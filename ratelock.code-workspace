@@ -1,0 +1,27 @@
+{
+  "folders": [
+    {
+      "name": "ratelock",
+      "path": ".",
+    },
+    {
+      "name": "core",
+      "path": "packages/core",
+    },
+    {
+      "name": "eslint",
+      "path": "packages/eslint",
+    },
+    {
+      "name": "tsconfig",
+      "path": "packages/tsconfig",
+    },
+    {
+      "name": "prettier",
+      "path": "packages/prettier",
+    },
+  ],
+  "settings": {
+    "cSpell.words": [],
+  },
+}

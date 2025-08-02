@@ -1,0 +1,12 @@
+{
+  "extends": ["@ratelock/tsconfig/base.json"],
+  "include": ["tsconfig.json"],
+  "exclude": [
+    "apps",
+    "packages",
+    "node_modules",
+    ".turbo",
+    ".vscode",
+    "ratelock.code-workspace.json"
+  ]
+}
