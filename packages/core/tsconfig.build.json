@@ -1,0 +1,19 @@
+{
+    "extends": "@ratelock/tsconfig/build.json",
+    "compilerOptions": {
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "declarationDir": "dist/types",
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "allowSyntheticDefaultImports": true,
+        "target": "ES2020",
+        "baseUrl": ".",
+        "rootDir": "src",
+        "importHelpers": true,
+        "isolatedModules": true,
+        "sourceMap": true
+    },
+    "include": ["./src/**/*"],
+    "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
+}

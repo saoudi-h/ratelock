@@ -1,12 +1,10 @@
-import { fixupConfigRules } from '@eslint/compat'
 import js from '@eslint/js'
 import * as regexpPlugin from 'eslint-plugin-regexp'
-// import turboPlugin from 'eslint-plugin-turbo'
 import prettierConfig from 'eslint-config-prettier'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
-import { compat, defineConfig } from '../utils.js'
+import { defineConfig } from '../utils.js'
 
 export const base = defineConfig(
     {
@@ -36,8 +34,6 @@ export const base = defineConfig(
     // Prettier config to disable conflicting rules
     prettierConfig,
 
-    ...fixupConfigRules(compat.extends('plugin:better-tailwindcss/recommended')),
-
     {
         files: ['**/*.cjs'],
         languageOptions: {
@@ -58,16 +54,7 @@ export const base = defineConfig(
                 ...globals.node,
             },
         },
-        settings: {
-            'better-tailwindcss': {
-                entryPoint: './app/global.css',
-                variables: ['className', 'classNames', 'classes'],
-            },
-        },
         rules: {
-            // ...betterTailwindcss.configs['recommended-error'].rules,
-            'better-tailwindcss/no-unregistered-classes': 'off',
-            // ...turboPlugin.configs.recommended.rules,
             '@typescript-eslint/no-unused-vars': [
                 'error',
                 { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },

@@ -1,0 +1,14 @@
+{
+    "extends": "@ratelock/tsconfig/base.json",
+    "compilerOptions": {
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "baseUrl": "src",
+        "rootDir": ".",
+        "paths": {
+            "@/*": ["src/*"]
+        }
+    },
+    "include": ["./src/**/*", "./src/**/*.json", "vite.config.ts"],
+    "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
+}
