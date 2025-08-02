@@ -12,15 +12,21 @@
     "clean": "turbo clean && rimraf node_modules",
     "version": "changeset version",
     "release": "changeset publish",
-    "typecheck": "tsc"
+    "typecheck": "turbo typecheck",
+    "prepare": "husky",
+    "pre-commit": "turbo pre-commit --concurrency=1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@commitlint/types": "^19.8.1",
     "@ratelock/eslint": "workspace:*",
     "@ratelock/prettier": "workspace:*",
     "@ratelock/tsconfig": "workspace:*",
     "@types/eslint": "^9.6.1",
     "@types/node": "^24.0.13",
     "eslint": "^9.30.1",
+    "husky": "^9.1.7",
     "prettier": "^3.5.3",
     "prettier-plugin-organize-imports": "^4.1.0",
     "rimraf": "^6.0.1",

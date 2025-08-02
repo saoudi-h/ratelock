@@ -11,6 +11,12 @@
     "lint": {
       "dependsOn": ["^lint"]
     },
+    "lint:fix": {
+      "dependsOn": ["^lint:fix"]
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"]
+    },
     "dev": {
       "cache": false,
       "persistent": true
@@ -18,6 +24,15 @@
     "clean": {
       "outputs": [],
       "cache": false
+    },
+    "format": {
+      "dependsOn": ["^format"]
+    },
+    "format:fix": {
+      "dependsOn": ["^format:fix"]
+    },
+    "pre-commit": {
+      "dependsOn": ["^pre-commit"]
     }
   }
 }
