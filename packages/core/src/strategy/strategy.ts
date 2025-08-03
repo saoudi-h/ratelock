@@ -1,9 +1,7 @@
 import type { Storage } from '../storage/storage'
 import type { InferStrategyResult } from './behaviors'
 
-/**
- * Métadonnées pour les stratégies (logs, debug, compat, etc.)
- */
+
 export interface StrategyMetadata {
     readonly name: string
     readonly version?: string
@@ -11,19 +9,13 @@ export interface StrategyMetadata {
     readonly supportsBatch: boolean
 }
 
-/**
- * Configuration de validation/normalisation des options
- */
+
 export interface ValidationConfig<T = unknown> {
     validate?(options: T): void
     normalize?(options: T): T
 }
 
-/**
- * Base abstraite pour toutes les stratégies
- * T: Interface des comportements (Windowed, Limited, etc.)
- * TOptions: Type d'options de la stratégie
- */
+
 export abstract class Strategy<T, TOptions = unknown> {
     abstract readonly metadata: StrategyMetadata
     protected readonly validation?: ValidationConfig<TOptions>
@@ -71,9 +63,6 @@ export interface StrategyStats {
     activeIdentifiers?: number
 }
 
-/**
- * Context injecté dans toutes les stratégies
- */
 export interface StrategyContext {
     storage: Storage
     // Futurs ajouts possibles:
@@ -82,26 +71,19 @@ export interface StrategyContext {
     // config?: GlobalConfig;
 }
 
-/**
- * Base pour toutes les options de stratégie
- */
+
 export interface BaseStrategyOptions {
-    prefix?: string // Préfixe pour les clés de stockage
-    enableStats?: boolean // Activer les statistiques
-    cleanupInterval?: number // Intervalle de nettoyage en ms
+    prefix?: string
+    enableStats?: boolean
+    cleanupInterval?: number
 }
 
-/**
- * Factory générique fortement typée
- */
 export type TypedStrategyFactory<
     TStrategy extends Strategy<any, any>,
     TOptions extends BaseStrategyOptions = BaseStrategyOptions,
 > = (options: TOptions) => (context: StrategyContext) => TStrategy
 
-/**
- * Registry des factories pour une meilleure organisation
- */
+
 export class StrategyRegistry {
     private static factories = new Map<string, TypedStrategyFactory<any, any>>()
 
@@ -142,19 +124,12 @@ export class StrategyBuilder<T extends Strategy<any, any>> {
     }
 }
 
-/**
- * Helper pour créer un builder
- */
+
 export function createStrategy<T extends Strategy<any, any>, O extends BaseStrategyOptions>(
     factory: TypedStrategyFactory<T, O>
-) {
-    return (options: O) => new StrategyBuilder(factory, options)
+): (options: O) => StrategyBuilder<T> {
+    return (options: O) => new StrategyBuilder(factory, options);
 }
-
-/* =============================================================================
- * Implémentation Fixed Window typée selon planned.md
- * =============================================================================
- */
 
 export interface FixedWindowOptions extends BaseStrategyOptions {
     limit: number
@@ -197,9 +172,10 @@ export class TypedFixedWindowStrategy extends Strategy<WindowedLimited, FixedWin
         supportsBatch: true,
     }
 
-    protected override readonly validation = fixedWindowValidation
+    protected override readonly validation: ValidationConfig<FixedWindowOptions> =
+        fixedWindowValidation
 
-    override async check(identifier: string) {
+    override async check(identifier: string): Promise<InferStrategyResult<WindowedLimited>> {
         const now = Date.now()
         const { limit, windowMs, startTimeMs = 0, prefix = 'fw' } = this.options
 
@@ -233,8 +209,6 @@ export class TypedFixedWindowStrategy extends Strategy<WindowedLimited, FixedWin
     override async checkBatch(
         identifiers: string[]
     ): Promise<Array<InferStrategyResult<WindowedLimited>>> {
-        // Implémentation simple utilisant check() par élément.
-        // Une implémentation pipeline pourra être ajoutée plus tard via Storage.pipeline()
         const results: Array<InferStrategyResult<WindowedLimited>> = []
         for (const identifier of identifiers) {
             results.push(await this.check(identifier))
@@ -243,14 +217,16 @@ export class TypedFixedWindowStrategy extends Strategy<WindowedLimited, FixedWin
     }
 }
 
-// Factory typée pour Fixed Window
+
 export const createTypedFixedWindowStrategy: TypedStrategyFactory<
     TypedFixedWindowStrategy,
     FixedWindowOptions
 > = options => context => new TypedFixedWindowStrategy(context.storage, options)
 
-// Enregistrement dans le registry
+
 StrategyRegistry.register('fixed-window', createTypedFixedWindowStrategy)
 
-// Helper builder
-export const FixedWindow = createStrategy(createTypedFixedWindowStrategy)
+
+export const FixedWindow: (options: FixedWindowOptions) => StrategyBuilder<TypedFixedWindowStrategy> = createStrategy(
+    createTypedFixedWindowStrategy
+)
