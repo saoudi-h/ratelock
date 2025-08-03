@@ -1,0 +1,44 @@
+diff --git a/.nvmrc b/.nvmrc
+index 818ab23..84e5de6 100644
+--- a/.nvmrc
++++ b/.nvmrc
+@@ -1 +1 @@
+-22.17.1
+\ No newline at end of file
++24.4.0
+\ No newline at end of file
+diff --git a/package.json b/package.json
+index 8792259..d7a304c 100644
+--- a/package.json
++++ b/package.json
+@@ -26,7 +26,6 @@
+     "@ratelock/tsconfig": "workspace:*",
+     "@types/eslint": "^9.6.1",
+     "@types/node": "^24.0.13",
+-    "eslint": "^9.30.1",
+     "husky": "^9.1.7",
+     "prettier": "^3.5.3",
+     "prettier-plugin-organize-imports": "^4.1.0",
+diff --git a/ratelock.code-workspace b/ratelock.code-workspace
+index d17867c..17863e9 100644
+--- a/ratelock.code-workspace
++++ b/ratelock.code-workspace
+@@ -20,6 +20,18 @@
+       "name": "prettier",
+       "path": "packages/prettier",
+     },
++    {
++      "name": "memory-storage",
++      "path": "packages/memory-storage",
++    },
++    {
++      "name": "redis-storage",
++      "path": "packages/redis-storage",
++    },
++    {
++      "name": "tsdown",
++      "path": "packages/tsdown",
++    },
+   ],
+   "settings": {
+     "cSpell.words": [],
