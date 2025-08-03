@@ -15,5 +15,20 @@ export type {
     WindowedLimited,
     WindowedResult,
 } from './behaviors'
-export { Strategy } from './strategy'
-export type { StrategyFactory } from './strategy'
+export {
+    FixedWindow,
+    Strategy,
+    StrategyBuilder,
+    StrategyRegistry,
+    TypedFixedWindowStrategy,
+    createStrategy,
+} from './strategy'
+export type {
+    BaseStrategyOptions,
+    FixedWindowOptions,
+    StrategyContext,
+    StrategyMetadata,
+    StrategyStats,
+    TypedStrategyFactory,
+    ValidationConfig,
+} from './strategy'

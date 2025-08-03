@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type { BaseResult } from './base'
 
 export interface Windowed {
@@ -44,12 +43,17 @@ export interface SlidingWindowResult extends WindowedResult {
     oldestRequest: number
 }
 
+/**
+ * Utilitaire interne pour générer un type vide strict au lieu de {}
+ */
+type Empty = Record<never, never>
+
 export type InferStrategyResult<T> = BaseResult &
-    (T extends Windowed ? WindowedResult : {}) &
-    (T extends Limited ? LimitedResult : {}) &
-    (T extends TokenBased ? TokenBasedResult : {}) &
-    (T extends IndividualTracking ? IndividualTrackingResult : {}) &
-    (T extends SlidingWindow ? SlidingWindowResult : {})
+    (T extends Windowed ? WindowedResult : Empty) &
+    (T extends Limited ? LimitedResult : Empty) &
+    (T extends TokenBased ? TokenBasedResult : Empty) &
+    (T extends IndividualTracking ? IndividualTrackingResult : Empty) &
+    (T extends SlidingWindow ? SlidingWindowResult : Empty)
 
 export type WindowedLimited = Windowed & Limited
 export type SlidingWindowLimited = SlidingWindow & Limited
