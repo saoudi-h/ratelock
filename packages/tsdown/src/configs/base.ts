@@ -6,9 +6,6 @@ export const base: UserConfigFn = defineConfig(({ watch }) => ({
     platform: 'node',
     dts: {
         sourcemap: !!watch,
-        compilerOptions: {
-            isolatedDeclarations: true,
-        },
     },
     unused: {
         level: 'error',
