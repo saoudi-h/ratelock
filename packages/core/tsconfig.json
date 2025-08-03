@@ -1,14 +1,27 @@
 {
     "extends": "@ratelock/tsconfig/base.json",
     "compilerOptions": {
-        "module": "ESNext",
-        "moduleResolution": "Bundler",
+        "target": "esnext",
+        "lib": ["es2022"],
+        "moduleDetection": "force",
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "resolveJsonModule": true,
+        "types": ["node"],
+        "strict": true,
+        "noUnusedLocals": true,
+        "declaration": true,
+        "esModuleInterop": true,
+        "isolatedModules": true,
+        "verbatimModuleSyntax": true,
+        "skipLibCheck": true,
         "baseUrl": "src",
+        "outDir": "./dist",
         "rootDir": ".",
         "paths": {
             "@/*": ["src/*"]
         }
     },
-    "include": ["./src/**/*", "./src/**/*.json", "vite.config.ts"],
+    "include": ["./src/**/*", "./src/**/*.json", "tsdown.config.ts"],
     "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
 }
