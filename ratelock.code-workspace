@@ -9,6 +9,14 @@
       "path": "packages/core",
     },
     {
+      "name": "local",
+      "path": "packages/local",
+    },
+    {
+      "name": "redis",
+      "path": "packages/redis",
+    },
+    {
       "name": "eslint",
       "path": "packages/eslint",
     },
@@ -19,6 +27,10 @@
     {
       "name": "prettier",
       "path": "packages/prettier",
+    },
+    {
+      "name": "tsdown",
+      "path": "packages/tsdown",
     },
   ],
   "settings": {
