@@ -1,6 +1,6 @@
 import js from '@eslint/js'
-import * as regexpPlugin from 'eslint-plugin-regexp'
 import prettierConfig from 'eslint-config-prettier'
+import * as regexpPlugin from 'eslint-plugin-regexp'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
