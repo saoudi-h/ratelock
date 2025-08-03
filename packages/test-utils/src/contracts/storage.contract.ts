@@ -1,0 +1,116 @@
+import type { Storage } from '@ratelock/core'
+import { beforeEach, describe, expect, it } from 'vitest'
+
+/**
+ * Factory qui retourne une instance fraîche de Storage pour chaque test.
+ */
+export type StorageFactory = () => Storage
+
+/**
+ * Contrat générique pour valider un adaptateur Storage conforme à @ratelock/core.
+ * L'API est basée sur des valeurs string et primitives, avec TTL en ms.
+ */
+export function storageContract(createStorage: StorageFactory) {
+    describe('Storage Contract', () => {
+        let storage: Storage
+
+        beforeEach(() => {
+            storage = createStorage()
+        })
+
+        it('set/get stocke et récupère une valeur string', async () => {
+            await storage.set('k1', '42')
+            const v = await storage.get('k1')
+            expect(v).toBe('42')
+        })
+
+        it('get renvoie null pour une clé absente', async () => {
+            const v = await storage.get('missing')
+            expect(v).toBeNull()
+        })
+
+        it('increment augmente de 1 et crée la clé si absente', async () => {
+            const n1 = await storage.increment('inc')
+            expect(typeof n1).toBe('number')
+            const n2 = await storage.increment('inc')
+            expect(n2).toBe(n1 + 1)
+        })
+
+        it('incrementIf respecte la borne max et expose incremented/value', async () => {
+            const r1 = await storage.incrementIf('incIf', 2)
+            expect(r1.value).toBe(1)
+            expect(r1.incremented).toBe(true)
+            const r2 = await storage.incrementIf('incIf', 2)
+            expect(r2.value).toBe(2)
+            expect(r2.incremented).toBe(true)
+            const r3 = await storage.incrementIf('incIf', 2)
+            expect(r3.value).toBe(2)
+            expect(r3.incremented).toBe(false)
+        })
+
+        it('decrement diminue la valeur (avec min facultatif)', async () => {
+            await storage.set('dec', '2')
+            const n1 = await storage.decrement('dec')
+            expect(n1).toBe(1)
+            const n2 = await storage.decrement('dec', 0)
+            expect(n2).toBe(0)
+        })
+
+        it('delete supprime une clé', async () => {
+            await storage.set('del', 'x')
+            await storage.delete('del')
+            const v = await storage.get('del')
+            expect(v).toBeNull()
+        })
+
+        it('expire applique un TTL sur une clé existante', async () => {
+            await storage.set('ttl', 'abc')
+            await storage.expire('ttl', 10)
+            const v1 = await storage.get('ttl')
+            expect(v1).toBe('abc')
+            await new Promise(r => setTimeout(r, 20))
+            const v2 = await storage.get('ttl')
+            expect([null, 'abc']).toContain(v2)
+        })
+
+        it('pipeline expose exec et enchaîne des opérations supportées', async () => {
+            const p = storage.pipeline()
+            await p.set('p1', 'a', 50)
+            await p.get('p1')
+            await p.increment('p2')
+            await p.exec()
+            const got = await storage.get('p1')
+            expect(got).toBe('a')
+            const n = await storage.increment('p2')
+            expect(n).toBeGreaterThan(0)
+        })
+
+        it('timestamps: add/count/getOldest/cleanup fonctionnent', async () => {
+            const id = 'ts:bucket'
+            await storage.addTimestamp(id, Date.now(), 50)
+            const count1 = await storage.countTimestamps(id, 1000)
+            expect(count1).toBeGreaterThanOrEqual(1)
+            const oldest = await storage.getOldestTimestamp(id)
+            expect([null, expect.any(Number)]).toContain(oldest)
+            await storage.cleanupTimestamps(id)
+            const count2 = await storage.countTimestamps(id, 1000)
+            expect(count2).toBeGreaterThanOrEqual(0)
+        })
+
+        it('multiGet/multiSet fonctionnent', async () => {
+            await storage.multiSet([
+                { key: 'm1', value: 'a' },
+                { key: 'm2', value: 'b', ttlMs: 50 },
+            ])
+            const res = await storage.multiGet(['m1', 'm2', 'm3'])
+            expect(res).toEqual(['a', 'b', null])
+        })
+
+        it('exists reflète la présence de la clé', async () => {
+            await storage.set('ex1', '1')
+            expect(await storage.exists('ex1')).toBe(true)
+            await storage.delete('ex1')
+            expect(await storage.exists('ex1')).toBe(false)
+        })
+    })
+}

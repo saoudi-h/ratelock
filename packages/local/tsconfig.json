@@ -7,8 +7,9 @@
         "rootDir": ".",
         "paths": {
             "@/*": ["src/*"]
-        }
+        },
+        "types": ["vitest", "node"]
     },
-    "include": ["./src/**/*", "tsdown.config.ts"],
+    "include": ["./src/**/*", "tsdown.config.ts", "vitest.config.ts"],
     "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
 }

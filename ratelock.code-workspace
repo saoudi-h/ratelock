@@ -32,6 +32,10 @@
       "name": "tsdown",
       "path": "packages/tsdown",
     },
+    {
+      "name": "test-utils",
+      "path": "packages/test-utils",
+    }
   ],
   "settings": {
     "cSpell.words": [],

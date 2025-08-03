@@ -1,0 +1,52 @@
+{
+    "name": "@ratelock/test-utils",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./config/vitest": {
+            "types": "./dist/config/vitest.base.d.ts",
+            "default": "./dist/config/vitest.base.js"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsdown",
+        "lint": "eslint . --max-warnings 0",
+        "lint:fix": "eslint . --max-warnings 0 --fix",
+        "format:check": "prettier \"**/*\" --ignore-unknown --list-different",
+        "format:fix": "prettier \"**/*\" --ignore-unknown --write",
+        "clean": "rimraf node_modules dist",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "test": "vitest"
+    },
+    "dependencies": {
+        "@ratelock/core": "workspace:*"
+    },
+    "devDependencies": {
+        "vitest": "^3.2.4",
+        "@vitest/coverage-v8": "^3.2.4",
+        "@types/node": "^24.0.13",
+        "typescript": "^5.9.2",
+        "@ratelock/eslint": "workspace:*",
+        "@ratelock/prettier": "workspace:*",
+        "@ratelock/tsconfig": "workspace:*",
+        "@ratelock/tsdown": "workspace:*",
+        "rimraf": "^5.0.5",
+        "chai": "^5.2.1"
+    },
+    "engines": {
+        "node": ">=18.17.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}
