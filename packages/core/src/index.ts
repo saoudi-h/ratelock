@@ -1,14 +1,34 @@
 export { RateLimiter } from './limiter/rate-limiter'
 export type { Storage, StoragePipeline } from './storage'
-export { Strategy, StrategyBuilder, StrategyRegistry, createStrategy } from './strategy'
+export {
+    Strategy, StrategyBuilder, StrategyRegistry, createStrategy, FixedWindow, TypedFixedWindowStrategy,
+    createFixedWindowStrategy,
+    createStrategyFactory,
+    createTypedFixedWindowStrategy,
+    fixedWindowValidator
+} from './strategy'
 export type {
     BaseResult,
     BaseStrategyOptions,
     StrategyContext,
     StrategyMetadata,
     StrategyStats,
-    TypedStrategyFactory,
-    ValidationConfig,
+    TypedStrategyFactory, FixedWindowOptions,
+    IndividualTracking,
+    IndividualTrackingResult,
+    IndividualWindowedLimited,
+    Limited,
+    SlidingWindow,
+    SlidingWindowLimited,
+    SlidingWindowResult,
+    TokenBased,
+    TokenBasedLimited,
+    TokenBasedResult,
+    Windowed,
+    WindowedLimited,
+    WindowedResult,
+    InferStrategyResult,
+    LimitedResult
 } from './strategy'
 
 // Advanced error handling
