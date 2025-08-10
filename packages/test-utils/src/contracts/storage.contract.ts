@@ -2,41 +2,40 @@ import type { Storage } from '@ratelock/core'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 /**
- * Factory qui retourne une instance fraîche de Storage pour chaque test.
+ * Factory function that returns a fresh instance of Storage for each test.
  */
 export type StorageFactory = () => Storage
 
 /**
- * Contrat générique pour valider un adaptateur Storage conforme à @ratelock/core.
- * L'API est basée sur des valeurs string et primitives, avec TTL en ms.
+ * Generic contract to validate a Storage adapter compliant with @ratelock/core.
+ * The API is based on string values and primitives, with TTL in milliseconds.
  */
 export function storageContract(createStorage: StorageFactory) {
     describe('Storage Contract', () => {
         let storage: Storage
-
         beforeEach(() => {
             storage = createStorage()
         })
 
-        it('set/get stocke et récupère une valeur string', async () => {
+        it('set/get stores and retrieves a string value', async () => {
             await storage.set('k1', '42')
             const v = await storage.get('k1')
             expect(v).toBe('42')
         })
 
-        it('get renvoie null pour une clé absente', async () => {
+        it('get returns null for a missing key', async () => {
             const v = await storage.get('missing')
             expect(v).toBeNull()
         })
 
-        it('increment augmente de 1 et crée la clé si absente', async () => {
+        it('increment increases by 1 and creates the key if missing', async () => {
             const n1 = await storage.increment('inc')
             expect(typeof n1).toBe('number')
             const n2 = await storage.increment('inc')
             expect(n2).toBe(n1 + 1)
         })
 
-        it('incrementIf respecte la borne max et expose incremented/value', async () => {
+        it('incrementIf respects the max bound and exposes incremented/value', async () => {
             const r1 = await storage.incrementIf('incIf', 2)
             expect(r1.value).toBe(1)
             expect(r1.incremented).toBe(true)
@@ -48,7 +47,7 @@ export function storageContract(createStorage: StorageFactory) {
             expect(r3.incremented).toBe(false)
         })
 
-        it('decrement diminue la valeur (avec min facultatif)', async () => {
+        it('decrement decreases the value (with optional min)', async () => {
             await storage.set('dec', '2')
             const n1 = await storage.decrement('dec')
             expect(n1).toBe(1)
@@ -56,14 +55,14 @@ export function storageContract(createStorage: StorageFactory) {
             expect(n2).toBe(0)
         })
 
-        it('delete supprime une clé', async () => {
+        it('delete removes a key', async () => {
             await storage.set('del', 'x')
             await storage.delete('del')
             const v = await storage.get('del')
             expect(v).toBeNull()
         })
 
-        it('expire applique un TTL sur une clé existante', async () => {
+        it('expire applies a TTL on an existing key', async () => {
             await storage.set('ttl', 'abc')
             await storage.expire('ttl', 10)
             const v1 = await storage.get('ttl')
@@ -73,7 +72,7 @@ export function storageContract(createStorage: StorageFactory) {
             expect([null, 'abc']).toContain(v2)
         })
 
-        it('pipeline expose exec et enchaîne des opérations supportées', async () => {
+        it('pipeline exposes exec and chains supported operations', async () => {
             const p = storage.pipeline()
             await p.set('p1', 'a', 50)
             await p.get('p1')
@@ -85,7 +84,7 @@ export function storageContract(createStorage: StorageFactory) {
             expect(n).toBeGreaterThan(0)
         })
 
-        it('timestamps: add/count/getOldest/cleanup fonctionnent', async () => {
+        it('timestamps: add/count/getOldest/cleanup work', async () => {
             const id = 'ts:bucket'
             await storage.addTimestamp(id, Date.now(), 50)
             const count1 = await storage.countTimestamps(id, 1000)
@@ -97,7 +96,7 @@ export function storageContract(createStorage: StorageFactory) {
             expect(count2).toBeGreaterThanOrEqual(0)
         })
 
-        it('multiGet/multiSet fonctionnent', async () => {
+        it('multiGet/multiSet work', async () => {
             await storage.multiSet([
                 { key: 'm1', value: 'a' },
                 { key: 'm2', value: 'b', ttlMs: 50 },
@@ -106,7 +105,7 @@ export function storageContract(createStorage: StorageFactory) {
             expect(res).toEqual(['a', 'b', null])
         })
 
-        it('exists reflète la présence de la clé', async () => {
+        it('exists reflects the presence of the key', async () => {
             await storage.set('ex1', '1')
             expect(await storage.exists('ex1')).toBe(true)
             await storage.delete('ex1')

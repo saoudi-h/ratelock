@@ -1,17 +1,11 @@
 {
-  "extends": "../tsconfig/base.json",
-  "compilerOptions": {
-    "composite": true,
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "types": ["vitest", "node"]
-  },
-  "include": [
-    "src",
-    "tsdown.config.ts",
-    "vitest.config.ts",
-    "eslint.config.js",
-    "prettier.config.js"
-  ],
-  "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
+    "extends": "../tsconfig/base.json",
+    "compilerOptions": {
+        "composite": true,
+        "rootDir": ".",
+        "outDir": "./dist",
+        "types": ["vitest", "node"]
+    },
+    "include": ["src", "tsdown.config.ts"],
+    "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
 }

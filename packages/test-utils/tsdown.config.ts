@@ -1,10 +1,10 @@
-import { defineConfig } from 'tsdown'
+import { base } from '@ratelock/tsdown'
+import type { UserConfigFn } from 'tsdown/config'
+import { defineConfig } from 'tsdown/config'
 
-export default defineConfig({
-    entry: ['src/index.ts'],
-    outDir: 'dist',
-    dts: true,
-    sourcemap: true,
-    clean: true,
-    format: ['esm'],
-})
+const configFn: UserConfigFn = defineConfig(async options => ({
+    ...(await base(options)),
+    entry: ['./src/index.ts', './src/{contracts,helpers,mocks,configs}/index.ts'],
+}))
+
+export default configFn

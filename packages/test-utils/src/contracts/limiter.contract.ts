@@ -3,33 +3,23 @@ import type { Limiter } from '@ratelock/core/limiter'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 /**
- * Factory qui retourne une instance fraîche de Limiter pour chaque test.
+ * Factory function that returns a fresh instance of Limiter for each test.
  */
 export type LimiterFactory<T extends BaseResult = BaseResult> = () => Limiter<T>
 
 /**
- * Contrat générique pour valider un adaptateur de Rate Limiter.
- * À utiliser dans les adaptateurs via:
- *
- *   import { describe } from "vitest";
- *   import { limiterContract } from "@ratelock/test-utils";
- *   import { MyLimiter } from "./rate-limiter.impl";
- *
- *   describe("MyLimiter contract", () => {
- *     limiterContract(() => new MyLimiter(...));
- *   });
+ * Generic contract to validate a Rate Limiter adapter.
  */
 export function limiterContract<T extends BaseResult = BaseResult>(
     createLimiter: LimiterFactory<T>
 ) {
     describe('RateLimiter Contract', () => {
         let limiter: Limiter<T>
-
         beforeEach(() => {
             limiter = createLimiter()
         })
 
-        it('check renvoie un résultat avec allowed (boolean)', async () => {
+        it('check returns a result with allowed (boolean)', async () => {
             const r = await limiter.check('user:1')
             expect(typeof r.allowed).toBe('boolean')
         })
