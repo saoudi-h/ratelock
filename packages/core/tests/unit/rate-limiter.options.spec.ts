@@ -1,6 +1,6 @@
 import { RateLimiter } from '@/limiter/rate-limiter'
 import type { Storage } from '@/storage/storage'
-import { FixedWindow, type FixedWindowOptions } from '@/strategy/strategy'
+import { FixedWindow, type FixedWindowOptions } from '@/strategy/fixed-window'
 import { describe, expect, it } from 'vitest'
 
 class InMemoryStorage implements Storage {

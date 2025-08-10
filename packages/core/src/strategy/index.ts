@@ -1,8 +1,11 @@
+export { Strategy } from './abstract'
 export type { BaseResult } from './base'
+export { StrategyBuilder, createStrategy } from './builder'
 export type {
     IndividualTracking,
     IndividualTrackingResult,
     IndividualWindowedLimited,
+    InferStrategyResult,
     Limited,
     LimitedResult,
     SlidingWindow,
@@ -14,26 +17,21 @@ export type {
     Windowed,
     WindowedLimited,
     WindowedResult,
-    InferStrategyResult,
-} from './behaviors'
+} from './capabilities'
+export { createStrategyFactory } from './factory'
 export {
     FixedWindow,
-    Strategy,
-    StrategyBuilder,
-    StrategyRegistry,
     TypedFixedWindowStrategy,
-    createStrategy,
     createFixedWindowStrategy,
-    createStrategyFactory,
     createTypedFixedWindowStrategy,
     fixedWindowValidator,
-
-} from './strategy'
+} from './fixed-window'
+export type { FixedWindowOptions } from './fixed-window'
+export { StrategyRegistry } from './registry'
 export type {
     BaseStrategyOptions,
-    FixedWindowOptions,
     StrategyContext,
     StrategyMetadata,
     StrategyStats,
     TypedStrategyFactory,
-} from './strategy'
+} from './types'

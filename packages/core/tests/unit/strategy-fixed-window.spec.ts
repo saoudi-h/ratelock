@@ -1,6 +1,10 @@
 import type { Storage } from '@/storage/storage'
-import type { TypedFixedWindowStrategy} from '@/strategy/strategy';
-import { createTypedFixedWindowStrategy, createFixedWindowStrategy, type FixedWindowOptions } from '@/strategy/strategy'
+import type { TypedFixedWindowStrategy } from '@/strategy/fixed-window'
+import {
+    createFixedWindowStrategy,
+    createTypedFixedWindowStrategy,
+    type FixedWindowOptions,
+} from '@/strategy/fixed-window'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 class InMemoryStorage implements Storage {
@@ -235,19 +239,17 @@ describe('TypedFixedWindowStrategy', () => {
     })
 
     it('validation options négatives via factory: lève une erreur', () => {
-        expect(
-            () =>
-                createFixedWindowStrategy(storage, {
-                    ...options,
-                    limit: 0,
-                })
+        expect(() =>
+            createFixedWindowStrategy(storage, {
+                ...options,
+                limit: 0,
+            })
         ).toThrowError()
-        expect(
-            () =>
-                createFixedWindowStrategy(storage, {
-                    ...options,
-                    windowMs: 0,
-                })
+        expect(() =>
+            createFixedWindowStrategy(storage, {
+                ...options,
+                windowMs: 0,
+            })
         ).toThrowError()
     })
 
