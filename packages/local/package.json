@@ -1,53 +1,67 @@
 {
-    "name": "@ratelock/local",
-    "version": "1.0.0",
-    "private": true,
-    "type": "module",
-    "main": "src/index.ts",
-    "types": "src/index.ts",
-    "exports": {
-        ".": {
-            "import": "./dist/esm/index.mjs",
-            "require": "./dist/cjs/index.cjs",
-            "types": "./dist/types/index.d.ts"
-        },
-        "./package.json": {
-            "default": "./package.json"
-        }
+  "name": "@ratelock/local",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.cts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     },
-    "scripts": {
-        "build": "tsdown",
-        "lint": "eslint . --max-warnings 0",
-        "lint:fix": "eslint . --max-warnings 0 --fix",
-        "format:check": "prettier \"**/*\" --ignore-unknown --list-different",
-        "format:fix": "prettier \"**/*\" --ignore-unknown --write",
-        "clean": "rimraf node_modules dist",
-        "typecheck": "tsc"
+    "./limiter": {
+      "import": "./dist/limiter/index.mjs",
+      "require": "./dist/limiter/index.cjs"
     },
-    "devDependencies": {
-        "@ratelock/core": "workspace:*",
-        "@ratelock/eslint": "workspace:*",
-        "@ratelock/prettier": "workspace:*",
-        "@ratelock/tsconfig": "workspace:*",
-        "@ratelock/tsdown": "workspace:*",
-        "@types/node": "^24.0.13"
+    "./storage": {
+      "import": "./dist/storage/index.mjs",
+      "require": "./dist/storage/index.cjs"
     },
-    "keywords": [
-        "@ratelock",
-        "storage",
-        "memory",
-        "rate-locking",
-        "rate-lock",
-        "ratelimit",
-        "typescript"
-    ],
-    "author": {
-        "name": "Saoudi Hakim",
-        "url": "https://hakimsaoudi.dev",
-        "email": "saoudihakim@gmail.com"
+    "./strategy": {
+      "import": "./dist/strategy/index.mjs",
+      "require": "./dist/strategy/index.cjs"
     },
-    "license": "MIT",
-    "engines": {
-        "node": ">=16"
-    }
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --max-warnings 0 --fix",
+    "format:check": "prettier \"**/*\" --ignore-unknown --list-different",
+    "format:fix": "prettier \"**/*\" --ignore-unknown --write",
+    "clean": "rimraf node_modules dist",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@ratelock/core": "workspace:*",
+    "@ratelock/eslint": "workspace:*",
+    "@ratelock/prettier": "workspace:*",
+    "@ratelock/tsconfig": "workspace:*",
+    "@ratelock/tsdown": "workspace:*",
+    "@ratelock/vitest": "workspace:*",
+    "@types/node": "^24.0.13"
+  },
+  "keywords": [
+    "@ratelock",
+    "storage",
+    "memory",
+    "rate-locking",
+    "rate-lock",
+    "ratelimit",
+    "typescript"
+  ],
+  "author": {
+    "name": "Saoudi Hakim",
+    "url": "https://hakimsaoudi.dev",
+    "email": "saoudihakim@gmail.com"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  },
+  "module": "./dist/index.mjs"
 }
