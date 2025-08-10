@@ -10,7 +10,7 @@
         "format:check": "prettier \"**/*\" --ignore-unknown --list-different",
         "format:fix": "prettier \"**/*\" --ignore-unknown --write",
         "clean": "rimraf node_modules",
-        "typecheck": "tsc"
+        "typecheck": "tsc -p tsconfig.json --noEmit"
     },
     "devDependencies": {
         "@ratelock/eslint": "workspace:*",
