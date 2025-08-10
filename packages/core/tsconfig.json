@@ -7,7 +7,7 @@
         "module": "esnext",
         "moduleResolution": "bundler",
         "resolveJsonModule": true,
-        "types": ["node"],
+        "types": ["node", "vitest"],
         "strict": true,
         "noUnusedLocals": true,
         "declaration": true,
@@ -15,13 +15,20 @@
         "isolatedModules": true,
         "verbatimModuleSyntax": true,
         "skipLibCheck": true,
-        "baseUrl": "src",
+        "baseUrl": ".",
         "outDir": "./dist",
         "rootDir": ".",
         "paths": {
-            "@/*": ["src/*"]
+            "@/*": ["src/*"],
+            "@tests/*": ["tests/*"]
         }
     },
-    "include": ["./src/**/*", "./src/**/*.json", "tsdown.config.ts"],
-    "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
+    "include": [
+        "./src/**/*",
+        "./src/**/*.json",
+        "tsdown.config.ts",
+        "vitest.config.ts",
+        "tests/**/*"
+    ],
+    "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo", "coverage"]
 }
