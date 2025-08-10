@@ -1,0 +1,41 @@
+{
+  "name": "@ratelock/vitest",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.cts",
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --max-warnings 0 --fix",
+    "format:check": "prettier \"**/*\" --ignore-unknown --list-different",
+    "format:fix": "prettier \"**/*\" --ignore-unknown --write",
+    "clean": "rimraf node_modules",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "tsdown"
+  },
+  "devDependencies": {
+    "@ratelock/eslint": "workspace:*",
+    "@ratelock/prettier": "workspace:*",
+    "@ratelock/tsconfig": "workspace:*",
+    "@ratelock/tsdown": "workspace:*"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "peerDependencies": {
+    "vite-tsconfig-paths": "^4.0.0"
+  },
+  "module": "./dist/index.mjs",
+  "dependencies": {
+    "vitest": "^3.2.4"
+  }
+}

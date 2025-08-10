@@ -35,6 +35,10 @@
     {
       "name": "test-utils",
       "path": "packages/test-utils",
+    },
+    {
+      "name": "vitest",
+      "path": "packages/vitest",
     }
   ],
   "settings": {
