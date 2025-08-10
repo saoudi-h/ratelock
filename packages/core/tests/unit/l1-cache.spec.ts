@@ -19,7 +19,7 @@ describe('L1Cache', () => {
         cache.stop()
     })
 
-    it('get retourne undefined si clé absente ou cache disabled', () => {
+    it('get returns undefined if key absent or cache disabled', () => {
         expect(cache.get('missing')).toBeUndefined()
 
         const disabled = new L1Cache<string>({ ...config, enabled: false })
@@ -27,14 +27,14 @@ describe('L1Cache', () => {
         disabled.stop()
     })
 
-    it('set/get stocke et récupère une valeur tant que TTL valide', async () => {
+    it('set/get stores and retrieves a value as long as TTL is valid', async () => {
         cache.set('k1', 'v1', 30)
         expect(cache.get('k1')).toBe('v1')
         await new Promise(r => setTimeout(r, 35))
         expect([undefined, 'v1']).toContain(cache.get('k1'))
     })
 
-    it('respecte le TTL par défaut depuis la config', async () => {
+    it('respects default TTL from config', async () => {
         cache.set('k1', 'v1')
         await new Promise(r => setTimeout(r, 10))
         expect(cache.get('k1')).toBe('v1')
@@ -42,7 +42,7 @@ describe('L1Cache', () => {
         expect([undefined, 'v1']).toContain(cache.get('k1'))
     })
 
-    it('évince le LRU quand maxSize atteint', () => {
+    it('evicts LRU when maxSize is reached', () => {
         cache.set('a', '1')
         cache.set('b', '2')
         expect(cache.get('a')).toBe('1')
@@ -52,13 +52,13 @@ describe('L1Cache', () => {
         expect(cache.get('c')).toBe('3')
     })
 
-    it('delete retire la clé du cache', () => {
+    it('delete removes the key from cache', () => {
         cache.set('x', '1')
         expect(cache.delete('x')).toBe(true)
         expect(cache.get('x')).toBeUndefined()
     })
 
-    it('clear vide le cache', () => {
+    it('clear empties the cache', () => {
         cache.set('a', '1')
         cache.set('b', '2')
         cache.clear()
@@ -66,7 +66,7 @@ describe('L1Cache', () => {
         expect(cache.get('b')).toBeUndefined()
     })
 
-    it('getStats retourne des métriques cohérentes', () => {
+    it('getStats returns consistent metrics', () => {
         cache.set('a', '1')
         cache.set('b', '2')
         expect(cache.get('a')).toBe('1') // hit

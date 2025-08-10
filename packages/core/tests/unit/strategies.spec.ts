@@ -1,39 +1,6 @@
 import type { Storage } from '@/storage/storage'
-import { describe, expect, it } from 'vitest'
-
-function storageContract(createStorage: () => Storage) {
-    describe('Storage Contract (minimal local copy)', () => {
-        it('set/get stores and retrieves a string value', async () => {
-            const storage = createStorage()
-            await storage.set('k1', '42')
-            const v = await storage.get('k1')
-            expect(v).toBe('42')
-        })
-
-        it('incrementIf respects the max boundary', async () => {
-            const storage = createStorage()
-            const r1 = await storage.incrementIf('incIf', 2)
-            expect(r1.value).toBe(1)
-            expect(r1.incremented).toBe(true)
-            const r2 = await storage.incrementIf('incIf', 2)
-            expect(r2.value).toBe(2)
-            expect(r2.incremented).toBe(true)
-            const r3 = await storage.incrementIf('incIf', 2)
-            expect(r3.value).toBe(2)
-            expect(r3.incremented).toBe(false)
-        })
-
-        it('multiGet/multiSet work correctly', async () => {
-            const storage = createStorage()
-            await storage.multiSet([
-                { key: 'm1', value: 'a' },
-                { key: 'm2', value: 'b' },
-            ])
-            const res = await storage.multiGet(['m1', 'm2', 'm3'])
-            expect(res).toEqual(['a', 'b', null])
-        })
-    })
-}
+import { FixedWindow, IndividualFixedWindow, SlidingWindowBuilder, TokenBucket } from '@/strategy'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 class InMemoryStorage implements Storage {
     private kv = new Map<string, { value: string; expiresAt?: number }>()
@@ -113,7 +80,6 @@ class InMemoryStorage implements Storage {
     ): Promise<{ value: number; incremented: boolean }> {
         const value = await this.increment(key, ttlMs)
         if (value > maxValue) {
-            // rollback
             const current = await this.get(key)
             const n = Math.max(0, (current ? parseInt(current, 10) : value) - 1)
             if (ttlMs !== undefined) {
@@ -133,69 +99,45 @@ class InMemoryStorage implements Storage {
         const current = await this.get(key)
         const n = Math.max(minValue, (current ? parseInt(current, 10) : 0) - 1)
         await this.set(key, String(n))
-        this.counters.set(key, { n })
         return n
     }
 
     async addTimestamp(identifier: string, timestamp: number, ttlMs: number): Promise<void> {
-        const arr = this.timestamps.get(identifier) ?? []
-        arr.push({ t: timestamp, expiresAt: this.now() + Math.max(1, ttlMs) })
-        this.timestamps.set(identifier, arr)
+        const key = `timestamps:${identifier}`
+        const timestamps = this.timestamps.get(key) || []
+        const expiresAt = this.now() + ttlMs
+        timestamps.push({ t: timestamp, expiresAt })
+        this.timestamps.set(key, timestamps)
     }
 
     async countTimestamps(identifier: string, windowMs: number): Promise<number> {
+        const key = `timestamps:${identifier}`
+        const timestamps = this.timestamps.get(key) || []
         const now = this.now()
-        const arr = (this.timestamps.get(identifier) ?? []).filter(
-            e => e.expiresAt > now && e.t >= now - windowMs
-        )
-        this.timestamps.set(identifier, arr)
-        return arr.length
+        const cutoff = now - windowMs
+        return timestamps.filter(t => t.t >= cutoff && t.expiresAt > now).length
     }
 
     async getOldestTimestamp(identifier: string): Promise<number | null> {
+        const key = `timestamps:${identifier}`
+        const timestamps = this.timestamps.get(key) || []
         const now = this.now()
-        const arr = (this.timestamps.get(identifier) ?? []).filter(e => e.expiresAt > now)
-        if (arr.length === 0) return null
-        return Math.min(...arr.map(e => e.t))
+        const validTimestamps = timestamps.filter(t => t.expiresAt > now)
+        if (validTimestamps.length === 0) return null
+        return Math.min(...validTimestamps.map(t => t.t))
     }
 
     async cleanupTimestamps(identifier: string): Promise<void> {
+        const key = `timestamps:${identifier}`
+        const timestamps = this.timestamps.get(key) || []
         const now = this.now()
-        const arr = (this.timestamps.get(identifier) ?? []).filter(e => e.expiresAt > now)
-        this.timestamps.set(identifier, arr)
+        const validTimestamps = timestamps.filter(t => t.expiresAt > now)
+        this.timestamps.set(key, validTimestamps)
     }
 
     pipeline() {
-        const ops: Array<() => Promise<unknown>> = []
+        const ops: Array<() => Promise<any>> = []
         const pipeline = {
-            increment: async (key: string, ttlMs?: number) => {
-                ops.push(() => this.increment(key, ttlMs))
-                return pipeline
-            },
-            incrementIf: async (key: string, maxValue: number, ttlMs?: number) => {
-                ops.push(() => this.incrementIf(key, maxValue, ttlMs))
-                return pipeline
-            },
-            decrement: async (key: string, minValue?: number) => {
-                ops.push(() => this.decrement(key, minValue))
-                return pipeline
-            },
-            addTimestamp: async (identifier: string, timestamp: number, ttlMs: number) => {
-                ops.push(() => this.addTimestamp(identifier, timestamp, ttlMs))
-                return pipeline
-            },
-            countTimestamps: async (identifier: string, windowMs: number) => {
-                ops.push(() => this.countTimestamps(identifier, windowMs))
-                return pipeline
-            },
-            getOldestTimestamp: async (identifier: string) => {
-                ops.push(() => this.getOldestTimestamp(identifier))
-                return pipeline
-            },
-            expire: async (keyOrIdentifier: string, ttlMs: number) => {
-                ops.push(() => this.expire(keyOrIdentifier, ttlMs))
-                return pipeline
-            },
             get: async (key: string) => {
                 ops.push(() => this.get(key))
                 return pipeline
@@ -212,11 +154,68 @@ class InMemoryStorage implements Storage {
     async multiGet(keys: string[]): Promise<(string | null)[]> {
         return Promise.all(keys.map(k => this.get(k)))
     }
+
     async multiSet(entries: Array<{ key: string; value: string; ttlMs?: number }>): Promise<void> {
         for (const e of entries) await this.set(e.key, e.value, e.ttlMs)
     }
 }
 
-describe('Storage Contract - InMemory adapter (integration)', () => {
-    storageContract(() => new InMemoryStorage())
+describe('All Strategies', () => {
+    let storage: InMemoryStorage
+
+    beforeEach(() => {
+        storage = new InMemoryStorage()
+    })
+
+    it('FixedWindow: allows requests within limit', async () => {
+        const limiter = FixedWindow({ limit: 2, windowMs: 1000 }).withStorage(storage)
+
+        const r1 = await limiter.check('user1')
+        const r2 = await limiter.check('user1')
+        const r3 = await limiter.check('user1')
+
+        expect(r1.allowed).toBe(true)
+        expect(r2.allowed).toBe(true)
+        expect(r3.allowed).toBe(false)
+    })
+
+    it('IndividualFixedWindow: starts window at first request', async () => {
+        const limiter = IndividualFixedWindow({ limit: 2, windowMs: 1000 }).withStorage(storage)
+
+        const r1 = await limiter.check('user1')
+        const r2 = await limiter.check('user1')
+        const r3 = await limiter.check('user1')
+
+        expect(r1.allowed).toBe(true)
+        expect(r2.allowed).toBe(true)
+        expect(r3.allowed).toBe(false)
+    })
+
+    it('SlidingWindow: tracks timestamps within window', async () => {
+        const limiter = SlidingWindowBuilder({ limit: 2, windowMs: 1000 }).withStorage(storage)
+
+        const r1 = await limiter.check('user1')
+        const r2 = await limiter.check('user1')
+        const r3 = await limiter.check('user1')
+
+        expect(r1.allowed).toBe(true)
+        expect(r2.allowed).toBe(true)
+        expect(r3.allowed).toBe(false)
+    })
+
+    it('TokenBucket: consumes tokens and refills over time', async () => {
+        const limiter = TokenBucket({
+            capacity: 2,
+            refillRate: 1, // 1 token per second
+            refillTime: 1000,
+        }).withStorage(storage)
+
+        const r1 = await limiter.check('user1')
+        const r2 = await limiter.check('user1')
+        const r3 = await limiter.check('user1')
+
+        expect(r1.allowed).toBe(true)
+        expect(r2.allowed).toBe(true)
+        expect(r3.allowed).toBe(false)
+    })
 })

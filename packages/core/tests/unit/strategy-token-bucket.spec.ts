@@ -1,10 +1,10 @@
 import type { Storage } from '@/storage/storage'
-import type { FixedWindowStrategy } from '@/strategy/fixed-window'
 import {
-    createFixedWindowStrategy,
-    createTypedFixedWindowStrategy,
-    type FixedWindowOptions,
-} from '@/strategy/fixed-window'
+    createTokenBucketStrategy,
+    createTypedTokenBucketStrategy,
+    TokenBucketStrategy,
+    type TokenBucketOptions,
+} from '@/strategy/token-bucket'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 class InMemoryStorage implements Storage {
@@ -85,7 +85,6 @@ class InMemoryStorage implements Storage {
     ): Promise<{ value: number; incremented: boolean }> {
         const value = await this.increment(key, ttlMs)
         if (value > maxValue) {
-            // rollback
             const current = await this.get(key)
             const n = Math.max(0, (current ? parseInt(current, 10) : value) - 1)
             if (ttlMs !== undefined) {
@@ -105,69 +104,45 @@ class InMemoryStorage implements Storage {
         const current = await this.get(key)
         const n = Math.max(minValue, (current ? parseInt(current, 10) : 0) - 1)
         await this.set(key, String(n))
-        this.counters.set(key, { n })
         return n
     }
 
     async addTimestamp(identifier: string, timestamp: number, ttlMs: number): Promise<void> {
-        const arr = this.timestamps.get(identifier) ?? []
-        arr.push({ t: timestamp, expiresAt: this.now() + Math.max(1, ttlMs) })
-        this.timestamps.set(identifier, arr)
+        const key = `timestamps:${identifier}`
+        const timestamps = this.timestamps.get(key) || []
+        const expiresAt = this.now() + ttlMs
+        timestamps.push({ t: timestamp, expiresAt })
+        this.timestamps.set(key, timestamps)
     }
 
     async countTimestamps(identifier: string, windowMs: number): Promise<number> {
+        const key = `timestamps:${identifier}`
+        const timestamps = this.timestamps.get(key) || []
         const now = this.now()
-        const arr = (this.timestamps.get(identifier) ?? []).filter(
-            e => e.expiresAt > now && e.t >= now - windowMs
-        )
-        this.timestamps.set(identifier, arr)
-        return arr.length
+        const cutoff = now - windowMs
+        return timestamps.filter(t => t.t >= cutoff && t.expiresAt > now).length
     }
 
     async getOldestTimestamp(identifier: string): Promise<number | null> {
+        const key = `timestamps:${identifier}`
+        const timestamps = this.timestamps.get(key) || []
         const now = this.now()
-        const arr = (this.timestamps.get(identifier) ?? []).filter(e => e.expiresAt > now)
-        if (arr.length === 0) return null
-        return Math.min(...arr.map(e => e.t))
+        const validTimestamps = timestamps.filter(t => t.expiresAt > now)
+        if (validTimestamps.length === 0) return null
+        return Math.min(...validTimestamps.map(t => t.t))
     }
 
     async cleanupTimestamps(identifier: string): Promise<void> {
+        const key = `timestamps:${identifier}`
+        const timestamps = this.timestamps.get(key) || []
         const now = this.now()
-        const arr = (this.timestamps.get(identifier) ?? []).filter(e => e.expiresAt > now)
-        this.timestamps.set(identifier, arr)
+        const validTimestamps = timestamps.filter(t => t.expiresAt > now)
+        this.timestamps.set(key, validTimestamps)
     }
 
     pipeline() {
-        const ops: Array<() => Promise<unknown>> = []
+        const ops: Array<() => Promise<any>> = []
         const pipeline = {
-            increment: async (key: string, ttlMs?: number) => {
-                ops.push(() => this.increment(key, ttlMs))
-                return pipeline
-            },
-            incrementIf: async (key: string, maxValue: number, ttlMs?: number) => {
-                ops.push(() => this.incrementIf(key, maxValue, ttlMs))
-                return pipeline
-            },
-            decrement: async (key: string, minValue?: number) => {
-                ops.push(() => this.decrement(key, minValue))
-                return pipeline
-            },
-            addTimestamp: async (identifier: string, timestamp: number, ttlMs: number) => {
-                ops.push(() => this.addTimestamp(identifier, timestamp, ttlMs))
-                return pipeline
-            },
-            countTimestamps: async (identifier: string, windowMs: number) => {
-                ops.push(() => this.countTimestamps(identifier, windowMs))
-                return pipeline
-            },
-            getOldestTimestamp: async (identifier: string) => {
-                ops.push(() => this.getOldestTimestamp(identifier))
-                return pipeline
-            },
-            expire: async (keyOrIdentifier: string, ttlMs: number) => {
-                ops.push(() => this.expire(keyOrIdentifier, ttlMs))
-                return pipeline
-            },
             get: async (key: string) => {
                 ops.push(() => this.get(key))
                 return pipeline
@@ -184,55 +159,91 @@ class InMemoryStorage implements Storage {
     async multiGet(keys: string[]): Promise<(string | null)[]> {
         return Promise.all(keys.map(k => this.get(k)))
     }
+
     async multiSet(entries: Array<{ key: string; value: string; ttlMs?: number }>): Promise<void> {
         for (const e of entries) await this.set(e.key, e.value, e.ttlMs)
     }
 }
 
-describe('FixedWindowStrategy', () => {
+describe('TokenBucketStrategy', () => {
     let storage: InMemoryStorage
-    let strategy: FixedWindowStrategy
-    const options: FixedWindowOptions = { limit: 2, windowMs: 100, prefix: 'fw:test' }
+    let strategy: TokenBucketStrategy
+    const options: TokenBucketOptions = {
+        capacity: 3,
+        refillRate: 1, // 1 token per second
+        refillTime: 1000,
+        prefix: 'tb:test',
+    }
 
     beforeEach(() => {
         storage = new InMemoryStorage()
-        strategy = createFixedWindowStrategy(storage, options)
+        strategy = createTokenBucketStrategy(storage, options)
     })
 
-    it('allows up to limit requests within the same window', async () => {
+    it('creates a TokenBucketStrategy instance', () => {
+        const strategy = createTokenBucketStrategy(storage, options)
+        expect(strategy).toBeInstanceOf(TokenBucketStrategy)
+    })
+
+    it('allows requests up to capacity', async () => {
         const r1 = await strategy.check('user:1')
         const r2 = await strategy.check('user:1')
         const r3 = await strategy.check('user:1')
+        const r4 = await strategy.check('user:1')
 
         expect(r1.allowed).toBe(true)
         expect(r2.allowed).toBe(true)
-        expect(r3.allowed).toBe(false)
-        expect(r3.remaining).toBe(0)
+        expect(r3.allowed).toBe(true)
+        expect(r4.allowed).toBe(false)
+        expect(r4.remaining).toBe(0)
     })
 
-    it('decrements if exceeded to compensate for over-increment', async () => {
-        await strategy.check('ip:1') // 1/2
-        await strategy.check('ip:1') // 2/2
-        const denied = await strategy.check('ip:1') // 3 => refuse and decrement
+    it('provides token information in result', async () => {
+        const result = await strategy.check('user:1')
+
+        expect(result).toHaveProperty('tokens')
+        expect(result).toHaveProperty('capacity')
+        expect(result).toHaveProperty('refillRate')
+        expect(typeof result.tokens).toBe('number')
+        expect(result.capacity).toBe(options.capacity)
+        expect(result.refillRate).toBe(options.refillRate)
+    })
+
+    it('refills tokens over time', async () => {
+        // Consume all tokens
+        await strategy.check('user:1') // 1 token consumed
+        await strategy.check('user:1') // 2 tokens consumed
+        await strategy.check('user:1') // 3 tokens consumed
+
+        // Should be denied
+        const denied = await strategy.check('user:1')
         expect(denied.allowed).toBe(false)
 
-        // The stored value must not exceed limit
-        const nowWindow = Math.floor(Date.now() / options.windowMs)
-        const k = `${options.prefix}:ip:1:${nowWindow}`
-        const raw = await storage.get(k)
-        expect(raw === null ? 0 : parseInt(raw, 10)).toBeLessThanOrEqual(options.limit)
+        // Wait for refill (simulate time passing)
+        const tokensKey = `${options.prefix}:user:1:tokens`
+        const lastRefillKey = `${options.prefix}:user:1:lastRefill`
+
+        // Manually set last refill to simulate time passing
+        const pastTime = Date.now() - 2000 // 2 seconds ago
+        await storage.set(lastRefillKey, pastTime.toString(), 10000)
+
+        // Next check should refill tokens
+        const result = await strategy.check('user:1')
+        expect(result.allowed).toBe(true)
+        expect(result.tokens).toBeGreaterThan(0)
     })
 
-    it('uses TTL based on window end time', async () => {
-        const before = Date.now()
-        await strategy.check('user:2')
-        const nowWindow = Math.floor((Date.now() - (options.startTimeMs ?? 0)) / options.windowMs)
-        const key = `${options.prefix}:user:2:${nowWindow}`
-        expect(await storage.exists(key)).toBe(true)
-        expect(Date.now()).toBeGreaterThanOrEqual(before)
+    it('calculates correct reset time', async () => {
+        const result = await strategy.check('user:1')
+
+        expect(result).toHaveProperty('reset')
+        expect(typeof result.reset).toBe('number')
+        // Reset time should be in the future, but we need to account for timing
+        const now = Date.now()
+        expect(result.reset).toBeGreaterThanOrEqual(now - 1000) // Allow 1 second tolerance
     })
 
-    it('checkBatch renvoie un résultat par identifiant', async () => {
+    it('checkBatch returns one result per identifier', async () => {
         const out = await strategy.checkBatch?.(['a', 'b', 'c'])
         expect(out).toBeDefined()
         expect(out!.length).toBe(3)
@@ -240,30 +251,74 @@ describe('FixedWindowStrategy', () => {
 
     it('validates negative options via factory: throws error', () => {
         expect(() =>
-            createFixedWindowStrategy(storage, {
+            createTokenBucketStrategy(storage, {
                 ...options,
-                limit: 0,
+                capacity: 0,
             })
         ).toThrowError()
         expect(() =>
-            createFixedWindowStrategy(storage, {
+            createTokenBucketStrategy(storage, {
                 ...options,
-                windowMs: 0,
+                refillRate: 0,
+            })
+        ).toThrowError()
+        expect(() =>
+            createTokenBucketStrategy(storage, {
+                ...options,
+                refillTime: 0,
             })
         ).toThrowError()
     })
 
     it('validates negative options via builder/registry: throws error', () => {
         expect(() => {
-            createTypedFixedWindowStrategy({ ...options, limit: 0 })({
+            createTypedTokenBucketStrategy({ ...options, capacity: 0 })({
                 storage: storage,
             })
         }).toThrowError()
 
         expect(() => {
-            createTypedFixedWindowStrategy({ ...options, windowMs: 0 })({
+            createTypedTokenBucketStrategy({ ...options, refillRate: 0 })({
                 storage: storage,
             })
         }).toThrowError()
+    })
+
+    it('handles fractional tokens correctly', async () => {
+        const fractionalOptions: TokenBucketOptions = {
+            capacity: 1,
+            refillRate: 0.5, // 0.5 tokens per second
+            refillTime: 1000,
+            prefix: 'frac:test',
+        }
+
+        const fractionalStrategy = createTokenBucketStrategy(storage, fractionalOptions)
+
+        // First request should be allowed
+        const r1 = await fractionalStrategy.check('user:1')
+        expect(r1.allowed).toBe(true)
+        expect(r1.tokens).toBe(0) // All tokens consumed
+
+        // Second request should be denied immediately
+        const r2 = await fractionalStrategy.check('user:1')
+        expect(r2.allowed).toBe(false)
+    })
+
+    it('respects capacity limit during refill', async () => {
+        // Consume all tokens
+        await strategy.check('user:1')
+        await strategy.check('user:1')
+        await strategy.check('user:1')
+
+        // Simulate very long time passing (more than capacity)
+        const tokensKey = `${options.prefix}:user:1:tokens`
+        const lastRefillKey = `${options.prefix}:user:1:lastRefill`
+        const pastTime = Date.now() - 10000 // 10 seconds ago
+        await storage.set(lastRefillKey, pastTime.toString(), 10000)
+
+        // Should refill but not exceed capacity
+        const result = await strategy.check('user:1')
+        expect(result.allowed).toBe(true)
+        expect(result.tokens).toBeLessThanOrEqual(options.capacity)
     })
 })

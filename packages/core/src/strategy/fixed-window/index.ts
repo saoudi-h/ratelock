@@ -34,7 +34,7 @@ export const fixedWindowValidator: StrategyValidator<FixedWindowOptions> = {
     },
 }
 
-export class TypedFixedWindowStrategy extends Strategy<WindowedLimited, FixedWindowOptions> {
+export class FixedWindowStrategy extends Strategy<WindowedLimited, FixedWindowOptions> {
     readonly metadata: StrategyMetadata = {
         name: 'fixed-window',
         version: '1.0.0',
@@ -85,17 +85,17 @@ export class TypedFixedWindowStrategy extends Strategy<WindowedLimited, FixedWin
 }
 
 export const createFixedWindowStrategy = createStrategyFactory<
-    TypedFixedWindowStrategy,
+    FixedWindowStrategy,
     FixedWindowOptions
->(fixedWindowValidator, (storage, options) => new TypedFixedWindowStrategy(storage, options))
+>(fixedWindowValidator, (storage, options) => new FixedWindowStrategy(storage, options))
 
 export const createTypedFixedWindowStrategy: TypedStrategyFactory<
-    TypedFixedWindowStrategy,
+    FixedWindowStrategy,
     FixedWindowOptions
 > = options => (context: StrategyContext) => createFixedWindowStrategy(context.storage, options)
 
 StrategyRegistry.register('fixed-window', createTypedFixedWindowStrategy)
 
-export const FixedWindow = createStrategy<TypedFixedWindowStrategy, FixedWindowOptions>(
+export const FixedWindow = createStrategy<FixedWindowStrategy, FixedWindowOptions>(
     createTypedFixedWindowStrategy
 )

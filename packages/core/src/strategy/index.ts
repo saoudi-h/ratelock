@@ -21,13 +21,40 @@ export type {
 export { createStrategyFactory } from './factory'
 export {
     FixedWindow,
-    TypedFixedWindowStrategy,
+    FixedWindowStrategy,
     createFixedWindowStrategy,
     createTypedFixedWindowStrategy,
     fixedWindowValidator,
 } from './fixed-window'
 export type { FixedWindowOptions } from './fixed-window'
+
+export {
+    IndividualFixedWindow,
+    IndividualFixedWindowStrategy,
+    createIndividualFixedWindowStrategy,
+    createTypedIndividualFixedWindowStrategy,
+    individualFixedWindowValidator,
+} from './individual-fixed-window'
+export type { IndividualFixedWindowOptions } from './individual-fixed-window'
+
+export {
+    SlidingWindowBuilder,
+    SlidingWindowStrategy,
+    createSlidingWindowStrategy,
+    createTypedSlidingWindowStrategy,
+    slidingWindowValidator,
+} from './sliding-window'
+export type { SlidingWindowOptions } from './sliding-window'
+
 export { StrategyRegistry } from './registry'
+export {
+    TokenBucket,
+    TokenBucketStrategy,
+    createTokenBucketStrategy,
+    createTypedTokenBucketStrategy,
+    tokenBucketValidator,
+} from './token-bucket'
+export type { TokenBucketOptions } from './token-bucket'
 export type {
     BaseStrategyOptions,
     StrategyContext,
