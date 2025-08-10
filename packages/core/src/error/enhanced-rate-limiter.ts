@@ -8,7 +8,7 @@ import type { RetryConfig } from './retry'
 import { RetryService } from './retry'
 
 /**
- * Configuration pour la gestion d'erreurs avancée
+ * Configuration for advanced error handling
  */
 export interface ErrorHandlingConfig {
     errorPolicy: 'throw' | 'allow' | 'deny'
@@ -16,11 +16,12 @@ export interface ErrorHandlingConfig {
     circuitBreakerConfig?: CircuitBreakerConfig
 }
 
-
 export type { CircuitBreakerConfig, HealthMetrics } from './circuit-breaker'
 export type { RetryConfig } from './retry'
 
-
+/**
+ * Enhanced result containing execution details
+ */
 export interface EnhancedResult<T> {
     result: T | null
     success: boolean
@@ -32,11 +33,18 @@ export interface EnhancedResult<T> {
 
 type InferLimiterResult<S> = S extends Strategy<infer T, any> ? InferStrategyResult<T> : BaseResult
 
-
+/**
+ * Enhanced rate limiter with advanced error handling capabilities
+ */
 export class EnhancedRateLimiter<S extends Strategy<any, any>> {
     private readonly circuitBreaker?: CircuitBreaker
     private readonly retryService?: RetryService
 
+    /**
+     * Creates an instance of EnhancedRateLimiter
+     * @param baseLimiter - The base rate limiter to enhance
+     * @param errorConfig - Configuration for error handling
+     */
     constructor(
         private readonly baseLimiter: RateLimiter<S>,
         private readonly errorConfig: ErrorHandlingConfig
@@ -49,6 +57,11 @@ export class EnhancedRateLimiter<S extends Strategy<any, any>> {
         }
     }
 
+    /**
+     * Checks the rate limit with enhanced error handling
+     * @param identifier - The identifier to check
+     * @returns Enhanced result with execution details
+     */
     async check(identifier: string): Promise<EnhancedResult<InferLimiterResult<S>>> {
         const startTime = Date.now()
         let attempts = 0
@@ -64,7 +77,6 @@ export class EnhancedRateLimiter<S extends Strategy<any, any>> {
 
         try {
             let result: InferLimiterResult<S>
-
             if (this.circuitBreaker) {
                 result = asLimiterResult(await this.circuitBreaker.execute(operation))
             } else if (this.retryService) {
@@ -82,7 +94,6 @@ export class EnhancedRateLimiter<S extends Strategy<any, any>> {
             }
         } catch (err) {
             finalError = err as Error
-
             const fallbackResult = this.applyErrorPolicy(finalError) as InferLimiterResult<S> | null
 
             return {
@@ -96,6 +107,11 @@ export class EnhancedRateLimiter<S extends Strategy<any, any>> {
         }
     }
 
+    /**
+     * Applies the configured error policy
+     * @param error - The error to handle
+     * @returns Result based on the error policy or throws the error
+     */
     private applyErrorPolicy(error: Error): BaseResult | null {
         switch (this.errorConfig.errorPolicy) {
             case 'allow':

@@ -14,6 +14,7 @@ export type {
     Windowed,
     WindowedLimited,
     WindowedResult,
+    InferStrategyResult,
 } from './behaviors'
 export {
     FixedWindow,
@@ -22,6 +23,11 @@ export {
     StrategyRegistry,
     TypedFixedWindowStrategy,
     createStrategy,
+    createFixedWindowStrategy,
+    createStrategyFactory,
+    createTypedFixedWindowStrategy,
+    fixedWindowValidator,
+
 } from './strategy'
 export type {
     BaseStrategyOptions,
@@ -30,5 +36,4 @@ export type {
     StrategyMetadata,
     StrategyStats,
     TypedStrategyFactory,
-    ValidationConfig,
 } from './strategy'

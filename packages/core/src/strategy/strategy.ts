@@ -1,7 +1,9 @@
 import type { Storage } from '../storage/storage'
 import type { InferStrategyResult } from './behaviors'
 
-
+/**
+ * Public metadata describing a Strategy implementation.
+ */
 export interface StrategyMetadata {
     readonly name: string
     readonly version?: string
@@ -9,50 +11,52 @@ export interface StrategyMetadata {
     readonly supportsBatch: boolean
 }
 
-
-export interface ValidationConfig<T = unknown> {
-    validate?(options: T): void
-    normalize?(options: T): T
+/**
+ * Options validator/normalizer used by factories to ensure option correctness.
+ */
+export interface StrategyValidator<TOptions> {
+    /**
+     * Validate user-provided options; must throw on invalid input.
+     */
+    validate(options: TOptions): void
+    /**
+     * Normalize user-provided options (fill defaults, coerce values, etc.).
+     */
+    normalize(options: TOptions): TOptions
 }
 
-
+/**
+ * Minimal abstract Strategy. Validation/normalization is NOT handled here anymore.
+ * Factories are responsible for building valid, normalized instances.
+ */
 export abstract class Strategy<T, TOptions = unknown> {
     abstract readonly metadata: StrategyMetadata
-    protected readonly validation?: ValidationConfig<TOptions>
 
     constructor(
         protected readonly storage: Storage,
         protected options: TOptions
-    ) {
-        // Validation automatique des options si configurée
-        this.validation?.validate?.(options)
-        // Normalisation des options
-        if (this.validation?.normalize) {
-            this.options = this.validation.normalize(options)
-        }
-    }
+    ) {}
 
     abstract check(identifier: string): Promise<InferStrategyResult<T>>
 
     /**
-     * Méthode optionnelle pour le nettoyage des ressources
+     * Optional resource cleanup hook.
      */
-
     cleanup?(identifier: string): Promise<void>
 
     /**
-     * Méthode optionnelle pour les statistiques
+     * Optional statistics hook.
      */
     getStats?(): Promise<StrategyStats>
 
     /**
-     * Méthode optionnelle pour la validation en lot
+     * Optional batch-check hook.
      */
     checkBatch?(identifiers: string[]): Promise<Array<InferStrategyResult<T>>>
 }
 
 /**
- * Interface pour les statistiques des stratégies
+ * Stats interface for strategies.
  */
 export interface StrategyStats {
     totalChecks: number
@@ -65,12 +69,8 @@ export interface StrategyStats {
 
 export interface StrategyContext {
     storage: Storage
-    // Futurs ajouts possibles:
-    // logger?: Logger;
-    // metrics?: MetricsCollector;
-    // config?: GlobalConfig;
+    // Future extensions: logger, metrics, global config, etc.
 }
-
 
 export interface BaseStrategyOptions {
     prefix?: string
@@ -82,7 +82,6 @@ export type TypedStrategyFactory<
     TStrategy extends Strategy<any, any>,
     TOptions extends BaseStrategyOptions = BaseStrategyOptions,
 > = (options: TOptions) => (context: StrategyContext) => TStrategy
-
 
 export class StrategyRegistry {
     private static factories = new Map<string, TypedStrategyFactory<any, any>>()
@@ -106,7 +105,7 @@ export class StrategyRegistry {
 }
 
 /**
- * Builder pour créer des stratégies de manière fluide
+ * Fluent builder for strategies.
  */
 export class StrategyBuilder<T extends Strategy<any, any>> {
     constructor(
@@ -124,21 +123,28 @@ export class StrategyBuilder<T extends Strategy<any, any>> {
     }
 }
 
-
+/**
+ * Helper to create a builder from a strategy factory.
+ */
 export function createStrategy<T extends Strategy<any, any>, O extends BaseStrategyOptions>(
     factory: TypedStrategyFactory<T, O>
 ): (options: O) => StrategyBuilder<T> {
-    return (options: O) => new StrategyBuilder(factory, options);
+    return (options: O) => new StrategyBuilder(factory, options)
 }
 
+/**
+ * Fixed-window options.
+ */
 export interface FixedWindowOptions extends BaseStrategyOptions {
     limit: number
     windowMs: number
     startTimeMs?: number
 }
 
-// Validation spécifique à Fixed Window
-const fixedWindowValidation: ValidationConfig<FixedWindowOptions> = {
+/**
+ * Fixed-window validator providing validation and normalization.
+ */
+export const fixedWindowValidator: StrategyValidator<FixedWindowOptions> = {
     validate(options) {
         if (options.limit <= 0) {
             throw new Error('limit must be positive')
@@ -150,7 +156,6 @@ const fixedWindowValidation: ValidationConfig<FixedWindowOptions> = {
             throw new Error('startTimeMs must be non-negative')
         }
     },
-
     normalize(options) {
         return {
             ...options,
@@ -164,6 +169,9 @@ const fixedWindowValidation: ValidationConfig<FixedWindowOptions> = {
 
 import type { WindowedLimited } from './behaviors'
 
+/**
+ * Concrete fixed-window strategy. Assumes options are already validated/normalized by a factory.
+ */
 export class TypedFixedWindowStrategy extends Strategy<WindowedLimited, FixedWindowOptions> {
     readonly metadata: StrategyMetadata = {
         name: 'fixed-window',
@@ -171,9 +179,6 @@ export class TypedFixedWindowStrategy extends Strategy<WindowedLimited, FixedWin
         memoryEfficient: true,
         supportsBatch: true,
     }
-
-    protected override readonly validation: ValidationConfig<FixedWindowOptions> =
-        fixedWindowValidation
 
     override async check(identifier: string): Promise<InferStrategyResult<WindowedLimited>> {
         const now = Date.now()
@@ -217,16 +222,42 @@ export class TypedFixedWindowStrategy extends Strategy<WindowedLimited, FixedWin
     }
 }
 
+/**
+ * Generic factory creator that wires validation and normalization into the construction step.
+ * It returns a factory function producing Strategy instances with validated/normalized options.
+ */
+export function createStrategyFactory<TStrategy extends Strategy<any, any>, TOptions extends BaseStrategyOptions>(
+    validator: StrategyValidator<TOptions>,
+    /**
+     * Concrete constructor that, given storage and normalized options, returns a Strategy instance.
+     */
+    construct: (storage: Storage, options: TOptions) => TStrategy
+): (storage: Storage, options: TOptions) => TStrategy {
+    return (storage: Storage, options: TOptions): TStrategy => {
+        validator.validate(options)
+        const normalized = validator.normalize(options)
+        return construct(storage, normalized)
+    }
+}
 
+/**
+ * Concrete fixed-window factory using the generic creator.
+ */
+export const createFixedWindowStrategy = createStrategyFactory<TypedFixedWindowStrategy, FixedWindowOptions>(
+    fixedWindowValidator,
+    (storage, options) => new TypedFixedWindowStrategy(storage, options)
+)
+
+/**
+ * Backward-compatible registry wiring for the typed builder API.
+ */
 export const createTypedFixedWindowStrategy: TypedStrategyFactory<
     TypedFixedWindowStrategy,
     FixedWindowOptions
-> = options => context => new TypedFixedWindowStrategy(context.storage, options)
-
+> = options => context => createFixedWindowStrategy(context.storage, options)
 
 StrategyRegistry.register('fixed-window', createTypedFixedWindowStrategy)
 
-
-export const FixedWindow: (options: FixedWindowOptions) => StrategyBuilder<TypedFixedWindowStrategy> = createStrategy(
-    createTypedFixedWindowStrategy
-)
+export const FixedWindow: (
+    options: FixedWindowOptions
+) => StrategyBuilder<TypedFixedWindowStrategy> = createStrategy(createTypedFixedWindowStrategy)
