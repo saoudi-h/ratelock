@@ -1,45 +1,45 @@
 export { RateLimiter } from './limiter/rate-limiter'
 export type { Storage, StoragePipeline } from './storage'
 export {
-    Strategy, StrategyBuilder, StrategyRegistry, createStrategy, FixedWindow, TypedFixedWindowStrategy,
+    FixedWindow,
+    Strategy,
+    StrategyBuilder,
+    StrategyRegistry,
+    TypedFixedWindowStrategy,
     createFixedWindowStrategy,
+    createStrategy,
     createStrategyFactory,
     createTypedFixedWindowStrategy,
-    fixedWindowValidator
+    fixedWindowValidator,
 } from './strategy'
 export type {
     BaseResult,
     BaseStrategyOptions,
-    StrategyContext,
-    StrategyMetadata,
-    StrategyStats,
-    TypedStrategyFactory, FixedWindowOptions,
+    FixedWindowOptions,
     IndividualTracking,
     IndividualTrackingResult,
     IndividualWindowedLimited,
+    InferStrategyResult,
     Limited,
+    LimitedResult,
     SlidingWindow,
     SlidingWindowLimited,
     SlidingWindowResult,
+    StrategyContext,
+    StrategyMetadata,
+    StrategyStats,
     TokenBased,
     TokenBasedLimited,
     TokenBasedResult,
+    TypedStrategyFactory,
     Windowed,
     WindowedLimited,
     WindowedResult,
-    InferStrategyResult,
-    LimitedResult
 } from './strategy'
 
 // Advanced error handling
-export { CircuitBreaker, CircuitState, EnhancedRateLimiter, RetryService } from './error'
-export type {
-    CircuitBreakerConfig,
-    EnhancedResult,
-    ErrorHandlingConfig,
-    HealthMetrics,
-    RetryConfig,
-} from './error'
+export { CircuitBreaker, CircuitState, RetryService } from './error'
+export type { CircuitBreakerConfig, HealthMetrics, RetryConfig } from './error'
 
 export { BatchProcessor, CachedStorage, L1Cache } from './cache'
 export type { BatchConfig, CacheConfig, L1CacheStats } from './cache'
