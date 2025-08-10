@@ -1,17 +1,24 @@
 import type { Storage, StoragePipeline } from '@ratelock/core/storage'
 import { StoragePipelineService } from './storage-pipline.service'
 
+/**
+ * In-memory storage service that implements the Storage interface.
+ * It handles key-value pairs, timestamps, and automatic expiration.
+ */
 export class StorageService implements Storage {
     private store = new Map<string, string>()
     private expirations = new Map<string, number>()
     private timestampsStore = new Map<string, Array<{ timestamp: number; expiresAt: number }>>()
     private cleanupInterval: NodeJS.Timeout | null = null
-    private readonly CLEANUP_INTERVAL_MS: number = 1000 // 1 seconde
+    private readonly CLEANUP_INTERVAL_MS: number = 1000
 
     constructor() {
         this.startCleanupTask()
     }
 
+    /**
+     * Starts the periodic cleanup task to remove expired entries.
+     */
     private startCleanupTask(): void {
         if (this.cleanupInterval) {
             clearInterval(this.cleanupInterval)
@@ -21,6 +28,9 @@ export class StorageService implements Storage {
         }, this.CLEANUP_INTERVAL_MS)
     }
 
+    /**
+     * Stops the periodic cleanup task.
+     */
     public stopCleanupTask(): void {
         if (this.cleanupInterval) {
             clearInterval(this.cleanupInterval)
@@ -28,10 +38,12 @@ export class StorageService implements Storage {
         }
     }
 
+    /**
+     * Cleans up all expired entries from the main store and timestamps store.
+     */
     private cleanupExpiredEntries(): void {
         const now = Date.now()
 
-        // Nettoyer les entrées expirées
         for (const [key, expirationTime] of this.expirations.entries()) {
             if (expirationTime <= now) {
                 this.store.delete(key)
@@ -39,7 +51,6 @@ export class StorageService implements Storage {
             }
         }
 
-        // Nettoyer les timestamps expirés
         for (const [identifier, timestamps] of this.timestampsStore.entries()) {
             const validTimestamps = timestamps.filter(t => t.expiresAt > now)
             if (validTimestamps.length === 0) {
@@ -50,6 +61,10 @@ export class StorageService implements Storage {
         }
     }
 
+    /**
+     * Checks if a key has expired and deletes it if necessary.
+     * @param {string} key - The key to check.
+     */
     private checkExpired(key: string): void {
         const expiration = this.expirations.get(key)
         if (expiration && expiration < Date.now()) {
@@ -58,11 +73,22 @@ export class StorageService implements Storage {
         }
     }
 
+    /**
+     * Retrieves the value associated with a key.
+     * @param {string} key - The key to retrieve.
+     * @returns {Promise<string | null>} The value or null if the key doesn't exist or has expired.
+     */
     async get(key: string): Promise<string | null> {
         this.checkExpired(key)
         return this.store.get(key) ?? null
     }
 
+    /**
+     * Sets a key-value pair with an optional time-to-live (TTL).
+     * @param {string} key - The key.
+     * @param {string} value - The value.
+     * @param {number} [ttlMs] - The time-to-live in milliseconds.
+     */
     async set(key: string, value: string, ttlMs?: number): Promise<void> {
         this.store.set(key, value)
         if (ttlMs && ttlMs > 0) {
@@ -72,22 +98,36 @@ export class StorageService implements Storage {
         }
     }
 
+    /**
+     * Deletes a key-value pair.
+     * @param {string} key - The key to delete.
+     */
     async delete(key: string): Promise<void> {
         this.store.delete(key)
         this.expirations.delete(key)
     }
 
+    /**
+     * Checks if a key exists and is not expired.
+     * @param {string} key - The key to check.
+     * @returns {Promise<boolean>} True if the key exists, false otherwise.
+     */
     async exists(key: string): Promise<boolean> {
         this.checkExpired(key)
         return this.store.has(key)
     }
 
+    /**
+     * Increments the value of a key. If the key does not exist, it is initialized to 1.
+     * @param {string} key - The key.
+     * @param {number} [ttlMs] - An optional TTL to set if the key is new.
+     * @returns {Promise<number>} The new value.
+     */
     async increment(key: string, ttlMs?: number): Promise<number> {
         this.checkExpired(key)
         const currentValue = parseInt(this.store.get(key) ?? '0', 10)
         const newValue = currentValue + 1
 
-        // Important: ne définir le TTL que si la clé n'existait pas
         const shouldSetTTL = ttlMs && !this.store.has(key)
 
         this.store.set(key, newValue.toString())
@@ -99,7 +139,13 @@ export class StorageService implements Storage {
         return newValue
     }
 
-    // Nouvelle méthode: incrément conditionnel
+    /**
+     * Increments the value of a key only if it is less than a maximum value.
+     * @param {string} key - The key.
+     * @param {number} maxValue - The maximum value allowed.
+     * @param {number} [ttlMs] - An optional TTL to set if the key is new.
+     * @returns {Promise<{ value: number; incremented: boolean }>} The current value and a flag indicating if the increment occurred.
+     */
     async incrementIf(
         key: string,
         maxValue: number,
@@ -127,7 +173,12 @@ export class StorageService implements Storage {
         return { value: currentValue, incremented: false }
     }
 
-    // Nouvelle méthode: décrément
+    /**
+     * Decrements the value of a key, ensuring it does not fall below a minimum value.
+     * @param {string} key - The key.
+     * @param {number} [minValue=0] - The minimum value.
+     * @returns {Promise<number>} The new value.
+     */
     async decrement(key: string, minValue: number = 0): Promise<number> {
         this.checkExpired(key)
         const currentValue = parseInt(this.store.get(key) ?? '0', 10)
@@ -143,6 +194,12 @@ export class StorageService implements Storage {
         return newValue
     }
 
+    /**
+     * Adds a timestamp to an identifier's list.
+     * @param {string} identifier - The identifier.
+     * @param {number} timestamp - The timestamp to add.
+     * @param {number} ttlMs - The TTL for this specific timestamp.
+     */
     async addTimestamp(identifier: string, timestamp: number, ttlMs: number): Promise<void> {
         if (!this.timestampsStore.has(identifier)) {
             this.timestampsStore.set(identifier, [])
@@ -151,6 +208,12 @@ export class StorageService implements Storage {
         timestamps.push({ timestamp, expiresAt: Date.now() + ttlMs })
     }
 
+    /**
+     * Counts the number of timestamps within a specified time window.
+     * @param {string} identifier - The identifier.
+     * @param {number} windowMs - The time window in milliseconds.
+     * @returns {Promise<number>} The number of valid timestamps.
+     */
     async countTimestamps(identifier: string, windowMs: number): Promise<number> {
         const timestamps = this.timestampsStore.get(identifier)
         if (!timestamps || timestamps.length === 0) {
@@ -160,12 +223,10 @@ export class StorageService implements Storage {
         const now = Date.now()
         const windowStart = now - windowMs
 
-        // Nettoyer et compter en une seule passe
         const validTimestamps = timestamps.filter(
             t => t.expiresAt > now && t.timestamp >= windowStart
         )
 
-        // Mettre à jour le store si des timestamps ont été nettoyés
         if (validTimestamps.length !== timestamps.length) {
             if (validTimestamps.length === 0) {
                 this.timestampsStore.delete(identifier)
@@ -177,6 +238,11 @@ export class StorageService implements Storage {
         return validTimestamps.length
     }
 
+    /**
+     * Retrieves the oldest valid timestamp for an identifier.
+     * @param {string} identifier - The identifier.
+     * @returns {Promise<number | null>} The oldest timestamp or null if none exist.
+     */
     async getOldestTimestamp(identifier: string): Promise<number | null> {
         const timestamps = this.timestampsStore.get(identifier)
         if (!timestamps || timestamps.length === 0) {
@@ -191,7 +257,6 @@ export class StorageService implements Storage {
             return null
         }
 
-        // Mettre à jour si nécessaire
         if (validTimestamps.length !== timestamps.length) {
             this.timestampsStore.set(identifier, validTimestamps)
         }
@@ -199,6 +264,10 @@ export class StorageService implements Storage {
         return Math.min(...validTimestamps.map(t => t.timestamp))
     }
 
+    /**
+     * Manually cleans up all expired timestamps for a specific identifier.
+     * @param {string} identifier - The identifier.
+     */
     async cleanupTimestamps(identifier: string): Promise<void> {
         const timestamps = this.timestampsStore.get(identifier)
         if (!timestamps) return
@@ -213,36 +282,41 @@ export class StorageService implements Storage {
         }
     }
 
+    /**
+     * Retrieves multiple values for a list of keys.
+     * @param {string[]} keys - The keys to retrieve.
+     * @returns {Promise<(string | null)[]>} An array of values, with null for keys that don't exist.
+     */
     async multiGet(keys: string[]): Promise<(string | null)[]> {
         return Promise.all(keys.map(key => this.get(key)))
     }
 
+    /**
+     * Sets multiple key-value pairs.
+     * @param {Array<{ key: string; value: string; ttlMs?: number }>} entries - An array of entries to set.
+     */
     async multiSet(entries: Array<{ key: string; value: string; ttlMs?: number }>): Promise<void> {
         for (const entry of entries) {
             await this.set(entry.key, entry.value, entry.ttlMs)
         }
     }
 
+    /**
+     * Creates a new storage pipeline for batch operations.
+     * @returns {StoragePipeline} A new storage pipeline instance.
+     */
     pipeline(): StoragePipeline {
         return new StoragePipelineService(this)
     }
 
+    /**
+     * Sets a new expiration time for an existing key or identifier.
+     * @param {string} keyOrIdentifier - The key or identifier to update.
+     * @param {number} ttlMs - The new TTL in milliseconds.
+     */
     async expire(keyOrIdentifier: string, ttlMs: number): Promise<void> {
         if (this.store.has(keyOrIdentifier) || this.timestampsStore.has(keyOrIdentifier)) {
             this.expirations.set(keyOrIdentifier, Date.now() + ttlMs)
         }
-    }
-
-    // Méthodes de debugging (à retirer en production)
-    public getStore(): Map<string, string> {
-        return this.store
-    }
-
-    public getExpirations(): Map<string, number> {
-        return this.expirations
-    }
-
-    public getTimestampsStore(): Map<string, Array<{ timestamp: number; expiresAt: number }>> {
-        return this.timestampsStore
     }
 }
