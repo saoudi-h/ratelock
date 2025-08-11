@@ -16,7 +16,7 @@ export const base: UserConfigFn = defineConfig(({ watch }) => ({
     exports: true,
     fixedExtension: true,
     minify: true,
-    unbundle: true,
+    unbundle: false,
     onSuccess() {
         console.info('🙏 Build succeeded!')
     },
