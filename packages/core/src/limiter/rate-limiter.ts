@@ -1,7 +1,8 @@
 import type { BatchConfig } from '../cache/batch-processor'
 import { CachedStorage } from '../cache/cached-storage'
 import { LazyTimestampCleaner } from '../cache/lazy-timestamp-cleaner'
-import { CircuitBreaker, CircuitState } from '../error/circuit-breaker'
+import type { CircuitState } from '../error/circuit-breaker';
+import { CircuitBreaker } from '../error/circuit-breaker'
 import { RetryService } from '../error/retry'
 import type { Storage } from '../storage/storage'
 import type { BaseResult } from '../strategy/base'
@@ -11,7 +12,6 @@ import type { Limiter, LimiterOptions, RateLimiterPerformanceOptions } from './l
 
 type InferLimiterResult<S> = S extends Strategy<infer T> ? InferStrategyResult<T> : BaseResult
 
-// no-op
 
 export class RateLimiter<S extends Strategy<any>> implements Limiter<InferLimiterResult<S>> {
     public readonly prefix: string
@@ -29,13 +29,8 @@ export class RateLimiter<S extends Strategy<any>> implements Limiter<InferLimite
         // Build effective storage (optionally wrapped with cache/batch)
         const effectiveStorage = this.buildEffectiveStorage(options.storage, options.performance)
 
-        // Build strategy from factory if provided, else use the given one
-        if (options.strategyFactory) {
-            this.strategy = options.strategyFactory(effectiveStorage)
-        } else if (options.strategy) {
+        if (options.strategy) {
             this.strategy = options.strategy
-            // If the strategy was constructed with a different storage, we do not mutate it.
-            // Consumers should prefer strategyFactory to bind the storage.
         } else {
             throw new Error('Either strategy or strategyFactory must be provided')
         }
@@ -147,6 +142,4 @@ export class RateLimiter<S extends Strategy<any>> implements Limiter<InferLimite
         }
         return cached
     }
-
-    // no-op
 }

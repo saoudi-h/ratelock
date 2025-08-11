@@ -2,7 +2,6 @@ import { Strategy } from '../abstract'
 import { createStrategy } from '../builder'
 import type { InferStrategyResult, TokenBasedLimited } from '../capabilities'
 import { createStrategyFactory, type StrategyValidator } from '../factory'
-import { StrategyRegistry } from '../registry'
 import type {
     BaseStrategyOptions,
     StrategyContext,
@@ -110,8 +109,6 @@ export const createTokenBucketStrategyWithContext: StrategyFactory<
     TokenBucketStrategy,
     TokenBucketOptions
 > = options => (context: StrategyContext) => createTokenBucketStrategy(context.storage, options)
-
-StrategyRegistry.register('token-bucket', createTokenBucketStrategyWithContext)
 
 export const TokenBucket = createStrategy<TokenBucketStrategy, TokenBucketOptions>(
     createTokenBucketStrategyWithContext

@@ -1,7 +1,6 @@
 export * from './abstract'
 export * from './builder'
 export * from './factory'
-export * from './registry'
 export * from './types'
 // Note: concrete strategies live in their own subdirectories
 

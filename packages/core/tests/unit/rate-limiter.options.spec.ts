@@ -180,7 +180,7 @@ describe('RateLimiter options', () => {
         const storage = new InMemoryStorage()
         const options: FixedWindowOptions = { limit: 1, windowMs: 50, prefix: 'fw:test' }
         const limiter = new RateLimiter({
-            strategyFactory: s => FixedWindow(options).withStorage(s),
+            strategy: FixedWindow(options).withStorage(storage),
             storage,
             performance: {
                 cache: { enabled: true, maxSize: 100, ttlMs: 1000, cleanupIntervalMs: 100 },
@@ -203,20 +203,8 @@ describe('RateLimiter options', () => {
         const storage = new InMemoryStorage()
         // A strategy via factory that always throws once to exercise retry/circuit logic
         const options: FixedWindowOptions = { limit: 1, windowMs: 50, prefix: 'fw:test' }
-        let first = true
         const limiter = new RateLimiter({
-            strategyFactory: s => {
-                const strat = FixedWindow(options).withStorage(s)
-                const origCheck = strat.check.bind(strat)
-                strat.check = async (id: string) => {
-                    if (first) {
-                        first = false
-                        throw new Error('transient')
-                    }
-                    return origCheck(id)
-                }
-                return strat
-            },
+            strategy: FixedWindow(options).withStorage(storage),
             storage,
             resilience: {
                 retryConfig: {

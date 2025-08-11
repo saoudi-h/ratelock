@@ -25,9 +25,7 @@ export interface RateLimiterResilienceOptions {
 export type StrategyFactory<S extends Strategy<any, any>> = (storage: Storage) => S
 
 export interface LimiterOptions<S extends Strategy<any, any> = Strategy<any, any>> {
-    // Provide either a constructed strategy OR a factory to build one with effective storage
     strategy?: S
-    strategyFactory?: StrategyFactory<S>
     storage: Storage
     errorPolicy?: 'throw' | 'allow' | 'deny'
     prefix?: string

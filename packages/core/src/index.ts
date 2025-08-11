@@ -5,7 +5,6 @@ export {
     FixedWindowStrategy,
     Strategy,
     StrategyBuilder,
-    StrategyRegistry,
     createFixedWindowStrategy,
     createStrategy,
     createStrategyFactory,

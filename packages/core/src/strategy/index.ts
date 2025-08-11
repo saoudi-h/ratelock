@@ -46,7 +46,6 @@ export {
 } from './sliding-window'
 export type { SlidingWindowOptions } from './sliding-window'
 
-export { StrategyRegistry } from './registry'
 export {
     TokenBucket,
     TokenBucketStrategy,
