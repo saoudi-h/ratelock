@@ -4,7 +4,7 @@ import { defineConfig } from 'tsdown/config'
 
 const config: UserConfigFn = defineConfig(async options => ({
     ...(await base(options)),
-    entry: ['./src/index.ts', './src/{limiter,storage,strategy}/index.ts'],
+    entry: ['./src/index.ts', './src/{limiter,storage,strategy,factory}/index.ts'],
 }))
 
 export default config
