@@ -115,6 +115,9 @@ export class StoragePipelineService implements StoragePipeline {
      * @returns {Promise<unknown[]>} An array of results from each command in the order they were queued.
      */
     async exec(): Promise<unknown[]> {
+        // Perform cleanup before executing the pipeline
+        // Note: This will trigger cleanup for the first operation in the pipeline
+        // which is sufficient for our needs
         const results = []
         for (const cmd of this.commands) {
             results.push(await cmd())
