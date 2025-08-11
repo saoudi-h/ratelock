@@ -1,65 +1,34 @@
-import type { FixedWindowStrategyOptions, createFixedWindowStrategy } from './fixed-window.strategy'
-import type {
-    IndividualFixedWindowStrategyOptions,
-    createIndividualFixedWindowStrategy,
-} from './individual-fixed-window.strategy'
-import type {
-    SlidingWindowStrategyOptions,
-    createOptimizedSlidingWindowStrategy,
-    createSlidingWindowStrategy,
-} from './sliding-window.strategy'
-import type {
-    TokenBucketStrategyOptions,
-    createContinuousTokenBucketStrategy,
-    createTokenBucketStrategy,
-} from './token-bucket.strategy'
-
-// Stratégies Fixed Window
+// Re-export core strategies for convenience
 export {
     FixedWindowStrategy,
     createFixedWindowStrategy,
-    type FixedWindowStrategyOptions,
-} from './fixed-window.strategy'
+    type FixedWindowOptions,
+} from '@ratelock/core/strategy'
 
 export {
     IndividualFixedWindowStrategy,
     createIndividualFixedWindowStrategy,
-    type IndividualFixedWindowStrategyOptions,
-} from './individual-fixed-window.strategy'
+    type IndividualFixedWindowOptions,
+} from '@ratelock/core/strategy'
 
-// Stratégies Sliding Window
 export {
-    OptimizedSlidingWindowStrategy,
     SlidingWindowStrategy,
-    createOptimizedSlidingWindowStrategy,
     createSlidingWindowStrategy,
-    type SlidingWindowStrategyOptions,
-} from './sliding-window.strategy'
+    type SlidingWindowOptions,
+} from '@ratelock/core/strategy'
 
-// Stratégies Token Bucket
 export {
-    ContinuousTokenBucketStrategy,
     TokenBucketStrategy,
-    createContinuousTokenBucketStrategy,
     createTokenBucketStrategy,
-    type TokenBucketStrategyOptions,
-} from './token-bucket.strategy'
+    type TokenBucketOptions,
+} from '@ratelock/core/strategy'
 
-// Types et helpers pour faciliter l'usage
+// Re-export core strategy types
 export type {
-    IndividualWindowedLimited,
+    BaseStrategyOptions,
+    InferStrategyResult,
     SlidingWindowLimited,
+    Strategy,
     TokenBasedLimited,
     WindowedLimited,
 } from '@ratelock/core/strategy'
-
-// Factory type générique
-export type LocalStrategyFactory<T> = T extends FixedWindowStrategyOptions
-    ? typeof createFixedWindowStrategy
-    : T extends IndividualFixedWindowStrategyOptions
-      ? typeof createIndividualFixedWindowStrategy
-      : T extends SlidingWindowStrategyOptions
-        ? typeof createSlidingWindowStrategy | typeof createOptimizedSlidingWindowStrategy
-        : T extends TokenBucketStrategyOptions
-          ? typeof createTokenBucketStrategy | typeof createContinuousTokenBucketStrategy
-          : never
