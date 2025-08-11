@@ -10,6 +10,10 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     },
+    "./factory": {
+      "import": "./dist/factory/index.mjs",
+      "require": "./dist/factory/index.cjs"
+    },
     "./limiter": {
       "import": "./dist/limiter/index.mjs",
       "require": "./dist/limiter/index.cjs"

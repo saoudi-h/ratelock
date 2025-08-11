@@ -10,6 +10,6 @@
         },
         "types": ["vitest", "node"]
     },
-    "include": ["./src/**/*", "tsdown.config.ts", "vitest.config.ts"],
+    "include": ["./src/**/*", "tsdown.config.ts", "vitest.config.ts", "./examples/**/*"],
     "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
 }
