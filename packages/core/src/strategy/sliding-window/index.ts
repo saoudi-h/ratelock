@@ -40,7 +40,7 @@ export class SlidingWindowStrategy extends Strategy<SlidingWindowLimited, Slidin
 
     override async check(identifier: string): Promise<InferStrategyResult<SlidingWindowLimited>> {
         const now = Date.now()
-        const { limit, windowMs, prefix = 'sw' } = this.options
+        const { limit, windowMs } = this.options
 
         // Add current timestamp
         await this.storage.addTimestamp(identifier, now, windowMs)

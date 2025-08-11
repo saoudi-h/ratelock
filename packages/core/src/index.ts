@@ -2,10 +2,10 @@ export { RateLimiter } from './limiter/rate-limiter'
 export type { Storage, StoragePipeline } from './storage'
 export {
     FixedWindow,
+    FixedWindowStrategy,
     Strategy,
     StrategyBuilder,
     StrategyRegistry,
-    TypedFixedWindowStrategy,
     createFixedWindowStrategy,
     createStrategy,
     createStrategyFactory,

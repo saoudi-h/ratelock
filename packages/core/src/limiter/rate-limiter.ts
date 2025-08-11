@@ -5,7 +5,7 @@ import { CircuitBreaker, CircuitState } from '../error/circuit-breaker'
 import { RetryService } from '../error/retry'
 import type { Storage } from '../storage/storage'
 import type { BaseResult } from '../strategy/base'
-import type { InferStrategyResult } from '../strategy/behaviors'
+import type { InferStrategyResult } from '../strategy/capabilities'
 import type { Strategy } from '../strategy/strategy'
 import type { Limiter, LimiterOptions, RateLimiterPerformanceOptions } from './limiter'
 

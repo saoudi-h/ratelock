@@ -74,18 +74,19 @@ export class TokenBucketStrategy extends Strategy<TokenBasedLimited, TokenBucket
             this.storage.set(lastRefillKey, now.toString(), ttlMs),
         ])
 
-        // Calculate next refill time
-        const tokensNeeded = 1 - currentTokens
-        const timeToNextToken = (tokensNeeded / refillRate) * 1000
-        const nextRefill = now + timeToNextToken
+        // Calculate next refill time (commented out as not used in result)
+        // const tokensNeeded = 1 - currentTokens
+        // const timeToNextToken = (tokensNeeded / refillRate) * 1000 // Not used in result
+        // const nextRefill = now + timeToNextToken // Not used in result
 
         return {
             allowed,
             remaining: Math.floor(currentTokens),
-            reset: nextRefill,
+            // reset: nextRefill, // Not exposed in result type
             tokens: currentTokens,
-            capacity,
-            refillRate,
+            refillTime: this.options.refillTime,
+            // capacity, // Not exposed in result type
+            // refillRate, // Not exposed in result type
         }
     }
 
