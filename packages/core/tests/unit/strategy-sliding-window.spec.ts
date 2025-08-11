@@ -1,6 +1,5 @@
 import {
     createSlidingWindowStrategy,
-    createSlidingWindowStrategyWithContext,
     SlidingWindowStrategy,
     type SlidingWindowOptions,
 } from '@/strategy/sliding-window'
@@ -79,15 +78,11 @@ describe('SlidingWindowStrategy', () => {
 
     it('validates negative options via builder/registry: throws error', () => {
         expect(() => {
-            createSlidingWindowStrategyWithContext({ ...options, limit: 0 })({
-                storage: storage,
-            })
+            createSlidingWindowStrategy(storage, { ...options, limit: 0 })
         }).toThrowError()
 
         expect(() => {
-            createSlidingWindowStrategyWithContext({ ...options, windowMs: 0 })({
-                storage: storage,
-            })
+            createSlidingWindowStrategy(storage, { ...options, windowMs: 0 })
         }).toThrowError()
     })
 

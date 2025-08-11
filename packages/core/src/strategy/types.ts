@@ -1,5 +1,3 @@
-import type { Storage } from '../storage/storage'
-
 export interface StrategyMetadata {
     readonly name: string
     readonly version?: string
@@ -16,17 +14,8 @@ export interface StrategyStats {
     activeIdentifiers?: number
 }
 
-export interface StrategyContext {
-    storage: Storage
-}
-
 export interface BaseStrategyOptions {
     prefix?: string
     enableStats?: boolean
     cleanupInterval?: number
 }
-
-export type StrategyFactory<
-    TStrategy,
-    TOptions extends BaseStrategyOptions = BaseStrategyOptions,
-> = (options: TOptions) => (context: StrategyContext) => TStrategy

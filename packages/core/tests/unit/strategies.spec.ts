@@ -1,6 +1,6 @@
-import { FixedWindow, IndividualFixedWindow, SlidingWindowBuilder, TokenBucket } from '@/strategy'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { InMemoryStorage } from './test-storage'
+import { createFixedWindowStrategy, createIndividualFixedWindowStrategy, createSlidingWindowStrategy, createTokenBucketStrategy } from '@/strategy'
 
 describe('All Strategies', () => {
     let storage: InMemoryStorage
@@ -10,7 +10,7 @@ describe('All Strategies', () => {
     })
 
     it('FixedWindow: allows requests within limit', async () => {
-        const limiter = FixedWindow({ limit: 2, windowMs: 1000 }).withStorage(storage)
+        const limiter = createFixedWindowStrategy(storage, { limit: 2, windowMs: 1000 })
 
         const r1 = await limiter.check('user1')
         const r2 = await limiter.check('user1')
@@ -22,7 +22,7 @@ describe('All Strategies', () => {
     })
 
     it('IndividualFixedWindow: starts window at first request', async () => {
-        const limiter = IndividualFixedWindow({ limit: 2, windowMs: 1000 }).withStorage(storage)
+        const limiter = createIndividualFixedWindowStrategy(storage, { limit: 2, windowMs: 1000 })
 
         const r1 = await limiter.check('user1')
         const r2 = await limiter.check('user1')
@@ -34,7 +34,7 @@ describe('All Strategies', () => {
     })
 
     it('SlidingWindow: tracks timestamps within window', async () => {
-        const limiter = SlidingWindowBuilder({ limit: 2, windowMs: 1000 }).withStorage(storage)
+        const limiter = createSlidingWindowStrategy(storage, { limit: 2, windowMs: 1000 })
 
         const r1 = await limiter.check('user1')
         const r2 = await limiter.check('user1')
@@ -46,11 +46,11 @@ describe('All Strategies', () => {
     })
 
     it('TokenBucket: consumes tokens and refills over time', async () => {
-        const limiter = TokenBucket({
+        const limiter = createTokenBucketStrategy(storage, {
             capacity: 2,
             refillRate: 1, // 1 token per second
             refillTime: 1000,
-        }).withStorage(storage)
+        })
 
         const r1 = await limiter.check('user1')
         const r2 = await limiter.check('user1')

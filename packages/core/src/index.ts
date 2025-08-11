@@ -1,14 +1,10 @@
 export { RateLimiter } from './limiter/rate-limiter'
 export type { Storage, StoragePipeline } from './storage'
 export {
-    FixedWindow,
     FixedWindowStrategy,
     Strategy,
-    StrategyBuilder,
     createFixedWindowStrategy,
-    createStrategy,
     createStrategyFactory,
-    createFixedWindowStrategyWithContext,
     fixedWindowValidator,
 } from './strategy'
 export type {
@@ -24,13 +20,11 @@ export type {
     SlidingWindow,
     SlidingWindowLimited,
     SlidingWindowResult,
-    StrategyContext,
     StrategyMetadata,
     StrategyStats,
     TokenBased,
     TokenBasedLimited,
     TokenBasedResult,
-    StrategyFactory,
     Windowed,
     WindowedLimited,
     WindowedResult,

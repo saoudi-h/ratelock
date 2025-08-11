@@ -1,11 +1,8 @@
 import { Strategy } from '../abstract'
-import { createStrategy } from '../builder'
 import type { InferStrategyResult, WindowedLimited } from '../capabilities'
 import { createStrategyFactory, type StrategyValidator } from '../factory'
 import type {
     BaseStrategyOptions,
-    StrategyContext,
-    StrategyFactory,
     StrategyMetadata,
 } from '../types'
 
@@ -109,15 +106,3 @@ export const createIndividualFixedWindowStrategy = createStrategyFactory<
     individualFixedWindowValidator,
     (storage, options) => new IndividualFixedWindowStrategy(storage, options)
 )
-
-export const createIndividualFixedWindowStrategyWithContext: StrategyFactory<
-    IndividualFixedWindowStrategy,
-    IndividualFixedWindowOptions
-> = options => (context: StrategyContext) =>
-    createIndividualFixedWindowStrategy(context.storage, options)
-
-
-export const IndividualFixedWindow = createStrategy<
-    IndividualFixedWindowStrategy,
-    IndividualFixedWindowOptions
->(createIndividualFixedWindowStrategyWithContext)

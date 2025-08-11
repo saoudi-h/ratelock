@@ -1,6 +1,6 @@
 import { RateLimiter } from '@/limiter/rate-limiter'
 import type { Storage } from '@/storage/storage'
-import { FixedWindow, type FixedWindowOptions } from '@/strategy/fixed-window'
+import { createFixedWindowStrategy, type FixedWindowOptions } from '@/strategy/fixed-window'
 import { describe, expect, it } from 'vitest'
 
 class InMemoryStorage implements Storage {
@@ -168,7 +168,7 @@ describe('RateLimiter options', () => {
     it('works with basic FixedWindow', async () => {
         const storage = new InMemoryStorage()
         const options: FixedWindowOptions = { limit: 2, windowMs: 50, prefix: 'fw:test' }
-        const strategy = FixedWindow(options).withStorage(storage)
+        const strategy = createFixedWindowStrategy(storage, options)
         const limiter = new RateLimiter({ strategy, storage })
         const r1 = await limiter.check('u')
         const r2 = await limiter.check('u')
@@ -180,7 +180,7 @@ describe('RateLimiter options', () => {
         const storage = new InMemoryStorage()
         const options: FixedWindowOptions = { limit: 1, windowMs: 50, prefix: 'fw:test' }
         const limiter = new RateLimiter({
-            strategy: FixedWindow(options).withStorage(storage),
+            strategy: createFixedWindowStrategy(storage, options),
             storage,
             performance: {
                 cache: { enabled: true, maxSize: 100, ttlMs: 1000, cleanupIntervalMs: 100 },
@@ -204,7 +204,7 @@ describe('RateLimiter options', () => {
         // A strategy via factory that always throws once to exercise retry/circuit logic
         const options: FixedWindowOptions = { limit: 1, windowMs: 50, prefix: 'fw:test' }
         const limiter = new RateLimiter({
-            strategy: FixedWindow(options).withStorage(storage),
+            strategy: createFixedWindowStrategy(storage, options),
             storage,
             resilience: {
                 retryConfig: {

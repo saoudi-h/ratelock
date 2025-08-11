@@ -1,12 +1,9 @@
 import { Strategy } from '../abstract'
-import { createStrategy } from '../builder'
 import type { InferStrategyResult, SlidingWindowLimited } from '../capabilities'
 import { createStrategyFactory, type StrategyValidator } from '../factory'
 
 import type {
     BaseStrategyOptions,
-    StrategyContext,
-    StrategyFactory,
     StrategyMetadata,
 } from '../types'
 
@@ -83,13 +80,3 @@ export const createSlidingWindowStrategy = createStrategyFactory<
     SlidingWindowStrategy,
     SlidingWindowOptions
 >(slidingWindowValidator, (storage, options) => new SlidingWindowStrategy(storage, options))
-
-export const createSlidingWindowStrategyWithContext: StrategyFactory<
-    SlidingWindowStrategy,
-    SlidingWindowOptions
-> = options => (context: StrategyContext) => createSlidingWindowStrategy(context.storage, options)
-
-
-export const SlidingWindowBuilder = createStrategy<SlidingWindowStrategy, SlidingWindowOptions>(
-    createSlidingWindowStrategyWithContext
-)
