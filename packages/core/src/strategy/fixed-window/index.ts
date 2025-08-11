@@ -6,8 +6,8 @@ import { StrategyRegistry } from '../registry'
 import type {
     BaseStrategyOptions,
     StrategyContext,
+    StrategyFactory,
     StrategyMetadata,
-    TypedStrategyFactory,
 } from '../types'
 
 export interface FixedWindowOptions extends BaseStrategyOptions {
@@ -89,13 +89,13 @@ export const createFixedWindowStrategy = createStrategyFactory<
     FixedWindowOptions
 >(fixedWindowValidator, (storage, options) => new FixedWindowStrategy(storage, options))
 
-export const createTypedFixedWindowStrategy: TypedStrategyFactory<
+export const createFixedWindowStrategyWithContext : StrategyFactory<
     FixedWindowStrategy,
     FixedWindowOptions
 > = options => (context: StrategyContext) => createFixedWindowStrategy(context.storage, options)
 
-StrategyRegistry.register('fixed-window', createTypedFixedWindowStrategy)
+StrategyRegistry.register('fixed-window', createFixedWindowStrategyWithContext)
 
 export const FixedWindow = createStrategy<FixedWindowStrategy, FixedWindowOptions>(
-    createTypedFixedWindowStrategy
+    createFixedWindowStrategyWithContext
 )

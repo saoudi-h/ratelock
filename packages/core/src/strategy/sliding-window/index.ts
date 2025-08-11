@@ -6,8 +6,8 @@ import { StrategyRegistry } from '../registry'
 import type {
     BaseStrategyOptions,
     StrategyContext,
+    StrategyFactory,
     StrategyMetadata,
-    TypedStrategyFactory,
 } from '../types'
 
 export interface SlidingWindowOptions extends BaseStrategyOptions {
@@ -84,13 +84,13 @@ export const createSlidingWindowStrategy = createStrategyFactory<
     SlidingWindowOptions
 >(slidingWindowValidator, (storage, options) => new SlidingWindowStrategy(storage, options))
 
-export const createTypedSlidingWindowStrategy: TypedStrategyFactory<
+export const createSlidingWindowStrategyWithContext: StrategyFactory<
     SlidingWindowStrategy,
     SlidingWindowOptions
 > = options => (context: StrategyContext) => createSlidingWindowStrategy(context.storage, options)
 
-StrategyRegistry.register('sliding-window', createTypedSlidingWindowStrategy)
+StrategyRegistry.register('sliding-window', createSlidingWindowStrategyWithContext)
 
 export const SlidingWindowBuilder = createStrategy<SlidingWindowStrategy, SlidingWindowOptions>(
-    createTypedSlidingWindowStrategy
+    createSlidingWindowStrategyWithContext
 )

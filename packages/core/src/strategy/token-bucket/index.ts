@@ -6,8 +6,8 @@ import { StrategyRegistry } from '../registry'
 import type {
     BaseStrategyOptions,
     StrategyContext,
+    StrategyFactory,
     StrategyMetadata,
-    TypedStrategyFactory,
 } from '../types'
 
 export interface TokenBucketOptions extends BaseStrategyOptions {
@@ -106,13 +106,13 @@ export const createTokenBucketStrategy = createStrategyFactory<
     TokenBucketOptions
 >(tokenBucketValidator, (storage, options) => new TokenBucketStrategy(storage, options))
 
-export const createTypedTokenBucketStrategy: TypedStrategyFactory<
+export const createTokenBucketStrategyWithContext: StrategyFactory<
     TokenBucketStrategy,
     TokenBucketOptions
 > = options => (context: StrategyContext) => createTokenBucketStrategy(context.storage, options)
 
-StrategyRegistry.register('token-bucket', createTypedTokenBucketStrategy)
+StrategyRegistry.register('token-bucket', createTokenBucketStrategyWithContext)
 
 export const TokenBucket = createStrategy<TokenBucketStrategy, TokenBucketOptions>(
-    createTypedTokenBucketStrategy
+    createTokenBucketStrategyWithContext
 )

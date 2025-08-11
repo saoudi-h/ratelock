@@ -1,6 +1,6 @@
 import {
     createTokenBucketStrategy,
-    createTypedTokenBucketStrategy,
+    createTokenBucketStrategyWithContext,
     TokenBucketStrategy,
     type TokenBucketOptions,
 } from '@/strategy/token-bucket'
@@ -109,13 +109,13 @@ describe('TokenBucketStrategy', () => {
 
     it('validates negative options via builder/registry: throws error', () => {
         expect(() => {
-            createTypedTokenBucketStrategy({ ...options, capacity: 0 })({
+            createTokenBucketStrategyWithContext({ ...options, capacity: 0 })({
                 storage: storage,
             })
         }).toThrowError()
 
         expect(() => {
-            createTypedTokenBucketStrategy({ ...options, refillRate: 0 })({
+            createTokenBucketStrategyWithContext({ ...options, refillRate: 0 })({
                 storage: storage,
             })
         }).toThrowError()

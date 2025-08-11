@@ -6,8 +6,8 @@ import { StrategyRegistry } from '../registry'
 import type {
     BaseStrategyOptions,
     StrategyContext,
+    StrategyFactory,
     StrategyMetadata,
-    TypedStrategyFactory,
 } from '../types'
 
 export interface IndividualFixedWindowOptions extends BaseStrategyOptions {
@@ -111,15 +111,15 @@ export const createIndividualFixedWindowStrategy = createStrategyFactory<
     (storage, options) => new IndividualFixedWindowStrategy(storage, options)
 )
 
-export const createTypedIndividualFixedWindowStrategy: TypedStrategyFactory<
+export const createIndividualFixedWindowStrategyWithContext: StrategyFactory<
     IndividualFixedWindowStrategy,
     IndividualFixedWindowOptions
 > = options => (context: StrategyContext) =>
     createIndividualFixedWindowStrategy(context.storage, options)
 
-StrategyRegistry.register('individual-fixed-window', createTypedIndividualFixedWindowStrategy)
+StrategyRegistry.register('individual-fixed-window', createIndividualFixedWindowStrategyWithContext)
 
 export const IndividualFixedWindow = createStrategy<
     IndividualFixedWindowStrategy,
     IndividualFixedWindowOptions
->(createTypedIndividualFixedWindowStrategy)
+>(createIndividualFixedWindowStrategyWithContext)

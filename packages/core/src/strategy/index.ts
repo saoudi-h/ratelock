@@ -23,7 +23,7 @@ export {
     FixedWindow,
     FixedWindowStrategy,
     createFixedWindowStrategy,
-    createTypedFixedWindowStrategy,
+    createFixedWindowStrategyWithContext,
     fixedWindowValidator,
 } from './fixed-window'
 export type { FixedWindowOptions } from './fixed-window'
@@ -32,7 +32,7 @@ export {
     IndividualFixedWindow,
     IndividualFixedWindowStrategy,
     createIndividualFixedWindowStrategy,
-    createTypedIndividualFixedWindowStrategy,
+    createIndividualFixedWindowStrategyWithContext,
     individualFixedWindowValidator,
 } from './individual-fixed-window'
 export type { IndividualFixedWindowOptions } from './individual-fixed-window'
@@ -41,7 +41,7 @@ export {
     SlidingWindowBuilder,
     SlidingWindowStrategy,
     createSlidingWindowStrategy,
-    createTypedSlidingWindowStrategy,
+    createSlidingWindowStrategyWithContext,
     slidingWindowValidator,
 } from './sliding-window'
 export type { SlidingWindowOptions } from './sliding-window'
@@ -51,7 +51,7 @@ export {
     TokenBucket,
     TokenBucketStrategy,
     createTokenBucketStrategy,
-    createTypedTokenBucketStrategy,
+    createTokenBucketStrategyWithContext,
     tokenBucketValidator,
 } from './token-bucket'
 export type { TokenBucketOptions } from './token-bucket'
@@ -60,5 +60,5 @@ export type {
     StrategyContext,
     StrategyMetadata,
     StrategyStats,
-    TypedStrategyFactory,
+    StrategyFactory,
 } from './types'

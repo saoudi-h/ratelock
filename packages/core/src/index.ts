@@ -9,7 +9,7 @@ export {
     createFixedWindowStrategy,
     createStrategy,
     createStrategyFactory,
-    createTypedFixedWindowStrategy,
+    createFixedWindowStrategyWithContext,
     fixedWindowValidator,
 } from './strategy'
 export type {
@@ -31,7 +31,7 @@ export type {
     TokenBased,
     TokenBasedLimited,
     TokenBasedResult,
-    TypedStrategyFactory,
+    StrategyFactory,
     Windowed,
     WindowedLimited,
     WindowedResult,

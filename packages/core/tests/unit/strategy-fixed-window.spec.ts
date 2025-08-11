@@ -1,10 +1,6 @@
 import type { Storage } from '@/storage/storage'
 import type { FixedWindowStrategy } from '@/strategy/fixed-window'
-import {
-    createFixedWindowStrategy,
-    createTypedFixedWindowStrategy,
-    type FixedWindowOptions,
-} from '@/strategy/fixed-window'
+import { createFixedWindowStrategy, type FixedWindowOptions } from '@/strategy/fixed-window'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 class InMemoryStorage implements Storage {
@@ -255,15 +251,11 @@ describe('FixedWindowStrategy', () => {
 
     it('validates negative options via builder/registry: throws error', () => {
         expect(() => {
-            createTypedFixedWindowStrategy({ ...options, limit: 0 })({
-                storage: storage,
-            })
+            createFixedWindowStrategy(storage, { ...options, limit: 0 })
         }).toThrowError()
 
         expect(() => {
-            createTypedFixedWindowStrategy({ ...options, windowMs: 0 })({
-                storage: storage,
-            })
+            createFixedWindowStrategy(storage, { ...options, windowMs: 0 })
         }).toThrowError()
     })
 })

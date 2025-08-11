@@ -1,8 +1,8 @@
-import type { BaseStrategyOptions, StrategyContext, TypedStrategyFactory } from './types'
+import type { BaseStrategyOptions, StrategyContext, StrategyFactory } from './types'
 
 export class StrategyBuilder<TStrategy, TOptions extends BaseStrategyOptions> {
     constructor(
-        private readonly factory: TypedStrategyFactory<TStrategy, TOptions>,
+        private readonly factory: StrategyFactory<TStrategy, TOptions>,
         private readonly options: TOptions
     ) {}
 
@@ -16,7 +16,7 @@ export class StrategyBuilder<TStrategy, TOptions extends BaseStrategyOptions> {
     }
 }
 export function createStrategy<TStrategy, TOptions extends BaseStrategyOptions>(
-    factory: TypedStrategyFactory<TStrategy, TOptions>
+    factory: StrategyFactory<TStrategy, TOptions>
 ): (options: TOptions) => StrategyBuilder<TStrategy, TOptions> {
     return (options: TOptions) => new StrategyBuilder(factory, options)
 }

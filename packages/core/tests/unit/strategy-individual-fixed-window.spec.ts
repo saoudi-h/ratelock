@@ -1,6 +1,6 @@
 import {
     createIndividualFixedWindowStrategy,
-    createTypedIndividualFixedWindowStrategy,
+    createIndividualFixedWindowStrategyWithContext,
     IndividualFixedWindowStrategy,
     type IndividualFixedWindowOptions,
 } from '@/strategy/individual-fixed-window'
@@ -93,13 +93,13 @@ describe('IndividualFixedWindowStrategy', () => {
 
     it('validates negative options via builder/registry: throws error', () => {
         expect(() => {
-            createTypedIndividualFixedWindowStrategy({ ...options, limit: 0 })({
+            createIndividualFixedWindowStrategyWithContext({ ...options, limit: 0 })({
                 storage: storage,
             })
         }).toThrowError()
 
         expect(() => {
-            createTypedIndividualFixedWindowStrategy({ ...options, windowMs: 0 })({
+            createIndividualFixedWindowStrategyWithContext({ ...options, windowMs: 0 })({
                 storage: storage,
             })
         }).toThrowError()

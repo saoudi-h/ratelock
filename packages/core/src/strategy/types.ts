@@ -26,7 +26,7 @@ export interface BaseStrategyOptions {
     cleanupInterval?: number
 }
 
-export type TypedStrategyFactory<
+export type StrategyFactory<
     TStrategy,
     TOptions extends BaseStrategyOptions = BaseStrategyOptions,
 > = (options: TOptions) => (context: StrategyContext) => TStrategy
