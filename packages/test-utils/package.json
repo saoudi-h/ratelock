@@ -10,21 +10,41 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     },
-    "./configs": {
-      "import": "./dist/configs/index.mjs",
-      "require": "./dist/configs/index.cjs"
-    },
     "./contracts": {
       "import": "./dist/contracts/index.mjs",
       "require": "./dist/contracts/index.cjs"
+    },
+    "./contracts/limiter.contract": {
+      "import": "./dist/contracts/limiter.contract.mjs",
+      "require": "./dist/contracts/limiter.contract.cjs"
+    },
+    "./contracts/storage.contract": {
+      "import": "./dist/contracts/storage.contract.mjs",
+      "require": "./dist/contracts/storage.contract.cjs"
     },
     "./helpers": {
       "import": "./dist/helpers/index.mjs",
       "require": "./dist/helpers/index.cjs"
     },
+    "./helpers/random": {
+      "import": "./dist/helpers/random.mjs",
+      "require": "./dist/helpers/random.cjs"
+    },
+    "./helpers/time": {
+      "import": "./dist/helpers/time.mjs",
+      "require": "./dist/helpers/time.cjs"
+    },
     "./mocks": {
       "import": "./dist/mocks/index.mjs",
       "require": "./dist/mocks/index.cjs"
+    },
+    "./mocks/clock.mock": {
+      "import": "./dist/mocks/clock.mock.mjs",
+      "require": "./dist/mocks/clock.mock.cjs"
+    },
+    "./mocks/logger.mock": {
+      "import": "./dist/mocks/logger.mock.mjs",
+      "require": "./dist/mocks/logger.mock.cjs"
     },
     "./package.json": "./package.json"
   },
