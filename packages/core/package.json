@@ -39,9 +39,10 @@
     "format:fix": "prettier \"**/*\" --ignore-unknown --write",
     "clean": "rimraf node_modules dist",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest --run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest --run --coverage",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "prepublishOnly": "pnpm run build"
   },
   "devDependencies": {

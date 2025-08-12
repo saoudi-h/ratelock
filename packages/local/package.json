@@ -37,6 +37,10 @@
     "lint:fix": "eslint . --max-warnings 0 --fix",
     "format:check": "prettier \"**/*\" --ignore-unknown --list-different",
     "format:fix": "prettier \"**/*\" --ignore-unknown --write",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "clean": "rimraf node_modules dist",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
