@@ -90,7 +90,7 @@ export function storageContract(createStorage: StorageFactory) {
             const count1 = await storage.countTimestamps(id, 1000)
             expect(count1).toBeGreaterThanOrEqual(1)
             const oldest = await storage.getOldestTimestamp(id)
-            expect([null, expect.any(Number)]).toContain(oldest)
+            expect(oldest === null || typeof oldest === 'number').toBe(true)
             await storage.cleanupTimestamps(id)
             const count2 = await storage.countTimestamps(id, 1000)
             expect(count2).toBeGreaterThanOrEqual(0)
