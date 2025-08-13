@@ -1,0 +1,105 @@
+{
+  "name": "@ratelock/redis",
+  "version": "0.1.0",
+  "description": "Redis storage backend for RateLock rate limiting system",
+  "keywords": [
+    "rate-limit",
+    "rate-limiting",
+    "redis",
+    "throttle",
+    "api-rate-limit",
+    "sliding-window",
+    "fixed-window",
+    "token-bucket"
+  ],
+  "homepage": "https://github.com/ratelock/ratelock",
+  "bugs": {
+    "url": "https://github.com/ratelock/ratelock/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ratelock/ratelock.git",
+    "directory": "packages/redis"
+  },
+  "license": "MIT",
+  "author": "RateLock Team",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.cts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./factory": {
+      "import": "./dist/factory/index.mjs",
+      "require": "./dist/factory/index.cjs"
+    },
+    "./scripts": {
+      "import": "./dist/scripts/index.mjs",
+      "require": "./dist/scripts/index.cjs"
+    },
+    "./storage": {
+      "import": "./dist/storage/index.mjs",
+      "require": "./dist/storage/index.cjs"
+    },
+    "./types": {
+      "import": "./dist/types/index.mjs",
+      "require": "./dist/types/index.cjs"
+    },
+    "./utils": {
+      "import": "./dist/utils/index.mjs",
+      "require": "./dist/utils/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "test": "vitest --exclude \"**/*.integration.test.ts\"",
+    "test:ui": "vitest --exclude \"**/*.integration.test.ts\" --ui",
+    "test:run": "vitest run --exclude \"**/*.integration.test.ts\"",
+    "test:coverage": "vitest run --coverage",
+    "test:coverage:dev": "pnpm run docker:up && vitest run --coverage && pnpm run docker:down",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist .turbo node_modules",
+    "prepack": "tsdown",
+    "docker:up": "docker-compose --env-file .env.test -f docker-compose.test.yml up -d --wait",
+    "docker:down": "docker-compose --env-file .env.test -f docker-compose.test.yml down",
+    "test:integration": "pnpm run docker:up && vitest run --include \"**/*.integration.test.ts\" && pnpm run docker:down"
+  },
+  "peerDependencies": {
+    "@ratelock/core": "workspace:*"
+  },
+  "dependencies": {
+    "redis": "^4.7.0"
+  },
+  "devDependencies": {
+    "@ratelock/core": "workspace:*",
+    "@ratelock/eslint": "workspace:*",
+    "@ratelock/prettier": "workspace:*",
+    "@ratelock/test-utils": "workspace:*",
+    "@ratelock/tsconfig": "workspace:*",
+    "@ratelock/tsdown": "workspace:*",
+    "@ratelock/vitest": "workspace:*",
+    "@types/node": "^22.2.0",
+    "dotenv": "^17.2.1",
+    "typescript": "^5.5.4"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "module": "./dist/index.mjs"
+}
