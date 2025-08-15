@@ -1,0 +1,18 @@
+{
+    "extends": "@ratelock/tsconfig/next.json",
+    "compilerOptions": {
+        "exactOptionalPropertyTypes": false,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["./src/*"]
+        }
+    },
+    "include": [
+        "next-env.d.ts",
+        "**/*.ts",
+        "**/*.tsx",
+        ".next/types/**/*.ts",
+        "postcss.config.mjs"
+    ],
+    "exclude": ["node_modules"]
+}
