@@ -1,5 +1,7 @@
-import { createSlidingWindowLimiterFactory, FactoryResult } from '@ratelock/core/factory'
-import { createRedisStorage, RedisStorageConfig } from './storage-factory'
+import type { FactoryResult } from '@ratelock/core/factory';
+import { createSlidingWindowLimiterFactory } from '@ratelock/core/factory'
+import type { RedisStorageConfig } from './storage-factory';
+import { createRedisStorage } from './storage-factory'
 import type { SlidingWindowOptions } from '@ratelock/core/strategy'
 
 /**

@@ -1,5 +1,7 @@
-import { createIndividualFixedWindowLimiterFactory, FactoryResult } from '@ratelock/core/factory'
-import { createRedisStorage, RedisStorageConfig } from './storage-factory'
+import type { FactoryResult } from '@ratelock/core/factory';
+import { createIndividualFixedWindowLimiterFactory } from '@ratelock/core/factory'
+import type { RedisStorageConfig } from './storage-factory';
+import { createRedisStorage } from './storage-factory'
 import type { IndividualFixedWindowOptions } from '@ratelock/core/strategy'
 
 /**
