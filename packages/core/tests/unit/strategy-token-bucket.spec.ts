@@ -80,7 +80,7 @@ describe('TokenBucketStrategy', () => {
     })
 
     it('checkBatch returns one result per identifier', async () => {
-        const out = await strategy.checkBatch?.(['a', 'b', 'c'])
+        const out = await strategy.checkBatch(['a', 'b', 'c'])
         expect(out).toBeDefined()
         expect(out!.length).toBe(3)
     })
