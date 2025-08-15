@@ -5,6 +5,10 @@
       "path": ".",
     },
     {
+      "name": "playground",
+      "path": "apps/playground",
+    },
+    {
       "name": "core",
       "path": "packages/core",
     },
@@ -39,7 +43,7 @@
     {
       "name": "vitest",
       "path": "packages/vitest",
-    }
+    },
   ],
   "settings": {
     "cSpell.words": [],
