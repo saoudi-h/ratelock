@@ -29,27 +29,6 @@ function hashConfig(strategy: StrategyConfig, storage: StorageConfig) {
     return JSON.stringify({ strategy, storage })
 }
 
-/**
- * Resolves Redis connection URL with environment fallback
- * @param storage Redis-specific storage configuration
- * @returns Complete Redis connection URL
- */
-function resolveRedisUrl(storage: Extract<StorageConfig, { type: 'redis' }>['config']) {
-    const envUrl = process.env.REDIS_URL
-    if (envUrl && typeof envUrl === 'string' && envUrl.trim().length > 0) {
-        return envUrl
-    }
-
-    if (storage.url) return storage.url
-
-    const host = storage.host ?? 'localhost'
-    const port = storage.port ?? 6379
-    const password = storage.password
-    const db = storage.db
-    const auth = password ? `:${encodeURIComponent(password)}@` : ''
-    const dbPart = Number.isInteger(db) ? `/${db}` : ''
-    return `redis://${auth}${host}:${port}${dbPart}`
-}
 
 /**
  * Creates or retrieves a rate limiter instance
@@ -91,20 +70,21 @@ export async function getLimiter(strategy: StrategyConfig, storage: StorageConfi
                 break
         }
     } else {
-        const url = resolveRedisUrl(storage.config)
+
+        if(!storage.config.url) throw new Error('Redis URL is required')
 
         switch (strategy.type) {
             case 'fixed-window':
-                factoryResult = await createRedisFixedWindow({ strategy: strategy.config as any, storage: { redisOptions: url } })
+                factoryResult = await createRedisFixedWindow({ strategy: strategy.config as any, storage: { redisOptions: storage.config.url } })
                 break
             case 'sliding-window':
-                factoryResult = await createRedisSlidingWindow({ strategy: strategy.config as any, storage: { redisOptions: url } })
+                factoryResult = await createRedisSlidingWindow({ strategy: strategy.config as any, storage: { redisOptions: storage.config.url } })
                 break
             case 'token-bucket':
-                factoryResult = await createRedisTokenBucket({ strategy: strategy.config as any, storage: { redisOptions: url } })
+                factoryResult = await createRedisTokenBucket({ strategy: strategy.config as any, storage: { redisOptions: storage.config.url } })
                 break
             case 'individual-fixed-window':
-                factoryResult = await createRedisIndividualFixedWindow({ strategy: strategy.config as any, storage: { redisOptions: url } })
+                factoryResult = await createRedisIndividualFixedWindow({ strategy: strategy.config as any, storage: { redisOptions: storage.config.url } })
                 break
         }
     }

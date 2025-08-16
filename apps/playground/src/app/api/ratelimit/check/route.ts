@@ -1,19 +1,20 @@
 import { checkRateLimit, checkRateLimitBatch } from '@/simulation/server/limiter'
 import type { StorageConfig, StrategyConfig } from '@/simulation/types'
-import { validateStorageConfig, validateStrategyConfig } from '@/simulation/types/validation'
+import { enrichStorageConfig, validateStorageConfig, validateStrategyConfig } from '@/simulation/types/validation'
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
     try {
         const body = await req.json()
-        const { strategy, storage, userId, identifiers } = body as {
+        const { strategy, storage: storageConfig, userId, identifiers } = body as {
             strategy: StrategyConfig
             storage: StorageConfig
             userId?: string
             identifiers?: string[]
         }
 
-        console.log("body", body)
+
+        const storage = enrichStorageConfig(storageConfig)
 
         const sVal = validateStrategyConfig(strategy)
         if (!sVal.isValid) {
