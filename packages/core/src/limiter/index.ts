@@ -1,2 +1,2 @@
-export type { Limiter, LimiterOptions } from './limiter'
-export { RateLimiter } from './rate-limiter'
+export * from './limiter'
+export * from './rate-limiter'

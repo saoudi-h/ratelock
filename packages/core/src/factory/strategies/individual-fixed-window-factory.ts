@@ -1,4 +1,3 @@
-// src/factory/strategies/individual-fixed-window-factory.ts
 import type { RateLimiterPerformanceOptions, RateLimiterResilienceOptions } from '@/limiter/limiter';
 import type { Storage } from '../../storage/storage'
 import type {

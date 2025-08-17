@@ -10,7 +10,7 @@ import type { InferStrategyResult } from '../strategy/capabilities'
 import type { Strategy } from '../strategy/strategy'
 import type { Limiter, LimiterOptions, RateLimiterPerformanceOptions } from './limiter'
 
-type InferLimiterResult<S> = S extends Strategy<infer T> ? InferStrategyResult<T> : BaseResult
+export type InferLimiterResult<S> = S extends Strategy<infer T> ? InferStrategyResult<T> : BaseResult
 
 
 export class RateLimiter<S extends Strategy<any>> implements Limiter<InferLimiterResult<S>> {
