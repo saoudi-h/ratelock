@@ -35,9 +35,9 @@
       "import": "./dist/factory/index.mjs",
       "require": "./dist/factory/index.cjs"
     },
-    "./scripts": {
-      "import": "./dist/scripts/index.mjs",
-      "require": "./dist/scripts/index.cjs"
+    "./lua-scripts": {
+      "import": "./dist/lua-scripts/index.mjs",
+      "require": "./dist/lua-scripts/index.cjs"
     },
     "./storage": {
       "import": "./dist/storage/index.mjs",
@@ -59,7 +59,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsdown",
+    "build:lua": "tsx scripts/lua-minifier.ts",
+    "build": "pnpm build:lua && pnpm tsdown",
     "dev": "tsdown --watch",
     "test": "vitest --exclude \"**/*.integration.test.ts\"",
     "test:ui": "vitest --exclude \"**/*.integration.test.ts\" --ui",
@@ -93,6 +94,7 @@
     "@ratelock/vitest": "workspace:*",
     "@types/node": "^22.2.0",
     "dotenv": "^17.2.1",
+    "luamin": "^1.0.4",
     "typescript": "^5.5.4"
   },
   "engines": {
