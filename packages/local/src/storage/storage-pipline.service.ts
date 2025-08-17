@@ -15,32 +15,32 @@ export class StoragePipelineService implements StoragePipeline {
      * @param {string} key - The key to increment.
      * @param {number} maxValue - The maximum value allowed.
      * @param {number} [ttlMs] - An optional TTL to set if the key is new.
-     * @returns {Promise<this>} The pipeline instance for chaining.
+     * @returns {this} The pipeline instance for chaining.
      */
-    incrementIf(key: string, maxValue: number, ttlMs?: number | undefined): Promise<this> {
+    incrementIf(key: string, maxValue: number, ttlMs?: number | undefined): this {
         this.commands.push(() => this.storage.incrementIf(key, maxValue, ttlMs))
-        return Promise.resolve(this)
+        return this
     }
 
     /**
      * Queues a 'decrement' operation.
      * @param {string} key - The key to decrement.
      * @param {number} [minValue] - The minimum value to which the key can be decremented.
-     * @returns {Promise<this>} The pipeline instance for chaining.
+     * @returns {this} The pipeline instance for chaining.
      */
-    decrement(key: string, minValue?: number | undefined): Promise<this> {
+    decrement(key: string, minValue?: number | undefined): this {
         this.commands.push(() => this.storage.decrement(key, minValue))
-        return Promise.resolve(this)
+        return this
     }
 
     /**
      * Queues a 'get' operation.
      * @param {string} key - The key to retrieve.
-     * @returns {Promise<this>} The pipeline instance for chaining.
+     * @returns {this} The pipeline instance for chaining.
      */
-    get(key: string): Promise<this> {
+    get(key: string): this {
         this.commands.push(() => this.storage.get(key))
-        return Promise.resolve(this)
+        return this
     }
 
     /**
@@ -48,22 +48,22 @@ export class StoragePipelineService implements StoragePipeline {
      * @param {string} key - The key.
      * @param {string} value - The value.
      * @param {number} [ttlMs] - The time-to-live in milliseconds.
-     * @returns {Promise<this>} The pipeline instance for chaining.
+     * @returns {this} The pipeline instance for chaining.
      */
-    set(key: string, value: string, ttlMs?: number | undefined): Promise<this> {
+    set(key: string, value: string, ttlMs?: number | undefined): this {
         this.commands.push(() => this.storage.set(key, value, ttlMs))
-        return Promise.resolve(this)
+        return this
     }
 
     /**
      * Queues an 'increment' operation.
      * @param {string} key - The key to increment.
      * @param {number} [ttlMs] - An optional TTL to set if the key is new.
-     * @returns {Promise<this>} The pipeline instance for chaining.
+     * @returns {this} The pipeline instance for chaining.
      */
-    increment(key: string, ttlMs?: number): Promise<this> {
+    increment(key: string, ttlMs?: number): this {
         this.commands.push(() => this.storage.increment(key, ttlMs))
-        return Promise.resolve(this)
+        return this
     }
 
     /**
@@ -71,43 +71,43 @@ export class StoragePipelineService implements StoragePipeline {
      * @param {string} identifier - The identifier to associate the timestamp with.
      * @param {number} timestamp - The timestamp value.
      * @param {number} ttlMs - The time-to-live for this timestamp.
-     * @returns {Promise<this>} The pipeline instance for chaining.
+     * @returns {this} The pipeline instance for chaining.
      */
-    addTimestamp(identifier: string, timestamp: number, ttlMs: number): Promise<this> {
+    addTimestamp(identifier: string, timestamp: number, ttlMs: number): this {
         this.commands.push(() => this.storage.addTimestamp(identifier, timestamp, ttlMs))
-        return Promise.resolve(this)
+        return this
     }
 
     /**
      * Queues a 'countTimestamps' operation.
      * @param {string} identifier - The identifier to count timestamps for.
      * @param {number} windowMs - The time window in milliseconds.
-     * @returns {Promise<this>} The pipeline instance for chaining.
+     * @returns {this} The pipeline instance for chaining.
      */
-    countTimestamps(identifier: string, windowMs: number): Promise<this> {
+    countTimestamps(identifier: string, windowMs: number): this {
         this.commands.push(() => this.storage.countTimestamps(identifier, windowMs))
-        return Promise.resolve(this)
+        return this
     }
 
     /**
      * Queues a 'getOldestTimestamp' operation.
      * @param {string} identifier - The identifier.
-     * @returns {Promise<this>} The pipeline instance for chaining.
+     * @returns {this} The pipeline instance for chaining.
      */
-    getOldestTimestamp(identifier: string): Promise<this> {
+    getOldestTimestamp(identifier: string): this {
         this.commands.push(() => this.storage.getOldestTimestamp(identifier))
-        return Promise.resolve(this)
+        return this
     }
 
     /**
      * Queues an 'expire' operation to set a new TTL for a key or identifier.
      * @param {string} keyOrIdentifier - The key or identifier to update.
      * @param {number} ttlMs - The new TTL in milliseconds.
-     * @returns {Promise<this>} The pipeline instance for chaining.
+     * @returns {this} The pipeline instance for chaining.
      */
-    expire(keyOrIdentifier: string, ttlMs: number): Promise<this> {
+    expire(keyOrIdentifier: string, ttlMs: number): this {
         this.commands.push(() => this.storage.expire(keyOrIdentifier, ttlMs))
-        return Promise.resolve(this)
+        return this
     }
 
     /**
