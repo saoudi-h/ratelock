@@ -1,7 +1,8 @@
+import type {
+    FixedWindowOptions} from '@ratelock/core/strategy';
 import {
     FixedWindowStrategy as CoreFixedWindowStrategy,
     createStrategyFactory,
-    FixedWindowOptions,
     fixedWindowValidator,
     type InferStrategyResult,
     type WindowedLimited,

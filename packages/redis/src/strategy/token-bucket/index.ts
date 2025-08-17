@@ -1,7 +1,8 @@
+import type {
+    TokenBucketOptions} from '@ratelock/core/strategy';
 import {
     TokenBucketStrategy as CoreTokenBucketStrategy,
     createStrategyFactory,
-    TokenBucketOptions,
     tokenBucketValidator,
     type InferStrategyResult,
     type TokenBasedLimited,
@@ -35,7 +36,7 @@ export class TokenBucketStrategy extends CoreTokenBucketStrategy {
         }
 
         const now = Date.now()
-        const { capacity, refillRate, refillTime, prefix = 'tb' } = this.options
+        const { capacity, refillRate, refillTime: _refillTime, prefix = 'tb' } = this.options
         const key = `${prefix}:${identifier}`
 
         // Lazy load Lua script (only once)

@@ -1,7 +1,8 @@
+import type {
+    SlidingWindowOptions} from '@ratelock/core/strategy';
 import {
     SlidingWindowStrategy as CoreSlidingWindowStrategy,
     createStrategyFactory,
-    SlidingWindowOptions,
     slidingWindowValidator,
     type InferStrategyResult,
     type SlidingWindowLimited,

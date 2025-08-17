@@ -343,6 +343,9 @@ importers:
       dotenv:
         specifier: ^17.2.1
         version: 17.2.1
+      luamin:
+        specifier: ^1.0.4
+        version: 1.0.4
       typescript:
         specifier: ^5.5.4
         version: 5.9.2
@@ -3143,6 +3146,14 @@ packages:
 
   lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
+
+  luamin@1.0.4:
+    resolution: {integrity: sha512-z1h0bclRD/QGsS/Dz4Skp9z0qPTmmm+IKcrCapGmdTczPWVdN9f9jk6WqkNrcifQr8+n9Pzsm9WkwpOH1JBUAQ==}
+    hasBin: true
+
+  luaparse@0.2.1:
+    resolution: {integrity: sha512-VKBcryd5nJte4ZNR29NOk8F/UkMipjeb4yoxcSS51z6QAzg9DXUC2WsfLniS0J1eh3pr/ZL3e9ha6V8fhoLbBQ==}
+    hasBin: true
 
   lucide-react@0.539.0:
     resolution: {integrity: sha512-VVISr+VF2krO91FeuCrm1rSOLACQUYVy7NQkzrOty52Y8TlTPcXcMdQFj9bYzBgXbWCiywlwSZ3Z8u6a+6bMlg==}
@@ -6974,6 +6985,12 @@ snapshots:
   loupe@3.2.0: {}
 
   lru-cache@10.4.3: {}
+
+  luamin@1.0.4:
+    dependencies:
+      luaparse: 0.2.1
+
+  luaparse@0.2.1: {}
 
   lucide-react@0.539.0(react@19.1.0):
     dependencies:

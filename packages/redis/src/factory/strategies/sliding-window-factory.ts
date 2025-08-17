@@ -1,9 +1,10 @@
 import type { SlidingWindowOptions } from '@ratelock/core/strategy'
 import type { FactoryResult, StorageFactory } from '@ratelock/core/factory';
 import { BaseLimiterFactory } from '@ratelock/core/factory'
-import { RateLimiterPerformanceOptions, RateLimiterResilienceOptions } from '@ratelock/core/limiter'
-import { RedisStorage } from 'storage/redis-storage.interface'
-import { createSlidingWindowStrategy, SlidingWindowStrategy } from 'strategy/sliding-window';
+import type { RateLimiterPerformanceOptions, RateLimiterResilienceOptions } from '@ratelock/core/limiter'
+import type { RedisStorage } from 'storage/redis-storage.interface'
+import type { SlidingWindowStrategy } from 'strategy/sliding-window';
+import { createSlidingWindowStrategy } from 'strategy/sliding-window';
 import type { RedisStorageConfig } from '../storage-factory'
 import { createRedisStorage } from '../storage-factory'
 

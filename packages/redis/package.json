@@ -35,21 +35,13 @@
       "import": "./dist/factory/index.mjs",
       "require": "./dist/factory/index.cjs"
     },
-    "./lua-scripts": {
-      "import": "./dist/lua-scripts/index.mjs",
-      "require": "./dist/lua-scripts/index.cjs"
-    },
     "./storage": {
       "import": "./dist/storage/index.mjs",
       "require": "./dist/storage/index.cjs"
     },
-    "./types": {
-      "import": "./dist/types/index.mjs",
-      "require": "./dist/types/index.cjs"
-    },
-    "./utils": {
-      "import": "./dist/utils/index.mjs",
-      "require": "./dist/utils/index.cjs"
+    "./strategy": {
+      "import": "./dist/strategy/index.mjs",
+      "require": "./dist/strategy/index.cjs"
     },
     "./package.json": "./package.json"
   },

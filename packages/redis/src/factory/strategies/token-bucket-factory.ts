@@ -1,9 +1,10 @@
 import type { TokenBucketOptions } from '@ratelock/core/strategy'
 import type { FactoryResult, StorageFactory } from '@ratelock/core/factory'
 import { BaseLimiterFactory } from '@ratelock/core/factory'
-import { RateLimiterPerformanceOptions, RateLimiterResilienceOptions } from '@ratelock/core/limiter'
-import { RedisStorage } from 'storage/redis-storage.interface'
-import { createTokenBucketStrategy, TokenBucketStrategy } from 'strategy/token-bucket'
+import type { RateLimiterPerformanceOptions, RateLimiterResilienceOptions } from '@ratelock/core/limiter'
+import type { RedisStorage } from 'storage/redis-storage.interface'
+import type { TokenBucketStrategy } from 'strategy/token-bucket';
+import { createTokenBucketStrategy } from 'strategy/token-bucket'
 import type { RedisStorageConfig } from '../storage-factory'
 import { createRedisStorage } from '../storage-factory'
 

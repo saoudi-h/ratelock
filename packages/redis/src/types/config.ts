@@ -2,7 +2,7 @@
  * Configuration interfaces for Redis storage
  */
 
-import { RedisClientOptions, RedisClientType } from "./redis"
+import type { RedisClientOptions, RedisClientType } from "./redis"
 
 /**
  * Redis storage configuration

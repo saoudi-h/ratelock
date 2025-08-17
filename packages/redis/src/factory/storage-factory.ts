@@ -1,7 +1,7 @@
 import { createClient, type RedisClientOptions } from 'redis'
 import { StorageService } from '../storage/storage.service'
 import { RedisStorageError } from '../utils/errors'
-import { RedisStorage } from 'storage/redis-storage.interface'
+import type { RedisStorage } from 'storage/redis-storage.interface'
 
 /**
  * Configuration for the Redis storage factory.

@@ -24,7 +24,7 @@ export const buildLuaScripts = () => {
             const code = fs.readFileSync(inputPath, 'utf8')
 
             try {
-                const minified = luamin.minify(code).replaceAll("'", '"')
+                const minified = (luamin as any).minify(code).replaceAll("'", '"')
                 outputContent += `export const ${varName} = '${minified}'\n`
                 console.log(`✓ ${file} minified and added as export const ${varName}`)
                 scriptCount++

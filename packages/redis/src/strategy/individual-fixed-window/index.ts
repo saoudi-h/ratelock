@@ -1,7 +1,8 @@
+import type {
+    IndividualFixedWindowOptions} from '@ratelock/core/strategy';
 import {
     IndividualFixedWindowStrategy as CoreIndividualFixedWindowStrategy,
     createStrategyFactory,
-    IndividualFixedWindowOptions,
     individualFixedWindowValidator,
     type InferStrategyResult,
     type WindowedLimited,
@@ -52,7 +53,7 @@ export class IndividualFixedWindowStrategy extends CoreIndividualFixedWindowStra
             })
 
             // Lua script returns [allowed, current, remaining, reset]
-            const [allowedInt, current, remaining, reset] = result as [
+            const [allowedInt, _current, remaining, reset] = result as [
                 number,
                 number,
                 number,
