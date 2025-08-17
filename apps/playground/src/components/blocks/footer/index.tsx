@@ -1,12 +1,19 @@
 import Link from 'next/link'
 import { Section } from '../Section'
 import { SectionWrapper } from '../SectionWrapper'
+import { DiagonalLinesBackground } from '../DiagonalLinesBackground'
+import { FooterBackground } from '../FooterBackground'
 
 export const Footer = () => {
     return (
-        <SectionWrapper className="border-border border-dashed border-t">
-            <Section className="relative w-full">
-                <div className="inset-0 absolute h-full w-full text-border/20 bg-[size:10px_10px] [background-image:repeating-linear-gradient(315deg,currentColor_0_1px,#0000_0_50%)]" />
+
+
+        <SectionWrapper className="relative border-none min-h-96">
+            <div className="opacity-mask absolute w-full border-x border-border border-dashed h-44 top-0 left-0"></div>
+            <FooterBackground className="w-[200%] absolute top-0 left-1/2 transform -translate-x-1/2"/>
+            <div className="h-72"></div>
+            <Section className="relative w-full py-24 pt-72 h-full">
+                {/* <DiagonalLinesBackground /> */}
                 <footer className="relative">
                     <div className="flex flex-col items-center justify-between py-12 text-muted-foreground md:flex-row">
                         <div className="font-bold font-serif text-xl">RateLock</div>

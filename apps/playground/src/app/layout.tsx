@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono, Playfair } from 'next/font/google'
+import { Inter, JetBrains_Mono, Arvo } from 'next/font/google'
 import './globals.css'
 
 const interSans = Inter({
@@ -13,8 +13,9 @@ const jetBrainsMono = JetBrains_Mono({
     subsets: ['latin'],
 })
 
-const playfair = Playfair({
+const arvo = Arvo({
     variable: '--font-serif',
+    weight: '400',
     subsets: ['latin'],
 })
 
@@ -34,7 +35,7 @@ export default function RootLayout({
                 className={cn(
                     interSans.variable,
                     jetBrainsMono.variable,
-                    playfair.variable,
+                    arvo.variable,
                     'antialiased'
                 )}>
                 {children}
