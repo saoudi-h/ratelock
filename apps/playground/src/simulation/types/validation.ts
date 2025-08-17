@@ -8,6 +8,72 @@ import type {
     StrategyConfig,
     TokenBucketConfig,
 } from './types'
+import { z } from 'zod'
+
+export const tokenBucketConfigSchema = z.object({
+    capacity: z.number().min(1).max(50),
+    refillRate: z.number().min(1).max(50),
+    refillTime: z.number().min(1000),
+})
+
+export const slidingWindowConfigSchema = z.object({
+    limit: z.number().min(1).max(50),
+    windowMs: z.number().min(1000),
+})
+
+export const individualFixedWindowConfigSchema = z.object({
+    limit: z.number().min(1).max(50),
+    windowMs: z.number().min(1000),
+})
+
+export const fixedWindowConfigSchema = z.object({
+    limit: z.number().min(1).max(50),
+    windowMs: z.number().min(1000),
+})
+
+export const localStorageConfigSchema = z.object({
+    cleanupIntervalMs: z.number().positive().optional(),
+    cleanupRequestThreshold: z.number().positive().optional(),
+})
+
+export const redisStorageConfigSchema = z.object({
+    url: z.string().url().optional(),
+    host: z.string().optional(),
+    port: z.number().int().min(1).max(65535).optional(),
+    password: z.string().optional(),
+    db: z.number().int().nonnegative().optional(),
+    keyPrefix: z.string().optional(),
+})
+
+export const storageConfigSchema = z.discriminatedUnion('type', [
+    z.object({
+        type: z.literal('local'),
+        config: localStorageConfigSchema,
+    }),
+    z.object({
+        type: z.literal('redis'),
+        config: redisStorageConfigSchema,
+    }),
+])
+
+export const strategyConfigSchema = z.discriminatedUnion('type', [
+    z.object({
+        type: z.literal('fixed-window'),
+        config: fixedWindowConfigSchema,
+    }),
+    z.object({
+        type: z.literal('sliding-window'),
+        config: slidingWindowConfigSchema,
+    }),
+    z.object({
+        type: z.literal('token-bucket'),
+        config: tokenBucketConfigSchema,
+    }),
+    z.object({
+        type: z.literal('individual-fixed-window'),
+        config: individualFixedWindowConfigSchema,
+    }),
+])
 
 /**
  * Standard validation response format
@@ -18,178 +84,128 @@ export interface ValidationResult {
 }
 
 /**
+ * Converts Zod validation errors to standardized validation result format
+ * @param error Zod validation error
+ * @returns Formatted validation result with error paths and messages
+ */
+function zodToValidationResult(error: z.ZodError): ValidationResult {
+    return {
+        isValid: false,
+        errors: error.issues.map((err) => err.message),
+    }
+}
+
+/**
  * Validates fixed window strategy configuration
  * @param config Configuration to validate
- * @returns Validation result with error messages
+ * @returns Validation result with error messages if invalid
  */
 export function validateFixedWindowConfig(config: FixedWindowConfig): ValidationResult {
-    const errors: string[] = []
-
-    if (!Number.isInteger(config.limit) || config.limit <= 0) {
-        errors.push('Limit must be a positive integer')
+    const result = fixedWindowConfigSchema.safeParse(config)
+    if (result.success) {
+        return { isValid: true, errors: [] }
     }
-    if (!Number.isInteger(config.windowMs) || config.windowMs <= 0) {
-        errors.push('Window duration must be a positive integer (milliseconds)')
-    }
-    if (config.windowMs < 1000) {
-        errors.push('Window duration should be at least 1 second (1000ms)')
-    }
-
-    return {
-        isValid: errors.length === 0,
-        errors,
-    }
+    return zodToValidationResult(result.error)
 }
 
 /**
  * Validates sliding window strategy configuration
  * @param config Configuration to validate
- * @returns Validation result with error messages
+ * @returns Validation result with error messages if invalid
  */
 export function validateSlidingWindowConfig(config: SlidingWindowConfig): ValidationResult {
-    const errors: string[] = []
-
-    if (!Number.isInteger(config.limit) || config.limit <= 0) {
-        errors.push('Limit must be a positive integer')
+    const result = slidingWindowConfigSchema.safeParse(config)
+    if (result.success) {
+        return { isValid: true, errors: [] }
     }
-    if (!Number.isInteger(config.windowMs) || config.windowMs <= 0) {
-        errors.push('Window duration must be a positive integer (milliseconds)')
-    }
-    if (config.windowMs < 1000) {
-        errors.push('Window duration should be at least 1 second (1000ms)')
-    }
-
-    return {
-        isValid: errors.length === 0,
-        errors,
-    }
+    return zodToValidationResult(result.error)
 }
 
 /**
  * Validates token bucket strategy configuration
  * @param config Configuration to validate
- * @returns Validation result with error messages
+ * @returns Validation result with error messages if invalid
  */
 export function validateTokenBucketConfig(config: TokenBucketConfig): ValidationResult {
-    const errors: string[] = []
-
-    if (!Number.isInteger(config.capacity) || config.capacity <= 0) {
-        errors.push('Capacity must be a positive integer')
+    const result = tokenBucketConfigSchema.safeParse(config)
+    if (result.success) {
+        return { isValid: true, errors: [] }
     }
-    if (!Number.isInteger(config.refillRate) || config.refillRate <= 0) {
-        errors.push('Refill rate must be a positive integer')
-    }
-    if (!Number.isInteger(config.refillTime) || config.refillTime <= 0) {
-        errors.push('Refill time must be a positive integer (milliseconds)')
-    }
-    if (config.refillTime < 100) {
-        errors.push('Refill time should be at least 100ms')
-    }
-    if (config.refillRate > config.capacity) {
-        errors.push('Refill rate should not exceed capacity')
-    }
-
-    return {
-        isValid: errors.length === 0,
-        errors,
-    }
+    return zodToValidationResult(result.error)
 }
 
 /**
  * Validates individual fixed window strategy configuration
  * @param config Configuration to validate
- * @returns Validation result with error messages
+ * @returns Validation result with error messages if invalid
  */
 export function validateIndividualFixedWindowConfig(
     config: IndividualFixedWindowConfig
 ): ValidationResult {
-    const errors: string[] = []
-
-    if (!Number.isInteger(config.limit) || config.limit <= 0) {
-        errors.push('Limit must be a positive integer')
+    const result = individualFixedWindowConfigSchema.safeParse(config)
+    if (result.success) {
+        return { isValid: true, errors: [] }
     }
-    if (!Number.isInteger(config.windowMs) || config.windowMs <= 0) {
-        errors.push('Window duration must be a positive integer (milliseconds)')
-    }
-    if (config.windowMs < 1000) {
-        errors.push('Window duration should be at least 1 second (1000ms)')
-    }
-
-    return {
-        isValid: errors.length === 0,
-        errors,
-    }
+    return zodToValidationResult(result.error)
 }
 
 /**
  * Validates local storage configuration
  * @param config Configuration to validate
- * @returns Validation result with error messages
+ * @returns Validation result with error messages if invalid
  */
 export function validateLocalStorageConfig(config: LocalStorageConfig): ValidationResult {
-    const errors: string[] = []
-
-    if (config.cleanupIntervalMs !== undefined) {
-        if (!Number.isInteger(config.cleanupIntervalMs) || config.cleanupIntervalMs <= 0) {
-            errors.push('Cleanup interval must be a positive integer (milliseconds)')
-        }
+    const result = localStorageConfigSchema.safeParse(config)
+    if (result.success) {
+        return { isValid: true, errors: [] }
     }
-    if (config.cleanupRequestThreshold !== undefined) {
-        if (
-            !Number.isInteger(config.cleanupRequestThreshold) ||
-            config.cleanupRequestThreshold <= 0
-        ) {
-            errors.push('Cleanup request threshold must be a positive integer')
-        }
-    }
-
-    return {
-        isValid: errors.length === 0,
-        errors,
-    }
+    return zodToValidationResult(result.error)
 }
 
 /**
  * Validates Redis storage configuration
  * @param config Configuration to validate
- * @returns Validation result with error messages
+ * @returns Validation result with error messages if invalid
  */
 export function validateRedisStorageConfig(config: RedisStorageConfig): ValidationResult {
-    const errors: string[] = []
-
-    if (config.url && typeof config.url !== 'string') {
-        errors.push('Redis URL must be a string')
+    const result = redisStorageConfigSchema.safeParse(config)
+    if (result.success) {
+        return { isValid: true, errors: [] }
     }
-    if (config.host && typeof config.host !== 'string') {
-        errors.push('Redis host must be a string')
-    }
-    if (config.port !== undefined) {
-        if (!Number.isInteger(config.port) || config.port <= 0 || config.port > 65535) {
-            errors.push('Redis port must be a valid port number (1-65535)')
-        }
-    }
-    if (config.password && typeof config.password !== 'string') {
-        errors.push('Redis password must be a string')
-    }
-    if (config.db !== undefined) {
-        if (!Number.isInteger(config.db) || config.db < 0) {
-            errors.push('Redis database number must be a non-negative integer')
-        }
-    }
-    if (config.keyPrefix && typeof config.keyPrefix !== 'string') {
-        errors.push('Redis key prefix must be a string')
-    }
-
-    return {
-        isValid: errors.length === 0,
-        errors,
-    }
+    return zodToValidationResult(result.error)
 }
 
 /**
- * Enhances storage configuration with defaults
+ * Validates complete strategy configuration
+ * @param strategy Configuration to validate
+ * @returns Validation result with error messages if invalid
+ */
+export function validateStrategyConfig(strategy: StrategyConfig): ValidationResult {
+    const result = strategyConfigSchema.safeParse(strategy)
+    if (result.success) {
+        return { isValid: true, errors: [] }
+    }
+    return zodToValidationResult(result.error)
+}
+
+/**
+ * Validates complete storage configuration
+ * @param storage Configuration to validate
+ * @returns Validation result with error messages if invalid
+ */
+export function validateStorageConfig(storage: StorageConfig): ValidationResult {
+    const result = storageConfigSchema.safeParse(storage)
+    if (result.success) {
+        return { isValid: true, errors: [] }
+    }
+    return zodToValidationResult(result.error)
+}
+
+/**
+ * Enhances storage configuration with default values
  * @param config Base configuration
  * @returns Enhanced configuration with resolved defaults
+ * @note For Redis config, automatically resolves URL from environment if not provided
  */
 export function enrichStorageConfig(config: StorageConfig): StorageConfig {
     switch (config.type) {
@@ -207,59 +223,15 @@ export function enrichStorageConfig(config: StorageConfig): StorageConfig {
 }
 
 /**
- * Validates complete strategy configuration
- * @param strategy Configuration to validate
- * @returns Validation result with error messages
- */
-export function validateStrategyConfig(strategy: StrategyConfig): ValidationResult {
-    switch (strategy.type) {
-        case 'fixed-window':
-            return validateFixedWindowConfig(strategy.config)
-        case 'sliding-window':
-            return validateSlidingWindowConfig(strategy.config)
-        case 'token-bucket':
-            return validateTokenBucketConfig(strategy.config)
-        case 'individual-fixed-window':
-            return validateIndividualFixedWindowConfig(strategy.config)
-        default:
-            return {
-                isValid: false,
-                errors: ['Unknown strategy type'],
-            }
-    }
-}
-
-/**
- * Resolves Redis connection URL from environment
+ * Resolves Redis connection URL from environment variables
  * @returns Valid Redis connection URL
- * @throws When no valid Redis URL is available
+ * @throws Error when no valid Redis URL is available in environment
  */
 export function resolveRedisUrl(): string {
-    const redisRegex = /^rediss?:\/\/(?:([^:@]*)(?::([^@]*))?@)?([^\/@:]+)(?::(\d+))?(\/\d+)?$/
+    const redisRegex = /^rediss?:\/\/(?:[^:@]*(?::[^@]*)?@)?[^/@:]+(?::\d+)?(?:\/\d+)?$/
     const envUrl = process.env.REDIS_URL?.trim()
-
     if (envUrl && typeof envUrl === 'string' && redisRegex.test(envUrl)) {
         return envUrl
     }
-
     throw new Error('Invalid Redis URL')
-}
-
-/**
- * Validates complete storage configuration
- * @param storage Configuration to validate
- * @returns Validation result with error messages
- */
-export function validateStorageConfig(storage: StorageConfig): ValidationResult {
-    switch (storage.type) {
-        case 'local':
-            return validateLocalStorageConfig(storage.config)
-        case 'redis':
-            return validateRedisStorageConfig(storage.config)
-        default:
-            return {
-                isValid: false,
-                errors: ['Unknown storage type'],
-            }
-    }
 }

@@ -5,6 +5,7 @@ import type {
     RateLimitStrategy,
     RequestEvent,
     SlidingWindowConfig,
+    StrategyConfig,
     TokenBucketConfig,
 } from '@/simulation/types'
 import { atom } from 'jotai'
@@ -51,37 +52,21 @@ export const individualFixedWindowConfigAtom = atom<IndividualFixedWindowConfig>
 export const currentTokensAtomFamily = atomFamily(() => atom(10))
 export const lastRefillTimeAtomFamily = atomFamily(() => atom(0))
 
+
 /**
  * Gets configuration for a specific strategy type
  * @param strategyId The strategy identifier
  * @returns Configuration atom for the specified strategy
  */
 export const strategyConfigAtomFamily = atomFamily((strategyId: RateLimitStrategy) =>
-    atom((get) => {
-        switch (strategyId) {
-            case 'fixed-window': return get(fixedWindowConfigAtom)
-            case 'sliding-window': return get(slidingWindowConfigAtom)
-            case 'token-bucket': return get(tokenBucketConfigAtom)
-            case 'individual-fixed-window': return get(individualFixedWindowConfigAtom)
-            default: return get(fixedWindowConfigAtom)
-        }
+    atom((get): StrategyConfig => {
+      if (strategyId === 'fixed-window') return {type: 'fixed-window' ,config:get(fixedWindowConfigAtom)};
+      if (strategyId === 'sliding-window') return {type: 'sliding-window' ,config:get(slidingWindowConfigAtom)};
+      if (strategyId === 'token-bucket') return {type: 'token-bucket' ,config:get(tokenBucketConfigAtom)};
+     return {type: 'individual-fixed-window' ,config:get(individualFixedWindowConfigAtom)}
     })
-)
+  );
 
-/**
- * Gets complete strategy configuration for a specific type
- * @param strategyId The strategy identifier
- * @returns Complete strategy configuration
- */
-export const currentStrategyAtomFamily = atomFamily((strategyId: RateLimitStrategy) =>
-    atom<StrategyConfig>((get) => {
-        const config = get(strategyConfigAtomFamily(strategyId))
-        return {
-            type: strategyId,
-            config,
-        }
-    })
-)
 
 /**
  * Adds an event to a strategy's event history

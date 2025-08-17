@@ -1,5 +1,5 @@
 'use server'
-import type { RateLimitResult, StorageConfig, StrategyConfig } from '@/simulation/types/types'
+import type { RateLimitResult, StorageConfig, StrategyConfig } from '@/simulation/types'
 import { validateStorageConfig, validateStrategyConfig } from '@/simulation/types/validation'
 // Rate limiter adapters
 import {
