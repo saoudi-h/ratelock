@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { createRedisStorage } from '../../src/factory/storage-factory'
-import { createFixedWindowLimiter } from '../../src/factory/fixed-window-factory'
 import { RedisStorageError } from '../../src/utils/errors'
 import { RateLimiter } from '@ratelock/core'
+import { createFixedWindowLimiter } from '../../src/factory/strategies/fixed-window-factory'
 
 // Mock Redis client
 const mockClient = {
