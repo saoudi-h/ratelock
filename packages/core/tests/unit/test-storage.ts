@@ -136,43 +136,43 @@ export class InMemoryStorage implements Storage {
     pipeline() {
         const ops: Array<() => Promise<any>> = []
         const pipeline = {
-            get: async (key: string) => {
+            get: (key: string) => {
                 ops.push(() => this.get(key))
                 return pipeline
             },
-            set: async (key: string, value: string, ttlMs?: number) => {
+            set: (key: string, value: string, ttlMs?: number) => {
                 ops.push(() => this.set(key, value, ttlMs))
                 return pipeline
             },
-            increment: async (key: string, ttlMs?: number) => {
+            increment: (key: string, ttlMs?: number) => {
                 ops.push(() => this.increment(key, ttlMs))
                 return pipeline
             },
-            incrementIf: async (key: string, maxValue: number, ttlMs?: number) => {
+            incrementIf: (key: string, maxValue: number, ttlMs?: number) => {
                 ops.push(() => this.incrementIf(key, maxValue, ttlMs))
                 return pipeline
             },
-            decrement: async (key: string, minValue?: number) => {
+            decrement: (key: string, minValue?: number) => {
                 ops.push(() => this.decrement(key, minValue))
                 return pipeline
             },
-            addTimestamp: async (identifier: string, timestamp: number, ttlMs: number) => {
+            addTimestamp: (identifier: string, timestamp: number, ttlMs: number) => {
                 ops.push(() => this.addTimestamp(identifier, timestamp, ttlMs))
                 return pipeline
             },
-            countTimestamps: async (identifier: string, windowMs: number) => {
+            countTimestamps: (identifier: string, windowMs: number) => {
                 ops.push(() => this.countTimestamps(identifier, windowMs))
                 return pipeline
             },
-            getOldestTimestamp: async (identifier: string) => {
+            getOldestTimestamp: (identifier: string) => {
                 ops.push(() => this.getOldestTimestamp(identifier))
                 return pipeline
             },
-            cleanupTimestamps: async (identifier: string) => {
+            cleanupTimestamps: (identifier: string) => {
                 ops.push(() => this.cleanupTimestamps(identifier))
                 return pipeline
             },
-            expire: async (keyOrIdentifier: string, ttlMs: number) => {
+            expire: (keyOrIdentifier: string, ttlMs: number) => {
                 ops.push(() => this.expire(keyOrIdentifier, ttlMs))
                 return pipeline
             },
