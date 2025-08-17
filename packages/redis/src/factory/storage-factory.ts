@@ -1,7 +1,7 @@
 import { createClient, type RedisClientOptions } from 'redis'
-import type { Storage } from '@ratelock/core/storage'
 import { StorageService } from '../storage/storage.service'
 import { RedisStorageError } from '../utils/errors'
+import { RedisStorage } from 'storage/redis-storage.interface'
 
 /**
  * Configuration for the Redis storage factory.
@@ -22,12 +22,12 @@ export interface RedisStorageConfig {
  * @param config - Configuration options for the Redis storage service.
  * @returns A new instance of StorageService connected to Redis.
  */
-export async function createRedisStorage(config: RedisStorageConfig): Promise<Storage> {
+export async function createRedisStorage(config: RedisStorageConfig): Promise<RedisStorage> {
   const client = typeof config.redisOptions === 'string'
     ? createClient({ url: config.redisOptions })
     : createClient(config.redisOptions);
 
-  // Gérer les erreurs de connexion
+  // Handle connection errors
   client.on('error', (err) => console.error('Redis Client Error', err));
 
   try {

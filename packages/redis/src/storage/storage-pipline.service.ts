@@ -1,75 +1,144 @@
 import type { StoragePipeline } from '@ratelock/core/storage'
+import { DECREMENT, INCREMENT, INCREMENT_IF } from 'lua-scripts'
 
-// Le type RedisClientMultiCommand n'est pas exporté directement par la librairie redis.
-// Nous utilisons `any` pour éviter des imports profonds et fragiles.
-// Idéalement, ce type serait inféré ou un type plus générique serait utilisé.
-type RedisClientMultiCommand = any;
+/**
+ * Minimal Redis Multi interface for pipeline operations
+ * Defines the required Redis commands needed for rate limiting pipelines
+ */
+interface MinimalRedisMulti {
+    get(key: string): this
+    set(key: string, value: string, opts?: { PX?: number }): this
+    pExpire(key: string, ttl: number): this
+    eval(script: string, numKeys: number, ...args: string[]): this
+    zAdd(key: string, member: { score: number; value: string }): this
+    zCount(key: string, min: number, max: number): this
+    zRangeWithScores(key: string, start: number, stop: number): this
+    exec(): Promise<unknown[]>
+}
 
-// Ce service encapsule une transaction 'multi' de node-redis.
+/**
+ * Redis Pipeline Service for Rate Limiting
+ * Provides transactional operations for rate limiting using Redis pipelines
+ */
 export class StoragePipelineService implements StoragePipeline {
-    // Le type RedisClientMultiCommand correspond à l'objet retourné par client.multi()
-    constructor(private multi: RedisClientMultiCommand) {}
+    constructor(private multi: MinimalRedisMulti) {}
 
-    // Note: Les méthodes de l'interface qui ne sont pas directement supportées
-    // par `node-redis` `multi` (comme nos scripts Lua) ne sont pas implémentées ici.
-    // L'interface `StoragePipeline` devrait peut-être être simplifiée si
-    // toutes les méthodes ne sont pas "pipelinables" de la même manière.
-    // Pour l'instant, on implémente ce qui est directement possible.
+    /* ---------- Simple Key/Value Operations ---------- */
 
-    get(key: string): Promise<this> {
+    /**
+     * Queues a GET operation in the pipeline
+     * @param key - Key to retrieve
+     * @returns Pipeline instance for chaining
+     */
+    get(key: string): this {
         this.multi.get(key)
-        return Promise.resolve(this)
+        return this
     }
 
-    set(key: string, value: string, ttlMs?: number | undefined): Promise<this> {
-        if (ttlMs && ttlMs > 0) {
-            this.multi.set(key, value, { PX: ttlMs })
-        } else {
-            this.multi.set(key, value)
-        }
-        return Promise.resolve(this)
+    /**
+     * Queues a SET operation in the pipeline
+     * @param key - Key to set
+     * @param value - Value to store
+     * @param ttlMs - Optional TTL in milliseconds
+     * @returns Pipeline instance for chaining
+     */
+    set(key: string, value: string, ttlMs?: number): this {
+        this.multi.set(key, value, ttlMs ? { PX: ttlMs } : undefined)
+        return this
     }
 
-    expire(keyOrIdentifier: string, ttlMs: number): Promise<this> {
+    /**
+     * Queues an EXPIRE operation in the pipeline
+     * @param keyOrIdentifier - Key to set expiration on
+     * @param ttlMs - TTL in milliseconds
+     * @returns Pipeline instance for chaining
+     */
+    expire(keyOrIdentifier: string, ttlMs: number): this {
         this.multi.pExpire(keyOrIdentifier, ttlMs)
-        return Promise.resolve(this)
+        return this
     }
 
-    increment(_key: string, _ttlMs?: number): Promise<this> {
-        // L'exécution de scripts Lua dans un pipeline `multi` est complexe.
-        // Pour garder les choses simples, nous n'implémentons pas les commandes
-        // basées sur LUA dans le pipeline pour le moment.
-        console.warn('Pipelining custom LUA scripts like "increment" is not supported in this version.')
-        return Promise.resolve(this)
+    /* ---------- Lua Counter Operations ---------- */
+
+    /**
+     * Queues an INCREMENT operation using Lua script
+     * @param key - Key to increment
+     * @param ttlMs - Optional TTL in milliseconds
+     * @returns Pipeline instance for chaining
+     */
+    increment(key: string, ttlMs?: number): this {
+        this.multi.eval(INCREMENT, 1, key, (ttlMs ?? 0).toString())
+        return this
     }
-    incrementIf(_key: string, _maxValue: number, _ttlMs?: number): Promise<this> {
-        console.warn('Pipelining custom LUA scripts like "incrementIf" is not supported in this version.')
-        return Promise.resolve(this)
+
+    /**
+     * Queues a conditional INCREMENT operation using Lua script
+     * @param key - Key to increment
+     * @param maxValue - Maximum allowed value
+     * @param ttlMs - Optional TTL in milliseconds
+     * @returns Pipeline instance for chaining
+     */
+    incrementIf(key: string, maxValue: number, ttlMs?: number): this {
+        this.multi.eval(INCREMENT_IF, 1, key, maxValue.toString(), (ttlMs ?? 0).toString())
+        return this
     }
-    decrement(_key: string, _minValue?: number): Promise<this> {
-        console.warn('Pipelining custom LUA scripts like "decrement" is not supported in this version.')
-        return Promise.resolve(this)
+
+    /**
+     * Queues a DECREMENT operation using Lua script
+     * @param key - Key to decrement
+     * @param minValue - Minimum allowed value (default: 0)
+     * @returns Pipeline instance for chaining
+     */
+    decrement(key: string, minValue = 0): this {
+        this.multi.eval(DECREMENT, 1, key, minValue.toString())
+        return this
     }
-    addTimestamp(identifier: string, timestamp: number, ttlMs: number): Promise<this> {
-        this.multi.zAdd(identifier, { score: timestamp, value: timestamp.toString() })
-        if (ttlMs > 0) {
-            this.multi.pExpire(identifier, ttlMs)
-        }
-        return Promise.resolve(this)
+
+    /* ---------- Sorted Set Timestamp Operations ---------- */
+
+    /**
+     * Queues adding a timestamp to a sorted set
+     * @param identifier - Sorted set key
+     * @param timestamp - Timestamp value to add
+     * @param ttlMs - TTL for the sorted set
+     * @returns Pipeline instance for chaining
+     */
+    addTimestamp(identifier: string, timestamp: number, ttlMs: number): this {
+        this.multi
+            .zAdd(identifier, { score: timestamp, value: timestamp.toString() })
+            .pExpire(identifier, ttlMs)
+        return this
     }
-    countTimestamps(identifier: string, windowMs: number): Promise<this> {
+
+    /**
+     * Queues counting timestamps within a time window
+     * @param identifier - Sorted set key
+     * @param windowMs - Time window in milliseconds
+     * @returns Pipeline instance for chaining
+     */
+    countTimestamps(identifier: string, windowMs: number): this {
         const now = Date.now()
-        const windowStart = now - windowMs
-        this.multi.zCount(identifier, windowStart, now)
-        return Promise.resolve(this)
-    }
-    getOldestTimestamp(identifier: string): Promise<this> {
-        this.multi.zRangeWithScores(identifier, 0, 0)
-        return Promise.resolve(this)
+        this.multi.zCount(identifier, now - windowMs, now)
+        return this
     }
 
+    /**
+     * Queues getting the oldest timestamp from a sorted set
+     * @param identifier - Sorted set key
+     * @returns Pipeline instance for chaining
+     */
+    getOldestTimestamp(identifier: string): this {
+        this.multi.zRangeWithScores(identifier, 0, 0)
+        return this
+    }
+
+    /* ---------- Pipeline Execution ---------- */
+
+    /**
+     * Executes all queued commands in the pipeline
+     * @returns Array of command results
+     */
     async exec(): Promise<unknown[]> {
-        // Exécute la transaction et retourne les résultats
         return this.multi.exec()
     }
 }
