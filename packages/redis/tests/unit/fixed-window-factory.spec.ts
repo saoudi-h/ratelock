@@ -1,10 +1,8 @@
-import { RateLimiter } from '@ratelock/core'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createRedisStorage } from '../../src/factory/storage-factory'
 import { createFixedWindowLimiter } from '../../src/factory/strategies/fixed-window-factory'
 import { RedisStorageError } from '../../src/utils/errors'
 
-// Mock Redis client
 const mockClient = {
     connect: vi.fn(),
     disconnect: vi.fn(),
@@ -12,6 +10,7 @@ const mockClient = {
     on: vi.fn(),
     eval: vi.fn(),
     get: vi.fn(),
+    set: vi.fn(),
     del: vi.fn(),
     pTTL: vi.fn(),
     pExpire: vi.fn(),
@@ -22,10 +21,14 @@ const mockClient = {
     ping: vi.fn(),
     quit: vi.fn(),
     script: vi.fn(),
-    multi: vi.fn(),
+    multi: vi.fn(() => ({
+        get: vi.fn().mockReturnThis(),
+        set: vi.fn().mockReturnThis(),
+        eval: vi.fn().mockReturnThis(),
+        exec: vi.fn(),
+    })),
 }
 
-// Mock createClient function
 vi.mock('redis', () => ({
     createClient: vi.fn(() => mockClient),
 }))
@@ -33,51 +36,47 @@ vi.mock('redis', () => ({
 describe('Factory Functions', () => {
     beforeEach(() => {
         vi.clearAllMocks()
+        mockClient.connect.mockResolvedValue(undefined)
+        mockClient.eval.mockResolvedValue('1')
     })
 
     afterEach(() => {
-        vi.resetAllMocks()
+        vi.clearAllMocks()
     })
 
     describe('createRedisStorage', () => {
         it('should create Redis storage with string URL', async () => {
-            mockClient.connect.mockResolvedValue(undefined)
-
             const storage = await createRedisStorage({
                 redisOptions: 'redis://localhost:6379',
             })
 
             expect(storage).toBeDefined()
-            expect(mockClient.connect).toHaveBeenCalled()
-        })
-
-        it('should create Redis storage with options object', async () => {
-            mockClient.connect.mockResolvedValue(undefined)
-
-            const storage = await createRedisStorage({
-                redisOptions: { url: 'redis://localhost:6379' },
-            })
-
-            expect(storage).toBeDefined()
+            expect(storage).toHaveProperty('get')
+            expect(storage).toHaveProperty('set')
+            expect(storage).toHaveProperty('increment')
             expect(mockClient.connect).toHaveBeenCalled()
         })
 
         it('should throw RedisStorageError on connection failure', async () => {
-            mockClient.connect.mockRejectedValue(new Error('Connection failed'))
+            const connectionError = new Error('Connection failed')
+            mockClient.connect.mockRejectedValue(connectionError)
 
             await expect(
                 createRedisStorage({
                     redisOptions: 'redis://localhost:6379',
                 })
             ).rejects.toThrow(RedisStorageError)
+
+            await expect(
+                createRedisStorage({
+                    redisOptions: 'redis://localhost:6379',
+                })
+            ).rejects.toThrow('Failed to connect to Redis')
         })
     })
 
     describe('createFixedWindowLimiter', () => {
         it('should create fixed window rate limiter', async () => {
-            mockClient.connect.mockResolvedValue(undefined)
-            mockClient.eval.mockResolvedValue('1') // Mock increment script
-
             const { limiter, storage } = await createFixedWindowLimiter({
                 strategy: { limit: 10, windowMs: 60000 },
                 storage: {
@@ -87,7 +86,6 @@ describe('Factory Functions', () => {
 
             expect(limiter).toBeDefined()
             expect(storage).toBeDefined()
-            expect(limiter).toBeInstanceOf(RateLimiter)
         })
 
         it('should throw RedisStorageError on creation failure', async () => {

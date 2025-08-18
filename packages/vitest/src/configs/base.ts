@@ -11,7 +11,8 @@ export const base: ViteUserConfig = {
         coverage: {
             provider: 'v8',
             reporter: ['text', 'lcov', 'html'],
-            exclude: ['**/dist/**', '**/*.d.ts', '**/node_modules/**'],
+            include: ['**/src/**'],
+            exclude: ['**/dist/**', '**/*.d.ts', '**/node_modules/**', 'src/**/index.ts'],
         },
         setupFiles: [],
         mockReset: true,
