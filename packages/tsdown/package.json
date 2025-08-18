@@ -2,9 +2,10 @@
     "name": "@ratelock/tsdown",
     "version": "1.0.0",
     "private": true,
-    "main": "index.js",
+    "type": "module",
     "license": "MIT",
     "scripts": {
+        "build": "tsdown",
         "lint": "eslint . --max-warnings 0",
         "lint:fix": "eslint . --max-warnings 0 --fix",
         "format:check": "prettier \"**/*\" --ignore-unknown --list-different",
@@ -17,5 +18,18 @@
         "@ratelock/eslint": "workspace:*",
         "@ratelock/prettier": "workspace:*",
         "@ratelock/tsconfig": "workspace:*"
+    },
+    "files": [
+        "dist"
+    ],
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.cts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        },
+        "./package.json": "./package.json"
     }
 }
