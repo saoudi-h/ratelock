@@ -1,205 +1,92 @@
-# @ratelock/local
+# RateLock Local (`@ratelock/local`)
 
-A high-performance, in-memory rate limiting package for Node.js applications. This package provides fast, single-instance rate limiting without external dependencies.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ratelock/ratelock/main/apps/playground/public/logo.svg" alt="RateLock Logo" width="200">
+</p>
 
-## Features
+<p align="center">
+  <strong>A simple, fast, zero-dependency rate limiter for Node.js. Perfect for single-process applications.</strong>
+</p>
 
-- 🚀 **High Performance**: In-memory storage for maximum speed
-- 🧹 **Automatic Cleanup**: Built-in cleanup of expired entries
-- 🔧 **Multiple Strategies**: Fixed Window, Individual Fixed Window, Sliding Window, and Token Bucket
-- 📦 **Zero Dependencies**: No external storage dependencies
-- 🎯 **TypeScript**: Full TypeScript support with strict typing
-- 🔄 **Core Compatible**: Uses the same strategies as @ratelock/core
+<p align="center">
+  <a href="https://www.npmjs.com/package/@ratelock/local"><img src="https://img.shields.io/npm/v/@ratelock/local.svg" alt="NPM Version"></a>
+  <a href="https://github.com/ratelock/ratelock/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/@ratelock/core.svg" alt="License"></a>
+</p>
 
-## Installation
+---
+
+`@ratelock/local` provides an efficient, in-memory rate limiting solution. Because it runs in the same process as your application without any external dependencies, it's incredibly fast and easy to set up.
+
+## ✨ Key Features
+
+- **🚀 Blazing Fast:** In-memory storage means no network latency.
+- **👌 Zero Dependencies:** No need to set up a database or external cache.
+- **⚙️ Simple API:** Get started in minutes with a clean and modern factory-based API.
+- **🛡️ All Strategies Included:** Supports all standard RateLock strategies (Fixed Window, Sliding Window, etc.) out of the box.
+- **💧 Lightweight:** Adds minimal overhead to your application.
+
+## 🤔 When should I use it?
+
+`@ratelock/local` is the perfect choice for:
+
+- Rate limiting on a single server or process.
+- Development and testing environments.
+- Small to medium-sized applications where a distributed setup is not required.
+
+If you are running your application in a distributed environment (e.g., multiple servers, serverless functions), you should use an adapter with a shared storage backend, like **[`@ratelock/redis`](#)**.
+
+## 📦 Installation
 
 ```bash
 npm install @ratelock/local
+# or
+yarn add @ratelock/local
+# or
+pnpm add @ratelock/local
 ```
 
-## Quick Start
+## 🚀 Getting Started
+
+Here is a basic example of how to create a **Fixed Window** rate limiter that allows 10 requests every 60 seconds.
 
 ```typescript
-import { LocalRateLimiter } from '@ratelock/local'
-import { FixedWindow } from '@ratelock/local/strategy'
+import { createFixedWindowLimiter } from '@ratelock/local'
 
-// Create a rate limiter with Fixed Window strategy
-const limiter = new LocalRateLimiter(s =>
-    FixedWindow({ limit: 100, windowMs: 60000 }).withStorage(s)
-)
+// 1. Create the rate limiter
+const { limiter } = await createFixedWindowLimiter({
+    strategy: {
+        limit: 10, // Allow 10 requests
+        windowMs: 60000, // per 60 seconds
+    },
+})
 
-// Check if a request is allowed
-const result = await limiter.check('user123')
-console.log(result.allowed ? 'Request allowed' : 'Rate limited')
-```
+// 2. Use the limiter in your application (e.g., with Express)
+app.get('/api/protected', async (req, res) => {
+    const userId = req.ip // Or user ID, API key, etc.
+    const result = await limiter.check(userId)
 
-## Usage
-
-### Basic Rate Limiting
-
-```typescript
-import { LocalRateLimiter } from '@ratelock/local'
-import { FixedWindow } from '@ratelock/local/strategy'
-
-const limiter = new LocalRateLimiter(s =>
-    FixedWindow({
-        limit: 10, // 10 requests
-        windowMs: 60000, // per minute
-    }).withStorage(s)
-)
-
-// Check rate limit
-const result = await limiter.check('user123')
-if (result.allowed) {
-    // Process request
-    console.log(`Request allowed. ${result.remaining} requests remaining.`)
-} else {
-    // Rate limited
-    console.log(`Rate limited. Reset at ${new Date(result.reset)}`)
-}
-```
-
-### Different Strategies
-
-#### Fixed Window
-
-```typescript
-import { FixedWindow } from '@ratelock/local/strategy'
-
-const limiter = new LocalRateLimiter(s =>
-    FixedWindow({ limit: 100, windowMs: 60000 }).withStorage(s)
-)
-```
-
-#### Individual Fixed Window
-
-```typescript
-import { IndividualFixedWindow } from '@ratelock/local/strategy'
-
-const limiter = new LocalRateLimiter(s =>
-    IndividualFixedWindow({ limit: 50, windowMs: 30000 }).withStorage(s)
-)
-```
-
-#### Sliding Window
-
-```typescript
-import { SlidingWindowBuilder } from '@ratelock/local/strategy'
-
-const limiter = new LocalRateLimiter(s =>
-    SlidingWindowBuilder({ limit: 200, windowMs: 60000 }).withStorage(s)
-)
-```
-
-#### Token Bucket
-
-```typescript
-import { TokenBucket } from '@ratelock/local/strategy'
-
-const limiter = new LocalRateLimiter(s =>
-    TokenBucket({
-        capacity: 10, // 10 tokens
-        refillRate: 1, // 1 token per second
-        refillTime: 1000, // refill every second
-    }).withStorage(s)
-)
-```
-
-### Custom Configuration
-
-```typescript
-const limiter = new LocalRateLimiter(
-    s => FixedWindow({ limit: 100, windowMs: 60000 }).withStorage(s),
-    {
-        enableCleanup: true, // Enable automatic cleanup (default: true)
-        cleanupIntervalMs: 5000, // Cleanup every 5 seconds (default: 1000)
+    if (!result.allowed) {
+        return res.status(429).send('Too Many Requests')
     }
-)
 
-// Stop cleanup when done
-limiter.stopCleanup()
-```
+    res.setHeader('X-RateLimit-Limit', result.limit)
+    res.setHeader('X-RateLimit-Remaining', result.remaining)
 
-### Batch Operations
-
-```typescript
-// Check multiple identifiers at once
-const results = await limiter.checkBatch(['user1', 'user2', 'user3'])
-results.forEach((result, index) => {
-    console.log(`User ${index + 1}: ${result.allowed ? 'Allowed' : 'Denied'}`)
+    res.send('You have access!')
 })
 ```
 
-## API Reference
+## 📚 Strategies
 
-### LocalRateLimiter
+You can easily create a limiter for any supported strategy by importing its dedicated factory function:
 
-#### Constructor
+- `createFixedWindowLimiter`
+- `createSlidingWindowLimiter`
+- `createTokenBucketLimiter`
+- `createIndividualFixedWindowLimiter`
 
-```typescript
-new LocalRateLimiter(
-    strategyFactory: StrategyFactory,
-    options?: LocalRateLimiterOptions
-)
-```
+Each factory accepts a `strategy` configuration object tailored to that specific algorithm.
 
-#### Methods
+## 📜 License
 
-- `check(identifier: string): Promise<RateLimitResult>` - Check if a request is allowed
-- `checkBatch(identifiers: string[]): Promise<RateLimitResult[]>` - Check multiple identifiers
-- `stopCleanup(): void` - Stop the automatic cleanup task
-- `getStorageService(): StorageService` - Get the underlying storage service
-
-### LocalRateLimiterOptions
-
-```typescript
-interface LocalRateLimiterOptions {
-    enableCleanup?: boolean // Enable automatic cleanup (default: true)
-    cleanupIntervalMs?: number // Cleanup interval in milliseconds (default: 1000)
-}
-```
-
-### StorageService
-
-The underlying storage service provides these methods:
-
-- `get(key: string): Promise<string | null>`
-- `set(key: string, value: string, ttlMs?: number): Promise<void>`
-- `delete(key: string): Promise<void>`
-- `exists(key: string): Promise<boolean>`
-- `increment(key: string, ttlMs?: number): Promise<number>`
-- `incrementIf(key: string, maxValue: number, ttlMs?: number): Promise<{ value: number; incremented: boolean }>`
-- `decrement(key: string, minValue?: number): Promise<number>`
-- `addTimestamp(identifier: string, timestamp: number, ttlMs: number): Promise<void>`
-- `countTimestamps(identifier: string, windowMs: number): Promise<number>`
-- `getOldestTimestamp(identifier: string): Promise<number | null>`
-- `cleanupTimestamps(identifier: string): Promise<void>`
-- `multiGet(keys: string[]): Promise<(string | null)[]>`
-- `multiSet(entries: Array<{ key: string; value: string; ttlMs?: number }>): Promise<void>`
-- `pipeline(): StoragePipeline`
-- `expire(keyOrIdentifier: string, ttlMs: number): Promise<void>`
-
-## Performance
-
-The local package is optimized for high-performance scenarios:
-
-- **Memory Efficient**: Automatic cleanup of expired entries
-- **Fast Access**: In-memory Map-based storage
-- **Batch Operations**: Support for checking multiple identifiers at once
-- **Configurable Cleanup**: Adjustable cleanup intervals
-
-## Use Cases
-
-- **API Rate Limiting**: Protect your APIs from abuse
-- **User Authentication**: Limit login attempts
-- **Form Submissions**: Prevent spam submissions
-- **File Uploads**: Control upload frequency
-- **Single-Instance Applications**: When you don't need distributed rate limiting
-
-## Examples
-
-See the [examples](./examples/basic-usage.ts) directory for complete usage examples.
-
-## License
-
-MIT
+This project is licensed under the MIT License.

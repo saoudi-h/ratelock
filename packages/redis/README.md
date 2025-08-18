@@ -1,137 +1,99 @@
-# @ratelock/redis
+# RateLock Redis (`@ratelock/redis`)
 
-Redis storage backend for the RateLock rate limiting system.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ratelock/ratelock/main/apps/playground/public/logo.svg" alt="RateLock Logo" width="200">
+</p>
 
-## Overview
+<p align="center">
+  <strong>A high-performance, distributed rate limiter for Node.js, powered by Redis.</strong>
+</p>
 
-`@ratelock/redis` is a Redis-based storage implementation for RateLock, providing persistent and scalable rate limiting capabilities. It implements the Storage interface from `@ratelock/core` and supports all rate limiting strategies including fixed window, sliding window, and token bucket.
+<p align="center">
+  <a href="https://www.npmjs.com/package/@ratelock/redis"><img src="https://img.shields.io/npm/v/@ratelock/redis.svg" alt="NPM Version"></a>
+  <a href="https://github.com/ratelock/ratelock/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/@ratelock/core.svg" alt="License"></a>
+</p>
 
-## Features
+---
 
-- **Persistent Storage**: Uses Redis for durable rate limiting state
-- **High Performance**: Optimized Lua scripts for atomic operations
-- **Multiple Strategies**: Supports all RateLock rate limiting strategies
-- **Batch Operations**: Pipeline support for efficient batch processing
-- **Connection Management**: Automatic reconnection and error handling
-- **TypeScript Support**: Full TypeScript definitions included
+`@ratelock/redis` provides a robust, distributed rate limiting solution using Redis as a backend. It's the ideal choice for applications running in a multi-server or serverless environment, ensuring consistent rate limiting across your entire infrastructure.
 
-## Installation
+## ✨ Key Features
+
+- **🌐 Distributed & Scalable:** Reliably enforce rate limits across any number of servers or processes.
+- **🚀 High Performance:** Leverages the speed of Redis and uses optimized Lua scripts for atomic operations, preventing race conditions and ensuring maximum performance.
+- **🛡️ Consistent State:** Provides a single source of truth for rate limit counters, no matter where the request is handled.
+- **⚙️ Simple API:** Get started quickly with a clean, factory-based API similar to other RateLock adapters.
+- **💪 Resilient:** Built to handle enterprise-level traffic and benefits from Redis's stability.
+
+## 📦 Installation
+
+This package has a peer dependency on `redis`. You need to install both:
 
 ```bash
-npm install @ratelock/redis
+npm install @ratelock/redis redis
+# or
+yarn add @ratelock/redis redis
+# or
+pnpm add @ratelock/redis redis
 ```
 
-## Quick Start
+## 🚀 Getting Started
+
+Here is a basic example of how to create a **Fixed Window** rate limiter connected to your Redis instance.
 
 ```typescript
+import { createClient } from 'redis'
 import { createFixedWindowLimiter } from '@ratelock/redis'
 
-// Create a rate limiter with Redis storage
-const { limiter, close } = await createFixedWindowLimiter({
+// 1. Create and connect your Redis client
+const redisClient = createClient({
+    // Your Redis configuration
+    url: 'redis://localhost:6379',
+})
+await redisClient.connect()
+
+// 2. Create the rate limiter, passing the client to the storage config
+const { limiter } = await createFixedWindowLimiter({
     strategy: {
-        limit: 100,
-        windowMs: 60000, // 1 minute
+        limit: 15, // Allow 15 requests
+        windowMs: 60000, // per 60 seconds
     },
     storage: {
-        redis: 'redis://localhost:6379',
-        keyPrefix: 'api:',
+        client: redisClient,
+        // Optional prefix for all keys stored in Redis
+        prefix: 'my-app-ratelimit',
     },
-    prefix: 'user-rate-limit',
 })
 
-// Check if a request is allowed
-const result = await limiter.check('user123')
-if (result.allowed) {
-    console.log('Request allowed')
-} else {
-    console.log('Rate limit exceeded')
-}
+// 3. Use the limiter in your application (e.g., with Fastify)
+server.get('/api/protected', async (request, reply) => {
+    const userId = request.ip
+    const result = await limiter.check(userId)
 
-// Close the connection when done
-await close()
+    if (!result.allowed) {
+        return reply.status(429).send({ message: 'Too Many Requests' })
+    }
+
+    reply.header('X-RateLimit-Limit', result.limit)
+    reply.header('X-RateLimit-Remaining', result.remaining)
+
+    return { message: 'You have access!' }
+})
 ```
 
-## Configuration
+## 🤖 Atomic Operations with Lua
 
-### Storage Configuration
+To ensure the highest level of performance and prevent race conditions, `@ratelock/redis` implements all core logic in pre-loaded Lua scripts. This guarantees that operations like incrementing a counter are atomic, meaning they are performed as a single, indivisible operation within Redis.
 
-```typescript
-interface RedisStorageConfig {
-    /** Redis connection URL or options */
-    redis: string | RedisClientOptions
+## 📚 Strategies
 
-    /** Key prefix for all Redis keys */
-    keyPrefix?: string
+You can easily create a limiter for any supported strategy by importing its dedicated factory function:
 
-    /** Enable debug logging */
-    debug?: boolean
+- `createFixedWindowLimiter`
+- `createSlidingWindowLimiter`
+- `createTokenBucketLimiter`
+- `createIndividualFixedWindowLimiter`
 
-    /** Maximum number of retry attempts */
-    maxRetries?: number
+## 📜 License
 
-    /** Delay between retry attempts in milliseconds */
-    retryDelay?: number
-}
-```
-
-### Strategy Configuration
-
-All RateLock strategies are supported:
-
-- **Fixed Window**: `createFixedWindowLimiter`
-- **Sliding Window**: `createSlidingWindowLimiter`
-- **Token Bucket**: `createTokenBucketLimiter`
-- **Individual Fixed Window**: `createIndividualFixedWindowLimiter`
-
-## Lua Scripts
-
-The package uses optimized Lua scripts for atomic operations:
-
-- `FIXED_WINDOW_INCREMENT`: Atomic increment with limit checking
-- `SLIDING_WINDOW_ADD_REQUEST`: Add request to sliding window
-- `TOKEN_BUCKET_CONSUME`: Consume token from bucket
-- `GET_CURRENT`: Get current value/count
-- `RESET_KEY`: Reset a key
-- `GET_TTL`: Get TTL for a key
-
-## Error Handling
-
-The package includes comprehensive error handling:
-
-- Automatic reconnection on connection loss
-- Retry mechanism for failed operations
-- Detailed error reporting with context
-
-## API
-
-### Storage Methods
-
-- `increment(key: string, windowMs: number, limit: number)`: Increment counter for fixed window
-- `addRequest(key: string, windowMs: number, limit: number)`: Add request for sliding window
-- `consumeToken(key: string, capacity: number, refillRate: number)`: Consume token for token bucket
-- `getCurrent(key: string)`: Get current count/value
-- `reset(key: string)`: Reset a key
-- `getTTL(key: string)`: Get TTL for a key
-- `getKeysByPattern(pattern: string)`: Get keys by pattern
-- `deleteKeysByPattern(pattern: string)`: Delete keys by pattern
-- `getPipeline()`: Get pipeline for batch operations
-- `isHealthy()`: Check if Redis connection is healthy
-- `close()`: Close Redis connection
-
-### Pipeline Methods
-
-- `increment(key: string, windowMs: number, limit: number)`: Add increment operation
-- `addRequest(key: string, windowMs: number, limit: number)`: Add addRequest operation
-- `consumeToken(key: string, capacity: number, refillRate: number)`: Add consumeToken operation
-- `reset(key: string)`: Add reset operation
-- `getCurrent(key: string)`: Add getCurrent operation
-- `execute()`: Execute all commands
-- `executeInBatches(batchSize: number)`: Execute commands in batches
-
-## Examples
-
-See the [examples](./examples) directory for more usage examples.
-
-## License
-
-MIT
+This project is licensed under the MIT License.
