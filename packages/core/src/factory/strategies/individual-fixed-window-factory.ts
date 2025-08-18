@@ -1,10 +1,9 @@
-import type { RateLimiterPerformanceOptions, RateLimiterResilienceOptions } from '@/limiter/limiter';
+import type { RateLimiterPerformanceOptions, RateLimiterResilienceOptions } from '@/limiter/limiter'
 import type { Storage } from '../../storage/storage'
-import type {
-  IndividualFixedWindowStrategy} from '../../strategy/individual-fixed-window';
+import type { IndividualFixedWindowStrategy } from '../../strategy/individual-fixed-window'
 import {
-  type IndividualFixedWindowOptions,
-  createIndividualFixedWindowStrategy
+    type IndividualFixedWindowOptions,
+    createIndividualFixedWindowStrategy,
 } from '../../strategy/individual-fixed-window'
 import { BaseLimiterFactory } from '../base-factory'
 import type { StorageFactory } from '../types'
@@ -16,22 +15,22 @@ import type { StorageFactory } from '../types'
  * @template T - Type of storage
  */
 export class IndividualFixedWindowLimiterFactory<
-  TStorageConfig,
-  T extends Storage = Storage
+    TStorageConfig,
+    T extends Storage = Storage,
 > extends BaseLimiterFactory<
-  IndividualFixedWindowOptions,
-  TStorageConfig,
-  IndividualFixedWindowStrategy,
-  T
+    IndividualFixedWindowOptions,
+    TStorageConfig,
+    IndividualFixedWindowStrategy,
+    T
 > {
-  /**
-   * Creates a new instance of IndividualFixedWindowLimiterFactory.
-   *
-   * @param storageFactory - Factory function to create storage instances
-   */
-  constructor(storageFactory: StorageFactory<T, TStorageConfig>) {
-    super(createIndividualFixedWindowStrategy, storageFactory)
-  }
+    /**
+     * Creates a new instance of IndividualFixedWindowLimiterFactory.
+     *
+     * @param storageFactory - Factory function to create storage instances
+     */
+    constructor(storageFactory: StorageFactory<T, TStorageConfig>) {
+        super(createIndividualFixedWindowStrategy, storageFactory)
+    }
 }
 
 /**
@@ -44,17 +43,15 @@ export class IndividualFixedWindowLimiterFactory<
  * @returns A function that creates individual fixed window rate limiters
  */
 export function createIndividualFixedWindowLimiterFactory<
-  TStorageConfig,
-  T extends Storage = Storage
->(
-  storageFactory: StorageFactory<T, TStorageConfig>
-) {
-  const factory = new IndividualFixedWindowLimiterFactory(storageFactory)
-  return (config: {
-    strategy: IndividualFixedWindowOptions
-    storage: TStorageConfig
-    prefix?: string
-    performance?: RateLimiterPerformanceOptions
-    resilience?: RateLimiterResilienceOptions
-  }) => factory.create(config)
+    TStorageConfig,
+    T extends Storage = Storage,
+>(storageFactory: StorageFactory<T, TStorageConfig>) {
+    const factory = new IndividualFixedWindowLimiterFactory(storageFactory)
+    return (config: {
+        strategy: IndividualFixedWindowOptions
+        storage: TStorageConfig
+        prefix?: string
+        performance?: RateLimiterPerformanceOptions
+        resilience?: RateLimiterResilienceOptions
+    }) => factory.create(config)
 }

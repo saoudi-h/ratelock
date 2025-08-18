@@ -1,11 +1,11 @@
 'use client'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
     FixedWindowStrategy,
     IndividualFixedWindowStrategy,
     SlidingWindowStrategy,
     TokenBucketStrategy,
 } from '@/simulation/components/strategies'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { RateLimitStrategy } from '@/simulation/types'
 import { Cart5, Repeat, SliderVertical, User } from '@solar-icons/react-perf/BoldDuotone'
 import type { Icon } from '@solar-icons/react-perf/lib/types'
@@ -66,7 +66,7 @@ export const StrategyTabs = () => {
                 </TabsList>
                 {TABS.map(tab => (
                     <TabsContent key={tab.key} value={tab.key}>
-                            <tab.Strategy />
+                        <tab.Strategy />
                     </TabsContent>
                 ))}
             </Tabs>

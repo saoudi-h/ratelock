@@ -1,10 +1,9 @@
-import type { RateLimiterPerformanceOptions, RateLimiterResilienceOptions } from '@/limiter/limiter';
+import type { RateLimiterPerformanceOptions, RateLimiterResilienceOptions } from '@/limiter/limiter'
 import type { Storage } from '../../storage/storage'
-import type {
-  SlidingWindowStrategy} from '../../strategy/sliding-window';
+import type { SlidingWindowStrategy } from '../../strategy/sliding-window'
 import {
-  type SlidingWindowOptions,
-  createSlidingWindowStrategy
+    type SlidingWindowOptions,
+    createSlidingWindowStrategy,
 } from '../../strategy/sliding-window'
 import { BaseLimiterFactory } from '../base-factory'
 import type { StorageFactory } from '../types'
@@ -16,22 +15,17 @@ import type { StorageFactory } from '../types'
  * @template T - Type of storage
  */
 export class SlidingWindowLimiterFactory<
-  TStorageConfig,
-  T extends Storage = Storage
-> extends BaseLimiterFactory<
-  SlidingWindowOptions,
-  TStorageConfig,
-  SlidingWindowStrategy,
-  T
-> {
-  /**
-   * Creates a new instance of SlidingWindowLimiterFactory.
-   *
-   * @param storageFactory - Factory function to create storage instances
-   */
-  constructor(storageFactory: StorageFactory<T, TStorageConfig>) {
-    super(createSlidingWindowStrategy, storageFactory)
-  }
+    TStorageConfig,
+    T extends Storage = Storage,
+> extends BaseLimiterFactory<SlidingWindowOptions, TStorageConfig, SlidingWindowStrategy, T> {
+    /**
+     * Creates a new instance of SlidingWindowLimiterFactory.
+     *
+     * @param storageFactory - Factory function to create storage instances
+     */
+    constructor(storageFactory: StorageFactory<T, TStorageConfig>) {
+        super(createSlidingWindowStrategy, storageFactory)
+    }
 }
 
 /**
@@ -43,18 +37,15 @@ export class SlidingWindowLimiterFactory<
  * @param storageFactory - Factory function to create storage instances
  * @returns A function that creates sliding window rate limiters
  */
-export function createSlidingWindowLimiterFactory<
-  TStorageConfig,
-  T extends Storage = Storage
->(
-  storageFactory: StorageFactory<T, TStorageConfig>
+export function createSlidingWindowLimiterFactory<TStorageConfig, T extends Storage = Storage>(
+    storageFactory: StorageFactory<T, TStorageConfig>
 ) {
-  const factory = new SlidingWindowLimiterFactory(storageFactory)
-  return (config: {
-    strategy: SlidingWindowOptions
-    storage: TStorageConfig
-    prefix?: string
-    performance?: RateLimiterPerformanceOptions
-    resilience?: RateLimiterResilienceOptions
-  }) => factory.create(config)
+    const factory = new SlidingWindowLimiterFactory(storageFactory)
+    return (config: {
+        strategy: SlidingWindowOptions
+        storage: TStorageConfig
+        prefix?: string
+        performance?: RateLimiterPerformanceOptions
+        resilience?: RateLimiterResilienceOptions
+    }) => factory.create(config)
 }

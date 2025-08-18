@@ -1,6 +1,11 @@
+import {
+    createFixedWindowStrategy,
+    createIndividualFixedWindowStrategy,
+    createSlidingWindowStrategy,
+    createTokenBucketStrategy,
+} from '@/strategy'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { InMemoryStorage } from './test-storage'
-import { createFixedWindowStrategy, createIndividualFixedWindowStrategy, createSlidingWindowStrategy, createTokenBucketStrategy } from '@/strategy'
 
 describe('All Strategies', () => {
     let storage: InMemoryStorage

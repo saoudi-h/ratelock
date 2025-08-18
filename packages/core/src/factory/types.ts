@@ -2,8 +2,8 @@
 
 import type { RateLimiter, Strategy } from '..'
 import type {
-  RateLimiterPerformanceOptions,
-  RateLimiterResilienceOptions
+    RateLimiterPerformanceOptions,
+    RateLimiterResilienceOptions,
 } from '../limiter/limiter'
 import type { Storage } from '../storage/storage'
 
@@ -12,20 +12,20 @@ import type { Storage } from '../storage/storage'
  * Provides common configuration options for rate limiters.
  */
 export interface BaseFactoryConfig {
-  /**
-   * Optional prefix for keys stored in the storage.
-   */
-  prefix?: string
+    /**
+     * Optional prefix for keys stored in the storage.
+     */
+    prefix?: string
 
-  /**
-   * Optional performance configuration for the rate limiter.
-   */
-  performance?: RateLimiterPerformanceOptions
+    /**
+     * Optional performance configuration for the rate limiter.
+     */
+    performance?: RateLimiterPerformanceOptions
 
-  /**
-   * Optional resilience configuration for the rate limiter.
-   */
-  resilience?: RateLimiterResilienceOptions
+    /**
+     * Optional resilience configuration for the rate limiter.
+     */
+    resilience?: RateLimiterResilienceOptions
 }
 
 /**
@@ -35,24 +35,21 @@ export interface BaseFactoryConfig {
  * @template S - Type of strategy
  * @template T - Type of storage
  */
-export interface FactoryResult<
-  S extends Strategy<any>,
-  T extends Storage = Storage
-> {
-  /**
-   * The created rate limiter instance.
-   */
-  limiter: RateLimiter<S>
+export interface FactoryResult<S extends Strategy<any>, T extends Storage = Storage> {
+    /**
+     * The created rate limiter instance.
+     */
+    limiter: RateLimiter<S>
 
-  /**
-   * Optional: expose underlying storage component if needed.
-   */
-  storage?: T
+    /**
+     * Optional: expose underlying storage component if needed.
+     */
+    storage?: T
 
-  /**
-   * Optional: expose underlying strategy component if needed.
-   */
-  strategy?: S
+    /**
+     * Optional: expose underlying strategy component if needed.
+     */
+    strategy?: S
 }
 
 /**
@@ -62,13 +59,13 @@ export interface FactoryResult<
  * @template TConfig - Type of configuration for the storage
  */
 export interface StorageFactory<T extends Storage = Storage, TConfig = any> {
-  /**
-   * Creates a new storage instance with the specified configuration.
-   *
-   * @param config - Configuration for the storage
-   * @returns The created storage instance or a promise resolving to it
-   */
-  (config: TConfig): T | Promise<T>
+    /**
+     * Creates a new storage instance with the specified configuration.
+     *
+     * @param config - Configuration for the storage
+     * @returns The created storage instance or a promise resolving to it
+     */
+    (config: TConfig): T | Promise<T>
 }
 
 /**
@@ -78,10 +75,10 @@ export interface StorageFactory<T extends Storage = Storage, TConfig = any> {
  * @template TStrategyOptions - Type of strategy options
  */
 export type StrategyFactoryConfig<TStrategyOptions> = BaseFactoryConfig & {
-  /**
-   * Strategy-specific options.
-   */
-  strategy: TStrategyOptions
+    /**
+     * Strategy-specific options.
+     */
+    strategy: TStrategyOptions
 }
 
 /**
@@ -93,18 +90,20 @@ export type StrategyFactoryConfig<TStrategyOptions> = BaseFactoryConfig & {
  * @template T - Type of storage
  */
 export interface LimiterFactory<
-  TStrategyOptions,
-  TStorageConfig,
-  S extends Strategy<any>,
-  T extends Storage = Storage
+    TStrategyOptions,
+    TStorageConfig,
+    S extends Strategy<any>,
+    T extends Storage = Storage,
 > {
-  /**
-   * Creates a new rate limiter instance with the specified configuration.
-   *
-   * @param config - Configuration for the rate limiter
-   * @returns The factory result or a promise resolving to it
-   */
-  (config: StrategyFactoryConfig<TStrategyOptions> & {
-    storage: TStorageConfig
-  }): Promise<FactoryResult<S, T>> | FactoryResult<S, T>
+    /**
+     * Creates a new rate limiter instance with the specified configuration.
+     *
+     * @param config - Configuration for the rate limiter
+     * @returns The factory result or a promise resolving to it
+     */
+    (
+        config: StrategyFactoryConfig<TStrategyOptions> & {
+            storage: TStorageConfig
+        }
+    ): Promise<FactoryResult<S, T>> | FactoryResult<S, T>
 }

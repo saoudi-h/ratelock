@@ -1,14 +1,7 @@
 import { atom } from 'jotai'
 import { atomFamily } from 'jotai/utils'
-import {
-  isSimulationRunningAtomFamily,
-  simulationStartTimeAtomFamily
-} from './simulationTimeAtoms'
-import {
-  eventsAtomFamily,
-  autoRequestsAtomFamily,
-  autoRequestIntervalAtomFamily
-} from './atoms'
+import { autoRequestIntervalAtomFamily, autoRequestsAtomFamily, eventsAtomFamily } from './atoms'
+import { isSimulationRunningAtomFamily, simulationStartTimeAtomFamily } from './simulationTimeAtoms'
 
 /**
  * Starts simulation for a specific strategy
@@ -16,15 +9,12 @@ import {
  * @returns Atom that when committed will start the simulation
  */
 export const startSimulationAtomFamily = atomFamily((strategyId: string) =>
-  atom(
-    null,
-    (get, set) => {
-      set(isSimulationRunningAtomFamily(strategyId), true)
-      if (!get(simulationStartTimeAtomFamily(strategyId))) {
-        set(simulationStartTimeAtomFamily(strategyId), Date.now())
-      }
-    }
-  )
+    atom(null, (get, set) => {
+        set(isSimulationRunningAtomFamily(strategyId), true)
+        if (!get(simulationStartTimeAtomFamily(strategyId))) {
+            set(simulationStartTimeAtomFamily(strategyId), Date.now())
+        }
+    })
 )
 
 /**
@@ -33,12 +23,9 @@ export const startSimulationAtomFamily = atomFamily((strategyId: string) =>
  * @returns Atom that when committed will stop the simulation
  */
 export const stopSimulationAtomFamily = atomFamily((strategyId: string) =>
-  atom(
-    null,
-    (_, set) => {
-      set(isSimulationRunningAtomFamily(strategyId), false)
-    }
-  )
+    atom(null, (_, set) => {
+        set(isSimulationRunningAtomFamily(strategyId), false)
+    })
 )
 
 /**
@@ -52,14 +39,11 @@ export const stopSimulationAtomFamily = atomFamily((strategyId: string) =>
  * - Reset request interval to default (1000ms)
  */
 export const resetSimulationAtomFamily = atomFamily((strategyId: string) =>
-  atom(
-    null,
-    (_, set) => {
-      set(isSimulationRunningAtomFamily(strategyId), false)
-      set(simulationStartTimeAtomFamily(strategyId), null)
-      set(eventsAtomFamily(strategyId), [])
-      set(autoRequestsAtomFamily(strategyId), false)
-      set(autoRequestIntervalAtomFamily(strategyId), 1000)
-    }
-  )
+    atom(null, (_, set) => {
+        set(isSimulationRunningAtomFamily(strategyId), false)
+        set(simulationStartTimeAtomFamily(strategyId), null)
+        set(eventsAtomFamily(strategyId), [])
+        set(autoRequestsAtomFamily(strategyId), false)
+        set(autoRequestIntervalAtomFamily(strategyId), 1000)
+    })
 )

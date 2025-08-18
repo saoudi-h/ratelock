@@ -1,7 +1,7 @@
 import type { BatchConfig } from '../cache/batch-processor'
 import { CachedStorage } from '../cache/cached-storage'
 import { LazyTimestampCleaner } from '../cache/lazy-timestamp-cleaner'
-import type { CircuitState } from '../error/circuit-breaker';
+import type { CircuitState } from '../error/circuit-breaker'
 import { CircuitBreaker } from '../error/circuit-breaker'
 import { RetryService } from '../error/retry'
 import type { Storage } from '../storage/storage'
@@ -10,8 +10,8 @@ import type { InferStrategyResult } from '../strategy/capabilities'
 import type { Strategy } from '../strategy/strategy'
 import type { Limiter, LimiterOptions, RateLimiterPerformanceOptions } from './limiter'
 
-export type InferLimiterResult<S> = S extends Strategy<infer T> ? InferStrategyResult<T> : BaseResult
-
+export type InferLimiterResult<S> =
+    S extends Strategy<infer T> ? InferStrategyResult<T> : BaseResult
 
 export class RateLimiter<S extends Strategy<any>> implements Limiter<InferLimiterResult<S>> {
     public readonly prefix: string

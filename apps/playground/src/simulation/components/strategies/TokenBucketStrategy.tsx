@@ -9,7 +9,7 @@ export function TokenBucketStrategy() {
     const hookReturn = useTokenBucket()
 
     return (
-            <StrategyLayout
+        <StrategyLayout
             title="Token Bucket"
             subTitle="Token-based rate limiting with burst capacity"
             description="In token bucket, tokens are added at a fixed rate. Each request consumes a token. When the bucket is empty, requests are denied."
@@ -31,8 +31,12 @@ export function TokenBucketStrategy() {
                 now={hookReturn.now}
                 currentTokens={hookReturn.currentTokens}
                 isRunning={hookReturn.isRunning}
-            lastResult={hookReturn.events.length > 0 ? hookReturn.events[hookReturn.events.length - 1].result : undefined}
-        />
+                lastResult={
+                    hookReturn.events.length > 0
+                        ? hookReturn.events[hookReturn.events.length - 1].result
+                        : undefined
+                }
+            />
         </StrategyLayout>
     )
 }

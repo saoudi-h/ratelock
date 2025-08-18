@@ -28,23 +28,23 @@ import { createFixedWindowLimiter } from '@ratelock/redis'
 
 // Create a rate limiter with Redis storage
 const { limiter, close } = await createFixedWindowLimiter({
-  strategy: {
-    limit: 100,
-    windowMs: 60000, // 1 minute
-  },
-  storage: {
-    redis: 'redis://localhost:6379',
-    keyPrefix: 'api:',
-  },
-  prefix: 'user-rate-limit',
+    strategy: {
+        limit: 100,
+        windowMs: 60000, // 1 minute
+    },
+    storage: {
+        redis: 'redis://localhost:6379',
+        keyPrefix: 'api:',
+    },
+    prefix: 'user-rate-limit',
 })
 
 // Check if a request is allowed
 const result = await limiter.check('user123')
 if (result.allowed) {
-  console.log('Request allowed')
+    console.log('Request allowed')
 } else {
-  console.log('Rate limit exceeded')
+    console.log('Rate limit exceeded')
 }
 
 // Close the connection when done
@@ -57,20 +57,20 @@ await close()
 
 ```typescript
 interface RedisStorageConfig {
-  /** Redis connection URL or options */
-  redis: string | RedisClientOptions
-  
-  /** Key prefix for all Redis keys */
-  keyPrefix?: string
-  
-  /** Enable debug logging */
-  debug?: boolean
-  
-  /** Maximum number of retry attempts */
-  maxRetries?: number
-  
-  /** Delay between retry attempts in milliseconds */
-  retryDelay?: number
+    /** Redis connection URL or options */
+    redis: string | RedisClientOptions
+
+    /** Key prefix for all Redis keys */
+    keyPrefix?: string
+
+    /** Enable debug logging */
+    debug?: boolean
+
+    /** Maximum number of retry attempts */
+    maxRetries?: number
+
+    /** Delay between retry attempts in milliseconds */
+    retryDelay?: number
 }
 ```
 

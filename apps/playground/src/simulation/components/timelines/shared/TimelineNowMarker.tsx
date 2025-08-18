@@ -22,7 +22,9 @@ export function TimelineNowMarker({
     variant = 'default',
 }: TimelineNowMarkerProps) {
     return (
-        <div className={cn("absolute top-0 bottom-0 w-0", className)} style={{ left: `${leftPct}%` }}>
+        <div
+            className={cn('absolute top-0 bottom-0 w-0', className)}
+            style={{ left: `${leftPct}%` }}>
             <div className={cn('h-full border-l', variantClasses[variant])} />
             {label && (
                 <div

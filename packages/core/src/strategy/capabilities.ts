@@ -42,8 +42,8 @@ export interface SlidingWindow extends Windowed {
 }
 
 export interface SlidingWindowResult extends WindowedResult {
-    windowStart: number;
-    windowEnd: number;
+    windowStart: number
+    windowEnd: number
 }
 
 type Empty = Record<never, never>

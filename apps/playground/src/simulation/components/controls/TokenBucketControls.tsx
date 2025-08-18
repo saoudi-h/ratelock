@@ -1,11 +1,10 @@
 'use client'
 
 import { tokenBucketConfigAtom } from '@/simulation/store/atoms'
+import { tokenBucketConfigSchema } from '@/simulation/types'
 import { useAtom } from 'jotai'
 import { useMemo } from 'react'
 import { UnifiedControls, type ControlConfig } from './shared'
-import { tokenBucketConfigSchema } from '@/simulation/types'
-
 
 export default function TokenBucketControls() {
     const [config, setConfig] = useAtom(tokenBucketConfigAtom)
@@ -14,9 +13,9 @@ export default function TokenBucketControls() {
         const setCapacity = (capacity: number) => {
             const result = tokenBucketConfigSchema.safeParse({
                 ...config,
-                capacity
+                capacity,
             })
-            
+
             if (result.success) {
                 setConfig(result.data)
             }
@@ -25,9 +24,9 @@ export default function TokenBucketControls() {
         const setRefillRate = (refillRate: number) => {
             const result = tokenBucketConfigSchema.safeParse({
                 ...config,
-                refillRate
+                refillRate,
             })
-            
+
             if (result.success) {
                 setConfig(result.data)
             }
@@ -36,9 +35,9 @@ export default function TokenBucketControls() {
         const setRefillTime = (refillTime: number) => {
             const result = tokenBucketConfigSchema.safeParse({
                 ...config,
-                refillTime
+                refillTime,
             })
-            
+
             if (result.success) {
                 setConfig(result.data)
             }

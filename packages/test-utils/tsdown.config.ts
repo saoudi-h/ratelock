@@ -9,7 +9,7 @@ const configFn: UserConfigFn = defineConfig(async options => ({
     external: ['vitest'],
     dts: true,
     sourcemap: true,
-    treeshake: false
+    treeshake: false,
 }))
 
 export default configFn

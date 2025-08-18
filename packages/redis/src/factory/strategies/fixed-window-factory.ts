@@ -1,14 +1,15 @@
-import type { FixedWindowOptions } from '@ratelock/core/strategy'
 import type { FactoryResult, StorageFactory } from '@ratelock/core/factory'
 import { BaseLimiterFactory } from '@ratelock/core/factory'
-import type { RateLimiterPerformanceOptions, RateLimiterResilienceOptions } from '@ratelock/core/limiter'
+import type {
+    RateLimiterPerformanceOptions,
+    RateLimiterResilienceOptions,
+} from '@ratelock/core/limiter'
+import type { FixedWindowOptions } from '@ratelock/core/strategy'
 import type { RedisStorage } from 'storage/redis-storage.interface'
-import type { FixedWindowStrategy } from 'strategy/fixed-window';
+import type { FixedWindowStrategy } from 'strategy/fixed-window'
 import { createFixedWindowStrategy } from 'strategy/fixed-window'
 import type { RedisStorageConfig } from '../storage-factory'
 import { createRedisStorage } from '../storage-factory'
-
-
 
 /**
  * Factory for creating fixed window rate limiters.

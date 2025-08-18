@@ -1,10 +1,10 @@
 'use client'
 
 import { individualFixedWindowConfigAtom } from '@/simulation/store/atoms'
+import { individualFixedWindowConfigSchema } from '@/simulation/types'
 import { useAtom } from 'jotai'
 import { useMemo } from 'react'
 import { UnifiedControls, type ControlConfig } from './shared'
-import { individualFixedWindowConfigSchema } from '@/simulation/types'
 
 export default function IndividualFixedWindowControls() {
     const [config, setConfig] = useAtom(individualFixedWindowConfigAtom)
@@ -13,9 +13,9 @@ export default function IndividualFixedWindowControls() {
         const setLimit = (limit: number) => {
             const result = individualFixedWindowConfigSchema.safeParse({
                 ...config,
-                limit
+                limit,
             })
-            
+
             if (result.success) {
                 setConfig(result.data)
             }
@@ -24,9 +24,9 @@ export default function IndividualFixedWindowControls() {
         const setWindowMs = (windowMs: number) => {
             const result = individualFixedWindowConfigSchema.safeParse({
                 ...config,
-                windowMs
+                windowMs,
             })
-            
+
             if (result.success) {
                 setConfig(result.data)
             }

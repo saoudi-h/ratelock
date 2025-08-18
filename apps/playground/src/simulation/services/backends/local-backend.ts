@@ -1,19 +1,19 @@
 'use client'
 import type { RateLimitResult, StorageConfig, StrategyConfig } from '@/simulation/types'
-import { BackendError, type RateLimitBackend } from './types'
 import {
     createFixedWindowLimiter,
     createIndividualFixedWindowLimiter,
     createSlidingWindowLimiter,
     createTokenBucketLimiter,
 } from '@ratelock/local'
+import { BackendError, type RateLimitBackend } from './types'
 
 /**
  * Client-side rate limit backend using @ratelock/local
  * Designed for public demos without server dependencies
  */
 export class LocalBackend implements RateLimitBackend {
-    private limiterCache = new Map<string, any>
+    private limiterCache = new Map<string, any>()
 
     private hashConfig(strategy: StrategyConfig, storage: StorageConfig): string {
         return JSON.stringify({ strategy, storage })
@@ -28,23 +28,39 @@ export class LocalBackend implements RateLimitBackend {
         try {
             // Always use local storage configuration for client-side operations
             const localStorage = {
-                cleanupIntervalMs: storage.type === 'local' ? storage.config.cleanupIntervalMs ?? 1000 : 1000,
-                cleanupRequestThreshold: storage.type === 'local' ? storage.config.cleanupRequestThreshold ?? 1000 : 1000,
+                cleanupIntervalMs:
+                    storage.type === 'local' ? (storage.config.cleanupIntervalMs ?? 1000) : 1000,
+                cleanupRequestThreshold:
+                    storage.type === 'local'
+                        ? (storage.config.cleanupRequestThreshold ?? 1000)
+                        : 1000,
             }
 
             let factoryResult: any
             switch (strategy.type) {
                 case 'fixed-window':
-                    factoryResult = await createFixedWindowLimiter({ strategy: strategy.config, storage: localStorage })
+                    factoryResult = await createFixedWindowLimiter({
+                        strategy: strategy.config,
+                        storage: localStorage,
+                    })
                     break
                 case 'sliding-window':
-                    factoryResult = await createSlidingWindowLimiter({ strategy: strategy.config, storage: localStorage })
+                    factoryResult = await createSlidingWindowLimiter({
+                        strategy: strategy.config,
+                        storage: localStorage,
+                    })
                     break
                 case 'token-bucket':
-                    factoryResult = await createTokenBucketLimiter({ strategy: strategy.config, storage: localStorage })
+                    factoryResult = await createTokenBucketLimiter({
+                        strategy: strategy.config,
+                        storage: localStorage,
+                    })
                     break
                 case 'individual-fixed-window':
-                    factoryResult = await createIndividualFixedWindowLimiter({ strategy: strategy.config, storage: localStorage })
+                    factoryResult = await createIndividualFixedWindowLimiter({
+                        strategy: strategy.config,
+                        storage: localStorage,
+                    })
                     break
                 default:
                     throw new BackendError(
@@ -123,13 +139,13 @@ export class LocalBackend implements RateLimitBackend {
             const limiter = await this.getLimiter(strategy, storage)
 
             if (typeof limiter.checkBatch === 'function') {
-                return await limiter.checkBatch(identifiers) as RateLimitResult[]
+                return (await limiter.checkBatch(identifiers)) as RateLimitResult[]
             }
 
             // Fallback for limiters without native batch support
             const results: RateLimitResult[] = []
             for (const identifier of identifiers) {
-                results.push(await limiter.check(identifier) as RateLimitResult)
+                results.push((await limiter.check(identifier)) as RateLimitResult)
             }
             return results
         } catch (error) {

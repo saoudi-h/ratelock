@@ -52,43 +52,42 @@ export function BackendStatus({ className }: BackendStatusProps) {
 
     return (
         <Section className="py-12">
+            <div className={`border border-border border-dashed p-4 relative ${className}`}>
+                <DiagonalLinesBackground />
 
-        <div className={`border border-border border-dashed p-4 relative ${className}`}>
-            <DiagonalLinesBackground />
-
-            <div className="flex items-center justify-between relative">
-                <div>
-                    <h3 className="font-serif text-xl font-semibold">Backend Rate Limiting</h3>
-                    <p className={`text-sm font-mono ${getStatusColor()}`}>{getStatusText()}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{getDescription()}</p>
-                </div>
-                <div className="flex items-center space-x-2">
-                    <div
-                        className={`size-2.5 rounded-full ${
-                            isConfigured
-                            ? config.type === 'local'
-                            ? 'bg-blue-500'
-                            : 'bg-green-500'
-                            : 'bg-gray-400'
+                <div className="flex items-center justify-between relative">
+                    <div>
+                        <h3 className="font-serif text-xl font-semibold">Backend Rate Limiting</h3>
+                        <p className={`text-sm font-mono ${getStatusColor()}`}>{getStatusText()}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{getDescription()}</p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <div
+                            className={`size-2.5 rounded-full ${
+                                isConfigured
+                                    ? config.type === 'local'
+                                        ? 'bg-blue-500'
+                                        : 'bg-green-500'
+                                    : 'bg-gray-400'
                             }`}
-                            />
-                    <span className="text-xs text-muted-foreground">
-                        {isConfigured ? 'Active' : 'Inactive'}
-                    </span>
+                        />
+                        <span className="text-xs text-muted-foreground">
+                            {isConfigured ? 'Active' : 'Inactive'}
+                        </span>
+                    </div>
                 </div>
+                {config.type === 'api' && config.api && (
+                    <div className="mt-3 text-xs text-muted-foreground">
+                        <div>Base URL: {config.api.baseUrl || 'Relative'}</div>
+                        <div>Timeout: {config.api.timeout}ms</div>
+                    </div>
+                )}
+                {config.type === 'local' && (
+                    <div className="mt-3 text-xs text-yellow-600">
+                        ⚠️ Demo mode: data is stored in local memory only
+                    </div>
+                )}
             </div>
-            {config.type === 'api' && config.api && (
-                <div className="mt-3 text-xs text-muted-foreground">
-                    <div>Base URL: {config.api.baseUrl || 'Relative'}</div>
-                    <div>Timeout: {config.api.timeout}ms</div>
-                </div>
-            )}
-            {config.type === 'local' && (
-                <div className="mt-3 text-xs text-yellow-600">
-                    ⚠️ Demo mode: data is stored in local memory only
-                </div>
-            )}
-        </div>
         </Section>
     )
 }

@@ -26,7 +26,6 @@ export function TimelineEvent({
     size = 'md',
     showTooltip = true,
 }: TimelineEventProps) {
-
     const baseClasses = cn(
         'absolute top-1/2 -translate-y-1/2 rounded-full hover:scale-150 transition-all shadow',
         sizeClasses[size],
@@ -38,13 +37,17 @@ export function TimelineEvent({
     )
 
     return (
-        <motion.div initial={{ y: 100 }} animate={{ y: 0 }} exit={{ y: 100 }} className="absolute top-1/2 -translate-y-1/2 group" style={{ left: `${leftPct}%` }}>
+        <motion.div
+            initial={{ y: 100 }}
+            animate={{ y: 0 }}
+            exit={{ y: 100 }}
+            className="absolute top-1/2 -translate-y-1/2 group"
+            style={{ left: `${leftPct}%` }}>
             <div className={baseClasses} />
-                    <div
-                    className="absolute left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-popover text-popover-foreground text-[10px] border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                        {new Date(event.timestamp).toLocaleTimeString()} •{' '}
-                        {event.allowed ? 'Allowed' : 'Denied'}
-                    </div>
+            <div className="absolute left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-popover text-popover-foreground text-[10px] border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                {new Date(event.timestamp).toLocaleTimeString()} •{' '}
+                {event.allowed ? 'Allowed' : 'Denied'}
+            </div>
         </motion.div>
     )
 }

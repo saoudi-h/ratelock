@@ -32,7 +32,7 @@ export class StorageService implements Storage {
      */
     private performCleanupIfNeeded(): void {
         this.REQUEST_COUNT_SINCE_LAST_CLEANUP++
-        
+
         if (this.shouldCleanup()) {
             this.cleanupExpiredEntries()
             this.lastCleanupTime = Date.now()

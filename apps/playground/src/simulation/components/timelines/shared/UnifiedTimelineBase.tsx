@@ -1,16 +1,16 @@
 'use client'
 
+import { cn } from '@/lib/utils'
+import type { RequestEvent } from '@/simulation/types'
 import {
     calculateTimelineBounds,
     calculateTimelinePosition,
     isTimelineItemVisible,
 } from '@/simulation/utils'
-import { cn } from '@/lib/utils'
-import type { RequestEvent } from '@/simulation/types'
-import { useMemo, useRef, useEffect } from 'react'
+import { AnimatePresence, useAnimationFrame } from 'framer-motion'
+import { useEffect, useMemo, useRef } from 'react'
 import { TimelineEvent } from './TimelineEvent'
 import { TimelineNowMarker } from './TimelineNowMarker'
-import { AnimatePresence, useAnimationFrame } from 'framer-motion'
 
 export interface TimelineWindow {
     id: string
@@ -52,35 +52,36 @@ export function UnifiedTimelineBase({
     const backgroundRef = useRef<HTMLDivElement>(null)
     const lastTimeRef = useRef<number>(now)
     const patternSize = 20
-    
+
     useAnimationFrame(() => {
         if (!isRunning || !backgroundRef.current) return
-        
+
         const currentTime = now
         const deltaTime = currentTime - lastTimeRef.current
-        
+
         if (deltaTime > 0) {
             const containerWidth = backgroundRef.current.parentElement?.offsetWidth || 1000
             const pixelsPerMs = containerWidth / timelineSpan
-            
+
             const pixelsMoved = deltaTime * pixelsPerMs
-            
+
             const currentTransform = backgroundRef.current.style.transform
-            const currentX = currentTransform ? 
-                parseFloat(currentTransform.match(/translateX\(([^)]+)px\)/)?.[1] || '0') : 0
-            
+            const currentX = currentTransform
+                ? parseFloat(currentTransform.match(/translateX\(([^)]+)px\)/)?.[1] || '0')
+                : 0
+
             let newX = currentX - pixelsMoved
-            
+
             if (newX <= -patternSize) {
                 newX = newX + patternSize
             }
-            
+
             backgroundRef.current.style.transform = `translateX(${newX}px)`
         }
-        
+
         lastTimeRef.current = currentTime
     })
-    
+
     useEffect(() => {
         if (backgroundRef.current) {
             backgroundRef.current.style.transform = 'translateX(0px)'
@@ -114,9 +115,8 @@ export function UnifiedTimelineBase({
                 height,
                 className
             )}>
-            
-            <div 
-                ref={backgroundRef} 
+            <div
+                ref={backgroundRef}
                 className="absolute top-0 left-0 w-[200%] h-full opacity-30 text-primary/50 bg-[size:10px_10px] [background-image:repeating-linear-gradient(45deg,currentColor_0_1px,#0000_0_50%)]"
             />
 
@@ -173,18 +173,24 @@ export function UnifiedTimelineBase({
             })}
 
             <AnimatePresence initial={false}>
-            {visibleEvents.map((event, index) => {
-                const { leftPct } = calculateTimelinePosition(
-                    event.timestamp,
-                    event.timestamp,
-                    timelineStart,
-                    timelineSpan
-                )
+                {visibleEvents.map((event, index) => {
+                    const { leftPct } = calculateTimelinePosition(
+                        event.timestamp,
+                        event.timestamp,
+                        timelineStart,
+                        timelineSpan
+                    )
 
-                return <TimelineEvent key={event.id} event={event} leftPct={leftPct} isLast={index === visibleEvents.length - 1} />
-            })}
-
-                </AnimatePresence>
+                    return (
+                        <TimelineEvent
+                            key={event.id}
+                            event={event}
+                            leftPct={leftPct}
+                            isLast={index === visibleEvents.length - 1}
+                        />
+                    )
+                })}
+            </AnimatePresence>
 
             {showNowMarker && (
                 <TimelineNowMarker leftPct={nowMarkerPosition} label={nowMarkerLabel} />

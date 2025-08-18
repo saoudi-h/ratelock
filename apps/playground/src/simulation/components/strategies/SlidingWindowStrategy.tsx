@@ -9,7 +9,7 @@ export function SlidingWindowStrategy() {
     const hookReturn = useSlidingWindow()
 
     return (
-            <StrategyLayout
+        <StrategyLayout
             title="Sliding Window"
             subTitle="Dynamic sliding time window rate limiting"
             description="In sliding window, the window moves continuously with time, smoothing the counting."
@@ -22,14 +22,17 @@ export function SlidingWindowStrategy() {
             startSimulation={hookReturn.startSimulation}
             stopSimulation={hookReturn.stopSimulation}
             resetSimulation={hookReturn.resetSimulation}
-            controls={<SlidingWindowControls />}
-            >
-                <SlidingWindowTimeline
-                    events={hookReturn.events}
-                    now={hookReturn.now}
-                    lastResult={hookReturn.events.length > 0 ? hookReturn.events[hookReturn.events.length - 1].result : undefined}
-                    isRunning={hookReturn.isRunning}
-                />
-            </StrategyLayout>
+            controls={<SlidingWindowControls />}>
+            <SlidingWindowTimeline
+                events={hookReturn.events}
+                now={hookReturn.now}
+                lastResult={
+                    hookReturn.events.length > 0
+                        ? hookReturn.events[hookReturn.events.length - 1].result
+                        : undefined
+                }
+                isRunning={hookReturn.isRunning}
+            />
+        </StrategyLayout>
     )
 }

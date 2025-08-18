@@ -1,3 +1,3 @@
-import type { RedisClientType, RedisClientOptions } from 'redis'
+import type { RedisClientOptions, RedisClientType } from 'redis'
 
-export type { RedisClientType, RedisClientOptions }
+export type { RedisClientOptions, RedisClientType }

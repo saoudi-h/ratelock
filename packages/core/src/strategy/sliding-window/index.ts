@@ -72,7 +72,6 @@ export class SlidingWindowStrategy extends Strategy<SlidingWindowLimited, Slidin
         }
     }
 
-
     /**
      * Processes multiple identifiers in batch
      * @param identifiers - Array of unique keys to check

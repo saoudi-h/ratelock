@@ -1,37 +1,36 @@
 'use client'
 import { fixedWindowConfigAtom } from '@/simulation/store/atoms'
+import { fixedWindowConfigSchema } from '@/simulation/types'
 import { useAtom } from 'jotai'
 import { useMemo } from 'react'
 import { UnifiedControls, type ControlConfig } from './shared'
-import { fixedWindowConfigSchema } from '@/simulation/types'
-
 
 export default function FixedWindowControls() {
     const [config, setConfig] = useAtom(fixedWindowConfigAtom)
-    
+
     const controls: ControlConfig[] = useMemo(() => {
         const setLimit = (limit: number) => {
             const result = fixedWindowConfigSchema.safeParse({
                 ...config,
-                limit
+                limit,
             })
-            
-            if (result.success) {
-                setConfig(result.data)
-            } 
-        }
-        
-        const setWindowMs = (windowMs: number) => {
-            const result = fixedWindowConfigSchema.safeParse({
-                ...config,
-                windowMs
-            })
-            
+
             if (result.success) {
                 setConfig(result.data)
             }
         }
-        
+
+        const setWindowMs = (windowMs: number) => {
+            const result = fixedWindowConfigSchema.safeParse({
+                ...config,
+                windowMs,
+            })
+
+            if (result.success) {
+                setConfig(result.data)
+            }
+        }
+
         return [
             {
                 id: 'fixed-limit',
@@ -52,6 +51,6 @@ export default function FixedWindowControls() {
             },
         ]
     }, [config, setConfig])
-    
+
     return <UnifiedControls strategyName="Fixed Window" controls={controls} />
 }

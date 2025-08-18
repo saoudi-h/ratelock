@@ -8,17 +8,17 @@ export function useFixedWindow() {
     const config = useAtomValue(fixedWindowConfigAtom)
     const updateConfig = useSetAtom(updateFixedWindowConfigAtom)
     const strategyHook = useRateLimitStrategy('fixed-window')
-    
+
     const currentWindowStart = useMemo(() => {
         if (strategyHook.events.length > 0) {
-            const lastEvent = strategyHook.events[strategyHook.events.length - 1];
+            const lastEvent = strategyHook.events[strategyHook.events.length - 1]
             if (lastEvent.result?.reset) {
-                return lastEvent.result.reset - config.windowMs;
+                return lastEvent.result.reset - config.windowMs
             }
         }
-        
-        return strategyHook.simulationStartTime;
-    }, [strategyHook.events, config.windowMs, strategyHook.simulationStartTime]);
+
+        return strategyHook.simulationStartTime
+    }, [strategyHook.events, config.windowMs, strategyHook.simulationStartTime])
 
     return {
         ...strategyHook,

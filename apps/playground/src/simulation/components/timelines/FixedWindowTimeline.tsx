@@ -1,12 +1,12 @@
 'use client'
 
+import { useRefreshInterval } from '@/simulation/hooks/useRefreshInterval'
 import { fixedWindowConfigAtom } from '@/simulation/store/atoms'
 import type { RateLimitResult, RequestEvent } from '@/simulation/types'
+import { formatMs } from '@/simulation/utils'
 import { useAtomValue } from 'jotai'
 import { useMemo } from 'react'
 import { UnifiedTimelineBase, type TimelineWindowType } from './shared'
-import { formatMs } from '@/simulation/utils'
-import { useRefreshInterval } from '@/simulation/hooks/useRefreshInterval'
 
 type Props = {
     events: RequestEvent[]
@@ -23,7 +23,7 @@ export default function FixedWindowTimeline({
     simulationStartTime,
     lastResult,
     currentWindowStart,
-    isRunning
+    isRunning,
 }: Props) {
     useRefreshInterval(isRunning)
     const { windowMs, limit } = useAtomValue(fixedWindowConfigAtom)
@@ -34,20 +34,22 @@ export default function FixedWindowTimeline({
 
     const windows: TimelineWindowType[] = useMemo(() => {
         const baseTime = currentWindowStart || simulationStartTime || now
-        
+
         const currentWindowIndex = Math.floor((now - baseTime) / windowMs)
-        
+
         const firstWindowIndex = currentWindowIndex - 2
         const lastWindowIndex = currentWindowIndex + 2
-        
+
         const windows = []
         for (let i = firstWindowIndex; i <= lastWindowIndex; i++) {
             const windowStart = baseTime + i * windowMs
             const windowEnd = windowStart + windowMs
-            const windowEvents = events.filter(event => event.timestamp >= windowStart && event.timestamp < windowEnd)
-            
+            const windowEvents = events.filter(
+                event => event.timestamp >= windowStart && event.timestamp < windowEnd
+            )
+
             const isCurrent = windowStart <= now && now < windowEnd
-            
+
             windows.push({
                 id: `window-${i}`,
                 start: windowStart,
@@ -60,7 +62,7 @@ export default function FixedWindowTimeline({
                 index: i,
             })
         }
-        
+
         return windows.map(window => ({
             id: window.id,
             start: window.start,

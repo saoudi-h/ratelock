@@ -1,16 +1,15 @@
-import type { SlidingWindowOptions } from '@ratelock/core/strategy'
-import type { FactoryResult, StorageFactory } from '@ratelock/core/factory';
+import type { FactoryResult, StorageFactory } from '@ratelock/core/factory'
 import { BaseLimiterFactory } from '@ratelock/core/factory'
-import type { RateLimiterPerformanceOptions, RateLimiterResilienceOptions } from '@ratelock/core/limiter'
+import type {
+    RateLimiterPerformanceOptions,
+    RateLimiterResilienceOptions,
+} from '@ratelock/core/limiter'
+import type { SlidingWindowOptions } from '@ratelock/core/strategy'
 import type { RedisStorage } from 'storage/redis-storage.interface'
-import type { SlidingWindowStrategy } from 'strategy/sliding-window';
-import { createSlidingWindowStrategy } from 'strategy/sliding-window';
+import type { SlidingWindowStrategy } from 'strategy/sliding-window'
+import { createSlidingWindowStrategy } from 'strategy/sliding-window'
 import type { RedisStorageConfig } from '../storage-factory'
 import { createRedisStorage } from '../storage-factory'
-
-
-
-
 
 /**
  * Factory for creating sliding window rate limiters.
@@ -19,22 +18,17 @@ import { createRedisStorage } from '../storage-factory'
  * @template T - Type of storage
  */
 export class SlidingWindowLimiterFactory<
-  TStorageConfig,
-  T extends RedisStorage = RedisStorage
-> extends BaseLimiterFactory<
-  SlidingWindowOptions,
-  TStorageConfig,
-  SlidingWindowStrategy,
-  T
-> {
-  /**
-   * Creates a new instance of SlidingWindowLimiterFactory.
-   *
-   * @param storageFactory - Factory function to create storage instances
-   */
-  constructor(storageFactory: StorageFactory<T, TStorageConfig>) {
-    super(createSlidingWindowStrategy, storageFactory)
-  }
+    TStorageConfig,
+    T extends RedisStorage = RedisStorage,
+> extends BaseLimiterFactory<SlidingWindowOptions, TStorageConfig, SlidingWindowStrategy, T> {
+    /**
+     * Creates a new instance of SlidingWindowLimiterFactory.
+     *
+     * @param storageFactory - Factory function to create storage instances
+     */
+    constructor(storageFactory: StorageFactory<T, TStorageConfig>) {
+        super(createSlidingWindowStrategy, storageFactory)
+    }
 }
 
 /**
@@ -47,35 +41,32 @@ export class SlidingWindowLimiterFactory<
  * @returns A function that creates sliding window rate limiters
  */
 export function createSlidingWindowLimiterFactory<
-  TStorageConfig,
-  T extends RedisStorage = RedisStorage
->(
-  storageFactory: StorageFactory<T, TStorageConfig>
-) {
-  const factory = new SlidingWindowLimiterFactory(storageFactory)
-  return (config: {
-    strategy: SlidingWindowOptions
-    storage: TStorageConfig
-    prefix?: string
-    performance?: RateLimiterPerformanceOptions
-    resilience?: RateLimiterResilienceOptions
-  }) => factory.create(config)
+    TStorageConfig,
+    T extends RedisStorage = RedisStorage,
+>(storageFactory: StorageFactory<T, TStorageConfig>) {
+    const factory = new SlidingWindowLimiterFactory(storageFactory)
+    return (config: {
+        strategy: SlidingWindowOptions
+        storage: TStorageConfig
+        prefix?: string
+        performance?: RateLimiterPerformanceOptions
+        resilience?: RateLimiterResilienceOptions
+    }) => factory.create(config)
 }
-
 
 /**
  * Configuration for creating a sliding window rate limiter with Redis.
  */
 export interface RedisSlidingWindowLimiterConfig {
-  /**
-   * Strategy-specific options.
-   */
-  strategy: SlidingWindowOptions
+    /**
+     * Strategy-specific options.
+     */
+    strategy: SlidingWindowOptions
 
-  /**
-   * Redis storage configuration.
-   */
-  storage: RedisStorageConfig
+    /**
+     * Redis storage configuration.
+     */
+    storage: RedisStorageConfig
 }
 
 /**
@@ -84,4 +75,6 @@ export interface RedisSlidingWindowLimiterConfig {
  * @param config - Configuration for the sliding window rate limiter.
  * @returns A promise that resolves to the factory result containing the limiter and its components.
  */
-export const createSlidingWindowLimiter = createSlidingWindowLimiterFactory(createRedisStorage) as (config: RedisSlidingWindowLimiterConfig) => Promise<FactoryResult<any>>
+export const createSlidingWindowLimiter = createSlidingWindowLimiterFactory(createRedisStorage) as (
+    config: RedisSlidingWindowLimiterConfig
+) => Promise<FactoryResult<any>>

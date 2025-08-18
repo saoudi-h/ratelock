@@ -1,13 +1,13 @@
 'use client'
 
 import { type WindowState } from '@/simulation/hooks/useIndividualFixedWindow'
-import { formatMs } from '@/simulation/utils'
+import { useRefreshInterval } from '@/simulation/hooks/useRefreshInterval'
 import { individualFixedWindowConfigAtom } from '@/simulation/store/atoms'
 import type { RateLimitResult, RequestEvent } from '@/simulation/types'
+import { formatMs } from '@/simulation/utils'
 import { useAtomValue } from 'jotai'
 import { useMemo } from 'react'
 import { UnifiedTimelineBase, type TimelineWindowType } from './shared'
-import { useRefreshInterval } from '@/simulation/hooks/useRefreshInterval'
 
 type Props = {
     events: RequestEvent[]
@@ -22,7 +22,7 @@ export default function IndividualFixedWindowTimeline({
     now: nowProp,
     lastResult,
     windows: windowsProp,
-    isRunning
+    isRunning,
 }: Props) {
     useRefreshInterval(isRunning)
     const { windowMs, limit } = useAtomValue(individualFixedWindowConfigAtom)
@@ -46,7 +46,7 @@ export default function IndividualFixedWindowTimeline({
                 isExpired,
                 eventCount: windowEvents.length,
                 limit,
-                label: isActive ? 'Active' : isExpired ? 'Expired' : 'Future'
+                label: isActive ? 'Active' : isExpired ? 'Expired' : 'Future',
             }
         })
     }, [windowsProp, now, limit, events])

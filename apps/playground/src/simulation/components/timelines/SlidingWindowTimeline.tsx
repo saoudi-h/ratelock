@@ -1,12 +1,12 @@
 'use client'
 
-import { formatMs } from '@/simulation/utils'
+import { useRefreshInterval } from '@/simulation/hooks/useRefreshInterval'
 import { slidingWindowConfigAtom } from '@/simulation/store/atoms'
 import type { RateLimitResult, RequestEvent } from '@/simulation/types'
+import { formatMs } from '@/simulation/utils'
 import { useAtomValue } from 'jotai'
 import { useMemo } from 'react'
 import { UnifiedTimelineBase, type TimelineWindowType } from './shared'
-import { useRefreshInterval } from '@/simulation/hooks/useRefreshInterval'
 
 type Props = {
     events: RequestEvent[]
@@ -15,7 +15,12 @@ type Props = {
     isRunning: boolean
 }
 
-export default function SlidingWindowTimeline({ events, now: nowProp, lastResult, isRunning }: Props) {
+export default function SlidingWindowTimeline({
+    events,
+    now: nowProp,
+    lastResult,
+    isRunning,
+}: Props) {
     useRefreshInterval(isRunning)
     const { limit, windowMs } = useAtomValue(slidingWindowConfigAtom)
     const now = nowProp ?? Date.now()

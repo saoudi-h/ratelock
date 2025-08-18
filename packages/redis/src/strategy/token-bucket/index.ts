@@ -1,5 +1,4 @@
-import type {
-    TokenBucketOptions} from '@ratelock/core/strategy';
+import type { TokenBucketOptions } from '@ratelock/core/strategy'
 import {
     TokenBucketStrategy as CoreTokenBucketStrategy,
     createStrategyFactory,

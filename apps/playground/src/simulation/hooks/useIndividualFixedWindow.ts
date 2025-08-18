@@ -19,31 +19,31 @@ export function useIndividualFixedWindow() {
     const strategyHook = useRateLimitStrategy('individual-fixed-window')
     const config = useAtomValue(individualFixedWindowConfigAtom)
     const updateConfig = useSetAtom(updateIndividualFixedWindowConfigAtom)
-    
+
     const events = useAtomValue(eventsAtomFamily('individual-fixed-window'))
     const [windows, setWindows] = useState<WindowState[]>([])
     const lastEventCount = useRef(0)
     const cleanupIntervalRef = useRef<NodeJS.Timeout>(undefined)
-    
+
     useEffect(() => {
         if (events.length === 0) {
             setWindows([])
             lastEventCount.current = 0
         }
     }, [events.length])
-    
+
     useEffect(() => {
         if (events.length <= lastEventCount.current) return
-        
+
         const newEvents = events.slice(lastEventCount.current)
         lastEventCount.current = events.length
-        
+
         newEvents.forEach(event => {
             setWindows(currentWindows => {
                 const belongsToExistingWindow = currentWindows.some(
                     window => event.timestamp >= window.start && event.timestamp < window.end
                 )
-                
+
                 if (belongsToExistingWindow) {
                     return currentWindows.map(window => {
                         if (event.timestamp >= window.start && event.timestamp < window.end) {
@@ -66,7 +66,7 @@ export function useIndividualFixedWindow() {
             })
         })
     }, [events, config.windowMs])
-    
+
     useEffect(() => {
         if (!strategyHook.isRunning) {
             if (cleanupIntervalRef.current) {
@@ -75,7 +75,7 @@ export function useIndividualFixedWindow() {
             }
             return
         }
-        
+
         cleanupIntervalRef.current = setInterval(() => {
             const now = strategyHook.now
             const timelineBuffer = config.windowMs * 3
@@ -83,7 +83,7 @@ export function useIndividualFixedWindow() {
                 currentWindows.filter(window => window.end > now - timelineBuffer)
             )
         }, 5000)
-        
+
         return () => {
             if (cleanupIntervalRef.current) {
                 clearInterval(cleanupIntervalRef.current)
@@ -91,7 +91,7 @@ export function useIndividualFixedWindow() {
             }
         }
     }, [config.windowMs, strategyHook.now, strategyHook.isRunning])
-    
+
     useEffect(() => {
         return () => {
             if (cleanupIntervalRef.current) {
@@ -99,7 +99,7 @@ export function useIndividualFixedWindow() {
             }
         }
     }, [])
-    
+
     return {
         ...strategyHook,
         config,

@@ -1,7 +1,7 @@
 'use client'
 
-import type { RateLimitResult, RequestEvent } from '@/simulation/types'
 import { useRefreshInterval } from '@/simulation/hooks/useRefreshInterval'
+import type { RateLimitResult, RequestEvent } from '@/simulation/types'
 import { useMemo } from 'react'
 import { UnifiedTimelineBase } from './shared'
 
@@ -12,7 +12,7 @@ type Props = {
     refillTime: number
     now?: number
     lastResult?: RateLimitResult
-    currentTokens?: number,
+    currentTokens?: number
     isRunning: boolean
 }
 
@@ -49,23 +49,23 @@ export default function TokenBucketTimeline({
 
     const calculateCurrentTokens = () => {
         let tokens = lastResult?.tokens ?? capacity
-        
+
         if (lastResult && events.length > 0) {
             const lastEvent = events[events.length - 1]
             if (lastEvent) {
                 const lastEventTime = lastEvent.timestamp
                 const timeElapsed = now - lastEventTime
-                
+
                 const refillCycles = Math.floor(timeElapsed / refillTime)
                 const refilledTokens = refillCycles * refillRate
-                
+
                 tokens = Math.min(capacity, tokens + refilledTokens)
             }
         }
-        
+
         return Math.floor(tokens * 100) / 100
     }
-    
+
     const currentTokens = calculateCurrentTokens()
     const tokenPercentage = Math.max(0, Math.min(100, (currentTokens / capacity) * 100))
 
@@ -99,9 +99,9 @@ export default function TokenBucketTimeline({
                 </div>
             </div>
 
-<div className="flex gap-4">
-    <div className="w-12 flex-shrink-0 h-48 flex flex-col">
-        <div className="relative flex-1 min-h-0">
+            <div className="flex gap-4">
+                <div className="w-12 flex-shrink-0 h-48 flex flex-col">
+                    <div className="relative flex-1 min-h-0">
                         <div className="absolute inset-0 bg-background rounded-lg border border-border border-dashed">
                             <div
                                 className="absolute bottom-0 left-0 right-0 bg-blue-500 rounded-lg transition-all duration-500 ease-out"
@@ -122,10 +122,11 @@ export default function TokenBucketTimeline({
                             style={{ bottom: `${tokenPercentage}%`, transform: 'translateY(50%)' }}>
                             {Math.floor(currentTokens)}
                         </div>
-                        <div className="absolute top-4 left-0 right-0 text-xs text-center mb-2 font-medium text-shadow-2xs">Token Level</div>
+                        <div className="absolute top-4 left-0 right-0 text-xs text-center mb-2 font-medium text-shadow-2xs">
+                            Token Level
+                        </div>
                     </div>
                 </div>
-
 
                 <UnifiedTimelineBase
                     now={now}
@@ -133,7 +134,7 @@ export default function TokenBucketTimeline({
                     events={events}
                     nowMarkerLabel="now"
                     isRunning={isRunning}
-            />
+                />
             </div>
 
             <div className="mt-2 text-sm text-muted-foreground flex items-center gap-4">

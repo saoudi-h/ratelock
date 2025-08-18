@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono, Arvo } from 'next/font/google'
+import { Arvo, Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 
 const interSans = Inter({

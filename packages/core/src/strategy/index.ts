@@ -45,8 +45,4 @@ export {
     tokenBucketValidator,
 } from './token-bucket'
 export type { TokenBucketOptions } from './token-bucket'
-export type {
-    BaseStrategyOptions,
-    StrategyMetadata,
-    StrategyStats,
-} from './types'
+export type { BaseStrategyOptions, StrategyMetadata, StrategyStats } from './types'

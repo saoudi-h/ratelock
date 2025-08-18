@@ -1,15 +1,22 @@
 {
-  "extends": "@ratelock/tsconfig/base.json",
-  "compilerOptions": {
-      "module": "ESNext",
-      "moduleResolution": "Bundler",
-      "baseUrl": "src",
-      "rootDir": ".",
-      "paths": {
-          "@/*": ["src/*"]
-      },
-      "types": ["vitest", "node"]
-  },
-  "include": ["./src/**/*", "tsdown.config.ts", "vitest.config.ts", "./examples/**/*", "./types", "./scripts"],
-  "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
+    "extends": "@ratelock/tsconfig/base.json",
+    "compilerOptions": {
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "baseUrl": "src",
+        "rootDir": ".",
+        "paths": {
+            "@/*": ["src/*"]
+        },
+        "types": ["vitest", "node"]
+    },
+    "include": [
+        "./src/**/*",
+        "tsdown.config.ts",
+        "vitest.config.ts",
+        "./examples/**/*",
+        "./types",
+        "./scripts"
+    ],
+    "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
 }

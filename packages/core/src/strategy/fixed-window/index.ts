@@ -1,11 +1,7 @@
 import { Strategy } from '../abstract'
 import type { InferStrategyResult, WindowedLimited } from '../capabilities'
 import { createStrategyFactory, type StrategyValidator } from '../factory'
-import type {
-    BaseStrategyOptions,
-
-    StrategyMetadata,
-} from '../types'
+import type { BaseStrategyOptions, StrategyMetadata } from '../types'
 
 export interface FixedWindowOptions extends BaseStrategyOptions {
     limit: number

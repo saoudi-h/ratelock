@@ -8,12 +8,10 @@ async function testLocalPackage() {
     try {
         // Create a rate limiter
         const storage = new StorageService()
-        const limiter = new RateLimiter(
-            {
-                strategy: createFixedWindowStrategy(storage, { limit: 3, windowMs: 5000 }),
-                storage,
-            }
-        )
+        const limiter = new RateLimiter({
+            strategy: createFixedWindowStrategy(storage, { limit: 3, windowMs: 5000 }),
+            storage,
+        })
 
         const userId = 'test-user'
 
@@ -33,7 +31,6 @@ async function testLocalPackage() {
         batchResults.forEach((result, index) => {
             console.log(`  User ${index + 1}: ${result.allowed ? 'ALLOWED' : 'DENIED'}`)
         })
-
 
         console.log('\n✅ All tests passed! @ratelock/local is working correctly.')
     } catch (error) {

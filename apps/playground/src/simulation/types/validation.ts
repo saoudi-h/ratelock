@@ -1,3 +1,4 @@
+import { z } from 'zod'
 import type {
     FixedWindowConfig,
     IndividualFixedWindowConfig,
@@ -8,7 +9,6 @@ import type {
     StrategyConfig,
     TokenBucketConfig,
 } from './types'
-import { z } from 'zod'
 
 export const tokenBucketConfigSchema = z.object({
     capacity: z.number().min(1).max(50),
@@ -91,7 +91,7 @@ export interface ValidationResult {
 function zodToValidationResult(error: z.ZodError): ValidationResult {
     return {
         isValid: false,
-        errors: error.issues.map((err) => err.message),
+        errors: error.issues.map(err => err.message),
     }
 }
 
@@ -217,7 +217,7 @@ export function enrichStorageConfig(config: StorageConfig): StorageConfig {
                 config: {
                     ...config.config,
                     url: config.config.url ?? resolveRedisUrl(),
-                }
+                },
             }
     }
 }

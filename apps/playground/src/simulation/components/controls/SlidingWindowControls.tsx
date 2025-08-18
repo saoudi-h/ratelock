@@ -1,11 +1,10 @@
 'use client'
 
 import { slidingWindowConfigAtom } from '@/simulation/store/atoms'
+import { slidingWindowConfigSchema } from '@/simulation/types'
 import { useAtom } from 'jotai'
 import { useMemo } from 'react'
 import { UnifiedControls, type ControlConfig } from './shared'
-import { slidingWindowConfigSchema } from '@/simulation/types'
-
 
 export default function SlidingWindowControls() {
     const [config, setConfig] = useAtom(slidingWindowConfigAtom)
@@ -14,20 +13,20 @@ export default function SlidingWindowControls() {
         const setLimit = (limit: number) => {
             const result = slidingWindowConfigSchema.safeParse({
                 ...config,
-                limit
+                limit,
             })
-            
+
             if (result.success) {
                 setConfig(result.data)
-            } 
+            }
         }
-        
+
         const setWindowMs = (windowMs: number) => {
             const result = slidingWindowConfigSchema.safeParse({
                 ...config,
-                windowMs
+                windowMs,
             })
-            
+
             if (result.success) {
                 setConfig(result.data)
             }

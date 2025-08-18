@@ -1,8 +1,8 @@
 import type { StoragePipeline } from '@ratelock/core/storage'
-import type { RedisStorage } from './redis-storage.interface'
+import { DECREMENT, INCREMENT, INCREMENT_IF } from 'lua-scripts'
 import type { RedisClientType } from 'types/redis'
+import type { RedisStorage } from './redis-storage.interface'
 import { StoragePipelineService } from './storage-pipline.service'
-import { INCREMENT, INCREMENT_IF, DECREMENT } from 'lua-scripts'
 
 /**
  * Redis Storage Service Implementation

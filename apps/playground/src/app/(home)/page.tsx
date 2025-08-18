@@ -1,8 +1,8 @@
-import { BackendStatus } from '@/simulation/components/backend-status'
+import { LandingBackground } from '@/components/blocks/LandingBackground'
 import { Section } from '@/components/blocks/Section'
 import { SectionSeparator } from '@/components/blocks/SectionSeparator'
+import { BackendStatus } from '@/simulation/components/backend-status'
 import { StrategyTabs } from '@/simulation/components/StrategyTabs'
-import { LandingBackground } from '@/components/blocks/LandingBackground'
 
 export default function Home() {
     const heading = 'RateLock Playground'

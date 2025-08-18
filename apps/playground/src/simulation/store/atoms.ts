@@ -52,7 +52,6 @@ export const individualFixedWindowConfigAtom = atom<IndividualFixedWindowConfig>
 export const currentTokensAtomFamily = atomFamily(() => atom(10))
 export const lastRefillTimeAtomFamily = atomFamily(() => atom(0))
 
-
 /**
  * Gets configuration for a specific strategy type
  * @param strategyId The strategy identifier
@@ -60,13 +59,15 @@ export const lastRefillTimeAtomFamily = atomFamily(() => atom(0))
  */
 export const strategyConfigAtomFamily = atomFamily((strategyId: RateLimitStrategy) =>
     atom((get): StrategyConfig => {
-      if (strategyId === 'fixed-window') return {type: 'fixed-window' ,config:get(fixedWindowConfigAtom)};
-      if (strategyId === 'sliding-window') return {type: 'sliding-window' ,config:get(slidingWindowConfigAtom)};
-      if (strategyId === 'token-bucket') return {type: 'token-bucket' ,config:get(tokenBucketConfigAtom)};
-     return {type: 'individual-fixed-window' ,config:get(individualFixedWindowConfigAtom)}
+        if (strategyId === 'fixed-window')
+            return { type: 'fixed-window', config: get(fixedWindowConfigAtom) }
+        if (strategyId === 'sliding-window')
+            return { type: 'sliding-window', config: get(slidingWindowConfigAtom) }
+        if (strategyId === 'token-bucket')
+            return { type: 'token-bucket', config: get(tokenBucketConfigAtom) }
+        return { type: 'individual-fixed-window', config: get(individualFixedWindowConfigAtom) }
     })
-  );
-
+)
 
 /**
  * Adds an event to a strategy's event history

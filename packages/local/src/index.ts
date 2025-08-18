@@ -9,11 +9,7 @@ export * from './strategy'
 // Re-export core types for convenience
 export type { Storage, StoragePipeline } from '@ratelock/core/storage'
 
-export type {
-    BaseStrategyOptions,
-    InferStrategyResult,
-    Strategy,
-} from '@ratelock/core/strategy'
+export type { BaseStrategyOptions, InferStrategyResult, Strategy } from '@ratelock/core/strategy'
 
 export type { LimiterOptions } from '@ratelock/core/limiter'
 

@@ -1,9 +1,16 @@
-import React from 'react'
+import { DiagonalLinesBackground } from '@/components/blocks/DiagonalLinesBackground'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
-import { DiagonalLinesBackground } from '@/components/blocks/DiagonalLinesBackground'
+import React from 'react'
 
 interface Props {
     children: React.ReactNode
@@ -38,7 +45,6 @@ export const StrategyLayout = ({
     stopSimulation,
     resetSimulation,
 }: Props) => {
-
     return (
         <Card className="relative border-dashed shadow-none rounded-none bg-transparent">
             <DiagonalLinesBackground />
