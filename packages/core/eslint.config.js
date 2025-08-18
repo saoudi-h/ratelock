@@ -5,6 +5,7 @@ export default defineConfig(...configs.base, {
         'eslint.config.js',
         'eslint-types.d.ts',
         'prettier.config.js',
+        'lint-staged.config.mjs',
         'coverage',
         'examples',
     ],

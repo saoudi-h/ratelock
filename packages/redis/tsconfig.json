@@ -16,7 +16,8 @@
         "vitest.config.ts",
         "./examples/**/*",
         "./types",
-        "./scripts"
+        "./scripts",
+        "lint-staged.config.mjs"
     ],
     "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
 }

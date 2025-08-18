@@ -28,7 +28,8 @@
         "./src/**/*.json",
         "tsdown.config.ts",
         "vitest.config.ts",
-        "tests/**/*"
+        "tests/**/*",
+        "lint-staged.config.mjs"
     ],
     "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo", "coverage"]
 }

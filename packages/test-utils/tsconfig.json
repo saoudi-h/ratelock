@@ -6,6 +6,6 @@
         "outDir": "./dist",
         "types": ["vitest", "node"]
     },
-    "include": ["src", "tsdown.config.ts"],
+    "include": ["src", "tsdown.config.ts", "lint-staged.config.mjs"],
     "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
 }

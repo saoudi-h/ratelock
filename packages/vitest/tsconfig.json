@@ -22,6 +22,6 @@
             ".": ["src/*"]
         }
     },
-    "include": ["src/index.ts", "src/**/*", "tsdown.config.ts"],
+    "include": ["src/index.ts", "src/**/*", "tsdown.config.ts", "lint-staged.config.mjs"],
     "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
 }

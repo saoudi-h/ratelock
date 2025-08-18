@@ -1,86 +1,87 @@
 {
-  "name": "@ratelock/test-utils",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "main": "./dist/index.cjs",
-  "types": "./dist/index.d.cts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+    "name": "@ratelock/test-utils",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "types": "./dist/index.d.cts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        },
+        "./contracts": {
+            "import": "./dist/contracts/index.mjs",
+            "require": "./dist/contracts/index.cjs"
+        },
+        "./contracts/limiter.contract": {
+            "import": "./dist/contracts/limiter.contract.mjs",
+            "require": "./dist/contracts/limiter.contract.cjs"
+        },
+        "./contracts/storage.contract": {
+            "import": "./dist/contracts/storage.contract.mjs",
+            "require": "./dist/contracts/storage.contract.cjs"
+        },
+        "./helpers": {
+            "import": "./dist/helpers/index.mjs",
+            "require": "./dist/helpers/index.cjs"
+        },
+        "./helpers/random": {
+            "import": "./dist/helpers/random.mjs",
+            "require": "./dist/helpers/random.cjs"
+        },
+        "./helpers/time": {
+            "import": "./dist/helpers/time.mjs",
+            "require": "./dist/helpers/time.cjs"
+        },
+        "./mocks": {
+            "import": "./dist/mocks/index.mjs",
+            "require": "./dist/mocks/index.cjs"
+        },
+        "./mocks/clock.mock": {
+            "import": "./dist/mocks/clock.mock.mjs",
+            "require": "./dist/mocks/clock.mock.cjs"
+        },
+        "./mocks/logger.mock": {
+            "import": "./dist/mocks/logger.mock.mjs",
+            "require": "./dist/mocks/logger.mock.cjs"
+        },
+        "./package.json": "./package.json"
     },
-    "./contracts": {
-      "import": "./dist/contracts/index.mjs",
-      "require": "./dist/contracts/index.cjs"
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsdown",
+        "lint": "eslint . --max-warnings 0",
+        "lint:fix": "eslint . --max-warnings 0 --fix",
+        "format:check": "prettier \"**/*\" --ignore-unknown --list-different",
+        "format:fix": "prettier \"**/*\" --ignore-unknown --write",
+        "clean": "rimraf node_modules dist",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "test": "vitest",
+        "pre-commit": "lint-staged"
     },
-    "./contracts/limiter.contract": {
-      "import": "./dist/contracts/limiter.contract.mjs",
-      "require": "./dist/contracts/limiter.contract.cjs"
+    "dependencies": {
+        "@ratelock/core": "workspace:*"
     },
-    "./contracts/storage.contract": {
-      "import": "./dist/contracts/storage.contract.mjs",
-      "require": "./dist/contracts/storage.contract.cjs"
+    "devDependencies": {
+        "@ratelock/eslint": "workspace:*",
+        "@ratelock/prettier": "workspace:*",
+        "@ratelock/tsconfig": "workspace:*",
+        "@ratelock/tsdown": "workspace:*",
+        "@types/node": "^24.0.13",
+        "@vitest/coverage-v8": "^3.2.4",
+        "chai": "^5.2.1",
+        "rimraf": "^5.0.5",
+        "typescript": "^5.9.2",
+        "vitest": "^3.2.4"
     },
-    "./helpers": {
-      "import": "./dist/helpers/index.mjs",
-      "require": "./dist/helpers/index.cjs"
+    "engines": {
+        "node": ">=18.17.0"
     },
-    "./helpers/random": {
-      "import": "./dist/helpers/random.mjs",
-      "require": "./dist/helpers/random.cjs"
+    "publishConfig": {
+        "access": "public"
     },
-    "./helpers/time": {
-      "import": "./dist/helpers/time.mjs",
-      "require": "./dist/helpers/time.cjs"
-    },
-    "./mocks": {
-      "import": "./dist/mocks/index.mjs",
-      "require": "./dist/mocks/index.cjs"
-    },
-    "./mocks/clock.mock": {
-      "import": "./dist/mocks/clock.mock.mjs",
-      "require": "./dist/mocks/clock.mock.cjs"
-    },
-    "./mocks/logger.mock": {
-      "import": "./dist/mocks/logger.mock.mjs",
-      "require": "./dist/mocks/logger.mock.cjs"
-    },
-    "./package.json": "./package.json"
-  },
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "build": "tsdown",
-    "lint": "eslint . --max-warnings 0",
-    "lint:fix": "eslint . --max-warnings 0 --fix",
-    "format:check": "prettier \"**/*\" --ignore-unknown --list-different",
-    "format:fix": "prettier \"**/*\" --ignore-unknown --write",
-    "clean": "rimraf node_modules dist",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest"
-  },
-  "dependencies": {
-    "@ratelock/core": "workspace:*"
-  },
-  "devDependencies": {
-    "@ratelock/eslint": "workspace:*",
-    "@ratelock/prettier": "workspace:*",
-    "@ratelock/tsconfig": "workspace:*",
-    "@ratelock/tsdown": "workspace:*",
-    "@types/node": "^24.0.13",
-    "@vitest/coverage-v8": "^3.2.4",
-    "chai": "^5.2.1",
-    "rimraf": "^5.0.5",
-    "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
-  },
-  "engines": {
-    "node": ">=18.17.0"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "module": "./dist/index.mjs"
+    "module": "./dist/index.mjs"
 }

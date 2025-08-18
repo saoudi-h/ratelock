@@ -12,7 +12,8 @@
         "**/*.ts",
         "**/*.tsx",
         ".next/types/**/*.ts",
-        "postcss.config.mjs"
+        "postcss.config.mjs",
+        "lint-staged.config.mjs"
     ],
     "exclude": ["node_modules"]
 }
