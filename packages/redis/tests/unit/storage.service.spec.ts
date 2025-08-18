@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { StorageService } from '../../src/storage/storage.service'
-import type { RedisClientType } from 'redis'
 
 const mockClient = {
   get: vi.fn(),
@@ -23,7 +22,7 @@ describe('StorageService', () => {
 
   beforeEach(() => {
     client = mockClient
-    storage = new StorageService(client as RedisClientType)
+    storage = new StorageService(client)
   })
 
   afterEach(() => {

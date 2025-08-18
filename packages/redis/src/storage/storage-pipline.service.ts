@@ -9,7 +9,7 @@ interface MinimalRedisMulti {
     get(key: string): this
     set(key: string, value: string, opts?: { PX?: number }): this
     pExpire(key: string, ttl: number): this
-    eval(script: string, numKeys: number, ...args: string[]): this
+    eval(script: string, options: { keys: string[]; arguments: string[] }): this
     zAdd(key: string, member: { score: number; value: string }): this
     zCount(key: string, min: number, max: number): this
     zRangeWithScores(key: string, start: number, stop: number): this
@@ -67,7 +67,10 @@ export class StoragePipelineService implements StoragePipeline {
      * @returns Pipeline instance for chaining
      */
     increment(key: string, ttlMs?: number): this {
-        this.multi.eval(INCREMENT, 1, key, (ttlMs ?? 0).toString())
+        this.multi.eval(INCREMENT, {
+            keys: [key],
+            arguments: [ttlMs?.toString() ?? '0'],
+        })
         return this
     }
 
@@ -79,7 +82,10 @@ export class StoragePipelineService implements StoragePipeline {
      * @returns Pipeline instance for chaining
      */
     incrementIf(key: string, maxValue: number, ttlMs?: number): this {
-        this.multi.eval(INCREMENT_IF, 1, key, maxValue.toString(), (ttlMs ?? 0).toString())
+        this.multi.eval(INCREMENT_IF, {
+            keys: [key],
+            arguments: [maxValue.toString(), ttlMs?.toString() ?? '0'],
+        })
         return this
     }
 
@@ -90,7 +96,10 @@ export class StoragePipelineService implements StoragePipeline {
      * @returns Pipeline instance for chaining
      */
     decrement(key: string, minValue = 0): this {
-        this.multi.eval(DECREMENT, 1, key, minValue.toString())
+        this.multi.eval(DECREMENT, {
+            keys: [key],
+            arguments: [minValue.toString()],
+        })
         return this
     }
 
@@ -104,9 +113,8 @@ export class StoragePipelineService implements StoragePipeline {
      * @returns Pipeline instance for chaining
      */
     addTimestamp(identifier: string, timestamp: number, ttlMs: number): this {
-        this.multi
-            .zAdd(identifier, { score: timestamp, value: timestamp.toString() })
-            .pExpire(identifier, ttlMs)
+        this.multi.zAdd(identifier, { score: timestamp, value: String(timestamp) })
+        this.multi.pExpire(identifier, ttlMs)
         return this
     }
 

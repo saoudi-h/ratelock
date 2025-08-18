@@ -27,5 +27,5 @@ describe('RedisStorage Contract', () => {
   })
 
   // Run the storage contract tests
-  storageContract(() => storage)
+  storageContract(() => storage!)
 })
