@@ -74,10 +74,14 @@ export function storageContract(createStorage: StorageFactory) {
 
         it('pipeline exposes exec and chains supported operations', async () => {
             const p = storage.pipeline()
-            await p.set('p1', 'a', 50)
-            await p.get('p1')
-            await p.increment('p2')
-            await p.exec()
+            p.set('p1', 'a', 50)
+            p.get('p1')
+            p.increment('p2')
+            const res = await p.exec()
+            expect(res).toHaveLength(3)
+            expect(res[0]).toBe('OK')
+            expect(res[1]).toBe('a')
+            expect(res[2]).toBe('1')
             const got = await storage.get('p1')
             expect(got).toBe('a')
             const n = await storage.increment('p2')
