@@ -1,26 +1,21 @@
 {
-    "extends": "@ratelock/tsconfig/base.json",
     "compilerOptions": {
         "target": "esnext",
-        "lib": ["es2022"],
+        "lib": ["es2023"],
         "moduleDetection": "force",
-        "module": "esnext",
+        "module": "preserve",
         "moduleResolution": "bundler",
         "resolveJsonModule": true,
         "types": ["node"],
         "strict": true,
         "noUnusedLocals": true,
         "declaration": true,
+        "isolatedDeclarations": true,
         "esModuleInterop": true,
         "isolatedModules": true,
         "verbatimModuleSyntax": true,
         "skipLibCheck": true,
-        "baseUrl": "src",
-        "outDir": "./dist",
-        "rootDir": ".",
-        "paths": {
-            "@/*": ["src/*"]
-        }
+        "allowImportingTsExtensions": true
     },
     "include": ["index.ts", "src/**/*", "lint-staged.config.mjs", "tsdown.config.ts"],
     "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
