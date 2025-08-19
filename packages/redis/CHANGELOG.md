@@ -1,5 +1,14 @@
 # @ratelock/redis
 
+## 0.1.1
+
+### Patch Changes
+
+- [`10fac0b`](https://github.com/saoudi-h/ratelock/commit/10fac0b8f4a77a0aa6c630987284f3554e12b460) Thanks [@saoudi-h](https://github.com/saoudi-h)! - Patch release adding missing description fields to package manifests and removing unused TypeScript type declarations.
+
+- Updated dependencies [[`10fac0b`](https://github.com/saoudi-h/ratelock/commit/10fac0b8f4a77a0aa6c630987284f3554e12b460)]:
+    - @ratelock/core@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
