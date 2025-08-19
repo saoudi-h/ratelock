@@ -2,4 +2,4 @@
  * Type definitions for @ratelock/redis
  */
 
-export * from './config'
+export * from './redis'
