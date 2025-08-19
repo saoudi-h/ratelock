@@ -86,7 +86,7 @@
         "@ratelock/tsconfig": "workspace:*",
         "@ratelock/tsdown": "workspace:*",
         "@ratelock/vitest": "workspace:*",
-        "@types/node": "^22.2.0",
+        "@types/node": "^24.3.0",
         "dotenv": "^17.2.1",
         "luamin": "^1.0.4",
         "typescript": "^5.5.4"

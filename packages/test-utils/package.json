@@ -70,10 +70,10 @@
         "@ratelock/prettier": "workspace:*",
         "@ratelock/tsconfig": "workspace:*",
         "@ratelock/tsdown": "workspace:*",
-        "@types/node": "^24.0.13",
+        "@types/node": "^24.3.0",
         "@vitest/coverage-v8": "^3.2.4",
-        "chai": "^5.2.1",
-        "rimraf": "^5.0.5",
+        "chai": "^5.3.1",
+        "rimraf": "^6.0.1",
         "typescript": "^5.9.2",
         "vitest": "^3.2.4"
     },

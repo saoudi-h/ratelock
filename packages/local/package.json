@@ -54,7 +54,7 @@
         "@ratelock/tsconfig": "workspace:*",
         "@ratelock/tsdown": "workspace:*",
         "@ratelock/vitest": "workspace:*",
-        "@types/node": "^24.0.13"
+        "@types/node": "^24.3.0"
     },
     "dependencies": {
         "@ratelock/core": "workspace:*"
