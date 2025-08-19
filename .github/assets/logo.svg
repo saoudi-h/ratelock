@@ -1,0 +1,19 @@
+<svg width="815" height="745" viewBox="0 0 815 745" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="815" height="745" fill="white"/>
+<rect x="199.5" y="331.5" width="416" height="344" rx="62.5" stroke="#434648" stroke-width="9"/>
+<rect x="199.5" y="331.5" width="416" height="344" rx="62.5" stroke="#434648" stroke-width="9"/>
+<rect x="199.5" y="331.5" width="416" height="344" rx="62.5" stroke="#434648" stroke-width="9"/>
+<rect x="199.5" y="331.5" width="416" height="344" rx="62.5" stroke="#434648" stroke-width="9"/>
+<path d="M560.774 368.01C576.985 368.421 590 381.69 590 398V430.5C590 432.985 587.985 435 585.5 435C583.015 435 581 432.985 581 430.5V398C581 386.402 571.598 377 560 377H257C245.402 377 236 386.402 236 398V430.5C236 432.985 233.985 435 231.5 435C229.015 435 227 432.985 227 430.5V398C227 381.69 240.015 368.421 256.226 368.01L257 368H560L560.774 368.01Z" fill="#434648"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M409.465 69C499.191 69 574.641 141.6 571.929 231.066C571.575 242.747 571.755 251.823 568.176 260.756C564.596 269.689 555.843 276 545.611 276C532.422 276 521.688 265.516 521.327 252.446C520.966 239.377 522.699 239.416 522.329 231.066C519.578 168.946 471.798 118.478 409.465 118.478C347.131 118.478 299.354 168.946 296.6 231.066C296.23 239.416 297.601 252.446 297.601 252.446C297.24 265.516 286.507 276 273.318 276C263.086 276 254.332 269.689 250.752 260.756C247.173 251.823 247 231.066 247 231.066C247 141.559 319.738 69 409.465 69Z" stroke="#434648" stroke-width="9"/>
+<line x1="275.5" y1="406.5" x2="275.5" y2="429.5" stroke="#434648" stroke-width="9" stroke-linecap="round"/>
+<line x1="304.5" y1="406.5" x2="304.5" y2="429.5" stroke="#434648" stroke-width="9" stroke-linecap="round"/>
+<line x1="334.5" y1="406.5" x2="334.5" y2="429.5" stroke="#434648" stroke-width="9" stroke-linecap="round"/>
+<line x1="364.5" y1="406.5" x2="364.5" y2="429.5" stroke="#DB1A1A" stroke-width="9" stroke-linecap="round"/>
+<circle cx="546" cy="251" r="13" fill="#DB1A1A"/>
+<rect x="529" y="602" width="20" height="20" fill="#DB1A1A"/>
+<rect x="231.5" y="575.5" width="354" height="72" rx="25.5" stroke="#434648" stroke-width="9"/>
+<path d="M270.5 602H368.5M270.5 622.5H368.5" stroke="#434648" stroke-width="9" stroke-linecap="round"/>
+<rect x="231.5" y="467.5" width="354" height="72" rx="25.5" stroke="#434648" stroke-width="9"/>
+<path d="M270.5 494H368.5M270.5 514.5H368.5" stroke="#434648" stroke-width="9" stroke-linecap="round"/>
+</svg>
