@@ -1,7 +1,7 @@
 # RateLock Redis (`@ratelock/redis`)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ratelock/ratelock/main/apps/playground/public/logo.svg" alt="RateLock Logo" width="200">
+  <img src="https://raw.githubusercontent.com/saoudi-h/ratelock/main/apps/playground/public/logo.svg" alt="RateLock Logo" width="50">
 </p>
 
 <p align="center">
@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@ratelock/redis"><img src="https://img.shields.io/npm/v/@ratelock/redis.svg" alt="NPM Version"></a>
-  <a href="https://github.com/ratelock/ratelock/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/@ratelock/core.svg" alt="License"></a>
+  <a href="https://github.com/saoudi-h/ratelock/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/@ratelock/redis.svg" alt="License"></a>
 </p>
 
 ---

@@ -1,7 +1,7 @@
 # RateLock Core (`@ratelock/core`)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ratelock/ratelock/main/apps/playground/public/logo.svg" alt="RateLock Logo" width="200">
+  <img src="https://raw.githubusercontent.com/saoudi-h/ratelock/main/apps/playground/public/logo.svg" alt="RateLock Logo" width="50">
 </p>
 
 <p align="center">
