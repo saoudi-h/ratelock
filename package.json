@@ -12,7 +12,7 @@
     "format:fix": "prettier \"**/*\" --ignore-unknown --list-different --write",
     "clean": "turbo clean && rimraf node_modules coverage",
     "changeset:version": "changeset version",
-    "changesetrelease": "changeset publish",
+    "release": "changeset publish",
     "typecheck": "turbo typecheck",
     "prepare": "husky",
     "pre-commit": "turbo pre-commit --concurrency=1",
