@@ -10,6 +10,12 @@
         },
         "types": ["vitest", "node"]
     },
-    "include": ["./src/**/*", "tsdown.config.ts", "vitest.config.ts", "./examples/**/*", "lint-staged.config.mjs"],
+    "include": [
+        "./src/**/*",
+        "tsdown.config.ts",
+        "vitest.config.ts",
+        "./examples/**/*",
+        "lint-staged.config.mjs"
+    ],
     "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
 }

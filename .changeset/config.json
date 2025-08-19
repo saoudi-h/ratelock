@@ -1,6 +1,9 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
-  "changelog": ["@changesets/changelog-github", { "repo": "saoudi-h/ratelock" }],
+  "changelog": [
+    "@changesets/changelog-github",
+    { "repo": "saoudi-h/ratelock" }
+  ],
   "commit": true,
   "fixed": [],
   "linked": [],
@@ -8,7 +11,7 @@
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
-        "onlyUpdatePeerDependentsWhenOutOfRange": true
+    "onlyUpdatePeerDependentsWhenOutOfRange": true
   },
   "ignore": []
 }

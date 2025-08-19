@@ -1,5 +1,5 @@
-name: 'Install'
-description: 'Sets up Node.js and runs install'
+name: "Install"
+description: "Sets up Node.js and runs install"
 
 runs:
   using: composite
@@ -16,8 +16,8 @@ runs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-        registry-url: 'https://registry.npmjs.org'
-        cache: 'pnpm'
+        registry-url: "https://registry.npmjs.org"
+        cache: "pnpm"
 
     - name: Setup Git User
       shell: bash
