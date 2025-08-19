@@ -15,7 +15,8 @@
         "isolatedModules": true,
         "verbatimModuleSyntax": true,
         "skipLibCheck": true,
-        "allowImportingTsExtensions": true
+        "allowImportingTsExtensions": true,
+        "emitDeclarationOnly": true
     },
     "include": ["index.ts", "src/**/*", "lint-staged.config.mjs", "tsdown.config.ts"],
     "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
