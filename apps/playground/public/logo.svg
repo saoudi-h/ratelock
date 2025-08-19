@@ -11,8 +11,8 @@
 <line x1="170" y1="347" x2="170" y2="369" stroke="#DB1A1A" stroke-width="10" stroke-linecap="round"/>
 <circle cx="351" cy="185" r="13" fill="#DB1A1A"/>
 <rect x="334" y="542" width="20" height="20" fill="#DB1A1A"/>
-<rect x="36.5" y="515.5" width="354" height="72" rx="25.5" stroke="black" stroke-width="9"/>
+<rect x="36.5" y="515.5" width="354" height="72" rx="25.5" stroke="currentColor" stroke-width="9"/>
 <path d="M75.5 542H173.5M75.5 562.5H173.5" stroke="currentColor" stroke-width="10" stroke-linecap="round"/>
-<rect x="36.5" y="407.5" width="354" height="72" rx="25.5" stroke="black" stroke-width="9"/>
+<rect x="36.5" y="407.5" width="354" height="72" rx="25.5" stroke="currentColor" stroke-width="9"/>
 <path d="M75.5 434H173.5M75.5 454.5H173.5" stroke="currentColor" stroke-width="10" stroke-linecap="round"/>
 </svg>
