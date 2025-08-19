@@ -1,5 +1,6 @@
 {
     "name": "@ratelock/core",
+    "description": "Core RateLock rate limiting system",
     "version": "0.1.0",
     "publishConfig": {
         "access": "public"

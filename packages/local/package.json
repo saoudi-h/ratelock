@@ -1,5 +1,6 @@
 {
     "name": "@ratelock/local",
+    "description": "In-memory storage backend for RateLock rate limiting system",
     "version": "0.1.0",
     "publishConfig": {
         "access": "public"
