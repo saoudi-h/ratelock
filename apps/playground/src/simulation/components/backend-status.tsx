@@ -3,22 +3,32 @@ import { DiagonalLinesBackground } from '@/components/blocks/DiagonalLinesBackgr
 import { Section } from '@/components/blocks/Section'
 import { getBackendConfig } from '@/simulation/config/backend'
 import { BackendProvider } from '@/simulation/services/backends'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 
 interface BackendStatusProps {
     className?: string
 }
 
+function useBackendConfigured() {
+    return useSyncExternalStore(
+        _callback => {
+            // BackendProvider doesn't have a subscription mechanism,
+            // so we return a no-op cleanup function
+            return () => {}
+        },
+        () => BackendProvider.getInstance().isConfigured(),
+        () => BackendProvider.getInstance().isConfigured()
+    )
+}
+
 export function BackendStatus({ className }: BackendStatusProps) {
     const [config] = useState(getBackendConfig())
-    const [isConfigured, setIsConfigured] = useState(false)
+    const isConfigured = useBackendConfigured()
 
     useEffect(() => {
         const provider = BackendProvider.getInstance()
-        setIsConfigured(provider.isConfigured())
         if (!provider.isConfigured()) {
             provider.configure(config)
-            setIsConfigured(true)
         }
     }, [config])
 
@@ -52,24 +62,37 @@ export function BackendStatus({ className }: BackendStatusProps) {
 
     return (
         <Section className="py-12">
-            <div className={`border border-border border-dashed p-4 relative ${className}`}>
+            <div
+                className={`
+                  relative border border-dashed border-border p-4
+                  ${className}
+                `}>
                 <DiagonalLinesBackground />
 
-                <div className="flex items-center justify-between relative">
+                <div className="relative flex items-center justify-between">
                     <div>
                         <h3 className="font-serif text-xl font-semibold">Backend Rate Limiting</h3>
-                        <p className={`text-sm font-mono ${getStatusColor()}`}>{getStatusText()}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{getDescription()}</p>
+                        <p
+                            className={`
+                              font-mono text-sm
+                              ${getStatusColor()}
+                            `}>
+                            {getStatusText()}
+                        </p>
+                        <p className="mt-1 text-xs text-muted-foreground">{getDescription()}</p>
                     </div>
                     <div className="flex items-center space-x-2">
                         <div
-                            className={`size-2.5 rounded-full ${
-                                isConfigured
-                                    ? config.type === 'local'
-                                        ? 'bg-blue-500'
-                                        : 'bg-green-500'
-                                    : 'bg-gray-400'
-                            }`}
+                            className={`
+                              size-2.5 rounded-full
+                              ${
+                                  isConfigured
+                                      ? config.type === 'local'
+                                          ? 'bg-blue-500'
+                                          : 'bg-green-500'
+                                      : 'bg-gray-400'
+                              }
+                            `}
                         />
                         <span className="text-xs text-muted-foreground">
                             {isConfigured ? 'Active' : 'Inactive'}
