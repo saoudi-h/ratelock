@@ -12,53 +12,59 @@ import type { Icon } from '@solar-icons/react-perf/lib/types'
 import React from 'react'
 import { Section } from '../../components/blocks/Section'
 
-export const StrategyTabs = () => {
-    const TABS: {
-        key: RateLimitStrategy
-        label: string
-        hint: string
-        icon: Icon
-        Strategy: () => React.JSX.Element
-        default?: boolean
-    }[] = [
-        {
-            key: 'fixed-window',
-            label: 'Fixed Window',
-            hint: 'Fixed windows that reset periodically',
-            icon: Repeat,
-            Strategy: FixedWindowStrategy,
-            default: true,
-        },
-        {
-            key: 'sliding-window',
-            label: 'Sliding Window',
-            hint: 'Sliding window based on the clock',
-            icon: SliderVertical,
-            Strategy: SlidingWindowStrategy,
-        },
-        {
-            key: 'token-bucket',
-            label: 'Token Bucket',
-            hint: 'Requests consume tokens, regular refill',
-            icon: Cart5,
-            Strategy: TokenBucketStrategy,
-        },
-        {
-            key: 'individual-fixed-window',
-            label: 'Individual Fixed Window',
-            hint: 'Per-user window, starts at first request',
-            icon: User,
-            Strategy: IndividualFixedWindowStrategy,
-        },
-    ]
+const TABS: {
+    key: RateLimitStrategy
+    label: string
+    hint: string
+    icon: Icon
+    Strategy: () => React.JSX.Element
+    default?: boolean
+}[] = [
+    {
+        key: 'fixed-window',
+        label: 'Fixed Window',
+        hint: 'Fixed windows that reset periodically',
+        icon: Repeat,
+        Strategy: FixedWindowStrategy,
+        default: true,
+    },
+    {
+        key: 'sliding-window',
+        label: 'Sliding Window',
+        hint: 'Sliding window based on the clock',
+        icon: SliderVertical,
+        Strategy: SlidingWindowStrategy,
+    },
+    {
+        key: 'token-bucket',
+        label: 'Token Bucket',
+        hint: 'Requests consume tokens, regular refill',
+        icon: Cart5,
+        Strategy: TokenBucketStrategy,
+    },
+    {
+        key: 'individual-fixed-window',
+        label: 'Individual Fixed Window',
+        hint: 'Per-user window, starts at first request',
+        icon: User,
+        Strategy: IndividualFixedWindowStrategy,
+    },
+]
 
+export const StrategyTabs = () => {
     return (
         <Section className="py-12">
             <Tabs defaultValue={TABS.find(tab => tab.default)?.key ?? 'fixed-window'}>
-                <TabsList className="w-full h-12 bg-background">
+                <TabsList className="h-12 w-full bg-background">
                     {TABS.map(tab => (
-                        <TabsTrigger key={tab.key} value={tab.key} className="border-dashed">
-                            <div className="flex items-center gap-2 md:gap-4 justify-between">
+                        <TabsTrigger key={tab.key} value={tab.key} className="
+                          border-dashed
+                        ">
+                            <div
+                                className="
+                                  flex items-center justify-between gap-2
+                                  md:gap-4
+                                ">
                                 {<tab.icon size={32} />} {tab.label}
                             </div>
                         </TabsTrigger>
