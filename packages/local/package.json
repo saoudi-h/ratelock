@@ -41,23 +41,22 @@
         "build": "tsdown",
         "lint": "eslint . --max-warnings 0",
         "lint:fix": "eslint . --max-warnings 0 --fix",
-        "format:check": "prettier \"**/*\" --ignore-unknown --list-different",
+        "format": "prettier \"**/*\" --ignore-unknown --list-different",
         "format:fix": "prettier \"**/*\" --ignore-unknown --write",
         "test": "vitest",
         "test:ui": "vitest --ui",
         "test:run": "vitest run",
         "test:coverage": "vitest run --coverage",
         "clean": "rimraf node_modules dist",
-        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "typecheck": "tsgo --noEmit",
         "pre-commit": "lint-staged"
     },
     "devDependencies": {
-        "@ratelock/eslint": "workspace:*",
-        "@ratelock/prettier": "workspace:*",
-        "@ratelock/tsconfig": "workspace:*",
-        "@ratelock/tsdown": "workspace:*",
         "@ratelock/vitest": "workspace:*",
-        "@types/node": "^24.3.0"
+        "@tala-tools/eslint": "0.1.0",
+        "@tala-tools/prettier": "0.0.2",
+        "@tala-tools/tsconfig": "0.0.1",
+        "@types/node": "^25.6.0"
     },
     "dependencies": {
         "@ratelock/core": "workspace:*"

@@ -1,4 +1,4 @@
-import { StorageService } from 'index'
+import { StorageService } from '@/index'
 import { RateLimiter } from '../src/limiter/rate-limiter'
 import { createFixedWindowStrategy } from '../src/strategy'
 

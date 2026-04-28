@@ -1,5 +1,5 @@
 {
-  "extends": ["@ratelock/tsconfig/base.json"],
+  "extends": ["@tala-tools/tsconfig/base.json"],
   "include": ["tsconfig.json", "commitlint.config.ts"],
   "exclude": [
     "apps",

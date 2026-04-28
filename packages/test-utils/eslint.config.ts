@@ -5,11 +5,10 @@ export default defineConfig([
     ...base,
     {
         ignores: [
-            'eslint.config.js',
+            'eslint.config.ts',
             'eslint-types.d.ts',
             'prettier.config.js',
-            'tests',
-            'coverage',
+            'tsdown.config.ts',
             'lint-staged.config.mjs',
         ],
     },
