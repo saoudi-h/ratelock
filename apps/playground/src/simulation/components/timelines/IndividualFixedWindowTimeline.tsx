@@ -6,7 +6,7 @@ import { individualFixedWindowConfigAtom } from '@/simulation/store/atoms'
 import type { RateLimitResult, RequestEvent } from '@/simulation/types'
 import { formatMs } from '@/simulation/utils'
 import { useAtomValue } from 'jotai'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { UnifiedTimelineBase, type TimelineWindowType } from './shared'
 
 type Props = {
@@ -26,7 +26,13 @@ export default function IndividualFixedWindowTimeline({
 }: Props) {
     useRefreshInterval(isRunning)
     const { windowMs, limit } = useAtomValue(individualFixedWindowConfigAtom)
-    const now = nowProp ?? Date.now()
+
+    // Use provided now prop, or compute once: 0 for SSR, Date.now() for client
+    const [nowFallback] = useState(() =>
+        nowProp !== undefined || typeof window === 'undefined' ? 0 : Date.now()
+    )
+
+    const now = nowProp ?? nowFallback
     const timelineSpan = windowMs * 4 // Show 4x window duration
 
     // Create windows for the timeline
@@ -65,18 +71,35 @@ export default function IndividualFixedWindowTimeline({
 
     return (
         <div className="w-full">
-            <div className="flex items-center justify-between mb-2 text-sm text-muted-foreground">
+            <div
+                className="
+                  mb-2 flex items-center justify-between text-sm
+                  text-muted-foreground
+                ">
                 <div className="flex items-center gap-3">
                     <span className="inline-flex items-center gap-1">
-                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+                        <span
+                            className="
+                              inline-block size-2.5 rounded-full bg-emerald-500
+                            "
+                        />
                         Allowed
                     </span>
                     <span className="inline-flex items-center gap-1">
-                        <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+                        <span
+                            className="
+                              inline-block size-2.5 rounded-full bg-rose-500
+                            "
+                        />
                         Denied
                     </span>
                     <span className="inline-flex items-center gap-1">
-                        <span className="w-3 h-3 bg-purple-100 border border-purple-300 inline-block" />
+                        <span
+                            className="
+                              inline-block size-3 border border-purple-300
+                              bg-purple-100
+                            "
+                        />
                         Individual Window
                     </span>
                 </div>
@@ -102,7 +125,10 @@ export default function IndividualFixedWindowTimeline({
                 isRunning={isRunning}
             />
 
-            <div className="mt-2 text-sm text-muted-foreground flex items-center gap-4">
+            <div
+                className="
+                  mt-2 flex items-center gap-4 text-sm text-muted-foreground
+                ">
                 <span>
                     Total: <b>{visibleEvents.length}</b>
                 </span>

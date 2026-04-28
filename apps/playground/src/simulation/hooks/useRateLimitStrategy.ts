@@ -24,7 +24,9 @@ import {
 
 export function useRateLimitStrategy(strategyId: RateLimitStrategy): StrategyHookReturn {
     const isRunning = useAtomValue(isSimulationRunningAtomFamily(strategyId))
-    const [now, setNow] = useState(Date.now())
+
+    // Initialize time: 0 for SSR, Date.now() for client (lazy eval ensures single call)
+    const [now, setNow] = useState(() => (typeof window === 'undefined' ? 0 : Date.now()))
     const simulationStartTime = useAtomValue(simulationStartTimeAtomFamily(strategyId))
     const events = useAtomValue(eventsAtomFamily(strategyId))
     const autoRequests = useAtomValue(autoRequestsAtomFamily(strategyId))
