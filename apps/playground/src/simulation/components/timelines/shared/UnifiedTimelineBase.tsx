@@ -87,7 +87,7 @@ export function UnifiedTimelineBase({
             backgroundRef.current.style.transform = 'translateX(0px)'
             lastTimeRef.current = now
         }
-    }, [isRunning])
+    }, [isRunning, now])
 
     const { timelineStart, timelineEnd } = calculateTimelineBounds(now, timelineSpan)
 
@@ -111,13 +111,20 @@ export function UnifiedTimelineBase({
     return (
         <div
             className={cn(
-                'relative w-full border border-dashed rounded-lg overflow-hidden bg-background',
+                `
+                  relative w-full overflow-hidden rounded-lg border
+                  border-dashed bg-background
+                `,
                 height,
                 className
             )}>
             <div
                 ref={backgroundRef}
-                className="absolute top-0 left-0 w-[200%] h-full opacity-30 text-primary/50 bg-[size:10px_10px] [background-image:repeating-linear-gradient(45deg,currentColor_0_1px,#0000_0_50%)]"
+                className="
+                  absolute top-0 left-0 h-full w-[200%]
+                  bg-[repeating-linear-gradient(45deg,currentColor_0_1px,#0000_0_50%)]
+                  bg-size-[10px_10px] text-primary/50 opacity-30
+                "
             />
 
             {visibleWindows.map(window => {
@@ -129,14 +136,14 @@ export function UnifiedTimelineBase({
                 )
 
                 const windowClasses = cn(
-                    'absolute top-2 bottom-2 border-2 border-dashed rounded',
-                    window.isActive && 'bg-blue-500/30 border-blue-500/50',
-                    window.isExpired && 'bg-gray-500/20 border-gray-500/30',
-                    window.isCurrent && 'bg-blue-600/40 border-blue-600/60',
+                    'absolute inset-y-2 rounded-sm border-2 border-dashed',
+                    window.isActive && 'border-blue-500/50 bg-blue-500/30',
+                    window.isExpired && 'border-gray-500/30 bg-gray-500/20',
+                    window.isCurrent && 'border-blue-600/60 bg-blue-600/40',
                     !window.isActive &&
                         !window.isExpired &&
                         !window.isCurrent &&
-                        'bg-gray-400/20 border-gray-400/30'
+                        'border-gray-400/30 bg-gray-400/20'
                 )
 
                 const shouldShowCount =
@@ -152,7 +159,11 @@ export function UnifiedTimelineBase({
                             width: `${widthPct}%`,
                         }}>
                         {window.label && (
-                            <div className="absolute top-2 left-2 text-xs text-muted-foreground">
+                            <div
+                                className="
+                                  absolute top-2 left-2 text-xs
+                                  text-muted-foreground
+                                ">
                                 {window.label}
                             </div>
                         )}
@@ -160,7 +171,10 @@ export function UnifiedTimelineBase({
                         {shouldShowCount && (
                             <div
                                 className={cn(
-                                    'absolute top-1 right-1 px-1.5 py-0.5 rounded text-xs font-medium',
+                                    `
+                                      absolute top-1 right-1 rounded-sm px-1.5
+                                      py-0.5 text-xs font-medium
+                                    `,
                                     isOverLimit
                                         ? 'bg-red-500/80 text-white'
                                         : 'bg-blue-500/80 text-white'

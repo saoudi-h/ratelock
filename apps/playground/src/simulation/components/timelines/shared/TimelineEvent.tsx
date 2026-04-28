@@ -27,11 +27,21 @@ export function TimelineEvent({
     showTooltip = true,
 }: TimelineEventProps) {
     const baseClasses = cn(
-        'absolute top-1/2 -translate-y-1/2 rounded-full hover:scale-150 transition-all shadow',
+        `
+          absolute top-1/2 -translate-y-1/2 rounded-full shadow-sm
+          transition-all
+          hover:scale-150
+        `,
         sizeClasses[size],
         event.allowed
-            ? 'bg-emerald-500/50 hover:bg-emerald-500/70'
-            : 'bg-rose-500/50 hover:bg-rose-500/70',
+            ? `
+              bg-emerald-500/50
+              hover:bg-emerald-500/70
+            `
+            : `
+              bg-rose-500/50
+              hover:bg-rose-500/70
+            `,
         showTooltip && 'group',
         className
     )
@@ -41,10 +51,16 @@ export function TimelineEvent({
             initial={{ y: 100 }}
             animate={{ y: 0 }}
             exit={{ y: 100 }}
-            className="absolute top-1/2 -translate-y-1/2 group"
+            className="group absolute top-1/2 -translate-y-1/2"
             style={{ left: `${leftPct}%` }}>
             <div className={baseClasses} />
-            <div className="absolute left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-popover text-popover-foreground text-[10px] border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+            <div
+                className="
+                  absolute left-1/2 z-10 mt-2 -translate-x-1/2 rounded-sm border
+                  bg-popover px-2 py-1 text-[10px] whitespace-nowrap
+                  text-popover-foreground opacity-0 transition-opacity
+                  group-hover:opacity-100
+                ">
                 {new Date(event.timestamp).toLocaleTimeString()} •{' '}
                 {event.allowed ? 'Allowed' : 'Denied'}
             </div>

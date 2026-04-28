@@ -76,18 +76,35 @@ export default function FixedWindowTimeline({
 
     return (
         <div className="w-full">
-            <div className="flex items-center justify-between mb-2 text-sm text-muted-foreground">
+            <div
+                className="
+                  mb-2 flex items-center justify-between text-sm
+                  text-muted-foreground
+                ">
                 <div className="flex items-center gap-3">
                     <span className="inline-flex items-center gap-1">
-                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+                        <span
+                            className="
+                              inline-block size-2.5 rounded-full bg-emerald-500
+                            "
+                        />
                         Allowed
                     </span>
                     <span className="inline-flex items-center gap-1">
-                        <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+                        <span
+                            className="
+                              inline-block size-2.5 rounded-full bg-rose-500
+                            "
+                        />
                         Denied
                     </span>
                     <span className="inline-flex items-center gap-1">
-                        <span className="w-3 h-3 border border-dashed border-gray-400 inline-block" />
+                        <span
+                            className="
+                              inline-block size-3 border border-dashed
+                              border-gray-400
+                            "
+                        />
                         Window
                     </span>
                 </div>
@@ -113,7 +130,10 @@ export default function FixedWindowTimeline({
                 nowMarkerLabel="now"
             />
 
-            <div className="mt-2 text-sm text-muted-foreground flex items-center gap-4">
+            <div
+                className="
+                  mt-2 flex items-center gap-4 text-sm text-muted-foreground
+                ">
                 <span>
                     Total: <b>{events.length}</b>
                 </span>

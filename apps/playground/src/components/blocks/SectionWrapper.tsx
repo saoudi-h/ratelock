@@ -9,9 +9,8 @@ export const SectionWrapper = React.forwardRef<HTMLDivElement, React.ComponentPr
                 {...props}
                 className={cn(
                     `
-                      mx-auto w-full border-border border-dashed
-                      min-xl:max-w-(--breakpoint-xl)
-                      min-xl:border-x
+                      mx-auto w-full border-dashed border-border
+                      xl:max-w-(--breakpoint-xl) xl:border-x
                     `,
                     className
                 )}

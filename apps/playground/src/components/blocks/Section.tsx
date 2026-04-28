@@ -15,10 +15,10 @@ export const Section = React.forwardRef<HTMLDivElement, SectionProps>(
                     'mx-auto w-full max-w-(--breakpoint-xl)',
                     noPadding ||
                         `
-                      px-4
-                      xl:px-6
-                      2xl:px-8
-                    `,
+                          px-4
+                          xl:px-6
+                          2xl:px-8
+                        `,
                     className
                 )}
             />
