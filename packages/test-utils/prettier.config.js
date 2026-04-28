@@ -1,1 +1,1 @@
-export { default } from '@ratelock/prettier'
+export { default } from '@tala-tools/prettier'

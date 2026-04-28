@@ -1,3 +1,3 @@
-import baseConfig from '@ratelock/prettier'
+import baseConfig from '@tala-tools/prettier'
 
 export default baseConfig

@@ -1,12 +1,10 @@
 {
-    "extends": "@ratelock/tsconfig/base.json",
+    "extends": "@tala-tools/tsconfig/base.json",
     "compilerOptions": {
         "module": "ESNext",
         "moduleResolution": "Bundler",
-        "baseUrl": "src",
-        "rootDir": ".",
         "paths": {
-            "@/*": ["src/*"]
+            "@/*": ["./src/*"]
         },
         "types": ["vitest", "node"]
     },

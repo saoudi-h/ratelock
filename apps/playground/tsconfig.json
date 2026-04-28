@@ -1,8 +1,7 @@
 {
-    "extends": "@ratelock/tsconfig/next.json",
+    "extends": "@tala-tools/tsconfig/nextjs.json",
     "compilerOptions": {
         "exactOptionalPropertyTypes": false,
-        "baseUrl": ".",
         "paths": {
             "@/*": ["./src/*"]
         }
