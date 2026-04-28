@@ -8,6 +8,19 @@ import React from 'react'
 import { cn } from '../../lib/utils'
 import { Button } from '../ui/button'
 
+const IconWrapper = ({ children }: { children: React.ReactNode }) => (
+    <motion.div
+        initial={{ x: -50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1, transition: { duration: 0.2 } }}
+        exit={{ x: 50, opacity: 0, transition: { duration: 0.3, ease: 'linear' } }}
+        className={`
+          absolute inset-0 flex size-full items-center justify-center
+          focus:outline-hidden
+        `}>
+        {children}
+    </motion.div>
+)
+
 const ICON_SIZE = {
     tiny: 14,
     small: 16,
@@ -31,19 +44,6 @@ export const ThemeToggle = ({ className, size = 'small', ...props }: ThemeToggle
         const newTheme = resolvedTheme === 'dark' ? 'light' : 'dark'
         setTheme(newTheme)
     }, [resolvedTheme, setTheme])
-
-    const IconWrapper = ({ children }: { children: React.ReactNode }) => (
-        <motion.div
-            initial={{ x: -50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1, transition: { duration: 0.2 } }}
-            exit={{ x: 50, opacity: 0, transition: { duration: 0.3, ease: 'linear' } }}
-            className={`
-              absolute inset-0 flex size-full items-center justify-center
-              focus:outline-hidden
-            `}>
-            {children}
-        </motion.div>
-    )
 
     if (isMounted) {
         return (
@@ -99,16 +99,16 @@ export const ThemeToggle = ({ className, size = 'small', ...props }: ThemeToggle
                 <Moon
                     size={iconSize}
                     className={`
-                  block
-                  dark:hidden
-                `}
+                      block
+                      dark:hidden
+                    `}
                 />
                 <Sun
                     size={iconSize}
                     className={`
-                  hidden
-                  dark:block
-                `}
+                      hidden
+                      dark:block
+                    `}
                 />
             </div>
         </Button>
