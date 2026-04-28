@@ -45,7 +45,13 @@ export function ControlField({
             <Input
                 id={id}
                 type={type}
-                className={cn('md:w-28 w-full', inputClassName)}
+                className={cn(
+                    `
+                      w-full
+                      md:w-28
+                    `,
+                    inputClassName
+                )}
                 min={min}
                 max={max}
                 step={step}

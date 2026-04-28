@@ -46,12 +46,21 @@ export const StrategyLayout = ({
     resetSimulation,
 }: Props) => {
     return (
-        <Card className="relative border-dashed shadow-none rounded-none bg-transparent">
+        <Card
+            className="
+              relative rounded-none border-dashed bg-transparent shadow-none
+            ">
             <DiagonalLinesBackground />
-            <CardHeader className="relative flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
+            <CardHeader
+                className="
+                  relative flex flex-col items-center justify-between gap-4
+                  md:flex-row md:items-start
+                ">
                 <div className="flex flex-col">
-                    <CardTitle className="font-black font-serif text-3xl">{title}</CardTitle>
-                    <CardDescription className="font-medium text-sm text-muted-foreground">
+                    <CardTitle className="font-serif text-3xl font-black">{title}</CardTitle>
+                    <CardDescription className="
+                      text-sm font-medium text-muted-foreground
+                    ">
                         {subTitle}
                     </CardDescription>
                 </div>
@@ -59,27 +68,46 @@ export const StrategyLayout = ({
             </CardHeader>
             <div className="h-0 w-full border-b border-dashed border-border" />
             <CardContent className="z-10">
-                <div className="flex items-center justify-between mb-4">
+                <div className="mb-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <Button
                             variant="default"
                             onClick={sendManualRequest}
                             disabled={!isRunning}
-                            className="relative overflow-hidden bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-lg">
+                            className="
+                              relative overflow-hidden bg-blue-600 font-semibold
+                              text-white transition-all duration-200
+                              hover:scale-105 hover:bg-blue-700 hover:shadow-lg
+                              active:scale-95
+                            ">
                             <span className="relative z-10">🚀 Send Request</span>
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700" />
+                            <div
+                                className="
+                                  absolute inset-0 -translate-x-full
+                                  bg-linear-to-r from-transparent via-white/10
+                                  to-transparent transition-transform
+                                  duration-700
+                                  hover:translate-x-full
+                                "
+                            />
                         </Button>
                         {!isRunning ? (
                             <Button
                                 variant="outline"
-                                className=" border-green-500 hover:border-green-700"
+                                className="
+                                  border-green-500
+                                  hover:border-green-700
+                                "
                                 onClick={startSimulation}>
                                 Play
                             </Button>
                         ) : (
                             <Button
                                 variant="default"
-                                className=" bg-orange-500 hover:bg-orange-600"
+                                className="
+                                  bg-orange-500
+                                  hover:bg-orange-600
+                                "
                                 onClick={stopSimulation}>
                                 Pause
                             </Button>
@@ -91,12 +119,16 @@ export const StrategyLayout = ({
                     <div className="flex items-center gap-2 bg-background">
                         <Button
                             variant={autoRequests ? 'destructive' : 'outline'}
-                            className={` ${autoRequests ? '' : ''}`}
+                            className={`
+                              ${autoRequests ? '' : ''}
+                            `}
                             onClick={toggleAutoRequests}>
                             {autoRequests ? 'Disable Auto-Requests' : 'Auto-Requests'}
                         </Button>
                         {autoRequests && (
-                            <div className="flex items-center gap-2 text-sm px-4">
+                            <div className="
+                              flex items-center gap-2 px-4 text-sm
+                            ">
                                 <Label htmlFor="fixed-interval-slider">Interval:</Label>
                                 <Slider
                                     id="fixed-interval-slider"
@@ -113,7 +145,10 @@ export const StrategyLayout = ({
                                         setAutoRequestInterval(value[0] || 200 * 50)
                                     }
                                 />
-                                <span className="text-muted-foreground min-w-[60px]">
+                                <span
+                                    className="
+                                      min-w-[60px] text-muted-foreground
+                                    ">
                                     {autoRequestInterval < 1000
                                         ? `${autoRequestInterval}ms`
                                         : `${(autoRequestInterval / 1000).toFixed(1)}s`}

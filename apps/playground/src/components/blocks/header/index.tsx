@@ -13,14 +13,14 @@ export const Header = () => {
             <div className="flex items-center gap-2">
                 <div
                     className={`
-                  hidden items-center gap-2
-                  lg:flex
-                `}>
+                      hidden items-center gap-2
+                      lg:flex
+                    `}>
                     <ThemeToggle
                         className={`
-                      shrink-0
-                      max-md:hidden
-                    `}
+                          shrink-0
+                          max-md:hidden
+                        `}
                     />
                 </div>
             </div>

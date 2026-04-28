@@ -7,8 +7,9 @@ export const BaseHeader: React.FC<{ children: React.ReactNode }> = ({ children }
         <div className="absolute inset-0 size-full bg-background/60" />
         <nav
             className={`
-          border-border border-dashed z-40 border-b backdrop-blur-md transition-opacity
-        `}>
+              z-40 border-b border-dashed border-border backdrop-blur-md
+              transition-opacity
+            `}>
             <SectionWrapper>
                 <Section className="flex h-16 items-center justify-between">{children}</Section>
             </SectionWrapper>

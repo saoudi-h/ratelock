@@ -14,9 +14,12 @@ const Layout = ({ children }: Props) => {
     return (
         <JotaiProvider>
             <ThemeProvider attribute="class" defaultTheme="dark">
-                <div className={cn('flex min-h-screen flex-col bg-background w-full')}>
+                <div
+                    className={cn(`
+                      flex min-h-screen w-full flex-col bg-background
+                    `)}>
                     <Header />
-                    <SectionWrapper className="flex flex-col flex-1 w-full">
+                    <SectionWrapper className="flex w-full flex-1 flex-col">
                         {children}
                     </SectionWrapper>
                     <Footer />

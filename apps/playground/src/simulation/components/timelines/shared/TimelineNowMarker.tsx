@@ -22,14 +22,15 @@ export function TimelineNowMarker({
     variant = 'default',
 }: TimelineNowMarkerProps) {
     return (
-        <div
-            className={cn('absolute top-0 bottom-0 w-0', className)}
-            style={{ left: `${leftPct}%` }}>
+        <div className={cn('absolute inset-y-0 w-0', className)} style={{ left: `${leftPct}%` }}>
             <div className={cn('h-full border-l', variantClasses[variant])} />
             {label && (
                 <div
                     className={cn(
-                        'absolute -bottom-0.5 -translate-x-1/2 px-2 py-1 backdrop-blur-sm text-white text-xs border rounded-t-sm',
+                        `
+                          absolute -bottom-0.5 -translate-x-1/2 rounded-t-sm
+                          border px-2 py-1 text-xs text-white backdrop-blur-sm
+                        `,
                         variantClasses[variant]
                     )}>
                     {label}

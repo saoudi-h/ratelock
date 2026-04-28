@@ -5,15 +5,30 @@ import { SectionWrapper } from '../SectionWrapper'
 
 export const Footer = () => {
     return (
-        <SectionWrapper className="relative border-none min-h-96">
-            <div className="opacity-mask absolute w-full border-x border-border border-dashed h-44 top-0 left-0"></div>
-            <FooterBackground className="w-[200%] absolute top-0 left-1/2 transform -translate-x-1/2" />
+        <SectionWrapper className="relative min-h-96 border-none">
+            <div
+                className="
+                  opacity-mask absolute top-0 left-0 h-44 w-full border-x
+                  border-dashed border-border
+                "></div>
+            <FooterBackground
+                className="
+                  absolute top-0 left-1/2 w-[200%] -translate-x-1/2 transform
+                "
+            />
             <div className="h-72"></div>
-            <Section className="relative w-full py-24 pt-72 h-full">
+            <Section className="relative size-full py-24 pt-72">
                 <footer className="relative">
-                    <div className="flex flex-col items-center justify-between py-12 text-muted-foreground md:flex-row">
-                        <div className="font-bold font-serif text-xl">RateLock</div>
-                        <Link href="https://github.com/saoudi-h/ratelock" className="text-primary">
+                    <div
+                        className="
+                          flex flex-col items-center justify-between py-12
+                          text-muted-foreground
+                          md:flex-row
+                        ">
+                        <div className="font-serif text-xl font-bold">RateLock</div>
+                        <Link href="https://github.com/saoudi-h/ratelock" className="
+                          text-primary
+                        ">
                             Github
                         </Link>
                         <Link
