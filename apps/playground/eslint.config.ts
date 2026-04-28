@@ -9,6 +9,7 @@ export default defineConfig([
             'eslint-types.d.ts',
             'prettier.config.js',
             'lint-staged.config.mjs',
+            'postcss.config.mjs',
         ],
     },
     {
@@ -23,7 +24,7 @@ export default defineConfig([
             'better-tailwindcss/no-unknown-classes': [
                 'error',
                 {
-                    ignore: [],
+                    ignore: ['opacity-mask'],
                 },
             ],
         },
