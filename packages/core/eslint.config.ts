@@ -8,6 +8,7 @@ export default defineConfig([
             'eslint.config.ts',
             'prettier.config.js',
             'lint-staged.config.mjs',
+            'vitest.config.ts',
             'coverage',
             'examples',
         ],

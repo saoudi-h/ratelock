@@ -1,17 +1,28 @@
-// Main exports for @ratelock/local package
-export { RateLimiter } from './limiter/rate-limiter'
-export { StoragePipelineService } from './storage/storage-pipline.service'
-export { StorageService } from './storage/storage.service'
+export { createFixedWindowLimiter } from './fixed-window'
+export type { FixedWindowLimiterConfig } from './fixed-window'
 
-// Re-export core strategies for convenience
-export * from './strategy'
+export { createSlidingWindowLimiter } from './sliding-window'
+export type { SlidingWindowLimiterConfig } from './sliding-window'
 
-// Re-export core types for convenience
-export type { Storage, StoragePipeline } from '@ratelock/core/storage'
+export { createTokenBucketLimiter } from './token-bucket'
+export type { TokenBucketLimiterConfig } from './token-bucket'
 
-export type { BaseStrategyOptions, InferStrategyResult, Strategy } from '@ratelock/core/strategy'
+export { createIndividualFixedWindowLimiter } from './individual-fixed-window'
+export type { IndividualFixedWindowLimiterConfig } from './individual-fixed-window'
 
-export type { LimiterOptions } from '@ratelock/core/limiter'
+export { withCache, withCircuitBreaker, withErrorPolicy, withRetry } from '@ratelock/core'
 
-// Export local factories
-export * from './factory'
+export type {
+    CacheConfig,
+    CircuitBreakerConfig,
+    ErrorPolicy,
+    FixedWindowOptions,
+    FixedWindowResult,
+    IndividualFixedWindowOptions,
+    Limiter,
+    RetryConfig,
+    SlidingWindowOptions,
+    SlidingWindowResult,
+    TokenBucketOptions,
+    TokenBucketResult,
+} from '@ratelock/core'

@@ -1,7 +1,7 @@
 {
     "name": "@ratelock/local",
     "description": "In-memory storage backend for RateLock rate limiting system",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "publishConfig": {
         "access": "public"
     },
@@ -12,22 +12,6 @@
         ".": {
             "import": "./dist/index.mjs",
             "require": "./dist/index.cjs"
-        },
-        "./factory": {
-            "import": "./dist/factory/index.mjs",
-            "require": "./dist/factory/index.cjs"
-        },
-        "./limiter": {
-            "import": "./dist/limiter/index.mjs",
-            "require": "./dist/limiter/index.cjs"
-        },
-        "./storage": {
-            "import": "./dist/storage/index.mjs",
-            "require": "./dist/storage/index.cjs"
-        },
-        "./strategy": {
-            "import": "./dist/strategy/index.mjs",
-            "require": "./dist/strategy/index.cjs"
         },
         "./package.json": "./package.json"
     },
@@ -52,6 +36,7 @@
         "pre-commit": "lint-staged"
     },
     "devDependencies": {
+        "@ratelock/test-utils": "workspace:*",
         "@ratelock/vitest": "workspace:*",
         "@tala-tools/eslint": "0.1.0",
         "@tala-tools/prettier": "0.0.2",

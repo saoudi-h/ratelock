@@ -1,6 +1,12 @@
-import { base } from '@ratelock/vitest'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-    ...base,
+    test: {
+        environment: 'node',
+        globals: true,
+        passWithNoTests: true,
+        reporters: ['default'],
+        mockReset: true,
+        restoreMocks: true,
+    },
 })

@@ -11,6 +11,7 @@ export default defineConfig([
             'tests',
             'coverage',
             'lint-staged.config.mjs',
+            'vitest.config.ts',
         ],
     },
 ])
