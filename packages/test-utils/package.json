@@ -14,37 +14,21 @@
             "import": "./dist/contracts/index.mjs",
             "require": "./dist/contracts/index.cjs"
         },
-        "./contracts/limiter.contract": {
-            "import": "./dist/contracts/limiter.contract.mjs",
-            "require": "./dist/contracts/limiter.contract.cjs"
+        "./contracts/fixed-window": {
+            "import": "./dist/contracts/fixed-window.mjs",
+            "require": "./dist/contracts/fixed-window.cjs"
         },
-        "./contracts/storage.contract": {
-            "import": "./dist/contracts/storage.contract.mjs",
-            "require": "./dist/contracts/storage.contract.cjs"
+        "./contracts/individual-fixed-window": {
+            "import": "./dist/contracts/individual-fixed-window.mjs",
+            "require": "./dist/contracts/individual-fixed-window.cjs"
         },
-        "./helpers": {
-            "import": "./dist/helpers/index.mjs",
-            "require": "./dist/helpers/index.cjs"
+        "./contracts/sliding-window": {
+            "import": "./dist/contracts/sliding-window.mjs",
+            "require": "./dist/contracts/sliding-window.cjs"
         },
-        "./helpers/random": {
-            "import": "./dist/helpers/random.mjs",
-            "require": "./dist/helpers/random.cjs"
-        },
-        "./helpers/time": {
-            "import": "./dist/helpers/time.mjs",
-            "require": "./dist/helpers/time.cjs"
-        },
-        "./mocks": {
-            "import": "./dist/mocks/index.mjs",
-            "require": "./dist/mocks/index.cjs"
-        },
-        "./mocks/clock.mock": {
-            "import": "./dist/mocks/clock.mock.mjs",
-            "require": "./dist/mocks/clock.mock.cjs"
-        },
-        "./mocks/logger.mock": {
-            "import": "./dist/mocks/logger.mock.mjs",
-            "require": "./dist/mocks/logger.mock.cjs"
+        "./contracts/token-bucket": {
+            "import": "./dist/contracts/token-bucket.mjs",
+            "require": "./dist/contracts/token-bucket.cjs"
         },
         "./package.json": "./package.json"
     },
