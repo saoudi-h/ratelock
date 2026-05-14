@@ -1,7 +1,7 @@
 {
     "name": "@ratelock/core",
     "description": "Core RateLock rate limiting system",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "publishConfig": {
         "access": "public"
     },
@@ -12,22 +12,6 @@
         ".": {
             "import": "./dist/index.mjs",
             "require": "./dist/index.cjs"
-        },
-        "./factory": {
-            "import": "./dist/factory/index.mjs",
-            "require": "./dist/factory/index.cjs"
-        },
-        "./limiter": {
-            "import": "./dist/limiter/index.mjs",
-            "require": "./dist/limiter/index.cjs"
-        },
-        "./storage": {
-            "import": "./dist/storage/index.mjs",
-            "require": "./dist/storage/index.cjs"
-        },
-        "./strategy": {
-            "import": "./dist/strategy/index.mjs",
-            "require": "./dist/strategy/index.cjs"
         },
         "./package.json": "./package.json"
     },
@@ -44,7 +28,7 @@
         "format": "prettier \"**/*\" --ignore-unknown --list-different",
         "format:fix": "prettier \"**/*\" --ignore-unknown --write",
         "clean": "rimraf node_modules dist",
-        "typecheck": "tsgo --noEmit",
+        "typecheck": "tsc --noEmit",
         "test": "vitest",
         "test:ui": "vitest --ui",
         "test:run": "vitest run",
