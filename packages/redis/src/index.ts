@@ -1,12 +1,31 @@
-/**
- * @ratelock/redis - Redis storage backend for RateLock rate limiting system
- */
+export { createFixedWindowLimiter } from './fixed-window'
+export type { FixedWindowLimiterConfig } from './fixed-window'
 
-// Main exports for @ratelock/redis package
-export * from './limiter/index'
+export { createSlidingWindowLimiter } from './sliding-window'
+export type { SlidingWindowLimiterConfig } from './sliding-window'
 
-// Factory exports
-export * from './factory/index'
+export { createTokenBucketLimiter } from './token-bucket'
+export type { TokenBucketLimiterConfig } from './token-bucket'
 
-// Type exports
-export * from './types/index'
+export { createIndividualFixedWindowLimiter } from './individual-fixed-window'
+export type { IndividualFixedWindowLimiterConfig } from './individual-fixed-window'
+
+export { adaptClient, createConnection } from './client'
+export type { RedisClient } from './client'
+
+export { withCache, withCircuitBreaker, withErrorPolicy, withRetry } from '@ratelock/core'
+
+export type {
+    CacheConfig,
+    CircuitBreakerConfig,
+    ErrorPolicy,
+    FixedWindowOptions,
+    FixedWindowResult,
+    IndividualFixedWindowOptions,
+    Limiter,
+    RetryConfig,
+    SlidingWindowOptions,
+    SlidingWindowResult,
+    TokenBucketOptions,
+    TokenBucketResult,
+} from '@ratelock/core'

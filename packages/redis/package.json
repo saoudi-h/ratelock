@@ -1,6 +1,6 @@
 {
     "name": "@ratelock/redis",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "description": "Redis storage backend for RateLock rate limiting system",
     "keywords": [
         "rate-limit",
@@ -35,18 +35,6 @@
             "import": "./dist/index.mjs",
             "require": "./dist/index.cjs"
         },
-        "./factory": {
-            "import": "./dist/factory/index.mjs",
-            "require": "./dist/factory/index.cjs"
-        },
-        "./storage": {
-            "import": "./dist/storage/index.mjs",
-            "require": "./dist/storage/index.cjs"
-        },
-        "./strategy": {
-            "import": "./dist/strategy/index.mjs",
-            "require": "./dist/strategy/index.cjs"
-        },
         "./package.json": "./package.json"
     },
     "sideEffects": false,
@@ -56,8 +44,7 @@
         "LICENSE"
     ],
     "scripts": {
-        "build:lua": "tsx scripts/lua-minifier.ts",
-        "build": "pnpm build:lua && pnpm tsdown",
+        "build": "tsdown",
         "dev": "tsdown --watch",
         "test": "vitest --exclude \"**/*.integration.test.ts\"",
         "test:ui": "vitest --exclude \"**/*.integration.test.ts\" --ui",
@@ -66,7 +53,6 @@
         "test:coverage:dev": "pnpm run docker:up && vitest run --coverage && pnpm run docker:down",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
-        "format": "prettier --write .",
         "format": "prettier --check .",
         "typecheck": "tsc --noEmit",
         "clean": "rm -rf dist .turbo node_modules",
@@ -77,7 +63,16 @@
         "pre-commit": "lint-staged"
     },
     "peerDependencies": {
+        "ioredis": "^5.0.0",
         "redis": "^4.0.0 || ^5.0.0"
+    },
+    "peerDependenciesMeta": {
+        "redis": {
+            "optional": true
+        },
+        "ioredis": {
+            "optional": true
+        }
     },
     "dependencies": {
         "@ratelock/core": "workspace:*"
@@ -91,6 +86,7 @@
         "@tala-tools/tsconfig": "0.0.1",
         "@types/node": "^25.6.0",
         "dotenv": "^17.4.2",
+        "ioredis": "^5.10.1",
         "luamin": "^1.0.4",
         "typescript": "^6.0.3"
     },
