@@ -1,0 +1,11 @@
+{
+    "extends": "@tala-tools/tsconfig/base.json",
+    "compilerOptions": {
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "skipLibCheck": true,
+        "types": ["node"]
+    },
+    "include": ["./src/**/*"],
+    "exclude": ["dist", "node_modules", ".turbo"]
+}

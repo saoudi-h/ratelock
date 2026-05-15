@@ -1,0 +1,26 @@
+{
+    "name": "@ratelock/bench",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "bench:local": "tsx src/index.ts",
+        "bench": "tsx src/index.ts",
+        "typecheck": "tsc --noEmit",
+        "clean": "rm -rf .turbo node_modules"
+    },
+    "dependencies": {
+        "@ratelock/core": "workspace:*",
+        "@ratelock/local": "workspace:*",
+        "@ratelock/redis": "workspace:*",
+        "@ratelock/postgres": "workspace:*"
+    },
+    "devDependencies": {
+        "@tala-tools/tsconfig": "0.0.1",
+        "@types/node": "^25.6.0",
+        "tsx": "^4.21.0",
+        "typescript": "^6.0.3"
+    },
+    "engines": {
+        "node": ">=18"
+    }
+}

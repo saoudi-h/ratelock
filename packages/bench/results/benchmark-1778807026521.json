@@ -1,0 +1,126 @@
+{
+  "meta": {
+    "date": "2026-05-15T01:03:41.168Z",
+    "node": "v25.9.0",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "results": [
+    {
+      "scenario": "local/fixed-window",
+      "backend": "local",
+      "strategy": "fixed-window",
+      "concurrency": 5,
+      "durationMs": 1000,
+      "config": {
+        "limit": 10000,
+        "windowMs": 60000,
+        "cache": false
+      },
+      "totalRequests": 1048577,
+      "successes": 1048577,
+      "failures": 0,
+      "throughput": 1029154,
+      "throughputUnit": "ops/sec",
+      "latencyMs": {
+        "min": 0.001329999999938991,
+        "p50": 0.003220000000055734,
+        "p95": 0.005400000000008731,
+        "p99": 0.007970000000000255,
+        "max": 55.462688999999955,
+        "avg": 0.00472455059189771
+      },
+      "memory": {
+        "heapUsedMb": 366,
+        "heapTotalMb": 462
+      }
+    },
+    {
+      "scenario": "local/sliding-window",
+      "backend": "local",
+      "strategy": "sliding-window",
+      "concurrency": 5,
+      "durationMs": 1000,
+      "config": {
+        "limit": 10000,
+        "windowMs": 60000,
+        "cache": false
+      },
+      "totalRequests": 973452,
+      "successes": 973452,
+      "failures": 0,
+      "throughput": 973445,
+      "throughputUnit": "ops/sec",
+      "latencyMs": {
+        "min": 0.0009900000000016007,
+        "p50": 0.003500000000030923,
+        "p95": 0.00599000000011074,
+        "p99": 0.008229999999912252,
+        "max": 29.529880999999932,
+        "avg": 0.004957389455258127
+      },
+      "memory": {
+        "heapUsedMb": 34,
+        "heapTotalMb": 525
+      }
+    },
+    {
+      "scenario": "local/token-bucket",
+      "backend": "local",
+      "strategy": "token-bucket",
+      "concurrency": 5,
+      "durationMs": 1000,
+      "config": {
+        "limit": 10000,
+        "windowMs": 60000,
+        "cache": false
+      },
+      "totalRequests": 1049092,
+      "successes": 1049092,
+      "failures": 0,
+      "throughput": 1045088,
+      "throughputUnit": "ops/sec",
+      "latencyMs": {
+        "min": 0.001330000000052678,
+        "p50": 0.003050000000257569,
+        "p95": 0.005090000000109285,
+        "p99": 0.007299999999759166,
+        "max": 111.11059599999999,
+        "avg": 0.004612743623056884
+      },
+      "memory": {
+        "heapUsedMb": 361,
+        "heapTotalMb": 937
+      }
+    },
+    {
+      "scenario": "local/individual-fixed-window",
+      "backend": "local",
+      "strategy": "individual-fixed-window",
+      "concurrency": 5,
+      "durationMs": 1000,
+      "config": {
+        "limit": 10000,
+        "windowMs": 60000,
+        "cache": false
+      },
+      "totalRequests": 1240391,
+      "successes": 1240391,
+      "failures": 0,
+      "throughput": 1240380,
+      "throughputUnit": "ops/sec",
+      "latencyMs": {
+        "min": 0.0013200000003052992,
+        "p50": 0.0029500000000552973,
+        "p95": 0.0042100000000573345,
+        "p99": 0.005740000000514556,
+        "max": 56.269013000000086,
+        "avg": 0.0038895807289796615
+      },
+      "memory": {
+        "heapUsedMb": 379,
+        "heapTotalMb": 881
+      }
+    }
+  ]
+}
