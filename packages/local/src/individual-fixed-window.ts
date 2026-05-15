@@ -16,9 +16,10 @@ export async function createIndividualFixedWindowLimiter(
 
   const sweep = () => {
     const now = Date.now()
+    let scanned = 0
     for (const [key, entry] of state) {
       if (now >= entry.start + windowMs) state.delete(key)
-      if (state.size <= maxSize) break
+      if (++scanned >= 100) break
     }
   }
 

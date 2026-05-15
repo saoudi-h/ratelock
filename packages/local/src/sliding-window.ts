@@ -14,11 +14,12 @@ export async function createSlidingWindowLimiter(
 
   const sweep = () => {
     const cutoff = Date.now() - windowMs
+    let scanned = 0
     for (const [key, timestamps] of state) {
       const filtered = timestamps.filter((ts) => ts > cutoff)
       if (filtered.length === 0) state.delete(key)
       else state.set(key, filtered)
-      if (state.size <= maxSize) break
+      if (++scanned >= 100) break
     }
   }
 

@@ -16,11 +16,12 @@ export async function createTokenBucketLimiter(
 
   const sweep = () => {
     const now = Date.now()
+    let scanned = 0
     for (const [key, bucket] of state) {
       const elapsed = (now - bucket.lastRefill) / 1000
       const tokens = Math.min(capacity, bucket.tokens + elapsed * refillRate)
       if (tokens >= capacity) state.delete(key)
-      if (state.size <= maxSize) break
+      if (++scanned >= 100) break
     }
   }
 
