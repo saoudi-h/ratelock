@@ -73,11 +73,11 @@ export async function createIndividualFixedWindowLimiter(
                 [startKey, countKey],
                 [windowMs.toString(), limit.toString(), now.toString()]
             )
-            const res = raw as [number, number, number, number]
-            return {
-                allowed: res[0] === 1,
-                remaining: res[2]!,
-                reset: res[3]!,
+      const res = raw as [unknown, unknown, unknown, unknown]
+      return {
+        allowed: Number(res[0]) === 1,
+        remaining: Number(res[2]),
+        reset: Number(res[3]),
             }
         },
 

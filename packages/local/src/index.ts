@@ -10,17 +10,11 @@ export type { TokenBucketLimiterConfig } from './token-bucket'
 export { createIndividualFixedWindowLimiter } from './individual-fixed-window'
 export type { IndividualFixedWindowLimiterConfig } from './individual-fixed-window'
 
-export { withCache, withCircuitBreaker, withErrorPolicy, withRetry } from '@ratelock/core'
-
 export type {
-    CacheConfig,
-    CircuitBreakerConfig,
-    ErrorPolicy,
     FixedWindowOptions,
     FixedWindowResult,
     IndividualFixedWindowOptions,
     Limiter,
-    RetryConfig,
     SlidingWindowOptions,
     SlidingWindowResult,
     TokenBucketOptions,

@@ -13,11 +13,17 @@ export interface RedisClient {
 }
 
 function detectDriver(raw: unknown): 'redis' | 'ioredis' {
-    if (raw && typeof raw === 'object') {
-        if ('isOpen' in raw || 'ping' in raw) return 'redis'
-        if ('status' in raw || 'connector' in raw) return 'ioredis'
-    }
-    throw new Error('Unrecognized Redis client. Provide a redis (node-redis) or ioredis instance.')
+  if (raw && typeof raw === 'object') {
+    // ioredis v5 has 'status' and 'connector'; node-redis has 'isOpen'
+    if ('connector' in raw) return 'ioredis'
+    if ('isOpen' in raw) return 'redis'
+    // Both have 'ping' — check after more specific properties
+    if ('status' in raw) return 'ioredis'
+    if ('ping' in raw) return 'redis'
+  }
+  throw new Error(
+    'Unrecognized Redis client. Provide a redis (node-redis) or ioredis instance.'
+  )
 }
 
 async function loadFromUrl(

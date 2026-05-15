@@ -15,13 +15,6 @@ export type { PgDriver } from './drivers/types'
 
 export { runMigrations } from './migrations'
 
-export {
-  withCache,
-  withRetry,
-  withCircuitBreaker,
-  withErrorPolicy,
-} from '@ratelock/core'
-
 export type {
   Limiter,
   FixedWindowResult,
@@ -31,8 +24,4 @@ export type {
   SlidingWindowOptions,
   TokenBucketOptions,
   IndividualFixedWindowOptions,
-  CacheConfig,
-  RetryConfig,
-  CircuitBreakerConfig,
-  ErrorPolicy,
 } from '@ratelock/core'

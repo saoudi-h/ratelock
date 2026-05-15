@@ -89,7 +89,7 @@ async function createPostgresChecker(config: ScenarioConfig) {
   const { createTokenBucketLimiter: createPgToken } = await import('@ratelock/postgres')
   const { createIndividualFixedWindowLimiter: createPgIndividual } = await import('@ratelock/postgres')
 
-  const opts = { sql, limit: config.limit, windowMs: config.windowMs, cache: config.cache, skipMigrations: true }
+  const opts = { sql, limit: config.limit, windowMs: config.windowMs, cache: config.cache, skipMigrations: false }
   let limiter: Limiter<any>
 
   switch (config.strategy) {
@@ -100,7 +100,7 @@ async function createPostgresChecker(config: ScenarioConfig) {
       limiter = await createPgSliding(opts as any)
       break
     case 'token-bucket':
-      limiter = await createPgToken({ sql, capacity: config.limit, refillRate: 1000, cache: config.cache, skipMigrations: true } as any)
+      limiter = await createPgToken({ sql, capacity: config.limit, refillRate: 1000, cache: config.cache, skipMigrations: false } as any)
       break
     case 'individual-fixed-window':
       limiter = await createPgIndividual(opts as any)

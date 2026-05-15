@@ -57,8 +57,8 @@ export async function createFixedWindowLimiter(
                 [key],
                 [windowMs.toString(), limit.toString(), now.toString()]
             )
-            const res = raw as [number, number, number, number]
-            return { allowed: res[0] === 1, remaining: res[2]!, reset: now + res[3]! }
+            const res = raw as [unknown, unknown, unknown, unknown]
+            return { allowed: Number(res[0]) === 1, remaining: Number(res[2]), reset: now + Number(res[3]) }
         },
 
         async checkBatch(ids: string[]): Promise<FixedWindowResult[]> {

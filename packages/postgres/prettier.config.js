@@ -1,7 +1,6 @@
-import type { UserConfig } from 'prettier'
 import { base } from '@tala-tools/prettier'
 
-const config: UserConfig = {
+const config = {
   ...base,
 }
 

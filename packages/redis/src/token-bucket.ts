@@ -62,12 +62,12 @@ export async function createTokenBucketLimiter(
                 [key],
                 [capacity.toString(), refillRate.toString(), now.toString()]
             )
-            const res = raw as [number, number, number]
-            return {
-                allowed: res[0] === 1,
-                remaining: res[1]!,
-                tokens: res[1]!,
-                refillTime: res[2]!,
+      const res = raw as [unknown, unknown, unknown]
+      return {
+        allowed: Number(res[0]) === 1,
+        remaining: Number(res[1]),
+        tokens: Number(res[1]),
+        refillTime: Number(res[2]),
             }
         },
 

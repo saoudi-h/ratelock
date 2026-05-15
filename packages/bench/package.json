@@ -11,8 +11,12 @@
     "dependencies": {
         "@ratelock/core": "workspace:*",
         "@ratelock/local": "workspace:*",
+        "@ratelock/postgres": "workspace:*",
         "@ratelock/redis": "workspace:*",
-        "@ratelock/postgres": "workspace:*"
+        "ioredis": "^5.10.1",
+        "pg": "^8.20.0",
+        "postgres": "^3.4.9",
+        "redis": "^5.12.1"
     },
     "devDependencies": {
         "@tala-tools/tsconfig": "0.0.1",

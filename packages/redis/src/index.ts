@@ -13,17 +13,11 @@ export type { IndividualFixedWindowLimiterConfig } from './individual-fixed-wind
 export { adaptClient, createConnection } from './client'
 export type { RedisClient } from './client'
 
-export { withCache, withCircuitBreaker, withErrorPolicy, withRetry } from '@ratelock/core'
-
 export type {
-    CacheConfig,
-    CircuitBreakerConfig,
-    ErrorPolicy,
     FixedWindowOptions,
     FixedWindowResult,
     IndividualFixedWindowOptions,
     Limiter,
-    RetryConfig,
     SlidingWindowOptions,
     SlidingWindowResult,
     TokenBucketOptions,
