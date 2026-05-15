@@ -14,6 +14,7 @@ export { createConnection, postgresDriver, pgDriver } from './drivers'
 export type { PgDriver } from './drivers/types'
 
 export { runMigrations } from './migrations'
+export { cleanupExpired } from './cleanup'
 
 export type {
   Limiter,
