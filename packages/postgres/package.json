@@ -1,0 +1,80 @@
+{
+    "name": "@ratelock/postgres",
+    "description": "PostgreSQL storage backend for RateLock rate limiting system",
+    "version": "0.1.0",
+    "publishConfig": {
+        "access": "public"
+    },
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "types": "./dist/index.d.cts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        },
+        "./package.json": "./package.json"
+    },
+    "sideEffects": false,
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "build": "tsdown",
+        "lint": "eslint . --max-warnings 0",
+        "lint:fix": "eslint . --max-warnings 0 --fix",
+        "format": "prettier \"**/*\" --ignore-unknown --list-different",
+        "format:fix": "prettier \"**/*\" --ignore-unknown --write",
+        "test": "vitest --exclude \"**/*.integration.test.ts\"",
+        "test:run": "vitest run --exclude \"**/*.integration.test.ts\"",
+        "test:integration": "vitest run",
+        "typecheck": "tsc --noEmit",
+        "clean": "rimraf dist node_modules .turbo",
+        "pre-commit": "lint-staged"
+    },
+    "dependencies": {
+        "@ratelock/core": "workspace:*"
+    },
+    "peerDependencies": {
+        "postgres": ">=3.0.0",
+        "pg": ">=8.0.0"
+    },
+    "peerDependenciesMeta": {
+        "postgres": {
+            "optional": true
+        },
+        "pg": {
+            "optional": true
+        }
+    },
+    "devDependencies": {
+        "@ratelock/test-utils": "workspace:*",
+        "@ratelock/vitest": "workspace:*",
+        "@tala-tools/eslint": "0.1.0",
+        "@tala-tools/prettier": "0.0.2",
+        "@tala-tools/tsconfig": "0.0.1",
+        "@types/node": "^25.6.0",
+        "postgres": ">=3.0.0",
+        "typescript": "^6.0.3"
+    },
+    "engines": {
+        "node": ">=18"
+    },
+    "author": {
+        "name": "Saoudi Hakim",
+        "url": "https://hakimsaoudi.dev",
+        "email": "saoudihakim@gmail.com"
+    },
+    "license": "MIT",
+    "keywords": [
+        "rate-limit",
+        "postgres",
+        "postgresql",
+        "sliding-window",
+        "fixed-window",
+        "token-bucket"
+    ],
+    "module": "./dist/index.mjs"
+}
