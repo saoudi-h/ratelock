@@ -7,13 +7,51 @@ const TABLES = [
   { table: 'ratelock.individual_fixed_window', column: 'expires_at' },
 ] as const
 
+const CLEANUP_INTERVAL_MS = 300_000
+
+type CleanupHandle = { stop: () => void }
+
+const runners = new WeakMap<PgDriver, CleanupHandle>()
+
 export async function cleanupExpired(driver: PgDriver): Promise<number> {
   let total = 0
   for (const { table, column } of TABLES) {
-    const rows = await driver.query<{ key: string }>(
-      `DELETE FROM ${table} WHERE ${column} < NOW() RETURNING key`,
-    )
-    total += rows.length
+    try {
+      const rows = await driver.query<{ key: string }>(
+        `DELETE FROM ${table} WHERE ${column} < NOW() - INTERVAL '1 hour' RETURNING key`,
+      )
+      total += rows.length
+    } catch {
+      // cleanup is best-effort
+    }
   }
   return total
+}
+
+export function startAutoCleanup(driver: PgDriver, disabled?: boolean): CleanupHandle {
+  if (disabled || runners.has(driver)) {
+    return { stop: () => {} }
+  }
+
+  let running = true
+
+  const loop = async () => {
+    while (running) {
+      await new Promise((r) => setTimeout(r, CLEANUP_INTERVAL_MS))
+      if (!running) break
+      await cleanupExpired(driver).catch(() => {})
+    }
+  }
+
+  loop()
+
+  const handle: CleanupHandle = {
+    stop: () => {
+      running = false
+      runners.delete(driver)
+    },
+  }
+
+  runners.set(driver, handle)
+  return handle
 }

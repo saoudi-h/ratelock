@@ -13,6 +13,7 @@ import {
 } from '@ratelock/core'
 import { createConnection, type PgDriver } from './drivers'
 import { runMigrations } from './migrations'
+import { startAutoCleanup } from './cleanup'
 
 const TABLE = 'ratelock.fixed_window'
 
@@ -37,6 +38,7 @@ export async function createFixedWindowLimiter(
   const drv = conn.driver
 
   if (!skipMigrations) await runMigrations(drv)
+  startAutoCleanup(drv)
 
   let limiter: Limiter<FixedWindowResult> = {
     async check(id: string): Promise<FixedWindowResult> {

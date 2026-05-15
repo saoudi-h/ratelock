@@ -13,6 +13,7 @@ import {
 } from '@ratelock/core'
 import { createConnection } from './drivers'
 import { runMigrations } from './migrations'
+import { startAutoCleanup } from './cleanup'
 
 const TABLE = 'ratelock.sliding_window'
 
@@ -37,6 +38,7 @@ export async function createSlidingWindowLimiter(
   const drv = conn.driver
 
   if (!skipMigrations) await runMigrations(drv)
+  startAutoCleanup(drv)
 
   let limiter: Limiter<SlidingWindowResult> = {
     async check(id: string): Promise<SlidingWindowResult> {

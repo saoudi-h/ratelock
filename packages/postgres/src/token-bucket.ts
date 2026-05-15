@@ -13,6 +13,7 @@ import {
 } from '@ratelock/core'
 import { createConnection } from './drivers'
 import { runMigrations } from './migrations'
+import { startAutoCleanup } from './cleanup'
 
 const TABLE = 'ratelock.token_bucket'
 
@@ -37,6 +38,7 @@ export async function createTokenBucketLimiter(
   const drv = conn.driver
 
   if (!skipMigrations) await runMigrations(drv)
+  startAutoCleanup(drv)
 
   let limiter: Limiter<TokenBucketResult> = {
     async check(id: string): Promise<TokenBucketResult> {
