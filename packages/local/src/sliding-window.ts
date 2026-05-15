@@ -2,13 +2,25 @@ import type { Limiter, SlidingWindowOptions, SlidingWindowResult } from '@ratelo
 
 export type SlidingWindowLimiterConfig = SlidingWindowOptions & {
   prefix?: string
+  maxSize?: number
 }
 
 export async function createSlidingWindowLimiter(
   config: SlidingWindowLimiterConfig,
 ): Promise<Limiter<SlidingWindowResult>> {
-  const { limit, windowMs, prefix = 'sw' } = config
+  const { limit, windowMs, prefix = 'sw', maxSize = 100000 } = config
   const state = new Map<string, number[]>()
+  let ops = 0
+
+  const sweep = () => {
+    const cutoff = Date.now() - windowMs
+    for (const [key, timestamps] of state) {
+      const filtered = timestamps.filter((ts) => ts > cutoff)
+      if (filtered.length === 0) state.delete(key)
+      else state.set(key, filtered)
+      if (state.size <= maxSize) break
+    }
+  }
 
   return {
     async check(id: string): Promise<SlidingWindowResult> {
@@ -23,6 +35,8 @@ export async function createSlidingWindowLimiter(
       if (allowed) timestamps.push(now)
 
       state.set(key, timestamps)
+
+      if (++ops % 1000 === 0 && state.size > maxSize) sweep()
 
       const oldest = timestamps.length > 0 ? Math.min(...timestamps) : now
 

@@ -4,13 +4,25 @@ type Bucket = { tokens: number; lastRefill: number }
 
 export type TokenBucketLimiterConfig = TokenBucketOptions & {
   prefix?: string
+  maxSize?: number
 }
 
 export async function createTokenBucketLimiter(
   config: TokenBucketLimiterConfig,
 ): Promise<Limiter<TokenBucketResult>> {
-  const { capacity, refillRate, prefix = 'tb' } = config
+  const { capacity, refillRate, prefix = 'tb', maxSize = 100000 } = config
   const state = new Map<string, Bucket>()
+  let ops = 0
+
+  const sweep = () => {
+    const now = Date.now()
+    for (const [key, bucket] of state) {
+      const elapsed = (now - bucket.lastRefill) / 1000
+      const tokens = Math.min(capacity, bucket.tokens + elapsed * refillRate)
+      if (tokens >= capacity) state.delete(key)
+      if (state.size <= maxSize) break
+    }
+  }
 
   return {
     async check(id: string): Promise<TokenBucketResult> {
@@ -19,26 +31,37 @@ export async function createTokenBucketLimiter(
       let bucket = state.get(key)
 
       if (!bucket) {
-        bucket = { tokens: capacity, lastRefill: now }
+        bucket = { tokens: capacity - 1, lastRefill: now }
         state.set(key, bucket)
+        if (++ops % 1000 === 0 && state.size > maxSize) sweep()
+        return {
+          allowed: true,
+          remaining: capacity - 1,
+          tokens: capacity - 1,
+          refillTime: 0,
+        }
       }
 
       const elapsed = (now - bucket.lastRefill) / 1000
-      bucket.tokens = Math.min(capacity, bucket.tokens + elapsed * refillRate)
-      bucket.lastRefill = now
+      const refilled = Math.min(capacity, bucket.tokens + elapsed * refillRate)
 
-      const allowed = bucket.tokens >= 1
-      if (allowed) bucket.tokens -= 1
-
-      state.set(key, bucket)
-
-      const timeUntilNext = allowed ? 0 : Math.ceil(((1 - bucket.tokens) / refillRate) * 1000)
+      if (refilled >= 1) {
+        bucket.tokens = refilled - 1
+        bucket.lastRefill = now
+        state.set(key, bucket)
+        return {
+          allowed: true,
+          remaining: Math.floor(bucket.tokens),
+          tokens: Math.floor(bucket.tokens),
+          refillTime: 0,
+        }
+      }
 
       return {
-        allowed,
+        allowed: false,
         remaining: Math.floor(bucket.tokens),
         tokens: Math.floor(bucket.tokens),
-        refillTime: timeUntilNext,
+        refillTime: Math.ceil((1 - bucket.tokens) / refillRate * 1000),
       }
     },
 

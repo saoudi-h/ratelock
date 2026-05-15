@@ -4,13 +4,23 @@ type Entry = { count: number; start: number }
 
 export type IndividualFixedWindowLimiterConfig = IndividualFixedWindowOptions & {
   prefix?: string
+  maxSize?: number
 }
 
 export async function createIndividualFixedWindowLimiter(
   config: IndividualFixedWindowLimiterConfig,
 ): Promise<Limiter<FixedWindowResult>> {
-  const { limit, windowMs, prefix = 'ifw' } = config
+  const { limit, windowMs, prefix = 'ifw', maxSize = 100000 } = config
   const state = new Map<string, Entry>()
+  let ops = 0
+
+  const sweep = () => {
+    const now = Date.now()
+    for (const [key, entry] of state) {
+      if (now >= entry.start + windowMs) state.delete(key)
+      if (state.size <= maxSize) break
+    }
+  }
 
   return {
     async check(id: string): Promise<FixedWindowResult> {
@@ -19,8 +29,14 @@ export async function createIndividualFixedWindowLimiter(
       let entry = state.get(key)
 
       if (!entry || now >= entry.start + windowMs) {
-        entry = { count: 0, start: now }
+        entry = { count: 1, start: now }
         state.set(key, entry)
+        if (++ops % 1000 === 0 && state.size > maxSize) sweep()
+        return {
+          allowed: true,
+          remaining: limit - 1,
+          reset: now + windowMs,
+        }
       }
 
       const allowed = entry.count < limit
