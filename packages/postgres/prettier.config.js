@@ -1,7 +1,1 @@
-import { base } from '@tala-tools/prettier'
-
-const config = {
-  ...base,
-}
-
-export default config
+export { default } from '@tala-tools/prettier'

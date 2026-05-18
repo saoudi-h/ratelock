@@ -21,6 +21,10 @@
       "path": "packages/redis",
     },
     {
+      "name": "postgres",
+      "path": "packages/postgres",
+    },
+    {
       "name": "test-utils",
       "path": "packages/test-utils",
     },
