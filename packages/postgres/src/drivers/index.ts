@@ -51,7 +51,7 @@ export async function createConnection(config: {
         const Pool = pg.default?.Pool ?? pg.Pool
         const pool = new Pool({ connectionString: config.connectionString })
         return { driver: pgDriver(pool), end: () => pool.end() }
-      } catch (e) {
+      } catch {
         if (config.driver === 'pg') throw new Error('pg package not found')
       }
     }

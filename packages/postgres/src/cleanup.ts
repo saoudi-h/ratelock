@@ -38,6 +38,7 @@ export function startAutoCleanup(driver: PgDriver, disabled?: boolean): CleanupH
   const loop = async () => {
     while (running) {
       await new Promise((r) => setTimeout(r, CLEANUP_INTERVAL_MS))
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (!running) break
       await cleanupExpired(driver).catch(() => {})
     }

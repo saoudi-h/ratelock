@@ -40,14 +40,22 @@ export class MockPgDriver implements PgDriver {
 
       const now = Date.now()
       const elapsed = (now - (existing.last_refill as number)) / 1000
-      const refilled = (existing.tokens as number) + elapsed * (existing.refill_rate as number)
+      const capacity = existing.capacity as number
+      const refill_rate = existing.refill_rate as number
+      const refilled = Math.min(capacity, (existing.tokens as number) + elapsed * refill_rate)
+      const allowed = refilled >= 1
 
-      if (refilled < 1) return []
+      const tokens = allowed ? refilled - 1 : refilled
+      const last_refill = allowed ? now : (existing.last_refill as number)
 
-      const consumed = refilled - 1
-      const tokens = consumed < 0 ? refilled : consumed
-      table.set(key, { ...existing, tokens: Math.max(0, tokens), last_refill: now })
-      return [{ tokens: Math.max(0, tokens) }]
+      table.set(key, { ...existing, tokens, last_refill })
+      return [{
+        tokens,
+        capacity,
+        refill_rate,
+        last_refill,
+        allowed
+      }]
     }
 
     return []

@@ -8,6 +8,7 @@
     },
     "include": [
         "./src/**/*",
+        "./__tests__/**/*",
         "tsdown.config.ts",
         "lint-staged.config.mjs"
     ],

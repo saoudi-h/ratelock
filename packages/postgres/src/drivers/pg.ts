@@ -1,6 +1,6 @@
 import type { PgDriver } from './types'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 export function pgDriver(pool: any): PgDriver {
   return {
     async query<T = unknown>(sql: string, params?: unknown[]): Promise<T[]> {
