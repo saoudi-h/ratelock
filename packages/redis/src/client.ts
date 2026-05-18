@@ -56,7 +56,7 @@ async function loadFromUrl(
                 },
             }
         } catch {
-            if (driver === 'ioredis') throw new Error('ioredis package not found')
+            throw new Error('ioredis package not found')
         }
     }
     throw new Error(
@@ -100,13 +100,48 @@ export function adaptClient(raw: unknown): RedisClient {
 
         async pExpire(key: string, ttlMs: number): Promise<unknown> {
             const client = raw as any
-            return client.pExpire(key, ttlMs)
+            if (driver === 'redis') {
+                return client.pExpire(key, ttlMs)
+            }
+            return client.pexpire(key, ttlMs)
         },
 
         multi(): any {
             const client = raw as any
-            if (driver === 'redis') return client.multi()
-            return client.multi()
+            const m = client.multi()
+            return {
+                get(key: string) {
+                    m.get(key)
+                },
+                set(key: string, value: string, ttlMs: number) {
+                    if (driver === 'redis') {
+                        m.set(key, value, { PX: ttlMs })
+                    } else {
+                        m.set(key, value, 'PX', ttlMs)
+                    }
+                },
+                del(...keys: string[]) {
+                    if (driver === 'redis') {
+                        m.del(keys)
+                    } else {
+                        m.del(keys)
+                    }
+                },
+                async exec(): Promise<unknown[]> {
+                    const results = await m.exec()
+                    if (!results) return []
+                    if (driver === 'ioredis') {
+                        return results.map((r: any) => {
+                            if (Array.isArray(r)) {
+                                if (r[0]) throw r[0]
+                                return r[1]
+                            }
+                            return r
+                        })
+                    }
+                    return results
+                }
+            }
         },
     }
 }

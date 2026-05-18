@@ -63,9 +63,9 @@ export async function createSlidingWindowLimiter(
         allowed: Number(res[0]) === 1,
         remaining: Number(res[2]),
         reset: now + Number(res[3]),
-                windowStart: now - windowMs,
-                windowEnd: now + res[3],
-            }
+        windowStart: now - windowMs,
+        windowEnd: now + Number(res[3]),
+      }
         },
 
         async checkBatch(ids: string[]): Promise<SlidingWindowResult[]> {
