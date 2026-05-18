@@ -31,9 +31,9 @@ async function bench(name: string, check: (id: string) => Promise<unknown>, dura
   console.log(`  ${name}`)
   console.log(`    ops/sec:     ${Math.round(ok / elapsed * 1000).toLocaleString()}`)
   console.log(`    requests:    ${ok}`)
-  console.log(`    p50:         ${(sorted[Math.floor(sorted.length * 0.5)] * 1000).toFixed(0)}μs`)
-  console.log(`    p95:         ${(sorted[Math.floor(sorted.length * 0.95)] * 1000).toFixed(0)}μs`)
-  console.log(`    p99:         ${(sorted[Math.floor(sorted.length * 0.99)] * 1000).toFixed(0)}μs`)
+  console.log(`    p50:         ${((sorted[Math.floor(sorted.length * 0.5)] ?? 0) * 1000).toFixed(0)}μs`)
+  console.log(`    p95:         ${((sorted[Math.floor(sorted.length * 0.95)] ?? 0) * 1000).toFixed(0)}μs`)
+  console.log(`    p99:         ${((sorted[Math.floor(sorted.length * 0.99)] ?? 0) * 1000).toFixed(0)}μs`)
   console.log()
 }
 
@@ -78,7 +78,8 @@ async function main() {
   } catch (e: any) { console.log(`  postgresql (postgres.js): SKIPPED (${e.message})\n`) }
 
   try {
-    const { default: pg } = await import('pg')
+    const pgName = 'pg'
+    const { default: pg } = (await import(pgName)) as any
     const pool = new pg.Pool({ connectionString: 'postgres://ratelock:ratelock@localhost:5433/ratelock_bench' })
     const { createFixedWindowLimiter: pg2 } = await import('@ratelock/postgres')
     const l4 = await pg2({ pool, limit: 10000, windowMs: 60000, skipMigrations: true })

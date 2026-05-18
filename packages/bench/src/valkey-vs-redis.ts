@@ -27,9 +27,9 @@ async function bench(name: string, check: (id: string) => Promise<unknown>, dura
   console.log(`  ${name}`)
   console.log(`    ops/sec:     ${Math.round(ok / elapsed * 1000).toLocaleString()}`)
   console.log(`    requests:    ${ok}`)
-  console.log(`    p50:         ${(sorted[Math.floor(sorted.length * 0.5)] * 1000).toFixed(0)}μs`)
-  console.log(`    p95:         ${(sorted[Math.floor(sorted.length * 0.95)] * 1000).toFixed(0)}μs`)
-  console.log(`    p99:         ${(sorted[Math.floor(sorted.length * 0.99)] * 1000).toFixed(0)}μs`)
+  console.log(`    p50:         ${((sorted[Math.floor(sorted.length * 0.5)] ?? 0) * 1000).toFixed(0)}μs`)
+  console.log(`    p95:         ${((sorted[Math.floor(sorted.length * 0.95)] ?? 0) * 1000).toFixed(0)}μs`)
+  console.log(`    p99:         ${((sorted[Math.floor(sorted.length * 0.99)] ?? 0) * 1000).toFixed(0)}μs`)
   console.log()
 }
 

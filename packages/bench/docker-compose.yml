@@ -1,0 +1,40 @@
+services:
+  postgres-bench:
+    image: postgres:18-alpine
+    container_name: ratelock-postgres-bench
+    command: postgres -c synchronous_commit=off -c fsync=off -c full_page_writes=off -c max_connections=200 -c shared_buffers=512MB
+    environment:
+      POSTGRES_DB: ratelock_bench
+      POSTGRES_USER: ratelock
+      POSTGRES_PASSWORD: ratelock
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ratelock -d ratelock_bench"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+  redis-bench:
+    image: redis:7-alpine
+    container_name: ratelock-redis-bench
+    command: redis-server --requirepass testpassword
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "testpassword", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+  valkey-bench:
+    image: valkey/valkey:alpine
+    container_name: ratelock-valkey-bench
+    command: valkey-server --requirepass testpassword
+    ports:
+      - "6381:6379"
+    healthcheck:
+      test: ["CMD", "valkey-cli", "-a", "testpassword", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
