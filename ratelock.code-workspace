@@ -28,6 +28,10 @@
       "name": "vitest",
       "path": "packages/vitest",
     },
+    {
+      "name": "bench",
+      "path": "packages/bench"
+    }
   ],
   "settings": {
     "cSpell.words": [],

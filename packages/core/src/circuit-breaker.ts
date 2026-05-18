@@ -65,5 +65,8 @@ export function withCircuitBreaker<T>(
     return {
         check,
         checkBatch,
+        async destroy() {
+            await limiter.destroy?.()
+        },
     }
 }

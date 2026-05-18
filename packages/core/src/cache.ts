@@ -30,7 +30,12 @@ export function withCache<T>(limiter: Limiter<T>, config?: CacheConfig): Limiter
             const cached = get(id)
             if (cached) return cached
             const result = await limiter.check(id)
-            if (result && typeof result === 'object' && 'allowed' in result && result.allowed === false) {
+            if (
+                result &&
+                typeof result === 'object' &&
+                'allowed' in result &&
+                result.allowed === false
+            ) {
                 set(id, result)
             }
             return result
@@ -58,13 +63,22 @@ export function withCache<T>(limiter: Limiter<T>, config?: CacheConfig): Limiter
                     const id = uncachedIds[j]!
                     const res = freshResults[j]!
                     results[idx] = res
-                    if (res && typeof res === 'object' && 'allowed' in res && res.allowed === false) {
+                    if (
+                        res &&
+                        typeof res === 'object' &&
+                        'allowed' in res &&
+                        res.allowed === false
+                    ) {
                         set(id, res)
                     }
                 }
             }
 
             return results
+        },
+        async destroy() {
+            cache.clear()
+            await limiter.destroy?.()
         },
     }
 }

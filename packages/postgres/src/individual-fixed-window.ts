@@ -1,54 +1,56 @@
 import {
-  type CacheConfig,
-  type CircuitBreakerConfig,
-  type ErrorPolicy,
-  type FixedWindowResult,
-  type IndividualFixedWindowOptions,
-  type Limiter,
-  type RetryConfig,
-  withCache,
-  withCircuitBreaker,
-  withErrorPolicy,
-  withRetry,
+    type CacheConfig,
+    type CircuitBreakerConfig,
+    type ErrorPolicy,
+    type FixedWindowResult,
+    type IndividualFixedWindowOptions,
+    type Limiter,
+    type RetryConfig,
+    validateFixedWindowOptions,
+    withCache,
+    withCircuitBreaker,
+    withErrorPolicy,
+    withRetry,
 } from '@ratelock/core'
+import { startAutoCleanup } from './cleanup'
 import { createConnection } from './drivers'
 import { runMigrations } from './migrations'
-import { startAutoCleanup } from './cleanup'
 
 const TABLE = 'ratelock.individual_fixed_window'
 
 export type IndividualFixedWindowLimiterConfig = IndividualFixedWindowOptions & {
-  sql?: unknown
-  pool?: unknown
-  connectionString?: string
-  driver?: 'postgres' | 'pg'
-  skipMigrations?: boolean
-  unlogged?: boolean
-  prefix?: string
-  cache?: CacheConfig
-  retry?: RetryConfig
-  circuitBreaker?: CircuitBreakerConfig
-  errorPolicy?: ErrorPolicy
+    sql?: unknown
+    pool?: unknown
+    connectionString?: string
+    driver?: 'postgres' | 'pg'
+    skipMigrations?: boolean
+    unlogged?: boolean
+    prefix?: string
+    cache?: CacheConfig
+    retry?: RetryConfig
+    circuitBreaker?: CircuitBreakerConfig
+    errorPolicy?: ErrorPolicy
 }
 
 export async function createIndividualFixedWindowLimiter(
-  config: IndividualFixedWindowLimiterConfig,
+    config: IndividualFixedWindowLimiterConfig
 ): Promise<Limiter<FixedWindowResult>> {
-  const { limit, windowMs, prefix = 'ifw', skipMigrations = false } = config
-  const conn = await createConnection(config)
-  const drv = conn.driver
+    validateFixedWindowOptions(config)
+    const { limit, windowMs, prefix = 'ifw', skipMigrations = false } = config
+    const conn = await createConnection(config)
+    const drv = conn.driver
 
-  if (!skipMigrations) await runMigrations(drv, { unlogged: config.unlogged })
-  startAutoCleanup(drv)
+    if (!skipMigrations) await runMigrations(drv, { unlogged: config.unlogged })
+    const cleanupHandle = startAutoCleanup(drv)
 
-  let limiter: Limiter<FixedWindowResult> = {
-    async check(id: string): Promise<FixedWindowResult> {
-      const key = `${prefix}:${id}`
+    let limiter: Limiter<FixedWindowResult> = {
+        async check(id: string): Promise<FixedWindowResult> {
+            const key = `${prefix}:${id}`
 
-      type Row = { count: number; window_start: string; expires_at: string }
+            type Row = { count: number; window_start: string; expires_at: string }
 
-      const rows = await drv.query<Row>(
-        `INSERT INTO ${TABLE} (key, count, window_start, expires_at)
+            const rows = await drv.query<Row>(
+                `INSERT INTO ${TABLE} (key, count, window_start, expires_at)
          VALUES ($1, 1, NOW(), NOW() + $2::interval)
          ON CONFLICT (key) DO UPDATE SET
            window_start = CASE
@@ -66,29 +68,34 @@ export async function createIndividualFixedWindowLimiter(
              ELSE ${TABLE}.expires_at
            END
          RETURNING count, window_start, expires_at`,
-        [key, `${windowMs} milliseconds`],
-      )
+                [key, `${windowMs} milliseconds`]
+            )
 
-      const row = rows[0]!
-      const count = row.count
-      const windowStart = new Date(row.window_start).getTime()
+            const row = rows[0]!
+            const count = row.count
+            const windowStart = new Date(row.window_start).getTime()
 
-      return {
-        allowed: count <= limit,
-        remaining: Math.max(0, limit - count),
-        reset: windowStart + windowMs,
-      }
-    },
+            return {
+                allowed: count <= limit,
+                remaining: Math.max(0, limit - count),
+                reset: windowStart + windowMs,
+            }
+        },
 
-    async checkBatch(ids: string[]): Promise<FixedWindowResult[]> {
-      return Promise.all(ids.map((id) => this.check(id)))
-    },
-  }
+        async checkBatch(ids: string[]): Promise<FixedWindowResult[]> {
+            return Promise.all(ids.map(id => limiter.check(id)))
+        },
 
-  if (config.cache) limiter = withCache(limiter, config.cache)
-  if (config.retry) limiter = withRetry(limiter, config.retry)
-  if (config.circuitBreaker) limiter = withCircuitBreaker(limiter, config.circuitBreaker)
-  if (config.errorPolicy) limiter = withErrorPolicy(limiter, config.errorPolicy)
+        async destroy() {
+            cleanupHandle.stop()
+            await conn.end()
+        },
+    }
 
-  return limiter
+    if (config.cache) limiter = withCache(limiter, config.cache)
+    if (config.retry) limiter = withRetry(limiter, config.retry)
+    if (config.circuitBreaker) limiter = withCircuitBreaker(limiter, config.circuitBreaker)
+    if (config.errorPolicy) limiter = withErrorPolicy(limiter, config.errorPolicy)
+
+    return limiter
 }

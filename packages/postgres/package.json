@@ -1,7 +1,7 @@
 {
     "name": "@ratelock/postgres",
     "description": "PostgreSQL storage backend for RateLock rate limiting system",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "publishConfig": {
         "access": "public"
     },
@@ -30,7 +30,7 @@
         "test": "vitest --exclude \"**/*.integration.test.ts\"",
         "test:run": "vitest run --exclude \"**/*.integration.test.ts\"",
         "test:integration": "vitest run",
-        "typecheck": "tsc --noEmit",
+        "typecheck": "tsgo --noEmit",
         "clean": "rimraf dist node_modules .turbo",
         "pre-commit": "lint-staged"
     },

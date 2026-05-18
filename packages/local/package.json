@@ -31,7 +31,7 @@
         "test:ui": "vitest --ui",
         "test:run": "vitest run",
         "test:coverage": "vitest run --coverage",
-        "clean": "rimraf node_modules dist",
+        "clean": "rimraf dist .turbo node_modules",
         "typecheck": "tsgo --noEmit",
         "pre-commit": "lint-staged"
     },

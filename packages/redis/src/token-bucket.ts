@@ -6,6 +6,7 @@ import {
     type RetryConfig,
     type TokenBucketOptions,
     type TokenBucketResult,
+    validateTokenBucketOptions,
     withCache,
     withCircuitBreaker,
     withErrorPolicy,
@@ -49,9 +50,10 @@ export type TokenBucketLimiterConfig = TokenBucketOptions & {
 export async function createTokenBucketLimiter(
     config: TokenBucketLimiterConfig
 ): Promise<Limiter<TokenBucketResult>> {
+    validateTokenBucketOptions(config)
     const { capacity, refillRate, prefix = 'tb' } = config
 
-    const { client, disconnect: _disconnect } = await createConnection(config)
+    const { client, disconnect } = await createConnection(config)
 
     let limiter: Limiter<TokenBucketResult> = {
         async check(id: string): Promise<TokenBucketResult> {
@@ -62,17 +64,21 @@ export async function createTokenBucketLimiter(
                 [key],
                 [capacity.toString(), refillRate.toString(), now.toString()]
             )
-      const res = raw as [unknown, unknown, unknown]
-      return {
-        allowed: Number(res[0]) === 1,
-        remaining: Number(res[1]),
-        tokens: Number(res[1]),
-        refillTime: Number(res[2]),
+            const res = raw as [unknown, unknown, unknown]
+            return {
+                allowed: Number(res[0]) === 1,
+                remaining: Number(res[1]),
+                tokens: Number(res[1]),
+                refillTime: Number(res[2]),
             }
         },
 
         async checkBatch(ids: string[]): Promise<TokenBucketResult[]> {
-            return Promise.all(ids.map(id => this.check(id)))
+            return Promise.all(ids.map(id => limiter.check(id)))
+        },
+
+        async destroy() {
+            await disconnect()
         },
     }
 

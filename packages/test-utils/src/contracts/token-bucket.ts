@@ -8,7 +8,7 @@ export function tokenBucketContract(createLimiter: TokenBucketFactory): void {
         let limiter: Limiter<TokenBucketResult>
 
         beforeEach(async () => {
-            limiter = await createLimiter({ capacity: 5, refillRate: 10, refillInterval: 100 })
+            limiter = await createLimiter({ capacity: 5, refillRate: 10 })
         })
 
         it('allows requests within capacity', async () => {

@@ -1,10 +1,10 @@
 import type { PgDriver } from './drivers/types'
 
 const TABLES = [
-  { table: 'ratelock.fixed_window', column: 'expires_at' },
-  { table: 'ratelock.sliding_window', column: 'expires_at' },
-  { table: 'ratelock.token_bucket', column: 'expires_at' },
-  { table: 'ratelock.individual_fixed_window', column: 'expires_at' },
+    { table: 'ratelock.fixed_window', column: 'expires_at' },
+    { table: 'ratelock.sliding_window', column: 'expires_at' },
+    { table: 'ratelock.token_bucket', column: 'expires_at' },
+    { table: 'ratelock.individual_fixed_window', column: 'expires_at' },
 ] as const
 
 const CLEANUP_INTERVAL_MS = 300_000
@@ -13,46 +13,48 @@ type CleanupHandle = { stop: () => void }
 
 const runners = new WeakMap<PgDriver, CleanupHandle>()
 
+/** Delete expired rows from all rate-limit tables. Returns the total number of rows removed. */
 export async function cleanupExpired(driver: PgDriver): Promise<number> {
-  let total = 0
-  for (const { table, column } of TABLES) {
-    try {
-      const rows = await driver.query<{ key: string }>(
-        `DELETE FROM ${table} WHERE ${column} < NOW() - INTERVAL '1 hour' RETURNING key`,
-      )
-      total += rows.length
-    } catch {
-      // cleanup is best-effort
+    let total = 0
+    for (const { table, column } of TABLES) {
+        try {
+            const rows = await driver.query<{ key: string }>(
+                `DELETE FROM ${table} WHERE ${column} < NOW() - INTERVAL '1 hour' RETURNING key`
+            )
+            total += rows.length
+        } catch {
+            // cleanup is best-effort
+        }
     }
-  }
-  return total
+    return total
 }
 
+/** Start a periodic cleanup timer. Uses `unref()` so it won't keep the process alive. */
 export function startAutoCleanup(driver: PgDriver, disabled?: boolean): CleanupHandle {
-  if (disabled || runners.has(driver)) {
-    return { stop: () => {} }
-  }
-
-  let running = true
-
-  const loop = async () => {
-    while (running) {
-      await new Promise((r) => setTimeout(r, CLEANUP_INTERVAL_MS))
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      if (!running) break
-      await cleanupExpired(driver).catch(() => {})
+    if (disabled || runners.has(driver)) {
+        return runners.get(driver) ?? { stop: () => {} }
     }
-  }
 
-  loop()
+    let timer: ReturnType<typeof setTimeout> | null = null
 
-  const handle: CleanupHandle = {
-    stop: () => {
-      running = false
-      runners.delete(driver)
-    },
-  }
+    const tick = () => {
+        cleanupExpired(driver).catch(() => {})
+        timer = setTimeout(tick, CLEANUP_INTERVAL_MS)
+        timer.unref()
+    }
 
-  runners.set(driver, handle)
-  return handle
+    // Start first tick after the interval (not immediately)
+    timer = setTimeout(tick, CLEANUP_INTERVAL_MS)
+    timer.unref()
+
+    const handle: CleanupHandle = {
+        stop: () => {
+            if (timer) clearTimeout(timer)
+            timer = null
+            runners.delete(driver)
+        },
+    }
+
+    runners.set(driver, handle)
+    return handle
 }

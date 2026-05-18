@@ -31,10 +31,18 @@ export function withErrorPolicy<T extends BaseResult>(
                     return ids.map(() => ({ allowed: false }) as T)
                 case 'throw':
                 default:
-                    throw new Error(`Rate limit check failed for batch of "${ids.join(', ')}"`, { cause: err })
+                    throw new Error(`Rate limit check failed for batch of "${ids.join(', ')}"`, {
+                        cause: err,
+                    })
             }
         }
     }
 
-    return { check: handle, checkBatch: handleBatch }
+    return {
+        check: handle,
+        checkBatch: handleBatch,
+        async destroy() {
+            await limiter.destroy?.()
+        },
+    }
 }

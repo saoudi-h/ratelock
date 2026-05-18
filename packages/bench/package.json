@@ -6,7 +6,7 @@
         "bench:local": "tsx src/index.ts",
         "bench:full": "tsx src/run-benchmarks.ts",
         "bench": "tsx src/index.ts",
-        "typecheck": "tsc --noEmit",
+        "typecheck": "tsgo --noEmit",
         "clean": "rm -rf .turbo node_modules"
     },
     "dependencies": {

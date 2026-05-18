@@ -13,17 +13,15 @@ export interface RedisClient {
 }
 
 function detectDriver(raw: unknown): 'redis' | 'ioredis' {
-  if (raw && typeof raw === 'object') {
-    // ioredis v5 has 'status' and 'connector'; node-redis has 'isOpen'
-    if ('connector' in raw) return 'ioredis'
-    if ('isOpen' in raw) return 'redis'
-    // Both have 'ping' — check after more specific properties
-    if ('status' in raw) return 'ioredis'
-    if ('ping' in raw) return 'redis'
-  }
-  throw new Error(
-    'Unrecognized Redis client. Provide a redis (node-redis) or ioredis instance.'
-  )
+    if (raw && typeof raw === 'object') {
+        // ioredis v5 has 'status' and 'connector'; node-redis has 'isOpen'
+        if ('connector' in raw) return 'ioredis'
+        if ('isOpen' in raw) return 'redis'
+        // Both have 'ping' — check after more specific properties
+        if ('status' in raw) return 'ioredis'
+        if ('ping' in raw) return 'redis'
+    }
+    throw new Error('Unrecognized Redis client. Provide a redis (node-redis) or ioredis instance.')
 }
 
 async function loadFromUrl(
@@ -87,9 +85,9 @@ export function adaptClient(raw: unknown): RedisClient {
         async set(key: string, value: string, ttlMs: number): Promise<void> {
             const client = raw as any
             if (driver === 'redis') {
-                client.set(key, value, { PX: ttlMs })
+                await client.set(key, value, { PX: ttlMs })
             } else {
-                client.set(key, value, 'PX', ttlMs)
+                await client.set(key, value, 'PX', ttlMs)
             }
         },
 
@@ -140,7 +138,7 @@ export function adaptClient(raw: unknown): RedisClient {
                         })
                     }
                     return results
-                }
+                },
             }
         },
     }

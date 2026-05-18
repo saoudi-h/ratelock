@@ -16,7 +16,7 @@
     "typecheck": "turbo typecheck",
     "prepare": "husky",
     "pre-commit": "turbo pre-commit --concurrency=1",
-    "test": "vitest --run",
+    "test": "vitest",
     "test:watch": "vitest",
     "test:coverage": "vitest --run --coverage"
   },

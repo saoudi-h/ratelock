@@ -2,11 +2,14 @@ import type { PgDriver } from './drivers/types'
 
 const SCHEMA = 'ratelock'
 
-export async function runMigrations(driver: PgDriver, options?: { unlogged?: boolean }): Promise<void> {
-  const tablePrefix = options?.unlogged ? 'UNLOGGED TABLE' : 'TABLE'
-  await driver.query(`CREATE SCHEMA IF NOT EXISTS ${SCHEMA}`)
+export async function runMigrations(
+    driver: PgDriver,
+    options?: { unlogged?: boolean }
+): Promise<void> {
+    const tablePrefix = options?.unlogged ? 'UNLOGGED TABLE' : 'TABLE'
+    await driver.query(`CREATE SCHEMA IF NOT EXISTS ${SCHEMA}`)
 
-  await driver.query(`
+    await driver.query(`
     CREATE ${tablePrefix} IF NOT EXISTS ${SCHEMA}.fixed_window (
       key TEXT PRIMARY KEY,
       count INTEGER NOT NULL DEFAULT 0,
@@ -14,7 +17,7 @@ export async function runMigrations(driver: PgDriver, options?: { unlogged?: boo
     )
   `)
 
-  await driver.query(`
+    await driver.query(`
     CREATE ${tablePrefix} IF NOT EXISTS ${SCHEMA}.sliding_window (
       key TEXT PRIMARY KEY,
       current_count INTEGER NOT NULL DEFAULT 0,
@@ -24,14 +27,22 @@ export async function runMigrations(driver: PgDriver, options?: { unlogged?: boo
     )
   `)
 
-  try {
-    // Migrate last_refill from TIMESTAMPTZ to DOUBLE PRECISION by dropping the legacy table in v0.2.0
-    await driver.query(`DROP TABLE IF EXISTS ${SCHEMA}.token_bucket CASCADE`)
-  } catch {
-    // Table might not exist, ignore error safely
-  }
+    // Migrate last_refill from TIMESTAMPTZ to DOUBLE PRECISION (v0.1 → v0.2)
+    // Only runs if the column type is wrong — safe for repeated execution
+    try {
+        const cols = await driver.query<{ data_type: string }>(
+            `SELECT data_type FROM information_schema.columns
+       WHERE table_schema = '${SCHEMA}' AND table_name = 'token_bucket' AND column_name = 'last_refill'`
+        )
+        if (cols.length > 0 && cols[0]!.data_type !== 'double precision') {
+            // Legacy table has TIMESTAMPTZ — rebuild it
+            await driver.query(`DROP TABLE IF EXISTS ${SCHEMA}.token_bucket CASCADE`)
+        }
+    } catch {
+        // Table might not exist yet, safe to continue
+    }
 
-  await driver.query(`
+    await driver.query(`
     CREATE ${tablePrefix} IF NOT EXISTS ${SCHEMA}.token_bucket (
       key TEXT PRIMARY KEY,
       tokens DOUBLE PRECISION NOT NULL,
@@ -42,7 +53,7 @@ export async function runMigrations(driver: PgDriver, options?: { unlogged?: boo
     )
   `)
 
-  await driver.query(`
+    await driver.query(`
     CREATE ${tablePrefix} IF NOT EXISTS ${SCHEMA}.individual_fixed_window (
       key TEXT PRIMARY KEY,
       count INTEGER NOT NULL DEFAULT 0,
@@ -51,25 +62,25 @@ export async function runMigrations(driver: PgDriver, options?: { unlogged?: boo
     )
   `)
 
-  await driver.query(`
+    await driver.query(`
     CREATE INDEX IF NOT EXISTS idx_fixed_window_expires_at
     ON ${SCHEMA}.fixed_window (expires_at)
     WHERE expires_at IS NOT NULL
   `)
 
-  await driver.query(`
+    await driver.query(`
     CREATE INDEX IF NOT EXISTS idx_sliding_window_expires_at
     ON ${SCHEMA}.sliding_window (expires_at)
     WHERE expires_at IS NOT NULL
   `)
 
-  await driver.query(`
+    await driver.query(`
     CREATE INDEX IF NOT EXISTS idx_token_bucket_expires_at
     ON ${SCHEMA}.token_bucket (expires_at)
     WHERE expires_at IS NOT NULL
   `)
 
-  await driver.query(`
+    await driver.query(`
     CREATE INDEX IF NOT EXISTS idx_individual_fixed_window_expires_at
     ON ${SCHEMA}.individual_fixed_window (expires_at)
     WHERE expires_at IS NOT NULL

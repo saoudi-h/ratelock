@@ -37,5 +37,8 @@ export function withRetry<T>(limiter: Limiter<T>, config: RetryConfig): Limiter<
     return {
         check: retry,
         checkBatch: retryBatch,
+        async destroy() {
+            await limiter.destroy?.()
+        },
     }
 }

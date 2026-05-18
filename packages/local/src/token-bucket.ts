@@ -1,75 +1,80 @@
 import type { Limiter, TokenBucketOptions, TokenBucketResult } from '@ratelock/core'
+import { validateTokenBucketOptions } from '@ratelock/core'
 
 type Bucket = { tokens: number; lastRefill: number }
 
 export type TokenBucketLimiterConfig = TokenBucketOptions & {
-  prefix?: string
-  maxSize?: number
+    prefix?: string
+    maxSize?: number
 }
 
 export async function createTokenBucketLimiter(
-  config: TokenBucketLimiterConfig,
+    config: TokenBucketLimiterConfig
 ): Promise<Limiter<TokenBucketResult>> {
-  const { capacity, refillRate, prefix = 'tb', maxSize = 100000 } = config
-  const state = new Map<string, Bucket>()
-  let ops = 0
+    validateTokenBucketOptions(config)
+    const { capacity, refillRate, prefix = 'tb', maxSize = 100000 } = config
+    const state = new Map<string, Bucket>()
+    let ops = 0
 
-  const sweep = () => {
-    const now = Date.now()
-    let scanned = 0
-    for (const [key, bucket] of state) {
-      const elapsed = (now - bucket.lastRefill) / 1000
-      const tokens = Math.min(capacity, bucket.tokens + elapsed * refillRate)
-      if (tokens >= capacity) state.delete(key)
-      if (++scanned >= 100) break
+    const sweep = () => {
+        const now = Date.now()
+        let scanned = 0
+        for (const [key, bucket] of state) {
+            const elapsed = (now - bucket.lastRefill) / 1000
+            const tokens = Math.min(capacity, bucket.tokens + elapsed * refillRate)
+            if (tokens >= capacity) state.delete(key)
+            if (++scanned >= 100) break
+        }
     }
-  }
 
-  const limiter: Limiter<TokenBucketResult> = {
-    async check(id: string): Promise<TokenBucketResult> {
-      const key = `${prefix}:${id}`
-      const now = Date.now()
-      let bucket = state.get(key)
+    const limiter: Limiter<TokenBucketResult> = {
+        async check(id: string): Promise<TokenBucketResult> {
+            const key = `${prefix}:${id}`
+            const now = Date.now()
+            let bucket = state.get(key)
 
-      if (!bucket) {
-        bucket = { tokens: capacity - 1, lastRefill: now }
-        state.set(key, bucket)
-        if (++ops % 1000 === 0 && state.size > maxSize) sweep()
-        return {
-          allowed: true,
-          remaining: capacity - 1,
-          tokens: capacity - 1,
-          refillTime: 0,
-        }
-      }
+            if (!bucket) {
+                bucket = { tokens: capacity - 1, lastRefill: now }
+                state.set(key, bucket)
+                if (++ops % 1000 === 0 && state.size > maxSize) sweep()
+                return {
+                    allowed: true,
+                    remaining: capacity - 1,
+                    tokens: capacity - 1,
+                    refillTime: 0,
+                }
+            }
 
-      const elapsed = (now - bucket.lastRefill) / 1000
-      const refilled = Math.min(capacity, bucket.tokens + elapsed * refillRate)
+            const elapsed = (now - bucket.lastRefill) / 1000
+            const refilled = Math.min(capacity, bucket.tokens + elapsed * refillRate)
 
-      if (refilled >= 1) {
-        bucket.tokens = refilled - 1
-        bucket.lastRefill = now
-        state.set(key, bucket)
-        return {
-          allowed: true,
-          remaining: Math.floor(bucket.tokens),
-          tokens: Math.floor(bucket.tokens),
-          refillTime: 0,
-        }
-      }
+            if (refilled >= 1) {
+                bucket.tokens = refilled - 1
+                bucket.lastRefill = now
+                state.set(key, bucket)
+                return {
+                    allowed: true,
+                    remaining: Math.floor(bucket.tokens),
+                    tokens: Math.floor(bucket.tokens),
+                    refillTime: 0,
+                }
+            }
 
-      return {
-        allowed: false,
-        remaining: Math.floor(bucket.tokens),
-        tokens: Math.floor(bucket.tokens),
-        refillTime: Math.ceil((1 - bucket.tokens) / refillRate * 1000),
-      }
-    },
+            return {
+                allowed: false,
+                remaining: Math.floor(bucket.tokens),
+                tokens: Math.floor(bucket.tokens),
+                refillTime: Math.ceil(((1 - bucket.tokens) / refillRate) * 1000),
+            }
+        },
 
-    checkBatch(ids: string[]): Promise<TokenBucketResult[]> {
-      return Promise.all(ids.map((id) => limiter.check(id)))
-    },
-  }
+        checkBatch(ids: string[]): Promise<TokenBucketResult[]> {
+            return Promise.all(ids.map(id => limiter.check(id)))
+        },
+        async destroy() {
+            state.clear()
+        },
+    }
 
-  return limiter
+    return limiter
 }

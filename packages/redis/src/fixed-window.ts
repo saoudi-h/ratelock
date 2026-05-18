@@ -6,6 +6,7 @@ import {
     type FixedWindowResult,
     type Limiter,
     type RetryConfig,
+    validateFixedWindowOptions,
     withCache,
     withCircuitBreaker,
     withErrorPolicy,
@@ -44,9 +45,10 @@ export type FixedWindowLimiterConfig = FixedWindowOptions & {
 export async function createFixedWindowLimiter(
     config: FixedWindowLimiterConfig
 ): Promise<Limiter<FixedWindowResult>> {
+    validateFixedWindowOptions(config)
     const { limit, windowMs, prefix = 'fw' } = config
 
-    const { client, disconnect: _disconnect } = await createConnection(config)
+    const { client, disconnect } = await createConnection(config)
 
     let limiter: Limiter<FixedWindowResult> = {
         async check(id: string): Promise<FixedWindowResult> {
@@ -58,11 +60,19 @@ export async function createFixedWindowLimiter(
                 [windowMs.toString(), limit.toString(), now.toString()]
             )
             const res = raw as [unknown, unknown, unknown, unknown]
-            return { allowed: Number(res[0]) === 1, remaining: Number(res[2]), reset: now + Number(res[3]) }
+            return {
+                allowed: Number(res[0]) === 1,
+                remaining: Number(res[2]),
+                reset: now + Number(res[3]),
+            }
         },
 
         async checkBatch(ids: string[]): Promise<FixedWindowResult[]> {
-            return Promise.all(ids.map(id => this.check(id)))
+            return Promise.all(ids.map(id => limiter.check(id)))
+        },
+
+        async destroy() {
+            await disconnect()
         },
     }
 
