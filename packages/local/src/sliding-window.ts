@@ -23,7 +23,7 @@ export async function createSlidingWindowLimiter(
     }
   }
 
-  return {
+  const limiter: Limiter<SlidingWindowResult> = {
     async check(id: string): Promise<SlidingWindowResult> {
       const key = `${prefix}:${id}`
       const now = Date.now()
@@ -51,7 +51,9 @@ export async function createSlidingWindowLimiter(
     },
 
     checkBatch(ids: string[]): Promise<SlidingWindowResult[]> {
-      return Promise.all(ids.map((id) => this.check(id)))
+      return Promise.all(ids.map((id) => limiter.check(id)))
     },
   }
+
+  return limiter
 }

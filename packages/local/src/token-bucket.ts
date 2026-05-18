@@ -25,7 +25,7 @@ export async function createTokenBucketLimiter(
     }
   }
 
-  return {
+  const limiter: Limiter<TokenBucketResult> = {
     async check(id: string): Promise<TokenBucketResult> {
       const key = `${prefix}:${id}`
       const now = Date.now()
@@ -67,7 +67,9 @@ export async function createTokenBucketLimiter(
     },
 
     checkBatch(ids: string[]): Promise<TokenBucketResult[]> {
-      return Promise.all(ids.map((id) => this.check(id)))
+      return Promise.all(ids.map((id) => limiter.check(id)))
     },
   }
+
+  return limiter
 }

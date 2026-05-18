@@ -23,7 +23,7 @@ export async function createIndividualFixedWindowLimiter(
     }
   }
 
-  return {
+  const limiter: Limiter<FixedWindowResult> = {
     async check(id: string): Promise<FixedWindowResult> {
       const key = `${prefix}:${id}`
       const now = Date.now()
@@ -54,7 +54,9 @@ export async function createIndividualFixedWindowLimiter(
     },
 
     checkBatch(ids: string[]): Promise<FixedWindowResult[]> {
-      return Promise.all(ids.map((id) => this.check(id)))
+      return Promise.all(ids.map((id) => limiter.check(id)))
     },
   }
+
+  return limiter
 }
