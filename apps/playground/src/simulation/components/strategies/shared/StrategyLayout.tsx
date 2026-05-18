@@ -58,7 +58,8 @@ export const StrategyLayout = ({
                 ">
                 <div className="flex flex-col">
                     <CardTitle className="font-serif text-3xl font-black">{title}</CardTitle>
-                    <CardDescription className="
+                    <CardDescription
+                        className="
                       text-sm font-medium text-muted-foreground
                     ">
                         {subTitle}
@@ -126,7 +127,8 @@ export const StrategyLayout = ({
                             {autoRequests ? 'Disable Auto-Requests' : 'Auto-Requests'}
                         </Button>
                         {autoRequests && (
-                            <div className="
+                            <div
+                                className="
                               flex items-center gap-2 px-4 text-sm
                             ">
                                 <Label htmlFor="fixed-interval-slider">Interval:</Label>

@@ -57,7 +57,10 @@ export const StrategyTabs = () => {
             <Tabs defaultValue={TABS.find(tab => tab.default)?.key ?? 'fixed-window'}>
                 <TabsList className="h-12 w-full bg-background">
                     {TABS.map(tab => (
-                        <TabsTrigger key={tab.key} value={tab.key} className="
+                        <TabsTrigger
+                            key={tab.key}
+                            value={tab.key}
+                            className="
                           border-dashed
                         ">
                             <div

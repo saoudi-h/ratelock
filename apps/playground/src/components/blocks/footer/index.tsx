@@ -26,7 +26,9 @@ export const Footer = () => {
                           md:flex-row
                         ">
                         <div className="font-serif text-xl font-bold">RateLock</div>
-                        <Link href="https://github.com/saoudi-h/ratelock" className="
+                        <Link
+                            href="https://github.com/saoudi-h/ratelock"
+                            className="
                           text-primary
                         ">
                             Github

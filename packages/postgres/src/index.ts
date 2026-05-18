@@ -10,19 +10,19 @@ export type { TokenBucketLimiterConfig } from './token-bucket'
 export { createIndividualFixedWindowLimiter } from './individual-fixed-window'
 export type { IndividualFixedWindowLimiterConfig } from './individual-fixed-window'
 
-export { createConnection, postgresDriver, pgDriver } from './drivers'
+export { createConnection, pgDriver, postgresDriver } from './drivers'
 export type { PgDriver } from './drivers/types'
 
-export { runMigrations } from './migrations'
 export { cleanupExpired } from './cleanup'
+export { runMigrations } from './migrations'
 
 export type {
-  Limiter,
-  FixedWindowResult,
-  SlidingWindowResult,
-  TokenBucketResult,
-  FixedWindowOptions,
-  SlidingWindowOptions,
-  TokenBucketOptions,
-  IndividualFixedWindowOptions,
+    FixedWindowOptions,
+    FixedWindowResult,
+    IndividualFixedWindowOptions,
+    Limiter,
+    SlidingWindowOptions,
+    SlidingWindowResult,
+    TokenBucketOptions,
+    TokenBucketResult,
 } from '@ratelock/core'

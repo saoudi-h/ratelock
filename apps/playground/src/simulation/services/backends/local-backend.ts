@@ -27,7 +27,10 @@ export class LocalBackend implements RateLimitBackend {
 
         try {
             // Always use local storage configuration for client-side operations
-            const maxSize = storage.type === 'local' ? (storage.config.cleanupRequestThreshold ?? 100000) : 100000
+            const maxSize =
+                storage.type === 'local'
+                    ? (storage.config.cleanupRequestThreshold ?? 100000)
+                    : 100000
 
             let factoryResult: any
             switch (strategy.type) {

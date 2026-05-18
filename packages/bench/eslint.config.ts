@@ -10,6 +10,7 @@ export default defineConfig([
             'prettier.config.js',
             'tsdown.config.ts',
             'lint-staged.config.mjs',
+            'src/types.d.ts',
         ],
     },
 ])

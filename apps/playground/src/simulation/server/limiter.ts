@@ -168,5 +168,5 @@ export async function checkRateLimitBatch(
     for (const id of identifiers) {
         out.push(await limiter.check(id))
     }
-    return out;
+    return out
 }

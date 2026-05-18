@@ -1,11 +1,13 @@
 #!/usr/bin/env node
-import { performance } from 'perf_hooks'
-import { writeFileSync, mkdirSync, existsSync } from 'fs'
+import {
+    createFixedWindowLimiter as createLocalFixed,
+    createIndividualFixedWindowLimiter as createLocalIndividual,
+    createSlidingWindowLimiter as createLocalSliding,
+    createTokenBucketLimiter as createLocalToken,
+} from '@ratelock/local'
+import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import { createFixedWindowLimiter as createLocalFixed } from '@ratelock/local'
-import { createSlidingWindowLimiter as createLocalSliding } from '@ratelock/local'
-import { createTokenBucketLimiter as createLocalToken } from '@ratelock/local'
-import { createIndividualFixedWindowLimiter as createLocalIndividual } from '@ratelock/local'
+import { performance } from 'perf_hooks'
 
 // Constants
 const DURATION_MS = parseInt(process.env.BENCH_DURATION ?? '2000', 10)
@@ -37,6 +39,7 @@ async function runHarness(
 ): Promise<BenchMetrics> {
     const latencies: number[] = []
     let successes = 0
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let failures = 0
     let totalReqs = 0
 
@@ -50,17 +53,23 @@ async function runHarness(
         while (performance.now() < endAt) {
             let idOrIds: string | string[]
 
-            const keySuffix = name.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()
+            const keySuffix = name.replace(/[^a-z0-9]/gi, '-').toLowerCase()
 
             if (scenario === 'diverse-keys') {
                 idOrIds = `bench:key:div:${keySuffix}:${idCounter++}`
             } else if (scenario === 'realistic-mix') {
-                const isSpam = Math.random() < 0.30
-                idOrIds = isSpam ? `bench:key:spam-realistic:${keySuffix}` : `bench:key:unique:${keySuffix}:${idCounter++}`
+                const isSpam = Math.random() < 0.3
+                idOrIds = isSpam
+                    ? `bench:key:spam-realistic:${keySuffix}`
+                    : `bench:key:unique:${keySuffix}:${idCounter++}`
             } else if (scenario === 'extreme-spam') {
                 idOrIds = `bench:key:extreme-spam-target:${keySuffix}`
-            } else { // batch-check
-                idOrIds = Array.from({ length: 5 }, (_, i) => `bench:key:batch:${keySuffix}:${idCounter++}-${i}`)
+            } else {
+                // batch-check
+                idOrIds = Array.from(
+                    { length: 5 },
+                    (_, i) => `bench:key:batch:${keySuffix}:${idCounter++}-${i}`
+                )
             }
 
             const t0 = performance.now()
@@ -68,11 +77,11 @@ async function runHarness(
                 const res = await checkFn(idOrIds)
                 const elapsed = performance.now() - t0
                 latencies.push(elapsed)
-                
+
                 // Track rate limit allowance
-                const allowed = Array.isArray(res) 
-                    ? res.every(r => r && r.allowed) 
-                    : (res && res.allowed !== false)
+                const allowed = Array.isArray(res)
+                    ? res.every(r => r && r.allowed)
+                    : res && res.allowed !== false
 
                 if (allowed) {
                     successes++
@@ -93,7 +102,7 @@ async function runHarness(
 
     await Promise.all(workers)
     const elapsed = performance.now() - start
-    
+
     // Sort for percentiles
     const sorted = latencies.slice().sort((a, b) => a - b)
     const p = (pct: number) => {
@@ -115,7 +124,7 @@ async function runHarness(
         latP50: p(50),
         latP95: p(95),
         latP99: p(99),
-        totalReqs
+        totalReqs,
     }
 }
 
@@ -123,10 +132,14 @@ async function runHarness(
 function printTable(title: string, metrics: BenchMetrics[]) {
     console.log(`\n  ■ ${title.toUpperCase()}`)
     console.log(`  ` + `─`.repeat(110))
-    console.log(`  ${'Implementation'.padEnd(38)} | ${'Ops/sec'.padStart(10)} | ${'Allowed'.padStart(8)} | ${'Rate Limit %'.padStart(12)} | ${'Avg Lat'.padStart(10)} | ${'p95 Lat'.padStart(10)} | ${'p99 Lat'.padStart(10)}`)
+    console.log(
+        `  ${'Implementation'.padEnd(38)} | ${'Ops/sec'.padStart(10)} | ${'Allowed'.padStart(8)} | ${'Rate Limit %'.padStart(12)} | ${'Avg Lat'.padStart(10)} | ${'p95 Lat'.padStart(10)} | ${'p99 Lat'.padStart(10)}`
+    )
     console.log(`  ` + `─`.repeat(110))
     for (const m of metrics) {
-        console.log(`  ${m.name.padEnd(38)} | ${m.throughput.toLocaleString().padStart(10)} | ${m.allowedCount.toLocaleString().padStart(8)} | ${(m.successRate.toFixed(3) + '%').padStart(12)} | ${m.latAvg.toFixed(2).padStart(8)}ms | ${m.latP95.toFixed(2).padStart(8)}ms | ${m.latP99.toFixed(2).padStart(8)}ms`)
+        console.log(
+            `  ${m.name.padEnd(38)} | ${m.throughput.toLocaleString().padStart(10)} | ${m.allowedCount.toLocaleString().padStart(8)} | ${(m.successRate.toFixed(3) + '%').padStart(12)} | ${m.latAvg.toFixed(2).padStart(8)}ms | ${m.latP95.toFixed(2).padStart(8)}ms | ${m.latP99.toFixed(2).padStart(8)}ms`
+        )
     }
     console.log(`  ` + `─`.repeat(110))
 }
@@ -154,18 +167,50 @@ async function main() {
     const ifw = await createLocalIndividual({ limit: LIMIT, windowMs: WINDOW_MS })
 
     const localMetrics: BenchMetrics[] = []
-    
+
     // Diverse Keys Scenario
-    localMetrics.push(await runHarness('Local Fixed Window (Diverse)', 'diverse-keys', (id) => fw.check(id as string)))
-    localMetrics.push(await runHarness('Local Sliding Window (Diverse)', 'diverse-keys', (id) => sw.check(id as string)))
-    localMetrics.push(await runHarness('Local Token Bucket (Diverse)', 'diverse-keys', (id) => tb.check(id as string)))
-    localMetrics.push(await runHarness('Local Indiv Fixed Window (Diverse)', 'diverse-keys', (id) => ifw.check(id as string)))
-    
+    localMetrics.push(
+        await runHarness('Local Fixed Window (Diverse)', 'diverse-keys', id =>
+            fw.check(id as string)
+        )
+    )
+    localMetrics.push(
+        await runHarness('Local Sliding Window (Diverse)', 'diverse-keys', id =>
+            sw.check(id as string)
+        )
+    )
+    localMetrics.push(
+        await runHarness('Local Token Bucket (Diverse)', 'diverse-keys', id =>
+            tb.check(id as string)
+        )
+    )
+    localMetrics.push(
+        await runHarness('Local Indiv Fixed Window (Diverse)', 'diverse-keys', id =>
+            ifw.check(id as string)
+        )
+    )
+
     // Extreme Spam Scenario
-    localMetrics.push(await runHarness('Local Fixed Window (Extreme Spam)', 'extreme-spam', (id) => fw.check(id as string)))
-    localMetrics.push(await runHarness('Local Sliding Window (Extreme Spam)', 'extreme-spam', (id) => sw.check(id as string)))
-    localMetrics.push(await runHarness('Local Token Bucket (Extreme Spam)', 'extreme-spam', (id) => tb.check(id as string)))
-    localMetrics.push(await runHarness('Local Indiv Fixed Window (Extreme Spam)', 'extreme-spam', (id) => ifw.check(id as string)))
+    localMetrics.push(
+        await runHarness('Local Fixed Window (Extreme Spam)', 'extreme-spam', id =>
+            fw.check(id as string)
+        )
+    )
+    localMetrics.push(
+        await runHarness('Local Sliding Window (Extreme Spam)', 'extreme-spam', id =>
+            sw.check(id as string)
+        )
+    )
+    localMetrics.push(
+        await runHarness('Local Token Bucket (Extreme Spam)', 'extreme-spam', id =>
+            tb.check(id as string)
+        )
+    )
+    localMetrics.push(
+        await runHarness('Local Indiv Fixed Window (Extreme Spam)', 'extreme-spam', id =>
+            ifw.check(id as string)
+        )
+    )
 
     printTable('Local Memory Strategy & Scenario Comparison', localMetrics)
     reports['local-algorithms'] = localMetrics
@@ -183,24 +228,73 @@ async function main() {
         const { createFixedWindowLimiter: createRedisFixed } = await import('@ratelock/redis')
         const { createSlidingWindowLimiter: createRedisSliding } = await import('@ratelock/redis')
         const { createTokenBucketLimiter: createRedisToken } = await import('@ratelock/redis')
-        const { createIndividualFixedWindowLimiter: createRedisIndividual } = await import('@ratelock/redis')
+        const { createIndividualFixedWindowLimiter: createRedisIndividual } =
+            await import('@ratelock/redis')
 
-        const rf = await createRedisFixed({ client: redisClient, limit: LIMIT, windowMs: WINDOW_MS })
-        const rs = await createRedisSliding({ client: redisClient, limit: LIMIT, windowMs: WINDOW_MS })
-        const rt = await createRedisToken({ client: redisClient, capacity: LIMIT, refillRate: LIMIT / 60 })
-        const ri = await createRedisIndividual({ client: redisClient, limit: LIMIT, windowMs: WINDOW_MS })
+        const rf = await createRedisFixed({
+            client: redisClient,
+            limit: LIMIT,
+            windowMs: WINDOW_MS,
+        })
+        const rs = await createRedisSliding({
+            client: redisClient,
+            limit: LIMIT,
+            windowMs: WINDOW_MS,
+        })
+        const rt = await createRedisToken({
+            client: redisClient,
+            capacity: LIMIT,
+            refillRate: LIMIT / 60,
+        })
+        const ri = await createRedisIndividual({
+            client: redisClient,
+            limit: LIMIT,
+            windowMs: WINDOW_MS,
+        })
 
         // Diverse Keys Scenario
-        redisStrategyMetrics.push(await runHarness('Redis Fixed Window (Diverse)', 'diverse-keys', (id) => rf.check(id as string)))
-        redisStrategyMetrics.push(await runHarness('Redis Sliding Window (Diverse)', 'diverse-keys', (id) => rs.check(id as string)))
-        redisStrategyMetrics.push(await runHarness('Redis Token Bucket (Diverse)', 'diverse-keys', (id) => rt.check(id as string)))
-        redisStrategyMetrics.push(await runHarness('Redis Indiv Fixed Window (Diverse)', 'diverse-keys', (id) => ri.check(id as string)))
-        
+        redisStrategyMetrics.push(
+            await runHarness('Redis Fixed Window (Diverse)', 'diverse-keys', id =>
+                rf.check(id as string)
+            )
+        )
+        redisStrategyMetrics.push(
+            await runHarness('Redis Sliding Window (Diverse)', 'diverse-keys', id =>
+                rs.check(id as string)
+            )
+        )
+        redisStrategyMetrics.push(
+            await runHarness('Redis Token Bucket (Diverse)', 'diverse-keys', id =>
+                rt.check(id as string)
+            )
+        )
+        redisStrategyMetrics.push(
+            await runHarness('Redis Indiv Fixed Window (Diverse)', 'diverse-keys', id =>
+                ri.check(id as string)
+            )
+        )
+
         // Extreme Spam Scenario
-        redisStrategyMetrics.push(await runHarness('Redis Fixed Window (Extreme Spam)', 'extreme-spam', (id) => rf.check(id as string)))
-        redisStrategyMetrics.push(await runHarness('Redis Sliding Window (Extreme Spam)', 'extreme-spam', (id) => rs.check(id as string)))
-        redisStrategyMetrics.push(await runHarness('Redis Token Bucket (Extreme Spam)', 'extreme-spam', (id) => rt.check(id as string)))
-        redisStrategyMetrics.push(await runHarness('Redis Indiv Fixed Window (Extreme Spam)', 'extreme-spam', (id) => ri.check(id as string)))
+        redisStrategyMetrics.push(
+            await runHarness('Redis Fixed Window (Extreme Spam)', 'extreme-spam', id =>
+                rf.check(id as string)
+            )
+        )
+        redisStrategyMetrics.push(
+            await runHarness('Redis Sliding Window (Extreme Spam)', 'extreme-spam', id =>
+                rs.check(id as string)
+            )
+        )
+        redisStrategyMetrics.push(
+            await runHarness('Redis Token Bucket (Extreme Spam)', 'extreme-spam', id =>
+                rt.check(id as string)
+            )
+        )
+        redisStrategyMetrics.push(
+            await runHarness('Redis Indiv Fixed Window (Extreme Spam)', 'extreme-spam', id =>
+                ri.check(id as string)
+            )
+        )
 
         redisClient.disconnect()
     } catch (e: any) {
@@ -223,30 +317,87 @@ async function main() {
 
         // Truncate tables to ensure a clean benchmark run state
         try {
-            await pool.query('TRUNCATE TABLE ratelock.fixed_window, ratelock.sliding_window, ratelock.token_bucket, ratelock.individual_fixed_window CASCADE')
-        } catch {}
+            await pool.query(
+                'TRUNCATE TABLE ratelock.fixed_window, ratelock.sliding_window, ratelock.token_bucket, ratelock.individual_fixed_window CASCADE'
+            )
+        } catch {
+            /* empty */
+        }
 
         const { createFixedWindowLimiter: createPgFixed } = await import('@ratelock/postgres')
         const { createSlidingWindowLimiter: createPgSliding } = await import('@ratelock/postgres')
         const { createTokenBucketLimiter: createPgToken } = await import('@ratelock/postgres')
-        const { createIndividualFixedWindowLimiter: createPgIndividual } = await import('@ratelock/postgres')
+        const { createIndividualFixedWindowLimiter: createPgIndividual } =
+            await import('@ratelock/postgres')
 
-        const pf = await createPgFixed({ pool, limit: LIMIT, windowMs: WINDOW_MS, skipMigrations: false })
-        const ps = await createPgSliding({ pool, limit: LIMIT, windowMs: WINDOW_MS, skipMigrations: true })
-        const pt = await createPgToken({ pool, capacity: LIMIT, refillRate: LIMIT / 60, skipMigrations: true })
-        const pi = await createPgIndividual({ pool, limit: LIMIT, windowMs: WINDOW_MS, skipMigrations: true })
+        const pf = await createPgFixed({
+            pool,
+            limit: LIMIT,
+            windowMs: WINDOW_MS,
+            skipMigrations: false,
+        })
+        const ps = await createPgSliding({
+            pool,
+            limit: LIMIT,
+            windowMs: WINDOW_MS,
+            skipMigrations: true,
+        })
+        const pt = await createPgToken({
+            pool,
+            capacity: LIMIT,
+            refillRate: LIMIT / 60,
+            skipMigrations: true,
+        })
+        const pi = await createPgIndividual({
+            pool,
+            limit: LIMIT,
+            windowMs: WINDOW_MS,
+            skipMigrations: true,
+        })
 
         // Diverse Keys Scenario
-        pgStrategyMetrics.push(await runHarness('Postgres Fixed Window (Diverse)', 'diverse-keys', (id) => pf.check(id as string)))
-        pgStrategyMetrics.push(await runHarness('Postgres Sliding Window (Diverse)', 'diverse-keys', (id) => ps.check(id as string)))
-        pgStrategyMetrics.push(await runHarness('Postgres Token Bucket (Diverse)', 'diverse-keys', (id) => pt.check(id as string)))
-        pgStrategyMetrics.push(await runHarness('Postgres Indiv Fixed Window (Diverse)', 'diverse-keys', (id) => pi.check(id as string)))
-        
+        pgStrategyMetrics.push(
+            await runHarness('Postgres Fixed Window (Diverse)', 'diverse-keys', id =>
+                pf.check(id as string)
+            )
+        )
+        pgStrategyMetrics.push(
+            await runHarness('Postgres Sliding Window (Diverse)', 'diverse-keys', id =>
+                ps.check(id as string)
+            )
+        )
+        pgStrategyMetrics.push(
+            await runHarness('Postgres Token Bucket (Diverse)', 'diverse-keys', id =>
+                pt.check(id as string)
+            )
+        )
+        pgStrategyMetrics.push(
+            await runHarness('Postgres Indiv Fixed Window (Diverse)', 'diverse-keys', id =>
+                pi.check(id as string)
+            )
+        )
+
         // Extreme Spam Scenario
-        pgStrategyMetrics.push(await runHarness('Postgres Fixed Window (Extreme Spam)', 'extreme-spam', (id) => pf.check(id as string)))
-        pgStrategyMetrics.push(await runHarness('Postgres Sliding Window (Extreme Spam)', 'extreme-spam', (id) => ps.check(id as string)))
-        pgStrategyMetrics.push(await runHarness('Postgres Token Bucket (Extreme Spam)', 'extreme-spam', (id) => pt.check(id as string)))
-        pgStrategyMetrics.push(await runHarness('Postgres Indiv Fixed Window (Extreme Spam)', 'extreme-spam', (id) => pi.check(id as string)))
+        pgStrategyMetrics.push(
+            await runHarness('Postgres Fixed Window (Extreme Spam)', 'extreme-spam', id =>
+                pf.check(id as string)
+            )
+        )
+        pgStrategyMetrics.push(
+            await runHarness('Postgres Sliding Window (Extreme Spam)', 'extreme-spam', id =>
+                ps.check(id as string)
+            )
+        )
+        pgStrategyMetrics.push(
+            await runHarness('Postgres Token Bucket (Extreme Spam)', 'extreme-spam', id =>
+                pt.check(id as string)
+            )
+        )
+        pgStrategyMetrics.push(
+            await runHarness('Postgres Indiv Fixed Window (Extreme Spam)', 'extreme-spam', id =>
+                pi.check(id as string)
+            )
+        )
 
         await pool.end()
     } catch (e: any) {
@@ -261,7 +412,7 @@ async function main() {
     // ==========================================
     console.log(`\nRunning Matrix 4: RateLock vs rate-limiter-flexible...`)
     const compMetrics: BenchMetrics[] = []
-    
+
     try {
         const rateLimiterFlexible = await import('rate-limiter-flexible')
         const rlfMemory = new rateLimiterFlexible.RateLimiterMemory({
@@ -269,15 +420,21 @@ async function main() {
             duration: WINDOW_MS / 1000,
         })
 
-        compMetrics.push(await runHarness('RateLock Local Fixed Window (Spam)', 'extreme-spam', (id) => fw.check(id as string)))
-        compMetrics.push(await runHarness('rate-limiter-flexible Memory (Spam)', 'extreme-spam', async (id) => {
-            try {
-                await rlfMemory.consume(id as string, 1)
-                return { allowed: true }
-            } catch {
-                return { allowed: false }
-            }
-        }))
+        compMetrics.push(
+            await runHarness('RateLock Local Fixed Window (Spam)', 'extreme-spam', id =>
+                fw.check(id as string)
+            )
+        )
+        compMetrics.push(
+            await runHarness('rate-limiter-flexible Memory (Spam)', 'extreme-spam', async id => {
+                try {
+                    await rlfMemory.consume(id as string, 1)
+                    return { allowed: true }
+                } catch {
+                    return { allowed: false }
+                }
+            })
+        )
 
         // Redis backend comparison
         try {
@@ -286,7 +443,11 @@ async function main() {
             await redisClient.connect()
 
             const { createFixedWindowLimiter: createRedisFixed } = await import('@ratelock/redis')
-            const ratelockRedis = await createRedisFixed({ client: redisClient, limit: LIMIT, windowMs: WINDOW_MS })
+            const ratelockRedis = await createRedisFixed({
+                client: redisClient,
+                limit: LIMIT,
+                windowMs: WINDOW_MS,
+            })
 
             const rlfRedis = new rateLimiterFlexible.RateLimiterRedis({
                 storeClient: redisClient,
@@ -294,15 +455,21 @@ async function main() {
                 duration: WINDOW_MS / 1000,
             })
 
-            compMetrics.push(await runHarness('RateLock Redis Fixed Window (Spam)', 'extreme-spam', (id) => ratelockRedis.check(id as string)))
-            compMetrics.push(await runHarness('rate-limiter-flexible Redis (Spam)', 'extreme-spam', async (id) => {
-                try {
-                    await rlfRedis.consume(id as string, 1)
-                    return { allowed: true }
-                } catch {
-                    return { allowed: false }
-                }
-            }))
+            compMetrics.push(
+                await runHarness('RateLock Redis Fixed Window (Spam)', 'extreme-spam', id =>
+                    ratelockRedis.check(id as string)
+                )
+            )
+            compMetrics.push(
+                await runHarness('rate-limiter-flexible Redis (Spam)', 'extreme-spam', async id => {
+                    try {
+                        await rlfRedis.consume(id as string, 1)
+                        return { allowed: true }
+                    } catch {
+                        return { allowed: false }
+                    }
+                })
+            )
 
             await redisClient.quit()
         } catch (e: any) {
@@ -316,29 +483,47 @@ async function main() {
             const pool = new pg.Pool({ connectionString: pgUrl, max: CONCURRENCY })
 
             const { createFixedWindowLimiter: createPgFixed } = await import('@ratelock/postgres')
-            const ratelockPg = await createPgFixed({ pool, limit: LIMIT, windowMs: WINDOW_MS, skipMigrations: true })
-
-            const rlfPg = await new Promise<any>((resolve, reject) => {
-                const limiter = new rateLimiterFlexible.RateLimiterPostgres({
-                    storeClient: pool,
-                    points: LIMIT,
-                    duration: WINDOW_MS / 1000,
-                    tableName: 'rlfl_postgres_fixed',
-                }, (err) => {
-                    if (err) reject(err)
-                    else resolve(limiter)
-                })
+            const ratelockPg = await createPgFixed({
+                pool,
+                limit: LIMIT,
+                windowMs: WINDOW_MS,
+                skipMigrations: true,
             })
 
-            compMetrics.push(await runHarness('RateLock Postgres Fixed Window (Spam)', 'extreme-spam', (id) => ratelockPg.check(id as string)))
-            compMetrics.push(await runHarness('rate-limiter-flexible Postgres (Spam)', 'extreme-spam', async (id) => {
-                try {
-                    await rlfPg.consume(id as string, 1)
-                    return { allowed: true }
-                } catch {
-                    return { allowed: false }
-                }
-            }))
+            const rlfPg = await new Promise<any>((resolve, reject) => {
+                const limiter = new rateLimiterFlexible.RateLimiterPostgres(
+                    {
+                        storeClient: pool,
+                        points: LIMIT,
+                        duration: WINDOW_MS / 1000,
+                        tableName: 'rlfl_postgres_fixed',
+                    },
+                    err => {
+                        if (err) reject(err)
+                        else resolve(limiter)
+                    }
+                )
+            })
+
+            compMetrics.push(
+                await runHarness('RateLock Postgres Fixed Window (Spam)', 'extreme-spam', id =>
+                    ratelockPg.check(id as string)
+                )
+            )
+            compMetrics.push(
+                await runHarness(
+                    'rate-limiter-flexible Postgres (Spam)',
+                    'extreme-spam',
+                    async id => {
+                        try {
+                            await rlfPg.consume(id as string, 1)
+                            return { allowed: true }
+                        } catch {
+                            return { allowed: false }
+                        }
+                    }
+                )
+            )
 
             await pool.end()
         } catch (e: any) {
@@ -366,23 +551,55 @@ async function main() {
         // Redis 7 (node-redis vs ioredis)
         const r1 = createClient({ url: 'redis://:testpassword@localhost:6380' })
         await r1.connect()
-        const redisNodeFixed = await createRedisFixed({ client: r1, limit: LIMIT, windowMs: WINDOW_MS })
+        const redisNodeFixed = await createRedisFixed({
+            client: r1,
+            limit: LIMIT,
+            windowMs: WINDOW_MS,
+        })
 
         const r2 = new IORedis('redis://:testpassword@localhost:6380')
-        const redisIoFixed = await createRedisFixed({ client: r2, limit: LIMIT, windowMs: WINDOW_MS })
+        const redisIoFixed = await createRedisFixed({
+            client: r2,
+            limit: LIMIT,
+            windowMs: WINDOW_MS,
+        })
 
         // Valkey 8 (node-redis vs ioredis)
         const v1 = createClient({ url: 'redis://:testpassword@localhost:6381' })
         await v1.connect()
-        const valkeyNodeFixed = await createRedisFixed({ client: v1, limit: LIMIT, windowMs: WINDOW_MS })
+        const valkeyNodeFixed = await createRedisFixed({
+            client: v1,
+            limit: LIMIT,
+            windowMs: WINDOW_MS,
+        })
 
         const v2 = new IORedis('redis://:testpassword@localhost:6381')
-        const valkeyIoFixed = await createRedisFixed({ client: v2, limit: LIMIT, windowMs: WINDOW_MS })
+        const valkeyIoFixed = await createRedisFixed({
+            client: v2,
+            limit: LIMIT,
+            windowMs: WINDOW_MS,
+        })
 
-        driverMetrics.push(await runHarness('Redis 7 (node-redis client) (Spam)', 'extreme-spam', (id) => redisNodeFixed.check(id as string)))
-        driverMetrics.push(await runHarness('Redis 7 (ioredis client) (Spam)', 'extreme-spam', (id) => redisIoFixed.check(id as string)))
-        driverMetrics.push(await runHarness('Valkey 8 (node-redis client) (Spam)', 'extreme-spam', (id) => valkeyNodeFixed.check(id as string)))
-        driverMetrics.push(await runHarness('Valkey 8 (ioredis client) (Spam)', 'extreme-spam', (id) => valkeyIoFixed.check(id as string)))
+        driverMetrics.push(
+            await runHarness('Redis 7 (node-redis client) (Spam)', 'extreme-spam', id =>
+                redisNodeFixed.check(id as string)
+            )
+        )
+        driverMetrics.push(
+            await runHarness('Redis 7 (ioredis client) (Spam)', 'extreme-spam', id =>
+                redisIoFixed.check(id as string)
+            )
+        )
+        driverMetrics.push(
+            await runHarness('Valkey 8 (node-redis client) (Spam)', 'extreme-spam', id =>
+                valkeyNodeFixed.check(id as string)
+            )
+        )
+        driverMetrics.push(
+            await runHarness('Valkey 8 (ioredis client) (Spam)', 'extreme-spam', id =>
+                valkeyIoFixed.check(id as string)
+            )
+        )
 
         // Cleanup Redis/Valkey connections
         await r1.quit()
@@ -402,21 +619,65 @@ async function main() {
         // postgres.js
         const postgres = (await import('postgres')).default
         const sql = postgres(pgUrl, { max: CONCURRENCY })
-        const pgjsFixed = await createPgFixed({ sql, limit: LIMIT, windowMs: WINDOW_MS, skipMigrations: true })
-        const pgjsToken = await createPgToken({ sql, capacity: LIMIT, refillRate: LIMIT / 60, skipMigrations: true })
+        const pgjsFixed = await createPgFixed({
+            sql,
+            limit: LIMIT,
+            windowMs: WINDOW_MS,
+            skipMigrations: true,
+        })
+        const pgjsToken = await createPgToken({
+            sql,
+            capacity: LIMIT,
+            refillRate: LIMIT / 60,
+            skipMigrations: true,
+        })
 
         // pg (node-postgres)
         const { default: pg } = (await import('pg')) as any
         const pool = new pg.Pool({ connectionString: pgUrl, max: CONCURRENCY })
-        const pgNodeFixed = await createPgFixed({ pool, limit: LIMIT, windowMs: WINDOW_MS, skipMigrations: true })
-        const pgNodeToken = await createPgToken({ pool, capacity: LIMIT, refillRate: LIMIT / 60, skipMigrations: true })
+        const pgNodeFixed = await createPgFixed({
+            pool,
+            limit: LIMIT,
+            windowMs: WINDOW_MS,
+            skipMigrations: true,
+        })
+        const pgNodeToken = await createPgToken({
+            pool,
+            capacity: LIMIT,
+            refillRate: LIMIT / 60,
+            skipMigrations: true,
+        })
 
-        driverMetrics.push(await runHarness('Postgres.js - Fixed Window (Diverse)', 'diverse-keys', (id) => pgjsFixed.check(id as string)))
-        driverMetrics.push(await runHarness('node-postgres - Fixed Window (Diverse)', 'diverse-keys', (id) => pgNodeFixed.check(id as string)))
-        driverMetrics.push(await runHarness('Postgres.js - Token Bucket (Diverse)', 'diverse-keys', (id) => pgjsToken.check(id as string)))
-        driverMetrics.push(await runHarness('node-postgres - Token Bucket (Diverse)', 'diverse-keys', (id) => pgNodeToken.check(id as string)))
-        driverMetrics.push(await runHarness('Postgres.js - Token Bucket (Extreme Spam)', 'extreme-spam', (id) => pgjsToken.check(id as string)))
-        driverMetrics.push(await runHarness('node-postgres - Token Bucket (Extreme Spam)', 'extreme-spam', (id) => pgNodeToken.check(id as string)))
+        driverMetrics.push(
+            await runHarness('Postgres.js - Fixed Window (Diverse)', 'diverse-keys', id =>
+                pgjsFixed.check(id as string)
+            )
+        )
+        driverMetrics.push(
+            await runHarness('node-postgres - Fixed Window (Diverse)', 'diverse-keys', id =>
+                pgNodeFixed.check(id as string)
+            )
+        )
+        driverMetrics.push(
+            await runHarness('Postgres.js - Token Bucket (Diverse)', 'diverse-keys', id =>
+                pgjsToken.check(id as string)
+            )
+        )
+        driverMetrics.push(
+            await runHarness('node-postgres - Token Bucket (Diverse)', 'diverse-keys', id =>
+                pgNodeToken.check(id as string)
+            )
+        )
+        driverMetrics.push(
+            await runHarness('Postgres.js - Token Bucket (Extreme Spam)', 'extreme-spam', id =>
+                pgjsToken.check(id as string)
+            )
+        )
+        driverMetrics.push(
+            await runHarness('node-postgres - Token Bucket (Extreme Spam)', 'extreme-spam', id =>
+                pgNodeToken.check(id as string)
+            )
+        )
 
         // Cleanup
         await sql.end()
@@ -433,11 +694,11 @@ async function main() {
     // ==========================================
     if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true })
     writeFileSync(join(OUT_DIR, 'benchmarks_raw.json'), JSON.stringify(reports, null, 2))
-    
+
     // Compile gorgeous markdown study
     const mdReport = generateMarkdownReport(reports)
     writeFileSync(join(OUT_DIR, 'benchmark_report.md'), mdReport)
-    
+
     console.log(`\n  ==============================================================`)
     console.log(`  Benchmark Suite Completed Successfully!`)
     console.log(`  Raw metrics saved to:      results/benchmarks_raw.json`)
@@ -450,7 +711,7 @@ function generateMarkdownReport(reports: Record<string, BenchMetrics[]>): string
     md += `Generated on: \`${new Date().toISOString()}\`  \n`
     md += `Environment: Node.js \`${process.version}\` | OS \`${process.platform}\` | Arch \`${process.arch}\`  \n`
     md += `Harness Configuration: \`${CONCURRENCY}\` concurrent worker loops, \`${DURATION_MS}ms\` duration per scenario.\n\n`
-    
+
     md += `## 1. Executive Summary & Design Recommendations\n\n`
     md += `Based on extensive, high-fidelity benchmarks executed on PostgreSQL 18.4, here are our core architectural recommendations:\n\n`
     md += `1. **Memory Storage (\`@ratelock/local\`)**: Stellar speeds exceeding **800,000 to 1,500,000+ ops/sec** under CPU-bound conditions. Fixed Window and Token Bucket are the most computationally efficient choice.\n`
@@ -462,13 +723,13 @@ function generateMarkdownReport(reports: Record<string, BenchMetrics[]>): string
         md += `## 2. Benchmark Matrix: ${section.replace('-', ' ').toUpperCase()}\n\n`
         md += `| Implementation Scenario | Throughput (Ops/sec) | Allowed Count | Rate Limit % | Avg Latency | p95 Latency | p99 Latency |\n`
         md += `| :--- | :---: | :---: | :---: | :---: | :---: | :---: |\n`
-        
+
         for (const m of metrics) {
             md += `| **${m.name}** | ${m.throughput.toLocaleString()} | ${m.allowedCount.toLocaleString()} | ${m.successRate.toFixed(3)}% | ${m.latAvg.toFixed(2)}ms | ${m.latP95.toFixed(2)}ms | ${m.latP99.toFixed(2)}ms |\n`
         }
         md += `\n`
     }
-    
+
     md += `## 3. Rate Limit Allowed Rate (Success Rate) vs Blocked Rate Explanation\n\n`
     md += `In this benchmark suite, **Rate Limit %** (historically named Success Rate) does *not* indicate whether the code crashed or succeeded technically. Instead, it measures **how many requests were allowed through by the rate limiter**:\n\n`
     md += `* **Rate Limit % = (Allowed Requests / Total Requests) * 100**\n`

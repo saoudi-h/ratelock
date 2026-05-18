@@ -34,8 +34,8 @@
     },
     {
       "name": "bench",
-      "path": "packages/bench"
-    }
+      "path": "packages/bench",
+    },
   ],
   "settings": {
     "cSpell.words": [],

@@ -10,9 +10,11 @@ export default function Home() {
         'Explore different rate limiting strategies with interactive visualizations. Each strategy runs independently with its own mini-game.'
     return (
         <>
-            <LandingBackground className="
+            <LandingBackground
+                className="
               absolute top-0 left-1/2 -translate-x-1/2 transform
-            " />
+            "
+            />
             <Section className="flex items-center justify-center py-32">
                 <div className="relative container text-center">
                     <div
