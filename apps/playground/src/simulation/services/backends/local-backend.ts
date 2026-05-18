@@ -27,39 +27,36 @@ export class LocalBackend implements RateLimitBackend {
 
         try {
             // Always use local storage configuration for client-side operations
-            const localStorage = {
-                cleanupIntervalMs:
-                    storage.type === 'local' ? (storage.config.cleanupIntervalMs ?? 1000) : 1000,
-                cleanupRequestThreshold:
-                    storage.type === 'local'
-                        ? (storage.config.cleanupRequestThreshold ?? 1000)
-                        : 1000,
-            }
+            const maxSize = storage.type === 'local' ? (storage.config.cleanupRequestThreshold ?? 100000) : 100000
 
             let factoryResult: any
             switch (strategy.type) {
                 case 'fixed-window':
                     factoryResult = await createFixedWindowLimiter({
-                        strategy: strategy.config,
-                        storage: localStorage,
+                        limit: strategy.config.limit,
+                        windowMs: strategy.config.windowMs,
+                        maxSize,
                     })
                     break
                 case 'sliding-window':
                     factoryResult = await createSlidingWindowLimiter({
-                        strategy: strategy.config,
-                        storage: localStorage,
+                        limit: strategy.config.limit,
+                        windowMs: strategy.config.windowMs,
+                        maxSize,
                     })
                     break
                 case 'token-bucket':
                     factoryResult = await createTokenBucketLimiter({
-                        strategy: strategy.config,
-                        storage: localStorage,
+                        capacity: strategy.config.capacity,
+                        refillRate: strategy.config.refillRate,
+                        maxSize,
                     })
                     break
                 case 'individual-fixed-window':
                     factoryResult = await createIndividualFixedWindowLimiter({
-                        strategy: strategy.config,
-                        storage: localStorage,
+                        limit: strategy.config.limit,
+                        windowMs: strategy.config.windowMs,
+                        maxSize,
                     })
                     break
                 default:
@@ -70,7 +67,7 @@ export class LocalBackend implements RateLimitBackend {
                     )
             }
 
-            if (!factoryResult?.limiter) {
+            if (!factoryResult) {
                 throw new BackendError(
                     'Failed to create limiter from factory',
                     'FACTORY_ERROR',
@@ -78,8 +75,8 @@ export class LocalBackend implements RateLimitBackend {
                 )
             }
 
-            this.limiterCache.set(key, factoryResult.limiter)
-            return factoryResult.limiter
+            this.limiterCache.set(key, factoryResult)
+            return factoryResult
         } catch (error) {
             if (error instanceof BackendError) throw error
 

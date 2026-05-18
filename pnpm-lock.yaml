@@ -124,11 +124,11 @@ importers:
         specifier: ^1.2.8
         version: 1.2.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@ratelock/local':
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: workspace:*
+        version: link:../../packages/local
       '@ratelock/redis':
-        specifier: ^0.1.1
-        version: 0.1.1(redis@5.12.1)
+        specifier: workspace:*
+        version: link:../../packages/redis
       '@solar-icons/react-perf':
         specifier: ^2.1.0
         version: 2.1.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -229,6 +229,9 @@ importers:
       postgres:
         specifier: ^3.4.9
         version: 3.4.9
+      rate-limiter-flexible:
+        specifier: ^11.1.0
+        version: 11.1.0
       redis:
         specifier: ^5.12.1
         version: 5.12.1
@@ -239,6 +242,9 @@ importers:
       '@types/node':
         specifier: ^25.6.0
         version: 25.6.0
+      '@types/pg':
+        specifier: ^8.20.0
+        version: 8.20.0
       tsx:
         specifier: ^4.21.0
         version: 4.21.0
@@ -1664,20 +1670,6 @@ packages:
   '@radix-ui/rect@1.1.1':
     resolution: {integrity: sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw==}
 
-  '@ratelock/core@0.1.1':
-    resolution: {integrity: sha512-ykA2MROWiH0usYk5VI3ZJIXP3rqq8RTpULt0RGAABv2iqb+yK2UODQONIa6xYxVg/vjaBe9Lks83LVstKkokng==}
-    engines: {node: '>=16'}
-
-  '@ratelock/local@0.1.1':
-    resolution: {integrity: sha512-StMjApUkGDk86c2VNhww1aGEzqDopuZ8u7SOK0u8t/g+7JZk+UUVCVFpb2h0Z0X6SHXpZOj4Wz7ZvxhF8AGVfQ==}
-    engines: {node: '>=16'}
-
-  '@ratelock/redis@0.1.1':
-    resolution: {integrity: sha512-smeKhsWU67ALMC5aWylhPIv4QPXGfz37b0HOFipe8ine/FgYrVpMp4Ozyj+QEd0aCpc3lPsb8GMVHTwyEX2XsA==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      redis: ^4.0.0 || ^5.0.0
-
   '@redis/bloom@5.12.1':
     resolution: {integrity: sha512-PUUfv+ms7jgPSBVoo/DN4AkPHj4D5TZSd6SbJX7egzBplkYUcKmHRE8RKia7UtZ8bSQbLguLvxVO+asKtQfZWA==}
     engines: {node: '>= 18.19.0'}
@@ -2167,6 +2159,9 @@ packages:
 
   '@types/node@25.6.0':
     resolution: {integrity: sha512-+qIYRKdNYJwY3vRCZMdJbPLJAtGjQBudzZzdzwQYkEPQd+PJGixUL5QfvCLDaULoLv+RhT3LDkwEfKaAkgSmNQ==}
+
+  '@types/pg@8.20.0':
+    resolution: {integrity: sha512-bEPFOaMAHTEP1EzpvHTbmwR8UsFyHSKsRisLIHVMXnpNefSbGA1bD6CVy+qKjGSqmZqNqBDV2azOBo8TgkcVow==}
 
   '@types/react-dom@19.2.3':
     resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
@@ -3456,6 +3451,9 @@ packages:
 
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
+
+  rate-limiter-flexible@11.1.0:
+    resolution: {integrity: sha512-lyyC0SqKz+dE5JoHZ4JMqdrM3LSZKBxzuAFAyKCYAnmHnPz/Rb6iDquxoL4CMipDXoR0G+QRhOzYWL3JKihbNw==}
 
   react-dom@19.2.5:
     resolution: {integrity: sha512-J5bAZz+DXMMwW/wV3xzKke59Af6CHY7G4uYLN1OvBcKEsWOs4pQExj86BBKamxl/Ik5bx9whOrvBlSDfWzgSag==}
@@ -5198,17 +5196,6 @@ snapshots:
 
   '@radix-ui/rect@1.1.1': {}
 
-  '@ratelock/core@0.1.1': {}
-
-  '@ratelock/local@0.1.1':
-    dependencies:
-      '@ratelock/core': 0.1.1
-
-  '@ratelock/redis@0.1.1(redis@5.12.1)':
-    dependencies:
-      '@ratelock/core': 0.1.1
-      redis: 5.12.1
-
   '@redis/bloom@5.12.1(@redis/client@5.12.1)':
     dependencies:
       '@redis/client': 5.12.1
@@ -5539,6 +5526,12 @@ snapshots:
   '@types/node@25.6.0':
     dependencies:
       undici-types: 7.19.2
+
+  '@types/pg@8.20.0':
+    dependencies:
+      '@types/node': 25.6.0
+      pg-protocol: 1.13.0
+      pg-types: 2.2.0
 
   '@types/react-dom@19.2.3(@types/react@19.2.14)':
     dependencies:
@@ -6749,6 +6742,8 @@ snapshots:
   quansync@1.0.0: {}
 
   queue-microtask@1.2.3: {}
+
+  rate-limiter-flexible@11.1.0: {}
 
   react-dom@19.2.5(react@19.2.5):
     dependencies:

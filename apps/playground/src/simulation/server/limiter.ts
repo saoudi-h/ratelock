@@ -49,72 +49,82 @@ export async function getLimiter(strategy: StrategyConfig, storage: StorageConfi
     let factoryResult: any
 
     if (storage.type === 'local') {
-        const localStorage = {
-            cleanupIntervalMs: storage.config.cleanupIntervalMs ?? 1000,
-            cleanupRequestThreshold: storage.config.cleanupRequestThreshold ?? 1000,
-        }
+        const maxSize = storage.config.cleanupRequestThreshold ?? 100000
 
         switch (strategy.type) {
             case 'fixed-window':
                 factoryResult = await createLocalFixedWindow({
-                    strategy: strategy.config,
-                    storage: localStorage,
+                    limit: strategy.config.limit,
+                    windowMs: strategy.config.windowMs,
+                    maxSize,
                 })
                 break
             case 'sliding-window':
                 factoryResult = await createLocalSlidingWindow({
-                    strategy: strategy.config,
-                    storage: localStorage,
+                    limit: strategy.config.limit,
+                    windowMs: strategy.config.windowMs,
+                    maxSize,
                 })
                 break
             case 'token-bucket':
                 factoryResult = await createLocalTokenBucket({
-                    strategy: strategy.config,
-                    storage: localStorage,
+                    capacity: strategy.config.capacity,
+                    refillRate: strategy.config.refillRate,
+                    maxSize,
                 })
                 break
             case 'individual-fixed-window':
                 factoryResult = await createLocalIndividualFixedWindow({
-                    strategy: strategy.config,
-                    storage: localStorage,
+                    limit: strategy.config.limit,
+                    windowMs: strategy.config.windowMs,
+                    maxSize,
                 })
                 break
         }
     } else {
         if (!storage.config.url) throw new Error('Redis URL is required')
 
+        const redisOptions = {
+            url: storage.config.url,
+            prefix: storage.config.keyPrefix || 'ratelock',
+        }
+
         switch (strategy.type) {
             case 'fixed-window':
                 factoryResult = await createRedisFixedWindow({
-                    strategy: strategy.config as any,
-                    storage: { redisOptions: storage.config.url },
+                    limit: strategy.config.limit,
+                    windowMs: strategy.config.windowMs,
+                    ...redisOptions,
                 })
                 break
             case 'sliding-window':
                 factoryResult = await createRedisSlidingWindow({
-                    strategy: strategy.config as any,
-                    storage: { redisOptions: storage.config.url },
+                    limit: strategy.config.limit,
+                    windowMs: strategy.config.windowMs,
+                    ...redisOptions,
                 })
                 break
             case 'token-bucket':
                 factoryResult = await createRedisTokenBucket({
-                    strategy: strategy.config as any,
-                    storage: { redisOptions: storage.config.url },
+                    capacity: strategy.config.capacity,
+                    refillRate: strategy.config.refillRate,
+                    ...redisOptions,
                 })
                 break
             case 'individual-fixed-window':
                 factoryResult = await createRedisIndividualFixedWindow({
-                    strategy: strategy.config as any,
-                    storage: { redisOptions: storage.config.url },
+                    limit: strategy.config.limit,
+                    windowMs: strategy.config.windowMs,
+                    ...redisOptions,
                 })
                 break
         }
     }
 
-    if (!factoryResult?.limiter) throw new Error('Failed to create limiter')
+    if (!factoryResult) throw new Error('Failed to create limiter')
 
-    limiterCache.set(key, factoryResult.limiter)
-    return factoryResult.limiter
+    limiterCache.set(key, factoryResult)
+    return factoryResult
 }
 
 /**
@@ -149,8 +159,8 @@ export async function checkRateLimitBatch(
 ): Promise<RateLimitResult[]> {
     const limiter = await getLimiter(strategy, storage)
 
-    if (typeof limiter.check === 'function') {
-        const results = await limiter.check(identifiers)
+    if (typeof limiter.checkBatch === 'function') {
+        const results = await limiter.checkBatch(identifiers)
         return results as RateLimitResult[]
     }
 
@@ -158,5 +168,5 @@ export async function checkRateLimitBatch(
     for (const id of identifiers) {
         out.push(await limiter.check(id))
     }
-    return out
+    return out;
 }
