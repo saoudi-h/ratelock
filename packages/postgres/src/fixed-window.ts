@@ -11,7 +11,7 @@ import {
   withErrorPolicy,
   withRetry,
 } from '@ratelock/core'
-import { createConnection, type PgDriver } from './drivers'
+import { createConnection } from './drivers'
 import { runMigrations } from './migrations'
 import { startAutoCleanup } from './cleanup'
 
@@ -23,6 +23,7 @@ export type FixedWindowLimiterConfig = FixedWindowOptions & {
   connectionString?: string
   driver?: 'postgres' | 'pg'
   skipMigrations?: boolean
+  unlogged?: boolean
   prefix?: string
   cache?: CacheConfig
   retry?: RetryConfig
@@ -37,7 +38,7 @@ export async function createFixedWindowLimiter(
   const conn = await createConnection(config)
   const drv = conn.driver
 
-  if (!skipMigrations) await runMigrations(drv)
+  if (!skipMigrations) await runMigrations(drv, { unlogged: config.unlogged })
   startAutoCleanup(drv)
 
   let limiter: Limiter<FixedWindowResult> = {

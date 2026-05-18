@@ -23,6 +23,7 @@ export type IndividualFixedWindowLimiterConfig = IndividualFixedWindowOptions & 
   connectionString?: string
   driver?: 'postgres' | 'pg'
   skipMigrations?: boolean
+  unlogged?: boolean
   prefix?: string
   cache?: CacheConfig
   retry?: RetryConfig
@@ -37,7 +38,7 @@ export async function createIndividualFixedWindowLimiter(
   const conn = await createConnection(config)
   const drv = conn.driver
 
-  if (!skipMigrations) await runMigrations(drv)
+  if (!skipMigrations) await runMigrations(drv, { unlogged: config.unlogged })
   startAutoCleanup(drv)
 
   let limiter: Limiter<FixedWindowResult> = {

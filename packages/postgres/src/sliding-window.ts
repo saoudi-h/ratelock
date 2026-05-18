@@ -23,6 +23,7 @@ export type SlidingWindowLimiterConfig = SlidingWindowOptions & {
   connectionString?: string
   driver?: 'postgres' | 'pg'
   skipMigrations?: boolean
+  unlogged?: boolean
   prefix?: string
   cache?: CacheConfig
   retry?: RetryConfig
@@ -37,7 +38,7 @@ export async function createSlidingWindowLimiter(
   const conn = await createConnection(config)
   const drv = conn.driver
 
-  if (!skipMigrations) await runMigrations(drv)
+  if (!skipMigrations) await runMigrations(drv, { unlogged: config.unlogged })
   startAutoCleanup(drv)
 
   let limiter: Limiter<SlidingWindowResult> = {
@@ -56,6 +57,8 @@ export async function createSlidingWindowLimiter(
          VALUES ($1, 1, 0, NOW(), NOW() + $2::interval)
          ON CONFLICT (key) DO UPDATE SET
            previous_count = CASE
+             WHEN ${TABLE}.window_start < NOW() - $3::interval
+             THEN 0
              WHEN ${TABLE}.window_start < NOW() - $2::interval
              THEN ${TABLE}.current_count
              ELSE ${TABLE}.previous_count
@@ -72,7 +75,7 @@ export async function createSlidingWindowLimiter(
            END,
            expires_at = NOW() + $2::interval
          RETURNING current_count, previous_count, window_start`,
-        [key, `${windowMs} milliseconds`],
+        [key, `${windowMs} milliseconds`, `${windowMs * 2} milliseconds`],
       )
 
       const row = rows[0]!

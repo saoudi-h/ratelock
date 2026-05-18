@@ -23,6 +23,7 @@ export type TokenBucketLimiterConfig = TokenBucketOptions & {
   connectionString?: string
   driver?: 'postgres' | 'pg'
   skipMigrations?: boolean
+  unlogged?: boolean
   prefix?: string
   cache?: CacheConfig
   retry?: RetryConfig
@@ -37,59 +38,81 @@ export async function createTokenBucketLimiter(
   const conn = await createConnection(config)
   const drv = conn.driver
 
-  if (!skipMigrations) await runMigrations(drv)
+  if (!skipMigrations) await runMigrations(drv, { unlogged: config.unlogged })
   startAutoCleanup(drv)
 
   let limiter: Limiter<TokenBucketResult> = {
     async check(id: string): Promise<TokenBucketResult> {
       const key = `${prefix}:${id}`
-      const now = Date.now()
+      const now = Date.now() / 1000
 
-      // Step 1: Try UPDATE (only if refilled tokens >= 1)
-      type Row = { tokens: number }
-      const updateRows = await drv.query<Row>(
-        `UPDATE ${TABLE} SET
-           tokens = GREATEST(0,
-             ${TABLE}.tokens + EXTRACT(EPOCH FROM NOW() - ${TABLE}.last_refill) * ${TABLE}.refill_rate - 1
-           ),
-           last_refill = NOW(),
-           expires_at = NOW() + '1 hour'::interval
-         WHERE key = $1
-           AND ${TABLE}.tokens + EXTRACT(EPOCH FROM NOW() - ${TABLE}.last_refill) * ${TABLE}.refill_rate >= 1
-         RETURNING tokens`,
-        [key],
-      )
+      const runUpdate = async (time: number): Promise<TokenBucketResult | null> => {
+        const rows = await drv.query<{ tokens: number; capacity: number; refill_rate: number; last_refill: number; allowed: boolean | number }>(
+          `UPDATE ${TABLE} SET
+             tokens = CASE
+               WHEN LEAST(capacity, tokens + ($2 - last_refill) * refill_rate) >= 1
+               THEN LEAST(capacity, tokens + ($2 - last_refill) * refill_rate) - 1
+               ELSE LEAST(capacity, tokens + ($2 - last_refill) * refill_rate)
+             END,
+             last_refill = CASE
+               WHEN LEAST(capacity, tokens + ($2 - last_refill) * refill_rate) >= 1
+               THEN $2
+               ELSE last_refill
+             END,
+             expires_at = TO_TIMESTAMP($2) + '1 hour'::interval
+           WHERE key = $1
+           RETURNING tokens, capacity, refill_rate, last_refill, (last_refill = $2) as allowed`,
+          [key, time],
+        )
 
-      if (updateRows.length > 0) {
-        const tokens = updateRows[0]!.tokens
+        if (rows.length === 0) return null
+
+        const r = rows[0]!
+        const tokens = Number(r.tokens)
+        const rate = Number(r.refill_rate)
+        const allowed = Boolean(r.allowed)
+
+        if (allowed) {
+          return {
+            allowed: true,
+            remaining: Math.floor(tokens),
+            tokens: Math.floor(tokens),
+            refillTime: 0,
+          }
+        }
+
         return {
-          allowed: true,
+          allowed: false,
           remaining: Math.floor(tokens),
           tokens: Math.floor(tokens),
-          refillTime: 0,
+          refillTime: Math.ceil(((1 - tokens) / rate) * 1000),
         }
       }
 
-      // Step 2: Try INSERT (new key)
-      const insertRows = await drv.query<Row>(
+      const result = await runUpdate(now)
+      if (result) return result
+
+      // Step 2: Try INSERT (new key) with capacity - 1 initial tokens
+      const insertRows = await drv.query<{ tokens: number }>(
         `INSERT INTO ${TABLE} (key, tokens, last_refill, capacity, refill_rate, expires_at)
-         VALUES ($1, $2, NOW(), $2, $3, NOW() + '1 hour'::interval)
+         VALUES ($1, $2 - 1, $4, $2, $3, TO_TIMESTAMP($4) + '1 hour'::interval)
          ON CONFLICT (key) DO NOTHING
          RETURNING tokens`,
-        [key, capacity, refillRate],
+        [key, capacity, refillRate, now],
       )
 
       if (insertRows.length > 0) {
         return {
           allowed: true,
-          remaining: Math.floor(insertRows[0]!.tokens),
-          tokens: Math.floor(insertRows[0]!.tokens),
+          remaining: capacity - 1,
+          tokens: capacity - 1,
           refillTime: 0,
         }
       }
 
-      // Step 3: Key exists but no tokens available
-      return {
+      // Step 3: Concurrency retry
+      const retryResult = await runUpdate(now)
+      return retryResult ?? {
         allowed: false,
         remaining: 0,
         tokens: 0,
