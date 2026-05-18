@@ -30,12 +30,40 @@ export function withCache<T>(limiter: Limiter<T>, config?: CacheConfig): Limiter
             const cached = get(id)
             if (cached) return cached
             const result = await limiter.check(id)
-            set(id, result)
+            if (result && typeof result === 'object' && 'allowed' in result && result.allowed === false) {
+                set(id, result)
+            }
             return result
         },
         async checkBatch(ids: string[]): Promise<T[]> {
-            const results = await limiter.checkBatch(ids)
-            ids.forEach((id, i) => set(id, results[i]!))
+            const results: T[] = new Array(ids.length)
+            const uncachedIndices: number[] = []
+            const uncachedIds: string[] = []
+
+            for (let i = 0; i < ids.length; i++) {
+                const id = ids[i]!
+                const cached = get(id)
+                if (cached) {
+                    results[i] = cached
+                } else {
+                    uncachedIndices.push(i)
+                    uncachedIds.push(id)
+                }
+            }
+
+            if (uncachedIds.length > 0) {
+                const freshResults = await limiter.checkBatch(uncachedIds)
+                for (let j = 0; j < uncachedIds.length; j++) {
+                    const idx = uncachedIndices[j]!
+                    const id = uncachedIds[j]!
+                    const res = freshResults[j]!
+                    results[idx] = res
+                    if (res && typeof res === 'object' && 'allowed' in res && res.allowed === false) {
+                        set(id, res)
+                    }
+                }
+            }
+
             return results
         },
     }

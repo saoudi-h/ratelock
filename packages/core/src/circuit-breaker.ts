@@ -36,10 +36,34 @@ export function withCircuitBreaker<T>(
         }
     }
 
+    const checkBatch = async (ids: string[]): Promise<T[]> => {
+        if (state === 'open') {
+            if (Date.now() - lastFailureTime >= config.recoveryTimeoutMs) {
+                state = 'half-open'
+            } else {
+                throw new Error('Circuit breaker is open')
+            }
+        }
+
+        try {
+            const result = await limiter.checkBatch(ids)
+            if (state === 'half-open') {
+                state = 'closed'
+                failureCount = 0
+            }
+            return result
+        } catch (err) {
+            failureCount++
+            lastFailureTime = Date.now()
+            if (failureCount >= config.failureThreshold) {
+                state = 'open'
+            }
+            throw err
+        }
+    }
+
     return {
         check,
-        checkBatch(ids: string[]): Promise<T[]> {
-            return limiter.checkBatch(ids)
-        },
+        checkBatch,
     }
 }

@@ -19,10 +19,23 @@ export function withRetry<T>(limiter: Limiter<T>, config: RetryConfig): Limiter<
         throw lastError
     }
 
+    const retryBatch = async (ids: string[]): Promise<T[]> => {
+        let lastError: unknown
+        for (let attempt = 0; attempt < config.maxAttempts; attempt++) {
+            try {
+                return await limiter.checkBatch(ids)
+            } catch (err) {
+                lastError = err
+                if (attempt === config.maxAttempts - 1) break
+                const delay = Math.min(baseDelayMs * 2 ** attempt, maxDelayMs)
+                await new Promise(r => setTimeout(r, delay))
+            }
+        }
+        throw lastError
+    }
+
     return {
         check: retry,
-        checkBatch(ids: string[]): Promise<T[]> {
-            return limiter.checkBatch(ids)
-        },
+        checkBatch: retryBatch,
     }
 }

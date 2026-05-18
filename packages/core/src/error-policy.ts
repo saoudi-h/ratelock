@@ -23,18 +23,16 @@ export function withErrorPolicy<T extends BaseResult>(
     const handleBatch = async (ids: string[]): Promise<T[]> => {
         try {
             return await limiter.checkBatch(ids)
-        } catch {
-            return ids.map(() => {
-                switch (policy) {
-                    case 'allow':
-                        return { allowed: true } as T
-                    case 'deny':
-                        return { allowed: false } as T
-                    case 'throw':
-                    default:
-                        return { allowed: false } as T
-                }
-            })
+        } catch (err) {
+            switch (policy) {
+                case 'allow':
+                    return ids.map(() => ({ allowed: true }) as T)
+                case 'deny':
+                    return ids.map(() => ({ allowed: false }) as T)
+                case 'throw':
+                default:
+                    throw new Error(`Rate limit check failed for batch of "${ids.join(', ')}"`, { cause: err })
+            }
         }
     }
 
