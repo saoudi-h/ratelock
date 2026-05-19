@@ -1,1 +1,3 @@
-export { default } from '@tala-tools/prettier'
+import baseConfig from '@tala-tools/prettier'
+
+export default baseConfig

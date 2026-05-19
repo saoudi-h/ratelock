@@ -18,5 +18,6 @@ export const base: ViteUserConfig = {
         mockReset: true,
         restoreMocks: true,
         include: ['**/*.spec.ts', '**/*.test.ts'],
+        exclude: ['**/__integration__/**', '**/node_modules/**', '**/dist/**'],
     },
 }

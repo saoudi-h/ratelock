@@ -1,6 +1,12 @@
-import type { CacheConfig, Limiter } from './types'
+import type { BaseResult, CacheConfig, Limiter } from './types'
 
 type CacheEntry<T> = { value: T; expiresAt: number }
+
+function isDeniedResult(value: unknown): value is BaseResult & { allowed: false } {
+    return (
+        typeof value === 'object' && value !== null && 'allowed' in value && value.allowed === false
+    )
+}
 
 export function withCache<T>(limiter: Limiter<T>, config?: CacheConfig): Limiter<T> {
     if (!config) return limiter
@@ -30,12 +36,7 @@ export function withCache<T>(limiter: Limiter<T>, config?: CacheConfig): Limiter
             const cached = get(id)
             if (cached) return cached
             const result = await limiter.check(id)
-            if (
-                result &&
-                typeof result === 'object' &&
-                'allowed' in result &&
-                result.allowed === false
-            ) {
+            if (isDeniedResult(result)) {
                 set(id, result)
             }
             return result
@@ -63,12 +64,7 @@ export function withCache<T>(limiter: Limiter<T>, config?: CacheConfig): Limiter
                     const id = uncachedIds[j]!
                     const res = freshResults[j]!
                     results[idx] = res
-                    if (
-                        res &&
-                        typeof res === 'object' &&
-                        'allowed' in res &&
-                        res.allowed === false
-                    ) {
+                    if (isDeniedResult(res)) {
                         set(id, res)
                     }
                 }

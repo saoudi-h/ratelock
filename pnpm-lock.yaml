@@ -217,6 +217,9 @@ importers:
       '@tala-tools/tsconfig':
         specifier: 0.0.1
         version: 0.0.1
+      '@types/mdx':
+        specifier: ^2.0.13
+        version: 2.0.13
       '@types/node':
         specifier: ^25.9.0
         version: 25.9.0
@@ -426,6 +429,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^4.1.6
         version: 4.1.6(vitest@4.1.6)
+      vitest:
+        specifier: ^4.1.6
+        version: 4.1.6(@types/node@25.9.0)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(happy-dom@20.9.0)(msw@2.14.6(@types/node@25.9.0)(typescript@6.0.3))(vite@7.0.6(@types/node@25.9.0)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.2)(yaml@2.9.0))
 
   packages/local:
     dependencies:
@@ -433,6 +439,9 @@ importers:
         specifier: workspace:*
         version: link:../core
     devDependencies:
+      '@eslint/js':
+        specifier: ^10.0.1
+        version: 10.0.1(eslint@10.4.0(jiti@2.7.0))
       '@ratelock/test-utils':
         specifier: workspace:*
         version: link:../test-utils
@@ -451,16 +460,19 @@ importers:
       '@types/node':
         specifier: ^25.9.0
         version: 25.9.0
+      vitest:
+        specifier: ^4.1.6
+        version: 4.1.6(@types/node@25.9.0)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(happy-dom@20.9.0)(msw@2.14.6(@types/node@25.9.0)(typescript@6.0.3))(vite@7.0.6(@types/node@25.9.0)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.2)(yaml@2.9.0))
 
   packages/postgres:
     dependencies:
       '@ratelock/core':
         specifier: workspace:*
         version: link:../core
-      pg:
-        specifier: '>=8.0.0'
-        version: 8.20.0
     devDependencies:
+      '@eslint/js':
+        specifier: ^10.0.1
+        version: 10.0.1(eslint@10.4.0(jiti@2.7.0))
       '@ratelock/test-utils':
         specifier: workspace:*
         version: link:../test-utils
@@ -479,12 +491,27 @@ importers:
       '@types/node':
         specifier: ^25.9.0
         version: 25.9.0
+      '@types/pg':
+        specifier: ^8.20.0
+        version: 8.20.0
+      '@vitest/coverage-v8':
+        specifier: ^4.1.6
+        version: 4.1.6(vitest@4.1.6)
+      dotenv:
+        specifier: ^17.4.2
+        version: 17.4.2
+      pg:
+        specifier: '>=8.0.0'
+        version: 8.20.0
       postgres:
         specifier: '>=3.0.0'
         version: 3.4.9
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
+      vitest:
+        specifier: ^4.1.6
+        version: 4.1.6(@types/node@25.9.0)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(happy-dom@20.9.0)(msw@2.14.6(@types/node@25.9.0)(typescript@6.0.3))(vite@7.0.6(@types/node@25.9.0)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.2)(yaml@2.9.0))
 
   packages/redis:
     dependencies:
@@ -495,6 +522,9 @@ importers:
         specifier: ^4.0.0 || ^5.0.0
         version: 5.8.0
     devDependencies:
+      '@eslint/js':
+        specifier: ^10.0.1
+        version: 10.0.1(eslint@10.4.0(jiti@2.7.0))
       '@ratelock/test-utils':
         specifier: workspace:*
         version: link:../test-utils

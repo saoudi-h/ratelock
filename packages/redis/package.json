@@ -18,7 +18,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/saoudi-h/ratelock.git",
+        "url": "git+https://github.com/saoudi-h/ratelock.git",
         "directory": "packages/redis"
     },
     "license": "MIT",
@@ -78,7 +78,7 @@
         "@ratelock/core": "workspace:*"
     },
     "devDependencies": {
-        "@ratelock/core": "workspace:*",
+        "@eslint/js": "^10.0.1",
         "@ratelock/test-utils": "workspace:*",
         "@ratelock/vitest": "workspace:*",
         "@tala-tools/eslint": "0.1.1",
@@ -91,7 +91,7 @@
         "typescript": "^6.0.3"
     },
     "engines": {
-        "node": ">=18"
+        "node": ">=22"
     },
     "publishConfig": {
         "access": "public"

@@ -2,6 +2,15 @@
     "name": "@ratelock/local",
     "description": "In-memory storage backend for RateLock rate limiting system",
     "version": "0.2.0",
+    "homepage": "https://github.com/saoudi-h/ratelock",
+    "bugs": {
+        "url": "https://github.com/saoudi-h/ratelock/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/saoudi-h/ratelock.git",
+        "directory": "packages/local"
+    },
     "publishConfig": {
         "access": "public"
     },
@@ -23,6 +32,7 @@
     ],
     "scripts": {
         "build": "tsdown",
+        "dev": "tsdown --watch",
         "lint": "eslint . --max-warnings 0",
         "lint:fix": "eslint . --max-warnings 0 --fix",
         "format": "prettier \"**/*\" --ignore-unknown --list-different",
@@ -33,15 +43,18 @@
         "test:coverage": "vitest run --coverage",
         "clean": "rimraf dist .turbo node_modules",
         "typecheck": "tsgo --noEmit",
+        "prepack": "tsdown",
         "pre-commit": "lint-staged"
     },
     "devDependencies": {
+        "@eslint/js": "^10.0.1",
         "@ratelock/test-utils": "workspace:*",
         "@ratelock/vitest": "workspace:*",
         "@tala-tools/eslint": "0.1.1",
         "@tala-tools/prettier": "0.0.3",
         "@tala-tools/tsconfig": "0.0.1",
-        "@types/node": "^25.9.0"
+        "@types/node": "^25.9.0",
+        "vitest": "^4.1.6"
     },
     "dependencies": {
         "@ratelock/core": "workspace:*"
@@ -62,7 +75,7 @@
     },
     "license": "MIT",
     "engines": {
-        "node": ">=16"
+        "node": ">=22"
     },
     "module": "./dist/index.mjs"
 }

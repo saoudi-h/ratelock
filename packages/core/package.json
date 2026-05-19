@@ -2,6 +2,15 @@
     "name": "@ratelock/core",
     "description": "Core RateLock rate limiting system",
     "version": "0.2.0",
+    "homepage": "https://github.com/saoudi-h/ratelock",
+    "bugs": {
+        "url": "https://github.com/saoudi-h/ratelock/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/saoudi-h/ratelock.git",
+        "directory": "packages/core"
+    },
     "publishConfig": {
         "access": "public"
     },
@@ -23,6 +32,7 @@
     ],
     "scripts": {
         "build": "tsdown",
+        "dev": "tsdown --watch",
         "lint": "eslint . --max-warnings 0",
         "lint:fix": "eslint . --max-warnings 0 --fix",
         "format": "prettier \"**/*\" --ignore-unknown --list-different",
@@ -33,6 +43,7 @@
         "test:ui": "vitest --ui",
         "test:run": "vitest run",
         "test:coverage": "vitest run --coverage",
+        "prepack": "tsdown",
         "prepublishOnly": "pnpm run build",
         "pre-commit": "lint-staged"
     },
@@ -42,7 +53,8 @@
         "@tala-tools/prettier": "0.0.3",
         "@tala-tools/tsconfig": "0.0.1",
         "@types/node": "^25.9.0",
-        "@vitest/coverage-v8": "^4.1.6"
+        "@vitest/coverage-v8": "^4.1.6",
+        "vitest": "^4.1.6"
     },
     "keywords": [
         "core",
@@ -66,7 +78,7 @@
     },
     "license": "MIT",
     "engines": {
-        "node": ">=16"
+        "node": ">=22"
     },
     "module": "./dist/index.mjs"
 }

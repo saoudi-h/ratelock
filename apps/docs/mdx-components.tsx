@@ -9,7 +9,7 @@ const generator = createGenerator()
 export function getMDXComponents(components?: MDXComponents): MDXComponents {
     return {
         ...defaultMdxComponents,
-        AutoTypeTable: props => <AutoTypeTable {...props} generator={generator} />,
+        AutoTypeTable: (props: Record<string, unknown>) => <AutoTypeTable {...props} generator={generator} />,
         ...components,
     }
 }

@@ -1,36 +1,68 @@
-# RateLock Core (`@ratelock/core`)
+# @ratelock/core
 
-<p align="center">
-  <strong>The foundational engine for the RateLock ecosystem.</strong>
-</p>
+> The foundational engine of the RateLock ecosystem.
+
+[![npm version](https://img.shields.io/npm/v/@ratelock/core.svg)](https://www.npmjs.com/package/@ratelock/core)
+[![License](https://img.shields.io/npm/l/@ratelock/core.svg)](https://github.com/saoudi-h/ratelock/blob/main/LICENSE)
 
 ---
 
-> **Internal Package: Do Not Use Directly**
->
-> `@ratelock/core` is a foundational package that provides the core functionalities and APIs for all official RateLock adapters. It is published to NPM to serve as a dependency for other `@ratelock` packages (like `@ratelock/redis` or `@ratelock/local`).
->
-> **You should not install or use this package directly in your application.** Please choose a ready-to-use adapter that fits your needs.
+> **Note:** `@ratelock/core` is primarily an internal package. You typically don't need to install it directly — it's pulled in automatically by storage adapters like `@ratelock/local`, `@ratelock/redis`, and `@ratelock/postgres`.
 
-## About RateLock Core
+## What's Inside
 
-This package contains the heart of the RateLock system, including:
+This package provides the shared types, validation utilities, and composable decorators that power all RateLock adapters:
 
-- The main `RateLimiter` class.
-- The standard `Storage` interface.
-- Base implementations for all official rate limiting strategies.
+### Types
 
-## Available Strategies
+- `Limiter<T>` — The universal limiter interface
+- `FixedWindowResult`, `SlidingWindowResult`, `TokenBucketResult` — Result types for each strategy
+- `FixedWindowOptions`, `SlidingWindowOptions`, `TokenBucketOptions` — Configuration types
 
-`@ratelock/core` provides the logic for four distinct rate limiting strategies:
+### Decorators
 
-- **Fixed Window**: The classic, memory-efficient strategy.
-- **Sliding Window**: A more accurate strategy that avoids bursts at the edges of windows.
-- **Token Bucket**: A flexible strategy that allows for bursts of traffic.
-- **Individual Fixed Window**: A variation of the fixed window strategy with individualized tracking.
+Wrap any limiter with additional behavior:
 
-While this package provides base implementations, official adapters like `@ratelock/redis` contain optimized versions of these strategies that leverage the atomic operations of their specific storage backend for maximum performance and accuracy.
+```typescript
+import { withCache, withRetry, withCircuitBreaker, withErrorPolicy } from '@ratelock/core'
 
-## 📜 License
+let limiter = await createFixedWindowLimiter({ limit: 100, windowMs: 60_000 })
 
-This project is licensed under the MIT License.
+// Cache denied requests to reduce backend load
+limiter = withCache(limiter, { maxSize: 1000, ttlMs: 30_000 })
+
+// Retry transient failures with exponential backoff
+limiter = withRetry(limiter, { maxAttempts: 3, baseDelayMs: 100 })
+
+// Open the circuit after 5 consecutive failures
+limiter = withCircuitBreaker(limiter, { failureThreshold: 5, recoveryTimeoutMs: 30_000 })
+
+// Fail-open: allow requests when the backend is unreachable
+limiter = withErrorPolicy(limiter, 'allow')
+```
+
+### Validation
+
+```typescript
+import {
+    validateFixedWindowOptions,
+    validateSlidingWindowOptions,
+    validateTokenBucketOptions,
+} from '@ratelock/core'
+
+validateFixedWindowOptions({ limit: 100, windowMs: 60_000 }) // throws RangeError if invalid
+```
+
+## Installation
+
+```bash
+npm install @ratelock/core
+```
+
+## Documentation
+
+Full API reference and guides at **[docs.ratelock.dev](https://docs.ratelock.dev)** _(coming soon)_.
+
+## License
+
+[MIT](./LICENSE)

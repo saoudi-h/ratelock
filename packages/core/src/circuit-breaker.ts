@@ -9,55 +9,58 @@ export function withCircuitBreaker<T>(
     let state: CircuitState = 'closed'
     let failureCount = 0
     let lastFailureTime = 0
+    let lastError: unknown = undefined
+    let isProbing = false
 
-    const check = async (id: string): Promise<T> => {
+    const tryTransition = (): void => {
         if (state === 'open') {
-            if (Date.now() - lastFailureTime >= config.recoveryTimeoutMs) {
+            if (Date.now() - lastFailureTime >= config.recoveryTimeoutMs && !isProbing) {
                 state = 'half-open'
+                isProbing = true
             } else {
-                throw new Error('Circuit breaker is open')
+                throw new Error('Circuit breaker is open', { cause: lastError })
             }
         }
+    }
 
+    const onSuccess = (): void => {
+        if (state === 'half-open') {
+            state = 'closed'
+            failureCount = 0
+            isProbing = false
+        }
+    }
+
+    const onFailure = (err: unknown): void => {
+        failureCount++
+        lastFailureTime = Date.now()
+        lastError = err
+        isProbing = false
+        if (failureCount >= config.failureThreshold) {
+            state = 'open'
+        }
+    }
+
+    const check = async (id: string): Promise<T> => {
+        tryTransition()
         try {
             const result = await limiter.check(id)
-            if (state === 'half-open') {
-                state = 'closed'
-                failureCount = 0
-            }
+            onSuccess()
             return result
         } catch (err) {
-            failureCount++
-            lastFailureTime = Date.now()
-            if (failureCount >= config.failureThreshold) {
-                state = 'open'
-            }
+            onFailure(err)
             throw err
         }
     }
 
     const checkBatch = async (ids: string[]): Promise<T[]> => {
-        if (state === 'open') {
-            if (Date.now() - lastFailureTime >= config.recoveryTimeoutMs) {
-                state = 'half-open'
-            } else {
-                throw new Error('Circuit breaker is open')
-            }
-        }
-
+        tryTransition()
         try {
             const result = await limiter.checkBatch(ids)
-            if (state === 'half-open') {
-                state = 'closed'
-                failureCount = 0
-            }
+            onSuccess()
             return result
         } catch (err) {
-            failureCount++
-            lastFailureTime = Date.now()
-            if (failureCount >= config.failureThreshold) {
-                state = 'open'
-            }
+            onFailure(err)
             throw err
         }
     }

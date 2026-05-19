@@ -2,6 +2,15 @@
     "name": "@ratelock/postgres",
     "description": "PostgreSQL storage backend for RateLock rate limiting system",
     "version": "0.2.0",
+    "homepage": "https://github.com/saoudi-h/ratelock",
+    "bugs": {
+        "url": "https://github.com/saoudi-h/ratelock/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/saoudi-h/ratelock.git",
+        "directory": "packages/postgres"
+    },
     "publishConfig": {
         "access": "public"
     },
@@ -23,15 +32,22 @@
     ],
     "scripts": {
         "build": "tsdown",
+        "dev": "tsdown --watch",
         "lint": "eslint . --max-warnings 0",
         "lint:fix": "eslint . --max-warnings 0 --fix",
         "format": "prettier \"**/*\" --ignore-unknown --list-different",
         "format:fix": "prettier \"**/*\" --ignore-unknown --write",
         "test": "vitest --exclude \"**/*.integration.test.ts\"",
+        "test:ui": "vitest --exclude \"**/*.integration.test.ts\" --ui",
         "test:run": "vitest run --exclude \"**/*.integration.test.ts\"",
-        "test:integration": "vitest run",
+        "test:coverage": "vitest run --coverage",
+        "test:coverage:dev": "pnpm run docker:up && vitest run --coverage && pnpm run docker:down",
+        "test:integration": "pnpm run docker:up && vitest run && pnpm run docker:down",
         "typecheck": "tsgo --noEmit",
         "clean": "rimraf dist node_modules .turbo",
+        "docker:up": "docker-compose --env-file .env.test -f docker-compose.test.yml up -d --wait",
+        "docker:down": "docker-compose --env-file .env.test -f docker-compose.test.yml down",
+        "prepack": "tsdown",
         "pre-commit": "lint-staged"
     },
     "dependencies": {
@@ -50,17 +66,23 @@
         }
     },
     "devDependencies": {
+        "@eslint/js": "^10.0.1",
         "@ratelock/test-utils": "workspace:*",
         "@ratelock/vitest": "workspace:*",
         "@tala-tools/eslint": "0.1.1",
         "@tala-tools/prettier": "0.0.3",
         "@tala-tools/tsconfig": "0.0.1",
         "@types/node": "^25.9.0",
+        "@types/pg": "^8.20.0",
+        "@vitest/coverage-v8": "^4.1.6",
+        "dotenv": "^17.4.2",
+        "pg": ">=8.0.0",
         "postgres": ">=3.0.0",
-        "typescript": "^6.0.3"
+        "typescript": "^6.0.3",
+        "vitest": "^4.1.6"
     },
     "engines": {
-        "node": ">=18"
+        "node": ">=22"
     },
     "author": {
         "name": "Saoudi Hakim",
