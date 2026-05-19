@@ -20,18 +20,18 @@
         "@ratelock/postgres": "workspace:*",
         "@ratelock/redis": "workspace:*",
         "ioredis": "^5.10.1",
-        "pg": "^8.20.0",
+        "pg": "^8.21.0",
         "postgres": "^3.4.9",
         "rate-limiter-flexible": "^11.1.0",
         "redis": "^5.12.1"
     },
     "devDependencies": {
-        "@tala-tools/eslint": "0.1.0",
-        "@tala-tools/prettier": "0.0.2",
+        "@tala-tools/eslint": "0.1.1",
+        "@tala-tools/prettier": "0.0.3",
         "@tala-tools/tsconfig": "0.0.1",
-        "@types/node": "^25.6.0",
+        "@types/node": "^25.9.0",
         "@types/pg": "^8.20.0",
-        "tsx": "^4.21.0",
+        "tsx": "^4.22.2",
         "typescript": "^6.0.3"
     },
     "engines": {

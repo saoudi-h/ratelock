@@ -38,10 +38,10 @@
     "devDependencies": {
         "@ratelock/test-utils": "workspace:*",
         "@ratelock/vitest": "workspace:*",
-        "@tala-tools/eslint": "0.1.0",
-        "@tala-tools/prettier": "0.0.2",
+        "@tala-tools/eslint": "0.1.1",
+        "@tala-tools/prettier": "0.0.3",
         "@tala-tools/tsconfig": "0.0.1",
-        "@types/node": "^25.6.0"
+        "@types/node": "^25.9.0"
     },
     "dependencies": {
         "@ratelock/core": "workspace:*"
