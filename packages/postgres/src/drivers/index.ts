@@ -38,8 +38,8 @@ export async function createConnection(config: {
         if (driver === 'postgres') {
             try {
                 const mod = await import('postgres')
-                const postgres = mod.default ?? mod
-                const sql = postgres(config.connectionString)
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                const sql = (mod.default ?? mod)(config.connectionString)
                 return { driver: postgresDriver(sql), end: () => sql.end() }
             } catch {
                 if (config.driver === 'postgres')
@@ -49,7 +49,8 @@ export async function createConnection(config: {
         if (driver === 'pg') {
             try {
                 const pg = await import('pg')
-                const Pool = pg.default?.Pool ?? pg.Pool
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                const Pool = (pg.default ?? pg).Pool
                 const pool = new Pool({ connectionString: config.connectionString })
                 return { driver: pgDriver(pool), end: () => pool.end() }
             } catch {
