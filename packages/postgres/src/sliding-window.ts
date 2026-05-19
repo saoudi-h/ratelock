@@ -84,11 +84,12 @@ export async function createSlidingWindowLimiter(
             const windowStart = new Date(row.window_start).getTime()
             const elapsed = (now - windowStart) / windowMs
             const estimated = row.previous_count * (1 - elapsed) + row.current_count
-            const allowed = Math.floor(estimated) <= limit
+            const count = Math.ceil(estimated)
+            const allowed = count <= limit
 
             return {
                 allowed,
-                remaining: Math.max(0, limit - Math.ceil(estimated)),
+                remaining: Math.max(0, limit - count),
                 reset: windowStart + windowMs + windowMs,
                 windowStart,
                 windowEnd: windowStart + windowMs,
