@@ -11,5 +11,6 @@ export default defineConfig({
         reporters: ['default'],
         mockReset: true,
         restoreMocks: true,
+        exclude: ['**/__integration__/**', '**/node_modules/**', '**/dist/**'],
     },
 })
