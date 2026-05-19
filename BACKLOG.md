@@ -32,17 +32,17 @@
 
 ### Core Bugs & Correctness
 
-- [ ] **Circuit breaker: preserve original error context** — Wrap "circuit open" errors with `{ cause: err }` so consumers can inspect the root cause. See `ANALYSIS_REPORT.md` section 1.
-- [ ] **Circuit breaker: concurrent half-open probe guard** — Add a boolean flag to ensure only one request acts as the half-open probe under concurrent load. See `ANALYSIS_REPORT.md` section 1.
-- [ ] **Redis sliding window: incorrect windowStart** — Return the actual oldest timestamp from the sorted set instead of `now - windowMs`. See `ANALYSIS_REPORT.md` section 4.
-- [ ] **Local checkBatch: same-ID race condition** — Deduplicate IDs or process sequentially per-key to avoid concurrent reads of stale state. See `ANALYSIS_REPORT.md` section 3.
+- [x] **Circuit breaker: preserve original error context** — Wrap "circuit open" errors with `{ cause: err }` so consumers can inspect the root cause. See `ANALYSIS_REPORT.md` section 1.
+- [x] **Circuit breaker: concurrent half-open probe guard** — Add a boolean flag to ensure only one request acts as the half-open probe under concurrent load. See `ANALYSIS_REPORT.md` section 1.
+- [x] **Redis sliding window: incorrect windowStart** — Return the actual oldest timestamp from the sorted set instead of `now - windowMs`. See `ANALYSIS_REPORT.md` section 4.
+- [~] **Local checkBatch: same-ID race condition** — ~Deduplicate IDs or process sequentially per-key to avoid concurrent reads of stale state.~ *(Invalid: JS execution of `check` is synchronous, so no interleaving occurs).*
 
 ### Testing
 
 - [ ] **Fix `@tala-tools/eslint` ESM import bug** — The package uses `import * as js from "@eslint/js"` which fails with ESLint 10 because CJS modules expose their exports under `.default` in ESM namespace imports. Upstream fix needed: change to `import js from "@eslint/js"`. Affects `@ratelock/redis`, `@ratelock/local`, `@ratelock/postgres`. `@ratelock/core` works due to different pnpm resolution. Workaround: fork/patch `@tala-tools/eslint` or migrate to a self-owned ESLint config.
 - [ ] **Add Redis integration tests** — Redis currently has no tests. Add contract-based integration tests using docker-compose.
 - [ ] **Verify postgres integration tests run** — The integration test file was created but needs to be verified against a real PostgreSQL instance.
-- [ ] **Add PR workflow CI** — Create a `.github/workflows/ci.yml` that runs lint, typecheck, and tests on pull requests.
+- [x] **Add PR workflow CI** — Create a `.github/workflows/ci.yml` that runs lint, typecheck, and tests on pull requests.
 
 ### Documentation Site
 
@@ -62,7 +62,7 @@
 
 - [ ] **Add `invalidate(id)` to withCache** — Allow manual cache busting for specific identifiers.
 - [ ] **Document cache TTL guidance** — Add JSDoc warning that `ttlMs` should be <= smallest window duration.
-- [ ] **Add publint to CI** — Run `publint` on all publishable packages before release.
+- [x] **Add publint to CI** — Run `publint` on all publishable packages before release.
 
 ### Runtime Compatibility
 
@@ -75,13 +75,13 @@
 
 ### Code Quality
 
-- [ ] **PostgreSQL sliding window: asymmetric remaining** — Fix the edge case where `allowed === true` but `remaining === 0`. See `ANALYSIS_REPORT.md` section 5.
+- [x] **PostgreSQL sliding window: asymmetric remaining** — Fix the edge case where `allowed === true` but `remaining === 0`. See `ANALYSIS_REPORT.md` section 5.
 - [ ] **Add JSDoc to all exported functions** — Improve IDE autocomplete and generated documentation.
 - [ ] **Consider exposing circuit state** — Add a getter for circuit breaker state for monitoring/observability.
 
 ### Infrastructure
 
-- [ ] **Add Renovate config** — Automate dependency updates with sensible grouping rules.
+- [x] **Add Renovate config** — Automate dependency updates with sensible grouping rules.
 - [ ] **Add package health badges to README** — Coverage, bundle size, etc.
 
 ---
