@@ -1,0 +1,38 @@
+---
+title: Introduction
+description: Welcome to Ratelock documentation.
+---
+
+Ratelock is a high-performance rate limiting suite for TypeScript, designed to be flexible, extensible, and easy to use.
+
+## Features
+
+- **Multiple Drivers**: Support for In-Memory, Redis, and PostgreSQL.
+- **Advanced Algorithms**: Fixed Window, Sliding Window, Token Bucket.
+- **Resilience**: Built-in support for Retries, Circuit Breakers, and Caching.
+- **Type-Safe**: Written in TypeScript with full type support.
+
+## Installation
+
+```bash
+npm install @ratelock/core @ratelock/local
+```
+
+## Quick Start
+
+```typescript
+import { createFixedWindowLimiter } from '@ratelock/local'
+
+const limiter = await createFixedWindowLimiter({
+    limit: 10,
+    windowMs: 60000, // 10 requests per minute
+})
+
+const result = await limiter.check('user-123')
+
+if (result.allowed) {
+    console.log('Request allowed!')
+} else {
+    console.log('Rate limit exceeded!')
+}
+```
