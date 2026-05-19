@@ -30,7 +30,9 @@ const LUA = `
   end
   local ttl = redis.call('PTTL', key)
   if ttl == -1 or ttl == -2 then ttl = window end
-  return {allowed, current + (allowed == 1 and 1 or 0), remaining, ttl}
+  local oldest = redis.call('ZRANGE', key, 0, 0, 'WITHSCORES')
+  local oldest_ts = #oldest > 0 and tonumber(oldest[2]) or (now - window)
+  return {allowed, current + (allowed == 1 and 1 or 0), remaining, ttl, oldest_ts}
 `
 
 export type SlidingWindowLimiterConfig = SlidingWindowOptions & {
@@ -63,12 +65,12 @@ export async function createSlidingWindowLimiter(
                 [key],
                 [windowMs.toString(), limit.toString(), now.toString(), uid]
             )
-            const res = raw as [unknown, unknown, unknown, unknown]
+            const res = raw as [unknown, unknown, unknown, unknown, unknown]
             return {
                 allowed: Number(res[0]) === 1,
                 remaining: Number(res[2]),
                 reset: now + Number(res[3]),
-                windowStart: now - windowMs,
+                windowStart: Number(res[4]),
                 windowEnd: now + Number(res[3]),
             }
         },
