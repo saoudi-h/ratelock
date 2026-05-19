@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@tala-tools/eslint': file:../tala-tools/packages/eslint
-
 importers:
 
   .:
@@ -31,8 +28,8 @@ importers:
         specifier: workspace:*
         version: link:packages/vitest
       '@tala-tools/eslint':
-        specifier: file:../tala-tools/packages/eslint
-        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: 0.1.2
+        version: 0.1.2(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -212,8 +209,8 @@ importers:
         specifier: ^4.3.0
         version: 4.3.0
       '@tala-tools/eslint':
-        specifier: file:../../../tala-tools/packages/eslint
-        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: 0.1.1
+        version: 0.1.1(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -336,8 +333,8 @@ importers:
         specifier: ^4.3.0
         version: 4.3.0
       '@tala-tools/eslint':
-        specifier: file:../../../tala-tools/packages/eslint
-        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: 0.1.1
+        version: 0.1.1(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -391,8 +388,8 @@ importers:
         version: 5.12.1
     devDependencies:
       '@tala-tools/eslint':
-        specifier: file:../../../tala-tools/packages/eslint
-        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: 0.1.2
+        version: 0.1.2(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -418,8 +415,8 @@ importers:
         specifier: workspace:*
         version: link:../vitest
       '@tala-tools/eslint':
-        specifier: file:../../../tala-tools/packages/eslint
-        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: 0.1.2
+        version: 0.1.2(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -452,8 +449,8 @@ importers:
         specifier: workspace:*
         version: link:../vitest
       '@tala-tools/eslint':
-        specifier: file:../../../tala-tools/packages/eslint
-        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: 0.1.2
+        version: 0.1.2(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -483,8 +480,8 @@ importers:
         specifier: workspace:*
         version: link:../vitest
       '@tala-tools/eslint':
-        specifier: file:../../../tala-tools/packages/eslint
-        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: 0.1.2
+        version: 0.1.2(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -532,8 +529,8 @@ importers:
         specifier: workspace:*
         version: link:../vitest
       '@tala-tools/eslint':
-        specifier: file:../../../tala-tools/packages/eslint
-        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: 0.1.2
+        version: 0.1.2(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -572,8 +569,8 @@ importers:
         version: link:../core
     devDependencies:
       '@tala-tools/eslint':
-        specifier: file:../../../tala-tools/packages/eslint
-        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: 0.1.2
+        version: 0.1.2(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -609,8 +606,8 @@ importers:
         version: 4.1.6(@types/node@25.9.0)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(happy-dom@20.9.0)(msw@2.14.6(@types/node@25.9.0)(typescript@6.0.3))(vite@7.0.6(@types/node@25.9.0)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.2)(yaml@2.9.0))
     devDependencies:
       '@tala-tools/eslint':
-        specifier: file:../../../tala-tools/packages/eslint
-        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: 0.1.2
+        version: 0.1.2(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -3237,8 +3234,18 @@ packages:
   '@tailwindcss/postcss@4.3.0':
     resolution: {integrity: sha512-Jm05Tjx+9yCLGv5qw1c+84Psds8MnyrEQYCB+FFk2lgGiUjlRqdxke4mVTuYrj2xnVZqKim2Apr5ySuQRYAw/w==}
 
-  '@tala-tools/eslint@file:../tala-tools/packages/eslint':
-    resolution: {directory: ../tala-tools/packages/eslint, type: directory}
+  '@tala-tools/eslint@0.1.1':
+    resolution: {integrity: sha512-joL2ObNnQTc06r3SPy5lQYlQ9kx7dqrR1ibeqqoZvz3HpJGoQPErdQBVCWTlIwWUnaPbV5Ozw/y+EBCjHMv09g==}
+    engines: {node: '>=20.19.0'}
+    peerDependencies:
+      eslint: ^10.2.0
+      tailwindcss: ^4.2.2
+    peerDependenciesMeta:
+      tailwindcss:
+        optional: true
+
+  '@tala-tools/eslint@0.1.2':
+    resolution: {integrity: sha512-fiCfug3Mp0D4z+RCDEZhSA8kmv58GtSe+sWbAO2XnQhcHwxPTMkLadQ8Gwd0XxB7WxFjIBgc6sMyo1cqw3U13A==}
     engines: {node: '>=20.19.0'}
     peerDependencies:
       eslint: ^10.2.0
@@ -9383,7 +9390,36 @@ snapshots:
       postcss: 8.5.14
       tailwindcss: 4.3.0
 
-  '@tala-tools/eslint@file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)':
+  '@tala-tools/eslint@0.1.1(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)':
+    dependencies:
+      '@eslint/config-helpers': 0.5.5
+      '@eslint/js': 10.0.1(eslint@10.4.0(jiti@2.7.0))
+      '@next/eslint-plugin-next': 16.2.6
+      '@typescript-eslint/utils': 8.59.4(eslint@10.4.0(jiti@2.7.0))(typescript@6.0.3)
+      eslint: 10.4.0(jiti@2.7.0)
+      eslint-config-prettier: 10.1.8(eslint@10.4.0(jiti@2.7.0))
+      eslint-plugin-better-tailwindcss: 4.5.0(eslint@10.4.0(jiti@2.7.0))(tailwindcss@4.3.0)(typescript@6.0.3)
+      eslint-plugin-jsx-a11y: 6.10.2(eslint@10.4.0(jiti@2.7.0))
+      eslint-plugin-playwright: 2.10.3(eslint@10.4.0(jiti@2.7.0))
+      eslint-plugin-react: 7.37.5(eslint@10.4.0(jiti@2.7.0))
+      eslint-plugin-react-hooks: 7.1.1(eslint@10.4.0(jiti@2.7.0))
+      eslint-plugin-regexp: 3.1.0(eslint@10.4.0(jiti@2.7.0))
+      eslint-plugin-storybook: 10.4.0(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(typescript@6.0.3)
+      eslint-plugin-tailwindcss: 3.18.3(tailwindcss@4.3.0)
+      eslint-plugin-turbo: 2.9.14(eslint@10.4.0(jiti@2.7.0))(turbo@2.9.14)
+      globals: 17.6.0
+      typescript-eslint: 8.59.4(eslint@10.4.0(jiti@2.7.0))(typescript@6.0.3)
+    optionalDependencies:
+      tailwindcss: 4.3.0
+    transitivePeerDependencies:
+      - '@eslint/css'
+      - oxlint
+      - storybook
+      - supports-color
+      - turbo
+      - typescript
+
+  '@tala-tools/eslint@0.1.2(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)':
     dependencies:
       '@eslint/config-helpers': 0.5.5
       '@eslint/js': 10.0.1(eslint@10.4.0(jiti@2.7.0))
