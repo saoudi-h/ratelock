@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@tala-tools/eslint': file:../tala-tools/packages/eslint
+
 importers:
 
   .:
@@ -28,8 +31,8 @@ importers:
         specifier: workspace:*
         version: link:packages/vitest
       '@tala-tools/eslint':
-        specifier: 0.1.1
-        version: 0.1.1(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: file:../tala-tools/packages/eslint
+        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -209,8 +212,8 @@ importers:
         specifier: ^4.3.0
         version: 4.3.0
       '@tala-tools/eslint':
-        specifier: 0.1.1
-        version: 0.1.1(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: file:../../../tala-tools/packages/eslint
+        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -333,8 +336,8 @@ importers:
         specifier: ^4.3.0
         version: 4.3.0
       '@tala-tools/eslint':
-        specifier: 0.1.1
-        version: 0.1.1(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: file:../../../tala-tools/packages/eslint
+        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -388,8 +391,8 @@ importers:
         version: 5.12.1
     devDependencies:
       '@tala-tools/eslint':
-        specifier: 0.1.1
-        version: 0.1.1(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: file:../../../tala-tools/packages/eslint
+        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -415,8 +418,8 @@ importers:
         specifier: workspace:*
         version: link:../vitest
       '@tala-tools/eslint':
-        specifier: 0.1.1
-        version: 0.1.1(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: file:../../../tala-tools/packages/eslint
+        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -449,8 +452,8 @@ importers:
         specifier: workspace:*
         version: link:../vitest
       '@tala-tools/eslint':
-        specifier: 0.1.1
-        version: 0.1.1(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: file:../../../tala-tools/packages/eslint
+        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -480,8 +483,8 @@ importers:
         specifier: workspace:*
         version: link:../vitest
       '@tala-tools/eslint':
-        specifier: 0.1.1
-        version: 0.1.1(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: file:../../../tala-tools/packages/eslint
+        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -518,9 +521,6 @@ importers:
       '@ratelock/core':
         specifier: workspace:*
         version: link:../core
-      redis:
-        specifier: ^4.0.0 || ^5.0.0
-        version: 5.8.0
     devDependencies:
       '@eslint/js':
         specifier: ^10.0.1
@@ -532,8 +532,8 @@ importers:
         specifier: workspace:*
         version: link:../vitest
       '@tala-tools/eslint':
-        specifier: 0.1.1
-        version: 0.1.1(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: file:../../../tala-tools/packages/eslint
+        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -543,6 +543,9 @@ importers:
       '@types/node':
         specifier: ^25.9.0
         version: 25.9.0
+      '@vitest/coverage-v8':
+        specifier: ^4.1.6
+        version: 4.1.6(vitest@4.1.6)
       dotenv:
         specifier: ^17.4.2
         version: 17.4.2
@@ -552,9 +555,15 @@ importers:
       luamin:
         specifier: ^1.0.4
         version: 1.0.4
+      redis:
+        specifier: ^5.12.1
+        version: 5.12.1
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
+      vitest:
+        specifier: ^4.1.6
+        version: 4.1.6(@types/node@25.9.0)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(happy-dom@20.9.0)(msw@2.14.6(@types/node@25.9.0)(typescript@6.0.3))(vite@7.0.6(@types/node@25.9.0)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.2)(yaml@2.9.0))
 
   packages/test-utils:
     dependencies:
@@ -563,8 +572,8 @@ importers:
         version: link:../core
     devDependencies:
       '@tala-tools/eslint':
-        specifier: 0.1.1
-        version: 0.1.1(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: file:../../../tala-tools/packages/eslint
+        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -600,8 +609,8 @@ importers:
         version: 4.1.6(@types/node@25.9.0)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(happy-dom@20.9.0)(msw@2.14.6(@types/node@25.9.0)(typescript@6.0.3))(vite@7.0.6(@types/node@25.9.0)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.2)(yaml@2.9.0))
     devDependencies:
       '@tala-tools/eslint':
-        specifier: 0.1.1
-        version: 0.1.1(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
+        specifier: file:../../../tala-tools/packages/eslint
+        version: file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)
       '@tala-tools/prettier':
         specifier: 0.0.3
         version: 0.0.3(prettier@3.8.3)
@@ -2694,12 +2703,6 @@ packages:
     peerDependencies:
       '@redis/client': ^5.12.1
 
-  '@redis/bloom@5.8.0':
-    resolution: {integrity: sha512-kpKZzAAjGiGYn88Bqq6+ozxPg6kGYWRZH9vnOwGcoSCbrW14SZpZVMYMFSio8FH9ZJUdUcmT/RLGlA1W1t0UWQ==}
-    engines: {node: '>= 18'}
-    peerDependencies:
-      '@redis/client': ^5.8.0
-
   '@redis/client@5.12.1':
     resolution: {integrity: sha512-7aPGWeqA3uFm43o19umzdl16CEjK/JQGtSXVPevplTaOU3VJA/rseBC1QvYUz9lLDIMBimc4SW/zrW4S89BaCA==}
     engines: {node: '>= 18.19.0'}
@@ -2712,21 +2715,11 @@ packages:
       '@opentelemetry/api':
         optional: true
 
-  '@redis/client@5.8.0':
-    resolution: {integrity: sha512-ywZjKGoSSAECGYOd9bJpws6d4867SN686obUWT/sRmo1c/Q8V+jWyInvlqwKa0BOvTHHwYeB2WFUEvd6PADeOQ==}
-    engines: {node: '>= 18'}
-
   '@redis/json@5.12.1':
     resolution: {integrity: sha512-eOze75esLve4vfqDel7aMX08CNaiLLQS2fV8mpRN9NxPe1rVR4vQyYiW/OgtGUysF6QOr9ANhfxABKNOJfXdKg==}
     engines: {node: '>= 18.19.0'}
     peerDependencies:
       '@redis/client': ^5.12.1
-
-  '@redis/json@5.8.0':
-    resolution: {integrity: sha512-xPBpwY6aKoRzMSu67MpwrBiSliON9bfHo9Y/pSPBjW8/KoOm1MzGqwJUO20qdjXpFoKJsDWwxIE1LHdBNzcImw==}
-    engines: {node: '>= 18'}
-    peerDependencies:
-      '@redis/client': ^5.8.0
 
   '@redis/search@5.12.1':
     resolution: {integrity: sha512-ItlxbxC9cKI6IU1TLWoczwJCRb6TdmkEpWv05UrPawqaAnWGRu3rcIqsc5vN483T2fSociuyV1UkWIL5I4//2w==}
@@ -2734,23 +2727,11 @@ packages:
     peerDependencies:
       '@redis/client': ^5.12.1
 
-  '@redis/search@5.8.0':
-    resolution: {integrity: sha512-lF9pNv9vySmirm1EzCH6YeRjhvH6lLT7tvebYHEM7WTkEQ/7kZWb4athliKESHpxzTQ36U9UbzuedSywHV6OhQ==}
-    engines: {node: '>= 18'}
-    peerDependencies:
-      '@redis/client': ^5.8.0
-
   '@redis/time-series@5.12.1':
     resolution: {integrity: sha512-c6JL6E3EcZJuNqKFz+KM+l9l5mpcQiKvTwgA3blt5glWJ8hjDk0yeHN3beE/MpqYIQ8UEX44ItQzgkE/gCBELQ==}
     engines: {node: '>= 18.19.0'}
     peerDependencies:
       '@redis/client': ^5.12.1
-
-  '@redis/time-series@5.8.0':
-    resolution: {integrity: sha512-kPTlW2ACXokjQNXjCD8Pw9mHDoB94AHUlHFahyjxz9lUJUVwiva2Dgfrd2k3JxHhSBqyY2PREIj9YwIUSTSSqQ==}
-    engines: {node: '>= 18'}
-    peerDependencies:
-      '@redis/client': ^5.8.0
 
   '@reduxjs/toolkit@2.12.0':
     resolution: {integrity: sha512-KiT+RzZbp6mQET+Mg+h2c97+9j1sNflUxQkIHI7Yuzf6Peu+OYpmkn6nbHWmLLWj+1ZODUJFwGZ7gx3L9R9EOw==}
@@ -3256,8 +3237,8 @@ packages:
   '@tailwindcss/postcss@4.3.0':
     resolution: {integrity: sha512-Jm05Tjx+9yCLGv5qw1c+84Psds8MnyrEQYCB+FFk2lgGiUjlRqdxke4mVTuYrj2xnVZqKim2Apr5ySuQRYAw/w==}
 
-  '@tala-tools/eslint@0.1.1':
-    resolution: {integrity: sha512-joL2ObNnQTc06r3SPy5lQYlQ9kx7dqrR1ibeqqoZvz3HpJGoQPErdQBVCWTlIwWUnaPbV5Ozw/y+EBCjHMv09g==}
+  '@tala-tools/eslint@file:../tala-tools/packages/eslint':
+    resolution: {directory: ../tala-tools/packages/eslint, type: directory}
     engines: {node: '>=20.19.0'}
     peerDependencies:
       eslint: ^10.2.0
@@ -6221,10 +6202,6 @@ packages:
     resolution: {integrity: sha512-LDsoVvb/CpoV9EN3FXvgvSHNJWuCIzl9MiO3ppOevuGLpSGJhwfQjpEwfFJcQvNSddHADDdZaWx0HnmMxRXG7g==}
     engines: {node: '>= 18.19.0'}
 
-  redis@5.8.0:
-    resolution: {integrity: sha512-re0MHm1KHbiVIUPDGoUM3jldvjH5EM/wGZ3A33gyUYoC/UnVNKNnZHM5hcJVry7L2O2eJU3nflSXTliv10BTKg==}
-    engines: {node: '>= 18'}
-
   redux-thunk@3.1.0:
     resolution: {integrity: sha512-NW2r5T6ksUKXCabzhL9z+h206HQw/NJkcLm1GPImRQ8IzfXwRGqjVhKJGauHirT0DAuyy6hjdnMZaRoAcy0Klw==}
     peerDependencies:
@@ -9063,15 +9040,7 @@ snapshots:
     dependencies:
       '@redis/client': 5.12.1
 
-  '@redis/bloom@5.8.0(@redis/client@5.8.0)':
-    dependencies:
-      '@redis/client': 5.8.0
-
   '@redis/client@5.12.1':
-    dependencies:
-      cluster-key-slot: 1.1.2
-
-  '@redis/client@5.8.0':
     dependencies:
       cluster-key-slot: 1.1.2
 
@@ -9079,25 +9048,13 @@ snapshots:
     dependencies:
       '@redis/client': 5.12.1
 
-  '@redis/json@5.8.0(@redis/client@5.8.0)':
-    dependencies:
-      '@redis/client': 5.8.0
-
   '@redis/search@5.12.1(@redis/client@5.12.1)':
     dependencies:
       '@redis/client': 5.12.1
 
-  '@redis/search@5.8.0(@redis/client@5.8.0)':
-    dependencies:
-      '@redis/client': 5.8.0
-
   '@redis/time-series@5.12.1(@redis/client@5.12.1)':
     dependencies:
       '@redis/client': 5.12.1
-
-  '@redis/time-series@5.8.0(@redis/client@5.8.0)':
-    dependencies:
-      '@redis/client': 5.8.0
 
   '@reduxjs/toolkit@2.12.0(react-redux@9.3.0(@types/react@19.2.14)(react@19.2.6)(redux@5.0.1))(react@19.2.6)':
     dependencies:
@@ -9426,7 +9383,7 @@ snapshots:
       postcss: 8.5.14
       tailwindcss: 4.3.0
 
-  '@tala-tools/eslint@0.1.1(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)':
+  '@tala-tools/eslint@file:../tala-tools/packages/eslint(eslint@10.4.0(jiti@2.7.0))(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(tailwindcss@4.3.0)(turbo@2.9.14)(typescript@6.0.3)':
     dependencies:
       '@eslint/config-helpers': 0.5.5
       '@eslint/js': 10.0.1(eslint@10.4.0(jiti@2.7.0))
@@ -12956,14 +12913,6 @@ snapshots:
     transitivePeerDependencies:
       - '@node-rs/xxhash'
       - '@opentelemetry/api'
-
-  redis@5.8.0:
-    dependencies:
-      '@redis/bloom': 5.8.0(@redis/client@5.8.0)
-      '@redis/client': 5.8.0
-      '@redis/json': 5.8.0(@redis/client@5.8.0)
-      '@redis/search': 5.8.0(@redis/client@5.8.0)
-      '@redis/time-series': 5.8.0(@redis/client@5.8.0)
 
   redux-thunk@3.1.0(redux@5.0.1):
     dependencies:
