@@ -1,0 +1,70 @@
+---
+title: Sliding Window
+description: Smooth rate limiting with per-request timestamp tracking.
+---
+
+The Sliding Window strategy tracks individual request timestamps and counts requests within a rolling time window. This eliminates the boundary burst problem of Fixed Window.
+
+## How It Works
+
+```
+Time ──────────────────────────────────────────────>
+     ←────── window (60s) ──────→
+     •    •  •    •  •  •  •  •  •  •  (10 requests)
+     ↑                           ↑
+   oldest                      now
+```
+
+Instead of resetting at fixed intervals, the window "slides" with time. Only requests within the last `windowMs` milliseconds are counted.
+
+## Configuration
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `limit` | `number` | Maximum requests allowed per window |
+| `windowMs` | `number` | Window duration in milliseconds |
+| `prefix` | `string` | Key prefix (default: `"sw"`) |
+| `maxSize` | `number` | Max entries before cleanup (default: `100000`) |
+
+## Usage
+
+```typescript
+import { createSlidingWindowLimiter } from '@ratelock/local'
+
+const limiter = await createSlidingWindowLimiter({
+    limit: 100,
+    windowMs: 60_000,
+})
+
+const result = await limiter.check('user:123')
+// { allowed: true, remaining: 99, reset: 1716000060000, windowStart: 1716000000000, windowEnd: 1716000060000 }
+```
+
+## Result Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `allowed` | `boolean` | Whether the request is allowed |
+| `remaining` | `number` | Requests remaining in the current window |
+| `reset` | `number` | Epoch timestamp (ms) when the oldest entry expires |
+| `windowStart` | `number` | Epoch timestamp (ms) of the window start |
+| `windowEnd` | `number` | Epoch timestamp (ms) of the window end |
+
+## Pros and Cons
+
+**Pros:**
+- No boundary burst problem
+- More accurate rate limiting
+- Smooth request distribution
+
+**Cons:**
+- Higher memory usage (stores individual timestamps)
+- Slightly slower than Fixed Window
+- Requires cleanup of expired entries
+
+## When to Use
+
+- When you need precise rate limiting
+- When users exploit Fixed Window boundaries
+- APIs with strict rate limit requirements
+- When accuracy matters more than memory usage

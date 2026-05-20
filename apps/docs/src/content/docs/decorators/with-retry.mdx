@@ -1,0 +1,50 @@
+---
+title: withRetry
+description: Retry transient failures with exponential backoff.
+---
+
+The `withRetry` decorator automatically retries failed rate limit checks with exponential backoff, handling transient errors like network timeouts or connection drops.
+
+## Usage
+
+```typescript
+import { withRetry } from '@ratelock/redis'
+
+const limiter = await createFixedWindowLimiter({ ... })
+const retried = withRetry(limiter, {
+    maxAttempts: 3,       // total attempts (including first)
+    baseDelayMs: 100,     // initial delay (default: 100)
+    maxDelayMs: 2000,     // maximum delay cap (default: 2000)
+})
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `maxAttempts` | `number` | — | Total number of attempts before giving up |
+| `baseDelayMs` | `number` | `100` | Initial delay between retries |
+| `maxDelayMs` | `number` | `2000` | Maximum delay cap |
+
+## Delay Calculation
+
+```
+Attempt 1: baseDelayMs × 2^0 = 100ms
+Attempt 2: baseDelayMs × 2^1 = 200ms
+Attempt 3: baseDelayMs × 2^2 = 400ms
+...
+Capped at maxDelayMs
+```
+
+## Built-in Alternative
+
+For most cases, use the built-in `retry` option at creation time instead:
+
+```typescript
+const limiter = await createFixedWindowLimiter({
+    url: 'redis://localhost:6379',
+    limit: 100,
+    windowMs: 60_000,
+    retry: { maxAttempts: 3 },
+})
+```
+
+See [Standalone Decorators](/docs/decorators) for when to use standalone vs built-in.

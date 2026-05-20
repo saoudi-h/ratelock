@@ -1,0 +1,163 @@
+---
+title: Installation
+description: Install RateLock packages for your project.
+---
+
+RateLock is distributed as multiple npm packages. Install only the adapter you need — each one includes all 4 rate limiting strategies.
+
+## Choose an Adapter
+
+### In-Memory (zero dependencies)
+
+<Tabs items={['npm', 'pnpm', 'yarn', 'bun']} groupId="package-manager" persist>
+  <Tab>
+    ```bash
+    npm install @ratelock/local
+    ```
+  </Tab>
+  <Tab>
+    ```bash
+    pnpm add @ratelock/local
+    ```
+  </Tab>
+  <Tab>
+    ```bash
+    yarn add @ratelock/local
+    ```
+  </Tab>
+  <Tab>
+    ```bash
+    bun add @ratelock/local
+    ```
+  </Tab>
+</Tabs>
+
+### Redis
+
+<Tabs items={['npm', 'pnpm', 'yarn', 'bun']} groupId="package-manager" persist>
+  <Tab>
+    ```bash
+    npm install @ratelock/redis redis
+    ```
+  </Tab>
+  <Tab>
+    ```bash
+    pnpm add @ratelock/redis redis
+    ```
+  </Tab>
+  <Tab>
+    ```bash
+    yarn add @ratelock/redis redis
+    ```
+  </Tab>
+  <Tab>
+    ```bash
+    bun add @ratelock/redis redis
+    ```
+  </Tab>
+</Tabs>
+
+Or with ioredis:
+
+<Tabs items={['npm', 'pnpm', 'yarn', 'bun']} groupId="package-manager" persist>
+  <Tab>
+    ```bash
+    npm install @ratelock/redis ioredis
+    ```
+  </Tab>
+  <Tab>
+    ```bash
+    pnpm add @ratelock/redis ioredis
+    ```
+  </Tab>
+  <Tab>
+    ```bash
+    yarn add @ratelock/redis ioredis
+    ```
+  </Tab>
+  <Tab>
+    ```bash
+    bun add @ratelock/redis ioredis
+    ```
+  </Tab>
+</Tabs>
+
+### PostgreSQL
+
+<Tabs items={['npm', 'pnpm', 'yarn', 'bun']} groupId="package-manager" persist>
+  <Tab>
+    ```bash
+    npm install @ratelock/postgres postgres
+    ```
+  </Tab>
+  <Tab>
+    ```bash
+    pnpm add @ratelock/postgres postgres
+    ```
+  </Tab>
+  <Tab>
+    ```bash
+    yarn add @ratelock/postgres postgres
+    ```
+  </Tab>
+  <Tab>
+    ```bash
+    bun add @ratelock/postgres postgres
+    ```
+  </Tab>
+</Tabs>
+
+Or with pg:
+
+<Tabs items={['npm', 'pnpm', 'yarn', 'bun']} groupId="package-manager" persist>
+  <Tab>
+    ```bash
+    npm install @ratelock/postgres pg
+    ```
+  </Tab>
+  <Tab>
+    ```bash
+    pnpm add @ratelock/postgres pg
+    ```
+  </Tab>
+  <Tab>
+    ```bash
+    yarn add @ratelock/postgres pg
+    ```
+  </Tab>
+  <Tab>
+    ```bash
+    bun add @ratelock/postgres pg
+    ```
+  </Tab>
+</Tabs>
+
+That's it. Each adapter includes all 4 strategies and built-in decorator support.
+
+## Using Multiple Adapters
+
+You can use different adapters for different rate limiters in the same app:
+
+```typescript
+import { createFixedWindowLimiter as createLocalLimiter } from '@ratelock/local'
+import { createFixedWindowLimiter as createRedisLimiter } from '@ratelock/redis'
+
+// Local limiter for lightweight checks
+const localLimiter = await createLocalLimiter({ limit: 100, windowMs: 60_000 })
+
+// Redis limiter for distributed checks
+const redisLimiter = await createRedisLimiter({
+    url: 'redis://localhost:6379',
+    limit: 1000,
+    windowMs: 60_000,
+})
+```
+
+## Requirements
+
+- **Node.js 22+** (all packages)
+- **TypeScript 5+** (recommended, not required)
+- Redis 6+ (for `@ratelock/redis`)
+- PostgreSQL 14+ (for `@ratelock/postgres`)
+
+> **Note:** `@ratelock/local` also works in browsers and Bun. Runtime compatibility is being expanded — see [Runtime Compatibility](/docs/getting-started/runtime) for details.

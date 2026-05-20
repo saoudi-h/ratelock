@@ -1,6 +1,11 @@
+import { Rate } from '@/components/ui-blocks/rate'
+import { onRateAction } from '@/lib/github'
+import { getMDXComponents } from '@/mdx-components'
 import { source } from '@/lib/source'
-import defaultMdxComponents from 'fumadocs-ui/mdx'
-import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/page'
+import { createRelativeLink } from 'fumadocs-ui/mdx'
+import { DocsPage, PageLastUpdate } from 'fumadocs-ui/layouts/docs/page'
+import { MarkdownCopyButton, ViewOptionsPopover } from 'fumadocs-ui/layouts/docs/page'
+import { DocsBody, DocsDescription, DocsTitle } from 'fumadocs-ui/page'
 import { notFound } from 'next/navigation'
 
 export default async function Page(props: { params: Promise<{ slug?: string[] }> }) {
@@ -8,23 +13,35 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
     const page = source.getPage(params.slug)
     if (!page) notFound()
 
-    const MDX = page.data.body
+    const MDXContent = page.data.body
+    const markdownUrl = `${page.url}.mdx`
 
     return (
         <DocsPage toc={page.data.toc} full={page.data.full}>
             <DocsTitle>{page.data.title}</DocsTitle>
             <DocsDescription>{page.data.description}</DocsDescription>
+            <div className="flex flex-row flex-wrap items-center gap-2 border-b pb-6">
+                <MarkdownCopyButton markdownUrl={markdownUrl} />
+                <ViewOptionsPopover
+                    markdownUrl={markdownUrl}
+                    githubUrl={`https://github.com/saoudi-h/ratelock/blob/main/apps/docs/src/content/docs/${page.path}`}
+                />
+            </div>
             <DocsBody>
-                <MDX components={{ ...defaultMdxComponents }} />
+                <MDXContent
+                    components={getMDXComponents({
+                        a: createRelativeLink(source, page),
+                    })}
+                />
             </DocsBody>
+            <Rate onRateAction={onRateAction} />
+            {page.data.lastModified && <PageLastUpdate date={page.data.lastModified} />}
         </DocsPage>
     )
 }
 
 export async function generateStaticParams() {
-    return source.getPages().map(page => ({
-        slug: page.slugs,
-    }))
+    return source.generateParams()
 }
 
 export async function generateMetadata(props: { params: Promise<{ slug?: string[] }> }) {

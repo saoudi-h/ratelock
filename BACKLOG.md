@@ -25,6 +25,10 @@
 - [x] Create technical analysis report (ANALYSIS_REPORT.md)
 - [x] Create runtime compatibility document (RUNTIME_COMPATIBILITY.md)
 - [x] Create PR workflow CI (`.github/workflows/ci.yml`)
+- [x] Populate docs site with full content (strategies, adapters, decorators)
+- [x] Fix Fumadocs content directory path (`src/content/docs`)
+- [x] Re-export decorators from all adapter packages
+- [x] Rewrite docs: decorators as "Advanced: Standalone Decorators"
 
 ---
 
@@ -32,22 +36,25 @@
 
 ### Core Bugs & Correctness
 
-- [x] **Circuit breaker: preserve original error context** — Wrap "circuit open" errors with `{ cause: err }` so consumers can inspect the root cause. See `ANALYSIS_REPORT.md` section 1.
-- [x] **Circuit breaker: concurrent half-open probe guard** — Add a boolean flag to ensure only one request acts as the half-open probe under concurrent load. See `ANALYSIS_REPORT.md` section 1.
-- [x] **Redis sliding window: incorrect windowStart** — Return the actual oldest timestamp from the sorted set instead of `now - windowMs`. See `ANALYSIS_REPORT.md` section 4.
-- [~] **Local checkBatch: same-ID race condition** — ~Deduplicate IDs or process sequentially per-key to avoid concurrent reads of stale state.~ *(Invalid: JS execution of `check` is synchronous, so no interleaving occurs).*
+- [x] **Circuit breaker: preserve original error context** — Wrap "circuit open" errors with `{ cause: err }`.
+- [x] **Circuit breaker: concurrent half-open probe guard** — Boolean flag for single probe.
+- [x] **Redis sliding window: incorrect windowStart** — Return actual oldest timestamp.
+- [~] **Local checkBatch: same-ID race condition** — *(Invalid: JS execution is synchronous, no interleaving).*
 
 ### Testing
 
-- [ ] **Fix `@tala-tools/eslint` ESM import bug** — The package uses `import * as js from "@eslint/js"` which fails with ESLint 10 because CJS modules expose their exports under `.default` in ESM namespace imports. Upstream fix needed: change to `import js from "@eslint/js"`. Affects `@ratelock/redis`, `@ratelock/local`, `@ratelock/postgres`. `@ratelock/core` works due to different pnpm resolution. Workaround: fork/patch `@tala-tools/eslint` or migrate to a self-owned ESLint config.
-- [ ] **Add Redis integration tests** — Redis currently has no tests. Add contract-based integration tests using docker-compose.
-- [ ] **Verify postgres integration tests run** — The integration test file was created but needs to be verified against a real PostgreSQL instance.
-- [x] **Add PR workflow CI** — Create a `.github/workflows/ci.yml` that runs lint, typecheck, and tests on pull requests.
+- [ ] **Fix `@tala-tools/eslint` ESM import bug** — CJS modules expose `.default` in ESM namespace imports. Upstream fix needed.
+- [ ] **Add Redis integration tests** — Contract-based tests using docker-compose.
+- [ ] **Verify postgres integration tests** — Run against real PostgreSQL instance.
 
-### Documentation Site
+### Docs UX Improvements (from solar-icons patterns)
 
-- [ ] **Initialize docs content** — The docs app (`apps/docs`) is empty. Add landing page, getting started guide, and API reference.
-- [ ] **Configure Fumadocs source** — Set up content collections and navigation structure.
+- [ ] **Package manager tabs** — `<CodeBlockTabs>` for npm/pnpm/yarn/bun snippets
+- [ ] **LLMs routes** — `/llms.txt`, `/llms.mdx/[[...slug]]`, `/llms-full.txt`
+- [ ] **Copy page as text** — `MarkdownCopyButton` + `ViewOptionsPopover` on each docs page
+- [ ] **Last modified date** — `PageLastUpdate` component on docs pages
+- [ ] **GitHub feedback widget** — Like/Dislike with GitHub Discussions integration
+- [ ] **Custom 404 page** — Branded not-found with go-home and go-back actions
 
 ---
 
@@ -55,19 +62,20 @@
 
 ### Performance
 
-- [ ] **Redis checkBatch: use pipelining** — Replace `Promise.all` with Redis MULTI/EXEC or pipelined EVALSHA for true batch operations.
-- [ ] **PostgreSQL checkBatch: single query** — Use `WHERE key = ANY($1)` for batch checks instead of N individual queries.
+- [ ] **Redis checkBatch: use pipelining** — MULTI/EXEC or pipelined EVALSHA.
+- [ ] **PostgreSQL checkBatch: single query** — `WHERE key = ANY($1)`.
 
 ### Developer Experience
 
-- [ ] **Add `invalidate(id)` to withCache** — Allow manual cache busting for specific identifiers.
-- [ ] **Document cache TTL guidance** — Add JSDoc warning that `ttlMs` should be <= smallest window duration.
-- [x] **Add publint to CI** — Run `publint` on all publishable packages before release.
+- [ ] **Add `invalidate(id)` to withCache** — Manual cache busting.
+- [ ] **Document cache TTL guidance** — JSDoc: `ttlMs` should be <= smallest window.
+- [x] **Add publint to CI** — Run on all publishable packages.
 
 ### Runtime Compatibility
 
-- [ ] **Evaluate Bun.js compatibility** — Test all packages under Bun. Document any known issues.
-- [ ] **Evaluate Deno compatibility** — Assess effort required for Deno support. Track in runtime-compatibility.md.
+- [ ] **Lower Node.js requirement** — Evaluate minimum version (18? 20?). `@ratelock/local` works in browsers.
+- [ ] **Test Bun.js compatibility** — Verify all packages work under Bun runtime.
+- [ ] **Clarify runtime messaging** — Update docs to reflect multi-runtime support (Node, Bun, browser for local).
 
 ---
 
@@ -75,25 +83,53 @@
 
 ### Code Quality
 
-- [x] **PostgreSQL sliding window: asymmetric remaining** — Fix the edge case where `allowed === true` but `remaining === 0`. See `ANALYSIS_REPORT.md` section 5.
-- [ ] **Add JSDoc to all exported functions** — Improve IDE autocomplete and generated documentation.
-- [ ] **Consider exposing circuit state** — Add a getter for circuit breaker state for monitoring/observability.
+- [x] **PostgreSQL sliding window: asymmetric remaining** — Fixed.
+- [ ] **Add JSDoc to all exported functions** — IDE autocomplete and generated docs.
+- [ ] **Expose circuit breaker state** — Getter for monitoring/observability.
 
 ### Infrastructure
 
-- [x] **Add Renovate config** — Automate dependency updates with sensible grouping rules.
-- [ ] **Add package health badges to README** — Coverage, bundle size, etc.
+- [x] **Add Renovate config** — Automated dependency updates.
+- [ ] **Add package health badges to README** — Coverage, bundle size.
 
 ---
 
-## Future / Ideas
+## Future / Ideas (Filtered & Prioritized)
 
-- [ ] **MongoDB adapter** — `@ratelock/mongo` using TTL indexes and findOneAndUpdate.
-- [ ] **Upstash Redis adapter** — `@ratelock/upstash` for serverless/edge deployments.
-- [ ] **Edge runtime adapter** — `@ratelock/edge` using Cloudflare KV or Durable Objects.
-- [ ] **Framework integrations** — First-party middleware for Express, Fastify, Hono, NestJS.
-- [ ] **Rate limit headers middleware** — Automatic `X-RateLimit-*` header injection.
-- [ ] **Dashboard / admin UI** — Visual monitoring of rate limit state across adapters.
+### Framework Integrations (High Value)
+
+- [ ] **Hono middleware** — `@ratelock/hono` — Lightweight, serverless-friendly, growing ecosystem
+- [ ] **Express middleware** — `@ratelock/express` — Still the most widely used Node framework
+- [ ] **Fastify plugin** — `@ratelock/fastify` — Performance-focused, strong community
+- [ ] **Rate limit headers middleware** — Automatic `X-RateLimit-*` header injection (shared utility)
+
+### New Adapters (Medium Value)
+
+- [ ] **Cloudflare KV adapter** — `@ratelock/cloudflare` — Edge/serverless deployments
+- [ ] **Upstash Redis adapter** — `@ratelock/upstash` — Serverless Redis with REST API
+- [ ] **MongoDB adapter** — `@ratelock/mongo` — TTL indexes + findOneAndUpdate
+
+### Bun Ecosystem (Explore, Don't Commit)
+
+- [ ] **Bun.Redis driver support** — Add to `@ratelock/redis` once Lua scripts PR merges (low effort, high value)
+- [ ] **Bun.sql driver support** — Evaluate if universal SQL client covers PostgreSQL-specific features needed
+- [ ] **Dedicated Bun packages?** — Only if driver differences can't be handled within existing adapters
+
+### Deno (Low Priority — Monitor)
+
+- [ ] **Deno compatibility assessment** — Test existing packages, document gaps
+- [ ] **Deno-specific adapters** — Only if demand justifies the maintenance cost
+
+### Docs Design (Future Session)
+
+- [ ] **Custom home page** — Hero section, feature cards, interactive demo, footer (Fumadocs HomeLayout replacement)
+- [ ] **Interactive strategy simulation** — Extract from playground, embed in docs as MDX component
+- [ ] **OG image generation** — Dynamic page preview images via `next/og` or Takumi
+
+### Dashboard / Admin UI (Long Term)
+
+- [ ] **Visual monitoring** — Rate limit state across adapters, real-time metrics
+- [ ] **Management API** — CRUD for rate limit rules, manual overrides
 
 ---
 
@@ -105,13 +141,23 @@
 - Versions will be managed by Changesets on first publish.
 - Internal packages (`test-utils`, `vitest`) use version `0.0.0` and are marked `private: true`.
 
-### Node.js Version
+### Runtime Support
 
-- Minimum supported: **Node.js 22**
-- Bun.js: Planned (compatible via Node.js API)
-- Deno: Planned (lower priority)
+- **Node.js**: Minimum version under evaluation (currently `>=22` in package.json, may be lowered)
+- **Bun**: Expected compatible via Node.js API. Testing pending.
+- **Browser**: `@ratelock/local` works in browsers (no Node-specific APIs)
+- **Deno**: Unknown — assessment needed
 
 ### Port Conventions
 
 - Redis test instance: **6380** (not default 6379)
 - PostgreSQL test instance: **5434** (not default 5432)
+
+### Decision Log
+
+| Decision | Date | Rationale |
+|----------|------|-----------|
+| Decorators re-exported from adapters | 2026-05-19 | Users never install `@ratelock/core` directly. Built-in for simplicity, standalone for advanced cases. |
+| Standalone decorators documented as "Advanced" | 2026-05-19 | Prevents confusion for new users while preserving flexibility for edge cases. |
+| No dedicated Bun packages (yet) | 2026-05-19 | Add driver support to existing adapters first. Split only if differences can't be abstracted. |
+| Framework integrations prioritized: Hono > Express > Fastify | 2026-05-19 | Hono is serverless-native and growing fast. Express for reach. Fastify for performance users. |

@@ -20,3 +20,6 @@ export type {
     TokenBucketOptions,
     TokenBucketResult,
 } from '@ratelock/core'
+
+export { withCache, withCircuitBreaker, withErrorPolicy, withRetry } from '@ratelock/core'
+export type { CacheConfig, CircuitBreakerConfig, ErrorPolicy, RetryConfig } from '@ratelock/core'

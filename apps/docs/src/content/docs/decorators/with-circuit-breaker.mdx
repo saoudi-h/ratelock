@@ -1,0 +1,59 @@
+---
+title: withCircuitBreaker
+description: Stop calling a failing backend to prevent cascading failures.
+---
+
+The `withCircuitBreaker` decorator implements the circuit breaker pattern. When the backend fails too many times, it "opens" the circuit and immediately rejects requests without calling the backend, giving it time to recover.
+
+## Usage
+
+```typescript
+import { withCircuitBreaker } from '@ratelock/redis'
+
+const limiter = await createFixedWindowLimiter({ ... })
+const circuitBreaker = withCircuitBreaker(limiter, {
+    failureThreshold: 5,      // open after 5 consecutive failures
+    recoveryTimeoutMs: 30_000, // wait 30s before trying again
+})
+```
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `failureThreshold` | `number` | Consecutive failures before opening the circuit |
+| `recoveryTimeoutMs` | `number` | Time to wait before transitioning to half-open |
+
+## States
+
+| State | Behavior |
+|-------|----------|
+| **Closed** | Normal operation. Requests go through to the backend. |
+| **Open** | Requests are rejected immediately. No backend calls. |
+| **Half-Open** | One probe request is allowed. If it succeeds, circuit closes. If it fails, circuit reopens. |
+
+## Error Context
+
+When the circuit is open, the thrown error includes the last error as its cause:
+
+```typescript
+try {
+    await limiter.check('user:123')
+} catch (err) {
+    console.log(err.message)     // "Circuit breaker is open"
+    console.log(err.cause)       // The original error that opened the circuit
+}
+```
+
+## Built-in Alternative
+
+For most cases, use the built-in `circuitBreaker` option at creation time instead:
+
+```typescript
+const limiter = await createFixedWindowLimiter({
+    url: 'redis://localhost:6379',
+    limit: 100,
+    windowMs: 60_000,
+    circuitBreaker: { failureThreshold: 5, recoveryTimeoutMs: 30_000 },
+})
+```
+
+See [Standalone Decorators](/docs/decorators) for when to use standalone vs built-in.

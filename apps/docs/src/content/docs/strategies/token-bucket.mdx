@@ -1,0 +1,86 @@
+---
+title: Token Bucket
+description: Allow bursts up to a capacity with steady refill rate.
+---
+
+The Token Bucket strategy uses a bucket of tokens that refills at a constant rate. Each request consumes one token. When the bucket is empty, requests are denied until tokens refill.
+
+## How It Works
+
+```
+Tokens: 10 ──→ 9 ──→ 8 ──→ 7 ──→ ... ──→ 0 (denied)
+                    ↑
+              refill: +1/sec
+```
+
+- **Capacity**: Maximum number of tokens (burst size)
+- **Refill Rate**: Tokens added per second
+- Each request consumes 1 token
+- Tokens refill continuously based on elapsed time
+
+## Configuration
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `capacity` | `number` | Maximum tokens (burst size) |
+| `refillRate` | `number` | Tokens added per second |
+| `prefix` | `string` | Key prefix (default: `"tb"`) |
+| `maxSize` | `number` | Max entries before cleanup (default: `100000`) |
+
+## Usage
+
+```typescript
+import { createTokenBucketLimiter } from '@ratelock/local'
+
+const limiter = await createTokenBucketLimiter({
+    capacity: 10,    // allow bursts of up to 10
+    refillRate: 1,   // 1 token per second
+})
+
+const result = await limiter.check('user:123')
+// { allowed: true, remaining: 9, tokens: 9, refillTime: 0 }
+```
+
+## Result Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `allowed` | `boolean` | Whether the request is allowed |
+| `remaining` | `number` | Tokens remaining after this check |
+| `tokens` | `number` | Same as `remaining` |
+| `refillTime` | `number` | Milliseconds until next token (0 if allowed) |
+
+## Calculating Retry-After
+
+When denied, `refillTime` tells you exactly how long to wait:
+
+```typescript
+const result = await limiter.check('user:123')
+
+if (!result.allowed) {
+    return new Response('Too Many Requests', {
+        status: 429,
+        headers: {
+            'Retry-After': String(Math.ceil(result.refillTime / 1000)),
+        },
+    })
+}
+```
+
+## Pros and Cons
+
+**Pros:**
+- Natural burst support
+- Smooth traffic shaping
+- Predictable refill behavior
+
+**Cons:**
+- Requires understanding of token bucket semantics
+- Burst capacity can be confusing for users
+
+## When to Use
+
+- APIs that should allow occasional bursts
+- Traffic shaping (smooth out request rates)
+- When you want to give users a "bank" of requests
+- Rate limiting with predictable recovery times

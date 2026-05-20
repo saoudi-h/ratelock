@@ -1,0 +1,67 @@
+---
+title: Fixed Window
+description: Count requests in fixed time windows. Simple and efficient.
+---
+
+The Fixed Window strategy divides time into equal windows and counts requests within each window. When the window expires, the count resets.
+
+## How It Works
+
+```
+Time ──────────────────────────────────────────────>
+     |──── Window 1 ────|──── Window 2 ────|────
+     0s                 60s                120s
+     count: 85          count: 42
+     limit: 100         limit: 100
+```
+
+All identifiers share the same window boundaries. At the start of each window, every counter resets to zero.
+
+## Configuration
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `limit` | `number` | Maximum requests allowed per window |
+| `windowMs` | `number` | Window duration in milliseconds |
+| `prefix` | `string` | Key prefix for the internal store (default: `"fw"`) |
+| `maxSize` | `number` | Max entries before cleanup triggers (default: `100000`) |
+
+## Usage
+
+```typescript
+import { createFixedWindowLimiter } from '@ratelock/local'
+
+const limiter = await createFixedWindowLimiter({
+    limit: 100,
+    windowMs: 60_000, // 1 minute
+})
+
+const result = await limiter.check('user:123')
+// { allowed: true, remaining: 99, reset: 1716000060000 }
+```
+
+## Result Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `allowed` | `boolean` | Whether the request is allowed |
+| `remaining` | `number` | Requests remaining in the current window |
+| `reset` | `number` | Epoch timestamp (ms) when the window resets |
+
+## Pros and Cons
+
+**Pros:**
+- Lowest memory usage
+- Fastest check operations
+- Simple to understand and debug
+
+**Cons:**
+- Boundary burst problem: a user can make 2x requests at window boundaries
+- All keys share the same window boundaries
+
+## When to Use
+
+- General API rate limiting
+- When memory efficiency is important
+- When the boundary burst problem is acceptable
+- High-traffic endpoints where simplicity matters

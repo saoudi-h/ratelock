@@ -1,0 +1,120 @@
+---
+title: Redis Adapter
+description: Distributed rate limiting powered by Redis and atomic Lua scripts.
+---
+
+The Redis adapter uses Redis sorted sets and Lua scripts for atomic, distributed rate limiting. It supports both `redis` (node-redis) and `ioredis` clients.
+
+## Installation
+
+```bash
+npm install @ratelock/redis redis
+# or with ioredis
+npm install @ratelock/redis ioredis
+```
+
+## Quick Start
+
+### With a Connection URL
+
+```typescript
+import { createFixedWindowLimiter } from '@ratelock/redis'
+
+const limiter = await createFixedWindowLimiter({
+    url: 'redis://localhost:6379',
+    limit: 100,
+    windowMs: 60_000,
+})
+```
+
+### With an Existing Client (node-redis)
+
+```typescript
+import { createClient } from 'redis'
+import { createFixedWindowLimiter } from '@ratelock/redis'
+
+const redisClient = createClient({ url: 'redis://localhost:6379' })
+await redisClient.connect()
+
+const limiter = await createFixedWindowLimiter({
+    client: redisClient,
+    limit: 100,
+    windowMs: 60_000,
+    prefix: 'my-app', // Optional key prefix
+})
+```
+
+### With ioredis
+
+```typescript
+import IORedis from 'ioredis'
+import { createFixedWindowLimiter } from '@ratelock/redis'
+
+const limiter = await createFixedWindowLimiter({
+    client: new IORedis('redis://localhost:6379'),
+    limit: 100,
+    windowMs: 60_000,
+})
+```
+
+## Built-in Decorators
+
+All limiters accept optional decorator configurations at creation time:
+
+```typescript
+const limiter = await createFixedWindowLimiter({
+    url: 'redis://localhost:6379',
+    limit: 100,
+    windowMs: 60_000,
+    cache: { maxSize: 1000, ttlMs: 30_000 },           // Cache denied results
+    retry: { maxAttempts: 3 },                          // Retry transient failures
+    circuitBreaker: { failureThreshold: 5, recoveryTimeoutMs: 30_000 },
+    errorPolicy: 'allow',                               // Fail-open on error
+})
+```
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `cache` | `CacheConfig` | Cache denied results to reduce Redis load |
+| `retry` | `RetryConfig` | Retry transient failures with exponential backoff |
+| `circuitBreaker` | `CircuitBreakerConfig` | Stop calling Redis after consecutive failures |
+| `errorPolicy` | `'throw' \| 'allow' \| 'deny'` | Behavior when the limiter throws |
+
+## All Strategies
+
+```typescript
+import {
+    createFixedWindowLimiter,
+    createSlidingWindowLimiter,
+    createTokenBucketLimiter,
+    createIndividualFixedWindowLimiter,
+} from '@ratelock/redis'
+```
+
+## Standalone Decorators (Advanced)
+
+For advanced use cases (conditional decorators, dynamic composition), import standalone decorators directly:
+
+```typescript
+import { withCache, withRetry } from '@ratelock/redis'
+
+const limiter = await createFixedWindowLimiter({ url: 'redis://...', limit: 100, windowMs: 60_000 })
+const cached = withCache(limiter, { maxSize: 500, ttlMs: 10_000 })
+```
+
+See [Standalone Decorators](/docs/decorators) for full documentation and when to use standalone vs built-in.
+
+## When to Use
+
+- Multi-server or serverless deployments
+- When you need consistent rate limits across processes
+- High-traffic applications requiring Redis-level performance
+- When atomicity matters (no race conditions between checks)
+
+## Cleanup
+
+```typescript
+await limiter.destroy() // Closes the Redis connection (if created internally)
+```
+
+If you provide your own client, `destroy()` does not close it — you manage the client lifecycle yourself.

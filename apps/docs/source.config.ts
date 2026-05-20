@@ -7,6 +7,7 @@ import { z } from 'zod'
 // You can customize Zod schemas for frontmatter and `meta.json` here
 // see https://fumadocs.vercel.app/docs/mdx/collections#define-docs
 export const docs = defineDocs({
+    dir: 'src/content/docs',
     docs: {
         schema: pageSchema.extend({
             preview: z.string().optional(),

@@ -1,0 +1,172 @@
+---
+title: PostgreSQL Adapter
+description: PostgreSQL-backed rate limiting using UPSERTs and native SQL operations.
+---
+
+The PostgreSQL adapter stores rate limit state in PostgreSQL tables using UPSERTs for atomic operations. It supports both `postgres` (porsager/postgres) and `pg` drivers.
+
+## Installation
+
+```bash
+npm install @ratelock/postgres postgres
+# or with pg
+npm install @ratelock/postgres pg
+```
+
+## Quick Start
+
+### With a Connection String
+
+```typescript
+import { createFixedWindowLimiter } from '@ratelock/postgres'
+
+const limiter = await createFixedWindowLimiter({
+    connectionString: 'postgres://user:pass@localhost:5432/mydb',
+    limit: 100,
+    windowMs: 60_000,
+})
+```
+
+### With an Existing Client (porsager/postgres)
+
+```typescript
+import postgres from 'postgres'
+import { createFixedWindowLimiter } from '@ratelock/postgres'
+
+const sql = postgres('postgres://user:pass@localhost:5432/mydb')
+
+const limiter = await createFixedWindowLimiter({
+    sql,
+    limit: 100,
+    windowMs: 60_000,
+})
+```
+
+### With an Existing Pool (pg)
+
+```typescript
+import { Pool } from 'pg'
+import { createFixedWindowLimiter } from '@ratelock/postgres'
+
+const pool = new Pool({ connectionString: 'postgres://user:pass@localhost:5432/mydb' })
+
+const limiter = await createFixedWindowLimiter({
+    pool,
+    limit: 100,
+    windowMs: 60_000,
+})
+```
+
+## Built-in Decorators
+
+All limiters accept optional decorator configurations at creation time:
+
+```typescript
+const limiter = await createFixedWindowLimiter({
+    connectionString: 'postgres://...',
+    limit: 100,
+    windowMs: 60_000,
+    cache: { maxSize: 1000, ttlMs: 30_000 },
+    retry: { maxAttempts: 3 },
+    circuitBreaker: { failureThreshold: 5, recoveryTimeoutMs: 30_000 },
+    errorPolicy: 'allow',
+})
+```
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `cache` | `CacheConfig` | Cache denied results to reduce database load |
+| `retry` | `RetryConfig` | Retry transient failures with exponential backoff |
+| `circuitBreaker` | `CircuitBreakerConfig` | Stop calling the database after consecutive failures |
+| `errorPolicy` | `'throw' \| 'allow' \| 'deny'` | Behavior when the limiter throws |
+
+## Auto-Migrations
+
+RateLock automatically creates its schema and tables on initialization:
+
+```sql
+-- Created automatically:
+CREATE TABLE IF NOT EXISTS ratelock_fixed_window (...);
+CREATE TABLE IF NOT EXISTS ratelock_sliding_window (...);
+CREATE TABLE IF NOT EXISTS ratelock_token_bucket (...);
+```
+
+Skip auto-migrations if you manage schema yourself:
+
+```typescript
+const limiter = await createFixedWindowLimiter({
+    connectionString: 'postgres://...',
+    limit: 100,
+    windowMs: 60_000,
+    skipMigrations: true,
+})
+```
+
+## Unlogged Tables
+
+For better write performance at the cost of crash safety, use unlogged tables:
+
+```typescript
+const limiter = await createFixedWindowLimiter({
+    connectionString: 'postgres://...',
+    limit: 100,
+    windowMs: 60_000,
+    unlogged: true,
+})
+```
+
+Unlogged tables are not written to WAL, providing significantly better write throughput. Data is lost on crash but rate limits are ephemeral anyway.
+
+## Auto-Cleanup
+
+The PostgreSQL adapter runs periodic cleanup of expired rows every 5 minutes. You can also trigger it manually:
+
+```typescript
+import { cleanupExpired } from '@ratelock/postgres'
+
+const deletedCount = await cleanupExpired(driver)
+```
+
+## All Exports
+
+```typescript
+import {
+    createFixedWindowLimiter,
+    createSlidingWindowLimiter,
+    createTokenBucketLimiter,
+    createIndividualFixedWindowLimiter,
+    createConnection,
+    pgDriver,
+    postgresDriver,
+    runMigrations,
+    cleanupExpired,
+} from '@ratelock/postgres'
+```
+
+## Standalone Decorators (Advanced)
+
+For advanced use cases (conditional decorators, dynamic composition), import standalone decorators directly:
+
+```typescript
+import { withCache, withRetry } from '@ratelock/postgres'
+
+const limiter = await createFixedWindowLimiter({ connectionString: 'postgres://...', limit: 100, windowMs: 60_000 })
+const cached = withCache(limiter, { maxSize: 500, ttlMs: 10_000 })
+```
+
+See [Standalone Decorators](/docs/decorators) for full documentation and when to use standalone vs built-in.
+
+## When to Use
+
+- Applications already running PostgreSQL
+- When you want rate limiting without adding Redis to your stack
+- When you need durable, persisted rate limit state
+- When you benefit from PostgreSQL's ACID guarantees
+
+## Cleanup
+
+```typescript
+await limiter.destroy() // Stops auto-cleanup and closes the connection
+```
+
+If you provide your own client, `destroy()` does not close it — you manage the client lifecycle yourself.

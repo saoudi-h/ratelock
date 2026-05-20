@@ -1,0 +1,65 @@
+---
+title: Individual Fixed Window
+description: Per-key fixed windows that start on first request.
+---
+
+Individual Fixed Window works like Fixed Window, but each identifier gets its own independent window that starts when that identifier first makes a request.
+
+## How It Works
+
+```
+User A: |──── Window (60s) ────|──── Window ────|
+        ↑ first request
+
+User B:         |──── Window (60s) ────|──── Window ────|
+                ↑ first request (30s later)
+```
+
+Unlike Fixed Window where all keys share the same window boundaries, each key's window is independent. This prevents the scenario where a new user gets penalized because they joined near the end of a window.
+
+## Configuration
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `limit` | `number` | Maximum requests per window per key |
+| `windowMs` | `number` | Window duration in milliseconds |
+| `prefix` | `string` | Key prefix (default: `"ifw"`) |
+| `maxSize` | `number` | Max entries before cleanup (default: `100000`) |
+
+## Usage
+
+```typescript
+import { createIndividualFixedWindowLimiter } from '@ratelock/local'
+
+const limiter = await createIndividualFixedWindowLimiter({
+    limit: 10,
+    windowMs: 60_000, // 10 requests per minute per user
+})
+
+const result = await limiter.check('user:123')
+// { allowed: true, remaining: 9, reset: 1716000060000 }
+```
+
+## Result Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `allowed` | `boolean` | Whether the request is allowed |
+| `remaining` | `number` | Requests remaining in this key's window |
+| `reset` | `number` | Epoch timestamp (ms) when this key's window resets |
+
+## Fixed Window vs Individual Fixed Window
+
+| Scenario | Fixed Window | Individual Fixed Window |
+|----------|-------------|------------------------|
+| User joins at 0:55 | Gets 5 seconds of window | Gets full 60-second window |
+| Window reset | All keys reset together | Each key resets independently |
+| Memory | Lower | Slightly higher (tracks per-key reset) |
+| Fairness | Less fair to late joiners | Fair to all users |
+
+## When to Use
+
+- Per-user rate limiting
+- When users join at different times
+- When you want each user to get a full window duration
+- Signup or onboarding flows where new users shouldn't be penalized

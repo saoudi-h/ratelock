@@ -1,0 +1,102 @@
+---
+title: Local Adapter
+description: Zero-dependency, in-memory rate limiting for single-process apps.
+---
+
+The Local adapter stores rate limit state in memory using JavaScript `Map` objects. It has zero external dependencies and provides sub-millisecond latency.
+
+## Installation
+
+```bash
+npm install @ratelock/local
+```
+
+## Quick Start
+
+```typescript
+import {
+    createFixedWindowLimiter,
+    createSlidingWindowLimiter,
+    createTokenBucketLimiter,
+    createIndividualFixedWindowLimiter,
+} from '@ratelock/local'
+
+const limiter = await createFixedWindowLimiter({
+    limit: 100,
+    windowMs: 60_000,
+})
+
+const result = await limiter.check('user:123')
+```
+
+## All Strategies
+
+| Function | Strategy |
+|----------|----------|
+| `createFixedWindowLimiter` | Fixed Window |
+| `createSlidingWindowLimiter` | Sliding Window |
+| `createTokenBucketLimiter` | Token Bucket |
+| `createIndividualFixedWindowLimiter` | Individual Fixed Window |
+
+## Configuration Options
+
+All limiters accept these common options:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `prefix` | `string` | Strategy-specific | Key prefix in the internal store |
+| `maxSize` | `number` | `100000` | Max entries before LRU cleanup triggers |
+
+Strategy-specific options are documented in the [Strategies](/docs/strategies) section.
+
+## Built-in Decorators
+
+All limiters accept optional decorator configurations at creation time:
+
+```typescript
+const limiter = await createFixedWindowLimiter({
+    limit: 100,
+    windowMs: 60_000,
+    cache: { maxSize: 1000, ttlMs: 30_000 },
+    retry: { maxAttempts: 3 },
+})
+```
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `cache` | `CacheConfig` | Cache denied results to reduce overhead |
+| `retry` | `RetryConfig` | Retry transient failures with exponential backoff |
+| `circuitBreaker` | `CircuitBreakerConfig` | Stop calling after consecutive failures |
+| `errorPolicy` | `'throw' \| 'allow' \| 'deny'` | Behavior when the limiter throws |
+
+## Standalone Decorators (Advanced)
+
+For advanced use cases, import standalone decorators directly:
+
+```typescript
+import { withCache, withRetry } from '@ratelock/local'
+
+const limiter = await createFixedWindowLimiter({ limit: 100, windowMs: 60_000 })
+const cached = withCache(limiter, { maxSize: 500, ttlMs: 10_000 })
+```
+
+See [Standalone Decorators](/docs/decorators) for full documentation and when to use standalone vs built-in.
+
+## When to Use
+
+- Single-server or single-process deployments
+- Development and testing environments
+- When you want zero external dependencies
+- When sub-millisecond latency matters
+
+## Limitations
+
+- **Not distributed**: State is not shared across processes or servers
+- **Volatile**: Rate limit state is lost on process restart
+- **Memory-bound**: Large numbers of unique identifiers consume memory
+
+## Cleanup
+
+```typescript
+await limiter.destroy() // Clears internal state
+```

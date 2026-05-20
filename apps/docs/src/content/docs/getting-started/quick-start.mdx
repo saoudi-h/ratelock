@@ -1,0 +1,91 @@
+---
+title: Quick Start
+description: Get up and running with RateLock in under 2 minutes.
+---
+
+## Your First Rate Limiter
+
+Create a rate limiter, check requests, and handle the result:
+
+```typescript
+import { createFixedWindowLimiter } from '@ratelock/local'
+
+const limiter = await createFixedWindowLimiter({
+    limit: 100,
+    windowMs: 60_000, // 100 requests per minute
+})
+
+const result = await limiter.check('user:123')
+
+if (!result.allowed) {
+    // Rate limit exceeded
+    return new Response('Too Many Requests', { status: 429 })
+}
+```
+
+## Understanding the Result
+
+Every `check()` call returns an object with strategy-specific fields:
+
+```typescript
+// Fixed Window / Sliding Window result
+{
+    allowed: true,
+    remaining: 99,    // requests left in window
+    reset: 1716000060000,  // when the window resets (ms)
+}
+
+// Token Bucket result
+{
+    allowed: true,
+    remaining: 9,
+    tokens: 9,
+    refillTime: 0,    // ms until next token (0 if allowed)
+}
+```
+
+## Setting Rate Limit Headers
+
+Use the result to set standard HTTP headers:
+
+```typescript
+const result = await limiter.check('user:123')
+
+return new Response(body, {
+    status: result.allowed ? 200 : 429,
+    headers: {
+        'X-RateLimit-Limit': String(limit),
+        'X-RateLimit-Remaining': String(result.remaining),
+        'X-RateLimit-Reset': String(result.reset),
+        ...(result.allowed ? {} : {
+            'Retry-After': String(Math.ceil((result.reset - Date.now()) / 1000)),
+        }),
+    },
+})
+```
+
+## Batch Checks
+
+Check multiple identifiers at once:
+
+```typescript
+const results = await limiter.checkBatch(['user:1', 'user:2', 'user:3'])
+
+for (const result of results) {
+    console.log(result.allowed ? 'allowed' : 'denied')
+}
+```
+
+## Cleanup
+
+Always destroy limiters when shutting down to release resources:
+
+```typescript
+await limiter.destroy()
+```
+
+## Next Steps
+
+- Learn about the [4 rate limiting strategies](/docs/strategies)
+- Explore [adapters](/docs/adapters) for Redis and PostgreSQL
+- [Standalone Decorators](/docs/decorators) for advanced use cases
