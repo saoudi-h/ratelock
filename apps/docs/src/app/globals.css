@@ -2,6 +2,8 @@
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 @import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -191,6 +193,33 @@
         background-image:
             linear-gradient(oklch(from var(--foreground) l c h / 0.04) 1px, transparent 1px),
             linear-gradient(90deg, oklch(from var(--foreground) l c h / 0.04) 1px, transparent 1px);
+    }
+
+    .simulation-grid {
+        background-image:
+            linear-gradient(oklch(from var(--primary) l c h / 0.08) 1px, transparent 1px),
+            linear-gradient(90deg, oklch(from var(--foreground) l c h / 0.04) 1px, transparent 1px);
+        background-size: 100% 42px, 72px 100%;
+        mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+    }
+
+    .simulation-scan {
+        background:
+            repeating-linear-gradient(
+                135deg,
+                transparent 0 16px,
+                oklch(from var(--primary) l c h / 0.035) 16px 17px
+            );
+        animation: simulation-drift 14s linear infinite;
+    }
+}
+
+@keyframes simulation-drift {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-72px);
     }
 }
 
