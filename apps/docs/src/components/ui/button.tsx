@@ -9,7 +9,7 @@ const buttonVariants = cva(
       border border-transparent bg-clip-padding text-sm font-medium
       whitespace-nowrap transition-all outline-none select-none
       focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30
-      active:not-aria-[haspopup]:translate-y-px
+      active:scale-[0.97]
       disabled:pointer-events-none disabled:opacity-50
       aria-invalid:border-destructive aria-invalid:ring-3
       aria-invalid:ring-destructive/20

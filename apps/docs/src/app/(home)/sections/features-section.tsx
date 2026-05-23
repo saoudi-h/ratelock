@@ -1,98 +1,149 @@
 'use client'
 
+import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Badge } from '@/components/ui/badge'
+import { Icon } from '@iconify/react'
 
 const features = [
     {
         title: 'Fixed Window',
         description:
-            'Simple and efficient. Count requests within fixed time intervals. Perfect for basic rate limiting needs.',
+            'Simple et ultra-performant. Compte les requêtes dans des intervalles de temps fixes. Idéal pour des limites basiques.',
         tag: 'Simple',
+        icon: 'solar:calendar-date-bold-duotone',
+        color: 'text-blue-500',
     },
     {
         title: 'Sliding Log',
         description:
-            'Precise tracking of every request. No boundary issues, complete accuracy at the cost of memory.',
-        tag: 'Precise',
+            'Précision chirurgicale. Suit chaque requête individuellement avec son timestamp. Une exactitude parfaite.',
+        tag: 'Précis',
+        icon: 'solar:document-bold-duotone',
+        color: 'text-amber-500',
     },
     {
         title: 'Sliding Window',
         description:
-            'Best of both worlds. Smooth rate limiting without the edge cases of fixed windows.',
-        tag: 'Balanced',
+            'Le meilleur des deux mondes. Limites lisses calculées sur une fenêtre glissante sans effet de frontière.',
+        tag: 'Équilibré',
+        icon: 'solar:history-bold-duotone',
+        color: 'text-emerald-500',
     },
     {
         title: 'Token Bucket',
         description:
-            'Allow bursts while maintaining average rate. Ideal for APIs that need to handle traffic spikes gracefully.',
+            'Autorise les pics de trafic temporaires tout en garantissant un débit moyen stable grâce au rechargement de jetons.',
         tag: 'Flexible',
+        icon: 'solar:cup-bold-duotone',
+        color: 'text-purple-500',
     },
     {
         title: 'Built-in Resilience',
         description:
-            'Decorators for retry, circuit breaker, timeout, and fallback. Protect your app from cascading failures.',
-        tag: 'Resilient',
+            'Intégration native de décotateurs de circuit-breaker, retry exponentiel et fallback pour blinder vos APIs.',
+        tag: 'Résilient',
+        icon: 'solar:shield-up-bold-duotone',
+        color: 'text-rose-500',
     },
     {
         title: 'Zero Config Local',
         description:
-            'In-memory adapter with zero dependencies. Get started in seconds, scale to Redis or Postgres when ready.',
+            'Fonctionne en mémoire locale instantanément sans base de données, parfait pour vos tests ou le serverless.',
         tag: 'Instant',
+        icon: 'solar:bolt-bold-duotone',
+        color: 'text-yellow-500',
     },
 ]
 
+export function SpotlightCard({
+    children,
+    className,
+}: {
+    children: React.ReactNode
+    className?: string
+}) {
+    const cardRef = useRef<HTMLDivElement>(null)
+    const [coords, setCoords] = useState({ x: 0, y: 0 })
+    const [isFocused, setIsFocused] = useState(false)
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!cardRef.current) return
+        const rect = cardRef.current.getBoundingClientRect()
+        setCoords({
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+        })
+    }
+
+    return (
+        <div
+            ref={cardRef}
+            onMouseMove={handleMouseMove}
+            onMouseEnter={() => setIsFocused(true)}
+            onMouseLeave={() => setIsFocused(false)}
+            className={`
+              relative overflow-hidden rounded-2xl border border-border/70 bg-card p-8
+              transition-all duration-300 hover:shadow-lg hover:border-primary/20
+              ${className ?? ''}
+            `}
+        >
+            {isFocused && (
+                <div
+                    className="pointer-events-none absolute -inset-px rounded-2xl transition-opacity duration-300"
+                    style={{
+                        background: `radial-gradient(350px circle at ${coords.x}px ${coords.y}px, var(--color-primary-rgb, oklch(0.70 0.20 160 / 10%)), transparent 80%)`,
+                    }}
+                />
+            )}
+            <div className="relative z-10">{children}</div>
+        </div>
+    )
+}
+
 export function FeaturesSection() {
     return (
-        <section className="relative">
+        <section className="relative bg-background">
             <div className="mx-auto max-w-7xl px-6 py-20 md:py-28">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-80px' }}
-                    transition={{ duration: 0.5 }}
-                    className="mb-12 md:mb-16"
-                >
-                    <h2 className="font-heading text-3xl font-semibold tracking-tight md:text-4xl">
-                        Everything you need,
+                <div className="mb-16 max-w-2xl">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
+                        <Icon icon="solar:widget-bold-duotone" className="size-3.5" />
+                        Fonctionnalités Clés
+                    </span>
+                    <h2 className="mt-4 font-heading text-4xl font-semibold tracking-tight md:text-5xl leading-tight">
+                        Tout ce dont vous avez besoin,
                         <br />
-                        nothing you don&apos;t
+                        sans fioritures.
                     </h2>
                     <p className="mt-4 max-w-lg text-muted-foreground">
-                        Four rate limiting strategies, three storage adapters,
-                        and built-in resilience patterns.
+                        Quatre stratégies de rate-limiting, trois adaptateurs de stockage résilients et des décorateurs intuitifs.
                     </p>
-                </motion.div>
+                </div>
 
-                <div className="grid gap-px bg-border md:grid-cols-2 lg:grid-cols-3">
-                    {features.map((feature, i) => (
-                        <motion.div
-                            key={feature.title}
-                            initial={{ opacity: 0, y: 16 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, margin: '-40px' }}
-                            transition={{ duration: 0.4, delay: i * 0.06 }}
-                        >
-                            <div
-                                className="group p-8 transition-colors hover:bg-muted"
-                                style={{ backgroundColor: 'var(--card)' }}
-                            >
-                                <div className="mb-4 flex items-center justify-between">
-                                    <Badge
-                                        variant="outline"
-                                        className="border-border text-xs text-muted-foreground"
-                                    >
-                                        {feature.tag}
-                                    </Badge>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {features.map((feature) => (
+                        <SpotlightCard key={feature.title}>
+                            <div className="flex items-center justify-between">
+                                <div className={`
+                                  flex size-11 items-center justify-center rounded-xl bg-muted/60
+                                  ${feature.color}
+                                `}>
+                                    <Icon icon={feature.icon} className="size-6" />
                                 </div>
-                                <h3 className="font-heading text-lg font-semibold">
-                                    {feature.title}
-                                </h3>
-                                <p className="mt-3 text-sm/relaxed text-muted-foreground">
-                                    {feature.description}
-                                </p>
+                                <Badge
+                                    variant="outline"
+                                    className="border-border/60 text-xs text-muted-foreground/80 bg-background/50 font-medium"
+                                >
+                                    {feature.tag}
+                                </Badge>
                             </div>
-                        </motion.div>
+                            <h3 className="mt-6 font-heading text-lg font-semibold tracking-tight text-foreground">
+                                {feature.title}
+                            </h3>
+                            <p className="mt-3 text-sm/relaxed text-muted-foreground/85">
+                                {feature.description}
+                            </p>
+                        </SpotlightCard>
                     ))}
                 </div>
             </div>

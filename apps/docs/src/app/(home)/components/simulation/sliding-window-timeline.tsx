@@ -15,14 +15,16 @@ interface SlidingWindowTimelineProps {
     events: RequestEvent[]
     config: SlidingWindowConfig
     lastResult?: { remaining: number; windowStart: number; windowEnd: number }
+    startTime: number
 }
 
 export function SlidingWindowTimeline({
     events,
     config,
     lastResult,
+    startTime,
 }: SlidingWindowTimelineProps) {
-    const now = useNow(80)
+    const now = useNow(100)
     const { windowMs, limit } = config
     const timelineSpan = windowMs * 2
 
@@ -39,15 +41,16 @@ export function SlidingWindowTimeline({
         return [
             {
                 id: 'sliding-window',
-                start: windowStart,
-                end: windowEnd,
+                start: 0,
+                end: windowMs,
                 isCurrent: true,
                 eventCount: allowedCount,
                 limit,
                 label: 'Window',
+                isStatic: true, // Reste immobile sous le curseur central 'now' !
             },
         ]
-    }, [windowStart, windowEnd, allowedCount, limit])
+    }, [windowMs, allowedCount, limit])
 
     const resetRemaining = lastResult?.windowStart
         ? Math.max(0, lastResult.windowStart + windowMs - now)
@@ -59,41 +62,49 @@ export function SlidingWindowTimeline({
                 <div className="flex items-center gap-3">
                     <span className="
                       inline-flex items-center gap-1.5 rounded-full border
-                      border-border/70 bg-card/80 px-2.5 py-1 text-sm
-                      text-muted-foreground
+                      border-border/70 bg-card/85 px-3 py-1 text-xs
+                      text-muted-foreground shadow-2xs backdrop-blur-xs
                     ">
-                        <span className="size-2.5 rounded-full bg-emerald-500" />
+                        <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
                         Allowed
                     </span>
                     <span className="
                       inline-flex items-center gap-1.5 rounded-full border
-                      border-border/70 bg-card/80 px-2.5 py-1 text-sm
-                      text-muted-foreground
+                      border-border/70 bg-card/85 px-3 py-1 text-xs
+                      text-muted-foreground shadow-2xs backdrop-blur-xs
                     ">
-                        <span className="size-2.5 rounded-full bg-rose-500" />
+                        <span className="size-2 rounded-full bg-rose-500" />
                         Denied
                     </span>
                 </div>
+                
+                {/* Badges à largeur fixe et justify-between pour un rendu zéro layout shift */}
                 <div className="
                   flex flex-wrap items-center gap-2 font-mono text-xs
                 ">
                     <span className="
-                      rounded-full border border-border/70 bg-card/80 px-2.5
-                      py-1
+                      inline-flex items-center justify-between w-32 rounded-full border border-border/60
+                      bg-card/85 px-3 py-1 shadow-2xs text-muted-foreground backdrop-blur-xs
                     ">
-                        Limit: <b>{limit}</b> / {(windowMs / 1000).toFixed(0)}s
+                        Limit: <b className="text-foreground">{limit}</b>
                     </span>
                     <span className="
-                      rounded-full border border-border/70 bg-card/80 px-2.5
-                      py-1
+                      inline-flex items-center justify-between w-36 rounded-full border border-border/60
+                      bg-card/85 px-3 py-1 shadow-2xs text-muted-foreground backdrop-blur-xs
                     ">
-                        Remaining: <b>{lastResult?.remaining ?? '—'}</b>
+                        Remaining:{' '}
+                        <b className="font-mono tabular-nums text-foreground">
+                            {lastResult?.remaining ?? '—'}
+                        </b>
                     </span>
                     <span className="
-                      rounded-full border border-border/70 bg-card/80 px-2.5
-                      py-1
+                      inline-flex items-center justify-between w-44 rounded-full border border-border/60
+                      bg-card/85 px-3 py-1 shadow-2xs text-muted-foreground backdrop-blur-xs
                     ">
-                        Oldest expires in: <b>{formatMs(resetRemaining)}</b>
+                        Expires in:{' '}
+                        <b className="font-mono tabular-nums text-foreground">
+                            {formatMs(resetRemaining)}
+                        </b>
                     </span>
                 </div>
             </div>
@@ -102,19 +113,20 @@ export function SlidingWindowTimeline({
                 events={events}
                 timelineSpan={timelineSpan}
                 windows={windows}
+                startTime={startTime}
             />
 
             <div className="
-              flex flex-wrap items-center gap-4 text-sm text-muted-foreground
+              flex flex-wrap items-center gap-4 text-xs text-muted-foreground
             ">
                 <span>
                     In window: <b>{inWindow.length}</b>
                 </span>
                 <span>
-                    Allowed: <b className="text-emerald-600">{allowedCount}</b>
+                    Allowed: <b className="text-emerald-600 dark:text-emerald-400">{allowedCount}</b>
                 </span>
                 <span>
-                    Denied: <b className="text-rose-600">{deniedCount}</b>
+                    Denied: <b className="text-rose-600 dark:text-rose-400">{deniedCount}</b>
                 </span>
             </div>
         </div>

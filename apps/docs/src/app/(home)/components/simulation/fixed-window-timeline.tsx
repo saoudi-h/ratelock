@@ -15,23 +15,24 @@ interface FixedWindowTimelineProps {
     events: RequestEvent[]
     config: FixedWindowConfig
     lastResult?: { remaining: number; reset: number }
+    startTime: number
 }
 
 export function FixedWindowTimeline({
     events,
     config,
     lastResult,
+    startTime,
 }: FixedWindowTimelineProps) {
-    const now = useNow(80)
+    const now = useNow(100)
     const { windowMs, limit } = config
     const timelineSpan = windowMs * 3
 
     const windows = useMemo((): TimelineWindow[] => {
-        const baseTime = lastResult?.reset ? lastResult.reset - windowMs : now
-        const currentWindowIndex = Math.floor((now - baseTime) / windowMs)
+        const baseTime = now - (now % windowMs)
 
         const result: TimelineWindow[] = []
-        for (let i = currentWindowIndex - 2; i <= currentWindowIndex + 2; i++) {
+        for (let i = -2; i <= 2; i++) {
             const windowStart = baseTime + i * windowMs
             const windowEnd = windowStart + windowMs
             const windowEvents = events.filter(
@@ -43,7 +44,7 @@ export function FixedWindowTimeline({
             const isFuture = windowStart > now
 
             result.push({
-                id: `window-${i}`,
+                id: `window-${windowStart}`,
                 start: windowStart,
                 end: windowEnd,
                 isCurrent,
@@ -55,7 +56,7 @@ export function FixedWindowTimeline({
             })
         }
         return result
-    }, [now, windowMs, limit, events, lastResult])
+    }, [now, windowMs, limit, events])
 
     const allowedCount = events.filter((e) => e.allowed).length
     const deniedCount = events.length - allowedCount
@@ -67,18 +68,18 @@ export function FixedWindowTimeline({
                 <div className="flex items-center gap-3">
                     <span className="
                       inline-flex items-center gap-1.5 rounded-full border
-                      border-border/70 bg-card/80 px-2.5 py-1 text-sm
-                      text-muted-foreground
+                      border-border/70 bg-card/85 px-3 py-1 text-xs
+                      text-muted-foreground shadow-2xs backdrop-blur-xs
                     ">
-                        <span className="size-2.5 rounded-full bg-emerald-500" />
+                        <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
                         Allowed
                     </span>
                     <span className="
                       inline-flex items-center gap-1.5 rounded-full border
-                      border-border/70 bg-card/80 px-2.5 py-1 text-sm
-                      text-muted-foreground
+                      border-border/70 bg-card/85 px-3 py-1 text-xs
+                      text-muted-foreground shadow-2xs backdrop-blur-xs
                     ">
-                        <span className="size-2.5 rounded-full bg-rose-500" />
+                        <span className="size-2 rounded-full bg-rose-500" />
                         Denied
                     </span>
                 </div>
@@ -86,22 +87,28 @@ export function FixedWindowTimeline({
                   flex flex-wrap items-center gap-2 font-mono text-xs
                 ">
                     <span className="
-                      rounded-full border border-border/70 bg-card/80 px-2.5
-                      py-1
+                      inline-flex items-center justify-between w-32 rounded-full border border-border/60
+                      bg-card/85 px-3 py-1 shadow-2xs text-muted-foreground backdrop-blur-xs
                     ">
-                        Limit: <b>{limit}</b> / {(windowMs / 1000).toFixed(0)}s
+                        Limit: <b className="text-foreground">{limit}</b>
                     </span>
                     <span className="
-                      rounded-full border border-border/70 bg-card/80 px-2.5
-                      py-1
+                      inline-flex items-center justify-between w-36 rounded-full border border-border/60
+                      bg-card/85 px-3 py-1 shadow-2xs text-muted-foreground backdrop-blur-xs
                     ">
-                        Remaining: <b>{lastResult?.remaining ?? '—'}</b>
+                        Remaining:{' '}
+                        <b className="font-mono tabular-nums text-foreground">
+                            {lastResult?.remaining ?? '—'}
+                        </b>
                     </span>
                     <span className="
-                      rounded-full border border-border/70 bg-card/80 px-2.5
-                      py-1
+                      inline-flex items-center justify-between w-40 rounded-full border border-border/60
+                      bg-card/85 px-3 py-1 shadow-2xs text-muted-foreground backdrop-blur-xs
                     ">
-                        Reset in: <b>{formatMs(resetRemaining)}</b>
+                        Reset in:{' '}
+                        <b className="font-mono tabular-nums text-foreground">
+                            {formatMs(resetRemaining)}
+                        </b>
                     </span>
                 </div>
             </div>
@@ -110,6 +117,7 @@ export function FixedWindowTimeline({
                 events={events}
                 timelineSpan={timelineSpan}
                 windows={windows}
+                startTime={startTime}
             />
 
             <div className="

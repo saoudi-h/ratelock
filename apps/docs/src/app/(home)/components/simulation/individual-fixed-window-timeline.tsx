@@ -15,45 +15,64 @@ interface IndividualFixedWindowTimelineProps {
     events: RequestEvent[]
     config: IndividualFixedWindowConfig
     lastResult?: { remaining: number; reset: number }
+    startTime: number
 }
 
 export function IndividualFixedWindowTimeline({
     events,
     config,
     lastResult,
+    startTime,
 }: IndividualFixedWindowTimelineProps) {
-    const now = useNow(80)
+    const now = useNow(100)
     const { windowMs, limit } = config
     const timelineSpan = windowMs * 3
 
+    // Reconstruction rigoureuse des fenêtres à déclenchement dynamique
     const windows = useMemo((): TimelineWindow[] => {
-        const baseTime = lastResult?.reset ? lastResult.reset - windowMs : now
-        const currentWindowIndex = Math.floor((now - baseTime) / windowMs)
+        if (events.length === 0) return []
 
+        const sortedEvents = [...events].sort((a, b) => a.timestamp - b.timestamp)
         const result: TimelineWindow[] = []
-        for (let i = currentWindowIndex - 2; i <= currentWindowIndex + 2; i++) {
-            const windowStart = baseTime + i * windowMs
-            const windowEnd = windowStart + windowMs
-            const windowEvents = events.filter((e) => e.timestamp >= windowStart && e.timestamp < windowEnd)
+        
+        let currentWindow: TimelineWindow | null = null
+        let windowIndex = 0
 
-            const isCurrent = windowStart <= now && now < windowEnd
-            const isPast = windowEnd <= now
-            const isFuture = windowStart > now
+        for (const event of sortedEvents) {
+            if (!currentWindow || event.timestamp >= currentWindow.end) {
+                // Une nouvelle fenêtre dynamique ne commence que lors du premier appel après expiration !
+                const start = event.timestamp
+                const end = start + windowMs
+                currentWindow = {
+                    id: `window-${windowIndex++}`,
+                    start,
+                    end,
+                    eventCount: 0,
+                    limit,
+                }
+                result.push(currentWindow)
+            }
+            
+            // On incrémente le compteur de requêtes autorisées pour cette fenêtre
+            if (event.allowed) {
+                currentWindow.eventCount = (currentWindow.eventCount || 0) + 1
+            }
+        }
 
-            result.push({
-                id: `window-${i}`,
-                start: windowStart,
-                end: windowEnd,
+        // Labellisation en fonction du temps présent (now)
+        return result.map((w) => {
+            const isCurrent = w.start <= now && now < w.end
+            const isPast = w.end <= now
+            const isFuture = w.start > now
+            return {
+                ...w,
                 isCurrent,
                 isPast,
                 isFuture,
-                eventCount: windowEvents.length,
-                limit,
                 label: isCurrent ? 'Current' : isPast ? 'Past' : 'Future',
-            })
-        }
-        return result
-    }, [now, windowMs, limit, events, lastResult])
+            }
+        })
+    }, [events, windowMs, limit, now])
 
     const allowedCount = events.filter((e) => e.allowed).length
     const deniedCount = events.length - allowedCount
@@ -62,27 +81,52 @@ export function IndividualFixedWindowTimeline({
     return (
         <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="text-sm text-muted-foreground">Single-key fixed window.</div>
+                <div className="flex items-center gap-3">
+                    <span className="
+                      inline-flex items-center gap-1.5 rounded-full border
+                      border-border/70 bg-card/85 px-3 py-1 text-xs
+                      text-muted-foreground shadow-2xs backdrop-blur-xs
+                    ">
+                        <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                        Allowed
+                    </span>
+                    <span className="
+                      inline-flex items-center gap-1.5 rounded-full border
+                      border-border/70 bg-card/85 px-3 py-1 text-xs
+                      text-muted-foreground shadow-2xs backdrop-blur-xs
+                    ">
+                        <span className="size-2 rounded-full bg-rose-500" />
+                        Denied
+                    </span>
+                </div>
+                
+                {/* Badges de taille fixe pour éliminer les décalages visuels */}
                 <div className="
                   flex flex-wrap items-center gap-2 font-mono text-xs
                 ">
                     <span className="
-                      rounded-full border border-border/70 bg-card/80 px-2.5
-                      py-1
+                      inline-flex items-center justify-between w-40 rounded-full border border-border/60
+                      bg-card/85 px-3 py-1 shadow-2xs text-muted-foreground backdrop-blur-xs
                     ">
-                        Limit: <b>{limit}</b> / key / {(windowMs / 1000).toFixed(0)}s
+                        Limit: <b className="text-foreground">{limit} / key</b>
                     </span>
                     <span className="
-                      rounded-full border border-border/70 bg-card/80 px-2.5
-                      py-1
+                      inline-flex items-center justify-between w-36 rounded-full border border-border/60
+                      bg-card/85 px-3 py-1 shadow-2xs text-muted-foreground backdrop-blur-xs
                     ">
-                        Remaining: <b>{lastResult?.remaining ?? '—'}</b>
+                        Remaining:{' '}
+                        <b className="font-mono tabular-nums text-foreground">
+                            {lastResult?.remaining ?? '—'}
+                        </b>
                     </span>
                     <span className="
-                      rounded-full border border-border/70 bg-card/80 px-2.5
-                      py-1
+                      inline-flex items-center justify-between w-40 rounded-full border border-border/60
+                      bg-card/85 px-3 py-1 shadow-2xs text-muted-foreground backdrop-blur-xs
                     ">
-                        Reset in: <b>{formatMs(resetRemaining)}</b>
+                        Reset in:{' '}
+                        <b className="font-mono tabular-nums text-foreground">
+                            {formatMs(resetRemaining)}
+                        </b>
                     </span>
                 </div>
             </div>
@@ -91,19 +135,20 @@ export function IndividualFixedWindowTimeline({
                 events={events}
                 timelineSpan={timelineSpan}
                 windows={windows}
+                startTime={startTime}
             />
 
             <div className="
-              flex flex-wrap items-center gap-4 text-sm text-muted-foreground
+              flex flex-wrap items-center gap-4 text-xs text-muted-foreground
             ">
                 <span>
                     Total: <b>{events.length}</b>
                 </span>
                 <span>
-                    Allowed: <b className="text-emerald-600">{allowedCount}</b>
+                    Allowed: <b className="text-emerald-600 dark:text-emerald-400">{allowedCount}</b>
                 </span>
                 <span>
-                    Denied: <b className="text-rose-600">{deniedCount}</b>
+                    Denied: <b className="text-rose-600 dark:text-rose-400">{deniedCount}</b>
                 </span>
             </div>
         </div>

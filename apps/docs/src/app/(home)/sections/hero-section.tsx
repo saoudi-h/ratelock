@@ -8,12 +8,16 @@ import { AnimatedCodePanel } from '../components/animated-code-panel'
 
 export function HeroSection() {
     return (
-        <section className="relative overflow-hidden bg-muted">
+        <section className="relative overflow-hidden bg-background">
+            {/* Ambient Glowing Gradient Mesh Background */}
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,var(--primary)/12%,transparent_40%)]" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,oklch(0.82_0.16_80)/6%,transparent_45%)]" />
+
             <div
                 className="pattern-grid pointer-events-none absolute inset-0"
                 style={{
-                    maskImage: 'radial-gradient(ellipse 70% 60% at 70% 40%, black 20%, transparent 70%)',
-                    WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at 70% 40%, black 20%, transparent 70%)',
+                    maskImage: 'radial-gradient(ellipse 70% 60% at 50% 50%, black 20%, transparent 80%)',
+                    WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at 50% 50%, black 20%, transparent 80%)',
                 }}
             />
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_70%_30%,var(--primary)/6%,transparent)]" />
@@ -61,7 +65,7 @@ export function HeroSection() {
                         >
                             <Link
                                 href="/docs"
-                                className="group relative inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-transparent px-6 text-sm font-medium text-foreground transition-all hover:bg-muted"
+                                className="group relative inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-transparent px-6 text-sm font-medium text-foreground transition-all duration-150 active:scale-[0.97] hover:bg-muted"
                             >
                                 <span className="pointer-events-none absolute inset-0 rounded-xl border border-primary" />
                                 <span className="pointer-events-none absolute inset-[3px] rounded-[9px] border border-primary/50" />
@@ -73,7 +77,7 @@ export function HeroSection() {
                                 href="https://github.com/saoudi-h/ratelock"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="group relative inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-background px-6 text-sm font-medium text-foreground transition-all hover:bg-muted"
+                                className="group relative inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-background px-6 text-sm font-medium text-foreground transition-all duration-150 active:scale-[0.97] hover:bg-muted"
                             >
                                 <span className="pointer-events-none absolute inset-0 rounded-xl border border-border" />
                                 <span className="pointer-events-none absolute inset-[2px] rounded-[10px] border border-border/50" />

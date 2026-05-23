@@ -12,8 +12,8 @@ import { checkRateLimit } from '@/simulation/engine'
 
 let eventIdCounter = 0
 
-export function useNow(throttleMs = 80) {
-    const [now, setNow] = useState(Date.now())
+export function useNow(throttleMs = 16) {
+    const [now, setNow] = useState(() => Date.now())
 
     useEffect(() => {
         let frameId = 0
@@ -44,12 +44,12 @@ export function useSimulation(strategyId: StrategyId) {
     const addEvent = useSetAtom(addEventAtom)
 
     const autoRequestsRef = useRef(autoRequests)
-    const autoIntervalRef = useRef(autoInterval)
     const configRef = useRef(config)
 
-    autoRequestsRef.current = autoRequests
-    autoIntervalRef.current = autoInterval
-    configRef.current = config
+    useEffect(() => {
+        autoRequestsRef.current = autoRequests
+        configRef.current = config
+    }, [autoRequests, config])
 
     const sendRequest = useCallback(async () => {
         const currentConfig = configRef.current[strategyId]
@@ -77,10 +77,10 @@ export function useSimulation(strategyId: StrategyId) {
             if (autoRequestsRef.current) {
                 sendRequest()
             }
-        }, autoIntervalRef.current)
+        }, autoInterval)
 
         return () => clearInterval(requestInterval)
-    }, [autoRequests, sendRequest])
+    }, [autoInterval, autoRequests, sendRequest])
 
     const strategyConfig = config[strategyId] as StrategySpecificConfig
 
