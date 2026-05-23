@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef, useEffect } from 'react'
+import { useMemo, useRef, useEffect, ReactNode } from 'react'
 import type { RequestEvent } from '@/simulation/types'
 
 export interface TimelineWindow {
@@ -24,6 +24,7 @@ interface UnifiedTimelineBaseProps {
     className?: string
     accentByEvent?: (event: RequestEvent) => string
     startTime?: number
+    children?: ReactNode
 }
 
 const DEFAULT_ALLOWED = 'border-emerald-500 bg-emerald-500/25 text-emerald-400'
@@ -37,6 +38,7 @@ export function UnifiedTimelineBase({
     className,
     accentByEvent,
     startTime,
+    children,
 }: UnifiedTimelineBaseProps) {
     const scrollContainerRef = useRef<HTMLDivElement>(null)
     
@@ -271,6 +273,7 @@ export function UnifiedTimelineBase({
                     )
                 })}
             </div>
+            {children}
         </div>
     )
 }

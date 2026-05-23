@@ -34,7 +34,7 @@ export function useNow(throttleMs = 16) {
     return now
 }
 
-export function useSimulation(strategyId: StrategyId) {
+export function useSimulation(strategyId: StrategyId, onAutoRequestTriggered?: () => void) {
     const events = useAtomValue(eventsAtomFamily(strategyId))
     const autoRequests = useAtomValue(autoRequestsAtomFamily(strategyId))
     const setAutoRequests = useSetAtom(autoRequestsAtomFamily(strategyId))
@@ -45,11 +45,13 @@ export function useSimulation(strategyId: StrategyId) {
 
     const autoRequestsRef = useRef(autoRequests)
     const configRef = useRef(config)
+    const onAutoRequestTriggeredRef = useRef(onAutoRequestTriggered)
 
     useEffect(() => {
         autoRequestsRef.current = autoRequests
         configRef.current = config
-    }, [autoRequests, config])
+        onAutoRequestTriggeredRef.current = onAutoRequestTriggered
+    }, [autoRequests, config, onAutoRequestTriggered])
 
     const sendRequest = useCallback(async () => {
         const currentConfig = configRef.current[strategyId]
@@ -75,7 +77,11 @@ export function useSimulation(strategyId: StrategyId) {
 
         const requestInterval = setInterval(() => {
             if (autoRequestsRef.current) {
-                sendRequest()
+                if (onAutoRequestTriggeredRef.current) {
+                    onAutoRequestTriggeredRef.current()
+                } else {
+                    sendRequest()
+                }
             }
         }, autoInterval)
 

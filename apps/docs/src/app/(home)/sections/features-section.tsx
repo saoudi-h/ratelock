@@ -9,7 +9,7 @@ const features = [
     {
         title: 'Fixed Window',
         description:
-            'Simple et ultra-performant. Compte les requêtes dans des intervalles de temps fixes. Idéal pour des limites basiques.',
+            'Simple and highly performant. Counts requests in fixed time intervals. Ideal for basic rate limit constraints.',
         tag: 'Simple',
         icon: 'solar:calendar-date-bold-duotone',
         color: 'text-blue-500',
@@ -17,23 +17,23 @@ const features = [
     {
         title: 'Sliding Log',
         description:
-            'Précision chirurgicale. Suit chaque requête individuellement avec son timestamp. Une exactitude parfaite.',
-        tag: 'Précis',
+            'Surgical precision. Tracks each request individually with its timestamp. Guarantees perfect mathematical accuracy.',
+        tag: 'Precise',
         icon: 'solar:document-bold-duotone',
         color: 'text-amber-500',
     },
     {
         title: 'Sliding Window',
         description:
-            'Le meilleur des deux mondes. Limites lisses calculées sur une fenêtre glissante sans effet de frontière.',
-        tag: 'Équilibré',
+            'Best of both worlds. Smooth rate limits calculated over a sliding window without boundary reset spikes.',
+        tag: 'Balanced',
         icon: 'solar:history-bold-duotone',
         color: 'text-emerald-500',
     },
     {
         title: 'Token Bucket',
         description:
-            'Autorise les pics de trafic temporaires tout en garantissant un débit moyen stable grâce au rechargement de jetons.',
+            'Permits temporary traffic bursts while guaranteeing a stable average throughput using token refills.',
         tag: 'Flexible',
         icon: 'solar:cup-bold-duotone',
         color: 'text-purple-500',
@@ -41,15 +41,15 @@ const features = [
     {
         title: 'Built-in Resilience',
         description:
-            'Intégration native de décotateurs de circuit-breaker, retry exponentiel et fallback pour blinder vos APIs.',
-        tag: 'Résilient',
+            'Native decorators supporting circuit breaker, exponential retry backoff, and fallback to keep your APIs resilient.',
+        tag: 'Resilient',
         icon: 'solar:shield-up-bold-duotone',
         color: 'text-rose-500',
     },
     {
         title: 'Zero Config Local',
         description:
-            'Fonctionne en mémoire locale instantanément sans base de données, parfait pour vos tests ou le serverless.',
+            'Works instantly in local memory without an external database, ideal for testing, local development, and serverless.',
         tag: 'Instant',
         icon: 'solar:bolt-bold-duotone',
         color: 'text-yellow-500',
@@ -108,15 +108,15 @@ export function FeaturesSection() {
                 <div className="mb-16 max-w-2xl">
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
                         <Icon icon="solar:widget-bold-duotone" className="size-3.5" />
-                        Fonctionnalités Clés
+                        Key Features
                     </span>
                     <h2 className="mt-4 font-heading text-4xl font-semibold tracking-tight md:text-5xl leading-tight">
-                        Tout ce dont vous avez besoin,
+                        Everything you need,
                         <br />
-                        sans fioritures.
+                        none of the fluff.
                     </h2>
                     <p className="mt-4 max-w-lg text-muted-foreground">
-                        Quatre stratégies de rate-limiting, trois adaptateurs de stockage résilients et des décorateurs intuitifs.
+                        Four rate-limiting strategies, three resilient storage adapters, and highly intuitive decorators.
                     </p>
                 </div>
 

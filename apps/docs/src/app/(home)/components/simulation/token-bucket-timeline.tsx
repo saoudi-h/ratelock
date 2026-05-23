@@ -66,202 +66,191 @@ export function TokenBucketTimeline({
     const strokeDashoffset = circumference * (1 - tokenPercent / 100)
 
     return (
-        <div className="space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                    <span className="
-                      inline-flex items-center gap-1.5 rounded-full border
-                      border-border/70 bg-card/80 px-2.5 py-1 text-sm
-                      text-muted-foreground
-                    ">
-                        <span className="size-2.5 rounded-full bg-emerald-500" />
-                        Allowed
-                    </span>
-                    <span className="
-                      inline-flex items-center gap-1.5 rounded-full border
-                      border-border/70 bg-card/80 px-2.5 py-1 text-sm
-                      text-muted-foreground
-                    ">
-                        <span className="size-2.5 rounded-full bg-rose-500" />
-                        Denied
-                    </span>
-                </div>
-                <div className="
-                  flex flex-wrap items-center gap-2 font-mono text-xs
-                ">
-                    <span className="
-                      inline-flex items-center justify-between w-32 rounded-full border border-border/60
-                      bg-card/85 px-3 py-1 shadow-2xs text-muted-foreground backdrop-blur-xs
-                    ">
-                        Capacity: <b className="text-foreground">{capacity}</b>
-                    </span>
-                    <span className="
-                      inline-flex items-center justify-between w-32 rounded-full border border-border/60
-                      bg-card/85 px-3 py-1 shadow-2xs text-muted-foreground backdrop-blur-xs
-                    ">
-                        Refill: <b className="text-foreground">{refillRate}/s</b>
-                    </span>
-                    <span className="
-                      inline-flex items-center justify-between w-48 rounded-full border border-border/60
-                      bg-card/85 px-3 py-1 shadow-2xs text-muted-foreground backdrop-blur-xs
-                    ">
-                        Next token:{' '}
-                        <b className="font-mono tabular-nums text-foreground">
-                            {formatMs(refillTimeMs)}
-                        </b>
-                    </span>
-                </div>
-            </div>
-
+        <div className="
+          grid items-stretch gap-4
+          lg:grid-cols-[135px_minmax(0,1fr)]
+        ">
             <div className="
-              grid items-stretch gap-4
-              lg:grid-cols-[135px_minmax(0,1fr)]
+              flex h-[184px] w-full flex-col items-center justify-between rounded-xl border
+              border-border/70 bg-card/40 p-3 shadow-xs relative overflow-hidden backdrop-blur-md
             ">
-                <div className="
-                  flex h-[184px] w-full flex-col items-center justify-between rounded-xl border
-                  border-border/70 bg-card/40 p-3 shadow-xs relative overflow-hidden backdrop-blur-md
-                ">
-                    <style>{`
-                      @keyframes token-enter {
-                        0% {
-                          transform: translateY(-40px) scale(0.3);
-                          opacity: 0;
-                        }
-                        70% {
-                          transform: translateY(2px) scale(1.15);
-                          opacity: 0.9;
-                        }
-                        100% {
-                          transform: translateY(0) scale(1);
-                          opacity: 1;
-                        }
-                      }
-                      .animate-token-enter {
-                        animation: token-enter 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-                      }
+                <style>{`
+                  @keyframes token-enter {
+                    0% {
+                      transform: translateY(-40px) scale(0.3);
+                      opacity: 0;
+                    }
+                    70% {
+                      transform: translateY(2px) scale(1.15);
+                      opacity: 0.9;
+                    }
+                    100% {
+                      transform: translateY(0) scale(1);
+                      opacity: 1;
+                    }
+                  }
+                  .animate-token-enter {
+                    animation: token-enter 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+                  }
 
-                      @keyframes token-exit {
-                        0% {
-                          transform: translateY(-10px) scale(1);
-                          opacity: 1;
-                          filter: brightness(1.3) drop-shadow(0 0 6px rgba(16, 185, 129, 0.9));
-                        }
-                        100% {
-                          transform: translateY(45px) scale(0.2);
-                          opacity: 0;
-                        }
-                      }
-                      .animate-token-exit {
-                        animation: token-exit 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-                      }
-                    `}</style>
+                  @keyframes token-exit {
+                    0% {
+                      transform: translateY(-10px) scale(1);
+                      opacity: 1;
+                      filter: brightness(1.3) drop-shadow(0 0 6px rgba(16, 185, 129, 0.9));
+                    }
+                    100% {
+                      transform: translateY(45px) scale(0.2);
+                      opacity: 0;
+                    }
+                  }
+                  .animate-token-exit {
+                    animation: token-exit 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+                  }
+                `}</style>
 
-                    <div className="text-center space-y-0.5">
-                        <div className="text-[9px] font-bold tracking-[0.16em] text-muted-foreground/80 uppercase">
-                            Tokens
-                        </div>
-                        <div className="font-mono text-sm font-bold tabular-nums text-foreground flex items-baseline justify-center">
-                            <span>{Math.floor(currentTokens)}</span>
-                            <span className="text-[10px] text-muted-foreground font-semibold">/{capacity}</span>
-                        </div>
+                <div className="text-center space-y-0.5">
+                    <div className="text-[9px] font-bold tracking-[0.16em] text-muted-foreground/80 uppercase">
+                        Tokens
                     </div>
+                    <div className="font-mono text-sm font-bold tabular-nums text-foreground flex items-baseline justify-center">
+                        <span>{Math.floor(currentTokens)}</span>
+                        <span className="text-[10px] text-muted-foreground font-semibold">/{capacity}</span>
+                    </div>
+                </div>
 
+                <div 
+                    className="relative w-16 border-2 border-border/60 bg-muted/15 rounded-b-2xl flex flex-col-reverse items-center justify-start pb-2.5 px-2 overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.35)]"
+                    style={{
+                        height: '116px',
+                        gap: capacity <= 6 ? '6px' : capacity <= 10 ? '4px' : '2px'
+                    }}
+                >
+                    {/* Remplissage liquide en arrière-plan */}
                     <div 
-                        className="relative w-16 border-2 border-border/60 bg-muted/15 rounded-b-2xl flex flex-col-reverse items-center justify-start pb-2.5 px-2 overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.35)]"
+                        className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-emerald-500/25 to-emerald-500/5 transition-all duration-300 ease-out pointer-events-none rounded-b-xl"
+                        style={{ height: `${tokenPercent}%` }}
+                    />
+
+                    {Array.from({ length: capacity }).map((_, index) => {
+                        const slotNumber = index + 1
+                        const isFull = slotNumber <= Math.floor(currentTokens)
+                        const isRefilling = slotNumber === Math.floor(currentTokens) + 1
+                        const refillPercent = currentTokens % 1
+                        
+                        const sizeClass = capacity <= 6 
+                            ? 'size-3.5' 
+                            : capacity <= 10 
+                              ? 'size-2.5' 
+                              : 'size-2'
+                        
+                        return (
+                            <div 
+                                key={index} 
+                                className="relative flex items-center justify-center z-10"
+                            >
+                                {isFull ? (
+                                    <div 
+                                        className={`
+                                            rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.7)] animate-token-enter
+                                            ${sizeClass}
+                                        `}
+                                    />
+                                ) : isRefilling ? (
+                                    <div 
+                                        className={`
+                                            rounded-full bg-emerald-400/80 shadow-[0_0_6px_rgba(52,211,153,0.5)] animate-pulse transition-all duration-300
+                                            ${sizeClass}
+                                        `}
+                                        style={{ 
+                                            opacity: refillPercent,
+                                            transform: `scale(${0.6 + refillPercent * 0.4})`
+                                        }}
+                                    />
+                                ) : (
+                                    <div 
+                                        className={`
+                                            rounded-full border border-dashed border-muted-foreground/30 bg-transparent transition-all duration-300
+                                            ${sizeClass}
+                                        `}
+                                    />
+                                )}
+                            </div>
+                        )
+                    })}
+                </div>
+
+                {/* Billes de jetons expulsées qui tombent à l'extérieur du becher */}
+                {expelledTokens.map((t) => (
+                    <div 
+                        key={t.id}
+                        className="absolute z-30 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.9)] animate-token-exit pointer-events-none"
                         style={{
-                            height: '116px',
-                            gap: capacity <= 6 ? '6px' : capacity <= 10 ? '4px' : '2px'
+                            bottom: '12px',
+                            left: `calc(50% - 32px + ${t.left}px)`,
+                            width: capacity <= 6 ? '14px' : capacity <= 10 ? '10px' : '8px',
+                            height: capacity <= 6 ? '14px' : capacity <= 10 ? '10px' : '8px',
                         }}
-                    >
-                        {/* Remplissage liquide en arrière-plan */}
-                        <div 
-                            className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-emerald-500/25 to-emerald-500/5 transition-all duration-300 ease-out pointer-events-none rounded-b-xl"
-                            style={{ height: `${tokenPercent}%` }}
-                        />
-
-                        {Array.from({ length: capacity }).map((_, index) => {
-                            const slotNumber = index + 1
-                            const isFull = slotNumber <= Math.floor(currentTokens)
-                            const isRefilling = slotNumber === Math.floor(currentTokens) + 1
-                            const refillPercent = currentTokens % 1
-                            
-                            const sizeClass = capacity <= 6 
-                                ? 'size-3.5' 
-                                : capacity <= 10 
-                                  ? 'size-2.5' 
-                                  : 'size-2'
-                            
-                            return (
-                                <div 
-                                    key={index} 
-                                    className="relative flex items-center justify-center z-10"
-                                >
-                                    {isFull ? (
-                                        <div 
-                                            className={`
-                                                rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.7)] animate-token-enter
-                                                ${sizeClass}
-                                            `}
-                                        />
-                                    ) : isRefilling ? (
-                                        <div 
-                                            className={`
-                                                rounded-full bg-emerald-400/80 shadow-[0_0_6px_rgba(52,211,153,0.5)] animate-pulse transition-all duration-300
-                                                ${sizeClass}
-                                            `}
-                                            style={{ 
-                                                opacity: refillPercent,
-                                                transform: `scale(${0.6 + refillPercent * 0.4})`
-                                            }}
-                                        />
-                                    ) : (
-                                        <div 
-                                            className={`
-                                                rounded-full border border-dashed border-muted-foreground/30 bg-transparent transition-all duration-300
-                                                ${sizeClass}
-                                            `}
-                                        />
-                                    )}
-                                </div>
-                            )
-                        })}
-                    </div>
-
-                    {/* Billes de jetons expulsées qui tombent à l'extérieur du becher */}
-                    {expelledTokens.map((t) => (
-                        <div 
-                            key={t.id}
-                            className="absolute z-30 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.9)] animate-token-exit pointer-events-none"
-                            style={{
-                                bottom: '12px',
-                                left: `calc(50% - 32px + ${t.left}px)`,
-                                width: capacity <= 6 ? '14px' : capacity <= 10 ? '10px' : '8px',
-                                height: capacity <= 6 ? '14px' : capacity <= 10 ? '10px' : '8px',
-                            }}
-                        />
-                    ))}
-                </div>
-
-                <div className="min-w-0">
-                    <UnifiedTimelineBase events={events} timelineSpan={timelineSpan} startTime={startTime} />
-                </div>
+                    />
+                ))}
             </div>
 
-            <div className="
-              flex flex-wrap items-center gap-4 text-sm text-muted-foreground
-            ">
-                <span>
-                    Tokens available:{' '}
-                    <b className="text-primary">
-                        {Math.floor(currentTokens)}/{capacity}
-                    </b>
-                </span>
-                <span>
-                    Allowed in history: <b className="text-emerald-600">{allowedCount}</b>
-                </span>
-                <span>
-                    Denied in history: <b className="text-rose-600">{deniedCount}</b>
-                </span>
+            <div className="min-w-0">
+                <UnifiedTimelineBase
+                    events={events}
+                    timelineSpan={timelineSpan}
+                    startTime={startTime}
+                >
+                    {/* Floating HUD Left */}
+                    <div className="absolute top-3 left-3 flex flex-wrap items-center gap-1.5 pointer-events-none z-30 select-none">
+                        <span className="
+                          inline-flex items-center gap-1.5 rounded-md border
+                          border-border/40 bg-background/60 backdrop-blur-md px-2 py-0.5 text-[10px] font-medium
+                          text-muted-foreground shadow-2xs
+                        ">
+                            <span className="size-1.5 rounded-full bg-blue-500" />
+                            Total: <span className="font-mono text-foreground font-bold">{events.length}</span>
+                        </span>
+                        <span className="
+                          inline-flex items-center gap-1.5 rounded-md border
+                          border-border/40 bg-background/60 backdrop-blur-md px-2 py-0.5 text-[10px] font-medium
+                          text-emerald-500/90 shadow-2xs
+                        ">
+                            <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            Allowed: <span className="font-mono text-foreground font-bold">{allowedCount}</span>
+                        </span>
+                        <span className="
+                          inline-flex items-center gap-1.5 rounded-md border
+                          border-border/40 bg-background/60 backdrop-blur-md px-2 py-0.5 text-[10px] font-medium
+                          text-rose-500/90 shadow-2xs
+                        ">
+                            <span className="size-1.5 rounded-full bg-rose-500" />
+                            Denied: <span className="font-mono text-foreground font-bold">{deniedCount}</span>
+                        </span>
+                    </div>
+
+                    {/* Floating HUD Right */}
+                    <div className="absolute top-3 right-3 flex flex-wrap items-center gap-1.5 pointer-events-none z-30 select-none">
+                        <span className="
+                          inline-flex items-center gap-1 rounded-md border border-border/40
+                          bg-background/60 backdrop-blur-md px-2 py-0.5 text-[10px] font-mono text-muted-foreground shadow-2xs
+                        ">
+                            Capacity: <span className="text-foreground font-bold">{capacity}</span>
+                        </span>
+                        <span className="
+                          inline-flex items-center gap-1 rounded-md border border-border/40
+                          bg-background/60 backdrop-blur-md px-2 py-0.5 text-[10px] font-mono text-muted-foreground shadow-2xs
+                        ">
+                            Refill: <span className="text-foreground font-bold">{refillRate}/s</span>
+                        </span>
+                        <span className="
+                          inline-flex items-center gap-1 rounded-md border border-border/40
+                          bg-background/60 backdrop-blur-md px-2 py-0.5 text-[10px] font-mono text-muted-foreground shadow-2xs
+                        ">
+                            Next token: <span className="text-foreground font-bold tabular-nums">{formatMs(refillTimeMs)}</span>
+                        </span>
+                    </div>
+                </UnifiedTimelineBase>
             </div>
         </div>
     )

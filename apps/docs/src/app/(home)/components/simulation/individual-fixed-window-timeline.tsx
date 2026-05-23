@@ -79,78 +79,61 @@ export function IndividualFixedWindowTimeline({
     const resetRemaining = lastResult?.reset ? Math.max(0, lastResult.reset - now) : 0
 
     return (
-        <div className="space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                    <span className="
-                      inline-flex items-center gap-1.5 rounded-full border
-                      border-border/70 bg-card/85 px-3 py-1 text-xs
-                      text-muted-foreground shadow-2xs backdrop-blur-xs
-                    ">
-                        <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                        Allowed
-                    </span>
-                    <span className="
-                      inline-flex items-center gap-1.5 rounded-full border
-                      border-border/70 bg-card/85 px-3 py-1 text-xs
-                      text-muted-foreground shadow-2xs backdrop-blur-xs
-                    ">
-                        <span className="size-2 rounded-full bg-rose-500" />
-                        Denied
-                    </span>
-                </div>
-                
-                {/* Badges de taille fixe pour éliminer les décalages visuels */}
-                <div className="
-                  flex flex-wrap items-center gap-2 font-mono text-xs
+        <UnifiedTimelineBase
+            events={events}
+            timelineSpan={timelineSpan}
+            windows={windows}
+            startTime={startTime}
+        >
+            {/* Floating HUD Left */}
+            <div className="absolute top-3 left-3 flex flex-wrap items-center gap-1.5 pointer-events-none z-30 select-none">
+                <span className="
+                  inline-flex items-center gap-1.5 rounded-md border
+                  border-border/40 bg-background/60 backdrop-blur-md px-2 py-0.5 text-[10px] font-medium
+                  text-muted-foreground shadow-2xs
                 ">
-                    <span className="
-                      inline-flex items-center justify-between w-40 rounded-full border border-border/60
-                      bg-card/85 px-3 py-1 shadow-2xs text-muted-foreground backdrop-blur-xs
-                    ">
-                        Limit: <b className="text-foreground">{limit} / key</b>
-                    </span>
-                    <span className="
-                      inline-flex items-center justify-between w-36 rounded-full border border-border/60
-                      bg-card/85 px-3 py-1 shadow-2xs text-muted-foreground backdrop-blur-xs
-                    ">
-                        Remaining:{' '}
-                        <b className="font-mono tabular-nums text-foreground">
-                            {lastResult?.remaining ?? '—'}
-                        </b>
-                    </span>
-                    <span className="
-                      inline-flex items-center justify-between w-40 rounded-full border border-border/60
-                      bg-card/85 px-3 py-1 shadow-2xs text-muted-foreground backdrop-blur-xs
-                    ">
-                        Reset in:{' '}
-                        <b className="font-mono tabular-nums text-foreground">
-                            {formatMs(resetRemaining)}
-                        </b>
-                    </span>
-                </div>
-            </div>
-
-            <UnifiedTimelineBase
-                events={events}
-                timelineSpan={timelineSpan}
-                windows={windows}
-                startTime={startTime}
-            />
-
-            <div className="
-              flex flex-wrap items-center gap-4 text-xs text-muted-foreground
-            ">
-                <span>
-                    Total: <b>{events.length}</b>
+                    <span className="size-1.5 rounded-full bg-blue-500" />
+                    Total: <span className="font-mono text-foreground font-bold">{events.length}</span>
                 </span>
-                <span>
-                    Allowed: <b className="text-emerald-600 dark:text-emerald-400">{allowedCount}</b>
+                <span className="
+                  inline-flex items-center gap-1.5 rounded-md border
+                  border-border/40 bg-background/60 backdrop-blur-md px-2 py-0.5 text-[10px] font-medium
+                  text-emerald-500/90 shadow-2xs
+                ">
+                    <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    Allowed: <span className="font-mono text-foreground font-bold">{allowedCount}</span>
                 </span>
-                <span>
-                    Denied: <b className="text-rose-600 dark:text-rose-400">{deniedCount}</b>
+                <span className="
+                  inline-flex items-center gap-1.5 rounded-md border
+                  border-border/40 bg-background/60 backdrop-blur-md px-2 py-0.5 text-[10px] font-medium
+                  text-rose-500/90 shadow-2xs
+                ">
+                    <span className="size-1.5 rounded-full bg-rose-500" />
+                    Denied: <span className="font-mono text-foreground font-bold">{deniedCount}</span>
                 </span>
             </div>
-        </div>
+
+            {/* Floating HUD Right */}
+            <div className="absolute top-3 right-3 flex flex-wrap items-center gap-1.5 pointer-events-none z-30 select-none">
+                <span className="
+                  inline-flex items-center gap-1 rounded-md border border-border/40
+                  bg-background/60 backdrop-blur-md px-2 py-0.5 text-[10px] font-mono text-muted-foreground shadow-2xs
+                ">
+                    Limit: <span className="text-foreground font-bold">{limit} / key</span>
+                </span>
+                <span className="
+                  inline-flex items-center gap-1 rounded-md border border-border/40
+                  bg-background/60 backdrop-blur-md px-2 py-0.5 text-[10px] font-mono text-muted-foreground shadow-2xs
+                ">
+                    Remaining: <span className="text-foreground font-bold tabular-nums">{lastResult?.remaining ?? '—'}</span>
+                </span>
+                <span className="
+                  inline-flex items-center gap-1 rounded-md border border-border/40
+                  bg-background/60 backdrop-blur-md px-2 py-0.5 text-[10px] font-mono text-muted-foreground shadow-2xs
+                ">
+                    Reset: <span className="text-foreground font-bold tabular-nums">{formatMs(resetRemaining)}</span>
+                </span>
+            </div>
+        </UnifiedTimelineBase>
     )
 }
