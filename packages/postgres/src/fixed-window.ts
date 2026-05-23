@@ -48,18 +48,18 @@ export async function createFixedWindowLimiter(
             const key = `${prefix}:${id}`
             const rows = await drv.query<{ count: number; expires_at: string }>(
                 `INSERT INTO ${TABLE} (key, count, expires_at)
-         VALUES ($1, 1, NOW() + $2::interval)
+         VALUES ($1, 1, to_timestamp((floor((extract(epoch from now()) * 1000) / $2) * $2 + $2) / 1000.0))
          ON CONFLICT (key) DO UPDATE SET
            count = CASE
              WHEN ${TABLE}.expires_at <= NOW() THEN 1
              ELSE ${TABLE}.count + 1
            END,
            expires_at = CASE
-             WHEN ${TABLE}.expires_at <= NOW() THEN NOW() + $2::interval
+             WHEN ${TABLE}.expires_at <= NOW() THEN to_timestamp((floor((extract(epoch from now()) * 1000) / $2) * $2 + $2) / 1000.0)
              ELSE ${TABLE}.expires_at
            END
          RETURNING count, expires_at`,
-                [key, `${windowMs} milliseconds`]
+                [key, windowMs]
             )
 
             const row = rows[0]!

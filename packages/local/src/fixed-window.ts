@@ -31,10 +31,13 @@ export async function createFixedWindowLimiter(
             const now = Date.now()
             const entry = state.get(key)
 
+            const windowStart = Math.floor(now / windowMs) * windowMs
+            const reset = windowStart + windowMs
+
             if (!entry || now >= entry.reset) {
-                state.set(key, { count: 1, reset: now + windowMs })
+                state.set(key, { count: 1, reset })
                 if (++ops % 1000 === 0 && state.size > maxSize) sweep()
-                return { allowed: true, remaining: limit - 1, reset: now + windowMs }
+                return { allowed: true, remaining: limit - 1, reset }
             }
 
             const allowed = entry.count < limit

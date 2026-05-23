@@ -19,13 +19,13 @@ const LUA = `
   local window = tonumber(ARGV[1])
   local limit = tonumber(ARGV[2])
   local now = tonumber(ARGV[3])
-  redis.call('SET', key, 0, 'PX', window, 'NX')
+  
+  local window_start = math.floor(now / window) * window
+  local ttl = window_start + window - now
+  
+  redis.call('SET', key, 0, 'PX', ttl, 'NX')
   local current = redis.call('INCR', key)
-  local ttl = redis.call('PTTL', key)
-  if ttl == -1 then
-    redis.call('PEXPIRE', key, window)
-    ttl = window
-  end
+  
   local allowed = current <= limit and 1 or 0
   local remaining = math.max(0, limit - current)
   return {allowed, current, remaining, ttl}

@@ -58,6 +58,16 @@ export function fixedWindowContract(createLimiter: FixedWindowFactory): void {
             expect(r.reset).toBeLessThan(now + 5000)
         })
 
+        it('aligns window resets strictly to the epoch', async () => {
+            const windowMs = 500
+            const localLimiter = await createLimiter({ limit: 5, windowMs })
+            const now = Date.now()
+            const expectedReset = Math.floor(now / windowMs) * windowMs + windowMs
+
+            const r = await localLimiter.check('epoch-user')
+            expect(r.reset).toBe(expectedReset)
+        })
+
         it('reports accurate remaining count', async () => {
             for (let i = 0; i < 3; i++) {
                 const r = await limiter.check('user-5')

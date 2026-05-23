@@ -73,9 +73,13 @@ export class MockPgDriver implements PgDriver {
             return this.individualFixedWindowUpsert(key, windowMs)
         }
         if (sql.includes('fixed_window')) {
-            const intervalStr = params[1] as string
+            const intervalVal = params[1]
             const windowMs =
-                typeof intervalStr === 'string' ? parseInt(intervalStr.split(' ')[0]!, 10) : 60000
+                typeof intervalVal === 'number'
+                    ? intervalVal
+                    : typeof intervalVal === 'string'
+                      ? parseInt(intervalVal.split(' ')[0]!, 10)
+                      : 60000
             return this.fixedWindowUpsert(key, windowMs)
         }
         if (sql.includes('sliding_window')) {
@@ -96,7 +100,8 @@ export class MockPgDriver implements PgDriver {
     private fixedWindowUpsert(key: string, windowMs: number): Row[] {
         const table = this.getTable('fixed_window')
         const now = Date.now()
-        const expiresAt = now + windowMs
+        const windowStart = Math.floor(now / windowMs) * windowMs
+        const expiresAt = windowStart + windowMs
         const existing = table.get(key)
 
         if (!existing || (existing.expires_at as number) <= now) {
