@@ -104,6 +104,12 @@ const cached = withCache(limiter, { maxSize: 500, ttlMs: 10_000 })
 
 See [Resilience Policies](/docs/policies) for full documentation and when to use standalone vs built-in.
 
+## Valkey Compatibility
+
+RateLock is fully compatible with **Valkey** (the high-performance open-source fork of Redis). Since Valkey maintains protocol and API compatibility with Redis, you can use `@ratelock/redis` to rate limit against a Valkey instance using either standard `ioredis` or `node-redis` clients.
+
+> **Note:** We do not support or test specialized Valkey-specific clients directly. Using standard Redis clients is fully tested, approved, and recommended.
+
 ## When to Use
 
 - Multi-server or serverless deployments

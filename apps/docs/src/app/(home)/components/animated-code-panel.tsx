@@ -26,17 +26,21 @@ if (result.allowed) {
         package: '@ratelock/redis',
         strategy: 'slidingWindow',
         code: `import { slidingWindow } from '@ratelock/redis'
+import { createClient } from 'redis'
+
+// Reuse your existing client instance
+const redisClient = createClient({ url: 'redis://...' })
+await redisClient.connect()
 
 const limiter = await slidingWindow({
+  client: redisClient,
   limit: 50,
   windowMs: 30_000,
-  url: 'redis://localhost:6379',
 })
 
 const result = await limiter.check('api:endpoint')
 
 if (result.allowed) {
-  // Request allowed
   console.log(result.remaining) // 49
 }`,
     },
@@ -44,17 +48,20 @@ if (result.allowed) {
         package: '@ratelock/postgres',
         strategy: 'tokenBucket',
         code: `import { tokenBucket } from '@ratelock/postgres'
+import postgres from 'postgres'
+
+// Reuse your existing database connection
+const sql = postgres('postgres://...')
 
 const limiter = await tokenBucket({
+  sql,
   capacity: 200,
   refillRate: 10,
-  connectionString: 'postgres://...',
 })
 
 const result = await limiter.check('service:auth')
 
 if (result.allowed) {
-  // Request allowed
   console.log(result.remaining) // 199
 }`,
     },

@@ -23,15 +23,15 @@ export function FeaturesSection() {
                 <div className="mb-16 max-w-2xl">
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary select-none">
                         <Icon icon="solar:shield-up-bold-duotone" className="size-3.5 animate-pulse" />
-                        Security & Resilience
+                        Network Resilience
                     </span>
                     <h2 className="mt-4 font-heading text-4xl font-semibold tracking-tight md:text-5xl leading-tight">
-                        Hardened for
+                        Designed for
                         <br />
-                        unreliable networks.
+                        network resilience.
                     </h2>
                     <p className="mt-4 max-w-lg text-muted-foreground leading-relaxed">
-                        Rate limiting is only as good as its stability during database outages or spam attacks. RateLock provides built-in enterprise resilience layers to protect your stack.
+                        A rate limiter should stay robust when your database is under load or temporarily unreachable. RateLock includes built-in policies like retries, circuit breakers, and local memory caching to help you handle transient errors gracefully.
                     </p>
                 </div>
 

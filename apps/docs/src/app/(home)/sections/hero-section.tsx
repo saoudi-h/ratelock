@@ -220,8 +220,8 @@ export function HeroSection() {
                         {[
                             { value: '4', label: 'Limiting Strategies', desc: 'Fixed, Sliding, Token Bucket' },
                             { value: '3', label: 'Storage Engines', desc: 'Memory, Redis, PostgreSQL' },
-                            { value: '0', label: 'Local Dependencies', desc: 'Zero runtime bundle bloat' },
-                            { value: '100%', label: 'Type-Safe Core', desc: 'Engineered with zero leaks' },
+                            { value: '< 0.02ms', label: 'Local Latency', desc: 'Sub-millisecond in-memory checks' },
+                            { value: 'TypeScript', label: 'Native Typings', desc: 'Robust auto-complete & type safety' },
                         ].map((stat, i) => (
                             <CardBentoBase key={i}>
                                 <div className="
