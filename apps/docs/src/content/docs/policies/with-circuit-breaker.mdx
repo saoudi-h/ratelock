@@ -17,10 +17,12 @@ const circuitBreaker = withCircuitBreaker(limiter, {
 })
 ```
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `failureThreshold` | `number` | Consecutive failures before opening the circuit |
-| `recoveryTimeoutMs` | `number` | Time to wait before transitioning to half-open |
+## Configuration Options
+
+<AutoTypeTable
+  path="../../packages/core/src/types.ts"
+  type="CircuitBreakerConfig"
+/>
 
 ## States
 

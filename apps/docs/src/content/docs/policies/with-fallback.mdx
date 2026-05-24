@@ -22,6 +22,15 @@ const denyPolicy = withFallback(limiter, { fallback: 'deny' })
 const throwPolicy = withFallback(limiter, { fallback: 'throw' })
 ```
 
+## Configuration Options
+
+The fallback configuration takes a policy defining how errors are handled:
+
+<AutoTypeTable
+  path="../../packages/core/src/types.ts"
+  type="FallbackPolicy"
+/>
+
 | Policy | Behavior | Use Case |
 |--------|----------|----------|
 | `'allow'` | Returns `{ allowed: true }` on error | Prefer availability over strict rate limiting |

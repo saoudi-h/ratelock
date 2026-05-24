@@ -104,6 +104,41 @@ const cached = withCache(limiter, { maxSize: 500, ttlMs: 10_000 })
 
 See [Resilience Policies](/docs/policies) for full documentation and when to use standalone vs built-in.
 
+## API Reference
+
+The factory functions in `@ratelock/redis` expect configuration objects matching these strict TypeScript shapes:
+
+<Tabs items={['fixedWindow', 'slidingWindow', 'tokenBucket', 'individualFixedWindow']}>
+  <Tab value="fixedWindow">
+    ### FixedWindowLimiterConfig
+    <AutoTypeTable
+      path="../../packages/redis/src/fixed-window.ts"
+      type="FixedWindowLimiterConfig"
+    />
+  </Tab>
+  <Tab value="slidingWindow">
+    ### SlidingWindowLimiterConfig
+    <AutoTypeTable
+      path="../../packages/redis/src/sliding-window.ts"
+      type="SlidingWindowLimiterConfig"
+    />
+  </Tab>
+  <Tab value="tokenBucket">
+    ### TokenBucketLimiterConfig
+    <AutoTypeTable
+      path="../../packages/redis/src/token-bucket.ts"
+      type="TokenBucketLimiterConfig"
+    />
+  </Tab>
+  <Tab value="individualFixedWindow">
+    ### IndividualFixedWindowLimiterConfig
+    <AutoTypeTable
+      path="../../packages/redis/src/individual-fixed-window.ts"
+      type="IndividualFixedWindowLimiterConfig"
+    />
+  </Tab>
+</Tabs>
+
 ## Valkey Compatibility
 
 RateLock is fully compatible with **Valkey** (the high-performance open-source fork of Redis). Since Valkey maintains protocol and API compatibility with Redis, you can use `@ratelock/redis` to rate limit against a Valkey instance using either standard `ioredis` or `node-redis` clients.

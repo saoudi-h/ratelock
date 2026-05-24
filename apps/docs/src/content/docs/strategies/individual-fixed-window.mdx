@@ -19,12 +19,12 @@ Unlike Fixed Window where all keys share the same window boundaries, each key's 
 
 ## Configuration
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `limit` | `number` | Maximum requests per window per key |
-| `windowMs` | `number` | Window duration in milliseconds |
-| `prefix` | `string` | Key prefix (default: `"ifw"`) |
-| `maxSize` | `number` | Max entries before cleanup (default: `100000`) |
+Options for the Individual Fixed Window strategy:
+
+<AutoTypeTable
+  path="../../packages/core/src/types.ts"
+  type="IndividualFixedWindowOptions"
+/>
 
 ## Usage
 

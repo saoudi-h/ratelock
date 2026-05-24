@@ -19,12 +19,12 @@ Instead of resetting at fixed intervals, the window "slides" with time. Only req
 
 ## Configuration
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `limit` | `number` | Maximum requests allowed per window |
-| `windowMs` | `number` | Window duration in milliseconds |
-| `prefix` | `string` | Key prefix (default: `"sw"`) |
-| `maxSize` | `number` | Max entries before cleanup (default: `100000`) |
+Options for the Sliding Window strategy:
+
+<AutoTypeTable
+  path="../../packages/core/src/types.ts"
+  type="SlidingWindowOptions"
+/>
 
 ## Usage
 
@@ -42,13 +42,12 @@ const result = await limiter.check('user:123')
 
 ## Result Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `allowed` | `boolean` | Whether the request is allowed |
-| `remaining` | `number` | Requests remaining in the current window |
-| `reset` | `number` | Epoch timestamp (ms) when the oldest entry expires |
-| `windowStart` | `number` | Epoch timestamp (ms) of the window start |
-| `windowEnd` | `number` | Epoch timestamp (ms) of the window end |
+The check result returned by the Sliding Window limiter:
+
+<AutoTypeTable
+  path="../../packages/core/src/types.ts"
+  type="SlidingWindowResult"
+/>
 
 ## Pros and Cons
 

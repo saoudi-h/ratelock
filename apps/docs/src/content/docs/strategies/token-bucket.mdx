@@ -20,12 +20,12 @@ Tokens: 10 ──→ 9 ──→ 8 ──→ 7 ──→ ... ──→ 0 (denied
 
 ## Configuration
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `capacity` | `number` | Maximum tokens (burst size) |
-| `refillRate` | `number` | Tokens added per second |
-| `prefix` | `string` | Key prefix (default: `"tb"`) |
-| `maxSize` | `number` | Max entries before cleanup (default: `100000`) |
+Options for the Token Bucket strategy:
+
+<AutoTypeTable
+  path="../../packages/core/src/types.ts"
+  type="TokenBucketOptions"
+/>
 
 ## Usage
 
@@ -43,12 +43,12 @@ const result = await limiter.check('user:123')
 
 ## Result Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `allowed` | `boolean` | Whether the request is allowed |
-| `remaining` | `number` | Tokens remaining after this check |
-| `tokens` | `number` | Same as `remaining` |
-| `refillTime` | `number` | Milliseconds until next token (0 if allowed) |
+The check result returned by the Token Bucket limiter:
+
+<AutoTypeTable
+  path="../../packages/core/src/types.ts"
+  type="TokenBucketResult"
+/>
 
 ## Calculating Retry-After
 

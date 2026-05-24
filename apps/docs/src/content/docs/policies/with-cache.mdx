@@ -17,10 +17,12 @@ const cached = withCache(limiter, {
 })
 ```
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `maxSize` | `number` | Maximum number of cached entries (LRU eviction) |
-| `ttlMs` | `number` | Time-to-live for cached entries in milliseconds |
+## Configuration Options
+
+<AutoTypeTable
+  path="../../packages/core/src/types.ts"
+  type="CacheConfig"
+/>
 
 ## How It Works
 

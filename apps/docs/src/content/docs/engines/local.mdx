@@ -87,6 +87,41 @@ const withResilience = withFallback(
 
 See [Resilience Policies](/docs/policies) for full documentation and when to use standalone vs built-in.
 
+## API Reference
+
+The factory functions in `@ratelock/local` expect configuration objects matching these strict TypeScript shapes:
+
+<Tabs items={['fixedWindow', 'slidingWindow', 'tokenBucket', 'individualFixedWindow']}>
+  <Tab value="fixedWindow">
+    ### FixedWindowLimiterConfig
+    <AutoTypeTable
+      path="../../packages/local/src/fixed-window.ts"
+      type="FixedWindowLimiterConfig"
+    />
+  </Tab>
+  <Tab value="slidingWindow">
+    ### SlidingWindowLimiterConfig
+    <AutoTypeTable
+      path="../../packages/local/src/sliding-window.ts"
+      type="SlidingWindowLimiterConfig"
+    />
+  </Tab>
+  <Tab value="tokenBucket">
+    ### TokenBucketLimiterConfig
+    <AutoTypeTable
+      path="../../packages/local/src/token-bucket.ts"
+      type="TokenBucketLimiterConfig"
+    />
+  </Tab>
+  <Tab value="individualFixedWindow">
+    ### IndividualFixedWindowLimiterConfig
+    <AutoTypeTable
+      path="../../packages/local/src/individual-fixed-window.ts"
+      type="IndividualFixedWindowLimiterConfig"
+    />
+  </Tab>
+</Tabs>
+
 ## When to Use
 
 - Single-server or single-process deployments
