@@ -28,36 +28,36 @@ export function IndividualFixedWindowTimeline({
     const { windowMs, limit } = config
     const timelineSpan = windowMs * 3
 
-    // Reconstruction rigoureuse des fenêtres à déclenchement dynamique
+    // Reconstruction rigoureuse et stable des fenêtres à déclenchement dynamique
     const windows = useMemo((): TimelineWindow[] => {
         if (events.length === 0) return []
 
         const sortedEvents = [...events].sort((a, b) => a.timestamp - b.timestamp)
-        const result: TimelineWindow[] = []
-        
-        let currentWindow: TimelineWindow | null = null
-        let windowIndex = 0
+        const windowMap = new Map<number, TimelineWindow>()
 
         for (const event of sortedEvents) {
-            if (!currentWindow || event.timestamp >= currentWindow.end) {
-                // Une nouvelle fenêtre dynamique ne commence que lors du premier appel après expiration !
-                const start = event.timestamp
-                const end = start + windowMs
-                currentWindow = {
-                    id: `window-${windowIndex++}`,
+            const end = event.result?.reset
+            if (!end) continue
+
+            const start = end - windowMs
+            let w = windowMap.get(end)
+            if (!w) {
+                w = {
+                    id: `window-${end}`,
                     start,
                     end,
                     eventCount: 0,
                     limit,
                 }
-                result.push(currentWindow)
+                windowMap.set(end, w)
             }
-            
-            // On incrémente le compteur de requêtes autorisées pour cette fenêtre
+
             if (event.allowed) {
-                currentWindow.eventCount = (currentWindow.eventCount || 0) + 1
+                w.eventCount = (w.eventCount || 0) + 1
             }
         }
+
+        const result = Array.from(windowMap.values()).sort((a, b) => a.start - b.start)
 
         // Labellisation en fonction du temps présent (now)
         return result.map((w) => {

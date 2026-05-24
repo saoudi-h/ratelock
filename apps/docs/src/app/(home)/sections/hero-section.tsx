@@ -202,15 +202,10 @@ export function HeroSection() {
                           hover:scale-[1.02]
                           lg:max-w-none
                         ">
-                            {/* We wrap AnimatedCodePanel in a larger container to remove the cramped look */}
-                            <div className="
-                              rounded-2xl border border-border/40 bg-card/40 p-2
-                              shadow-xs backdrop-blur-md
-                            ">
+
                                 <div className="w-full">
                                     <AnimatedCodePanel />
                                 </div>
-                            </div>
                         </div>
                     </motion.div>
 
@@ -228,16 +223,6 @@ export function HeroSection() {
                             { value: '0', label: 'Local Dependencies', desc: 'Zero runtime bundle bloat' },
                             { value: '100%', label: 'Type-Safe Core', desc: 'Engineered with zero leaks' },
                         ].map((stat, i) => (
-                            // <div
-                            //     key={i}
-                            //     className="
-                            //       group relative flex flex-col justify-between
-                            //       overflow-hidden rounded-4xl bg-card/60 p-1
-                            //       shadow-xs transition-colors duration-200
-                            //       select-none
-                            //       hover:bg-card/60
-                            //     "
-                            // >
                             <CardBentoBase key={i}>
                                 <div className="
                                   font-heading text-5xl leading-none font-black
