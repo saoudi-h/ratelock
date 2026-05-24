@@ -19,12 +19,12 @@ All identifiers share the same window boundaries. At the start of each window, e
 
 ## Configuration
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `limit` | `number` | Maximum requests allowed per window |
-| `windowMs` | `number` | Window duration in milliseconds |
-| `prefix` | `string` | Key prefix for the internal store (default: `"fw"`) |
-| `maxSize` | `number` | Max entries before cleanup triggers (default: `100000`) |
+Options for the Fixed Window strategy:
+
+<AutoTypeTable
+  path="../../packages/core/src/types.ts"
+  type="FixedWindowOptions"
+/>
 
 ## Usage
 
