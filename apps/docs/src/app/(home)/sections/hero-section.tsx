@@ -220,19 +220,24 @@ export function HeroSection() {
                         {[
                             { value: '4', label: 'Limiting Strategies', desc: 'Fixed, Sliding, Token Bucket' },
                             { value: '3', label: 'Storage Engines', desc: 'Memory, Redis, PostgreSQL' },
-                            { value: '< 0.02ms', label: 'Local Latency', desc: 'Sub-millisecond in-memory checks' },
+                            { value: 'Built-in', label: 'Resilience Policies', desc: 'Retry, circuit breaker, & fallback options' },
                             { value: 'TypeScript', label: 'Native Typings', desc: 'Robust auto-complete & type safety' },
-                        ].map((stat, i) => (
-                            <CardBentoBase key={i}>
-                                <div className="
-                                  font-heading text-5xl leading-none font-black
-                                  tracking-tighter text-foreground/50
-                                  transition-colors duration-200 text-shadow-xs
-                                  group-hover:text-primary/80
-                                  md:text-6xl
-                                ">
-                                    {stat.value}
-                                </div>
+                        ].map((stat, i) => {
+                            const isLong = stat.value.length > 6
+                            const fontSizeClass = isLong
+                                ? 'text-3xl sm:text-4xl md:text-5xl'
+                                : 'text-5xl md:text-6xl'
+                            return (
+                                <CardBentoBase key={i}>
+                                    <div className={`
+                                      font-heading leading-none font-black
+                                      tracking-tighter text-foreground/50
+                                      transition-colors duration-200 text-shadow-xs
+                                      group-hover:text-primary/80
+                                      ${fontSizeClass}
+                                    `}>
+                                        {stat.value}
+                                    </div>
                                 <div className="mt-6 pt-4">
                                     <div className="
                                       text-xs font-bold tracking-wider
@@ -248,7 +253,8 @@ export function HeroSection() {
                                     </div>
                                 </div>
                             </CardBentoBase>
-                        ))}
+                            )
+                        })}
                     </motion.div>
                 </motion.div>
             </div>

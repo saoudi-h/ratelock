@@ -47,7 +47,7 @@ export function FeaturesSection() {
                     <FeatureBentoCard
                         title="Deny-Only Cache Shield"
                         description="Why saturate your databases checking blacklisted IPs? RateLock caches repeatedly blocked requests in local memory, instantly rejecting malicious spikes in `0.02ms` without making a single network call."
-                        icon="solar:shield-bolt-bold-duotone"
+                        icon="solar:shield-bold-duotone"
                         iconColor="text-emerald-500"
                         iconBgColor="bg-emerald-500/10"
                         colSpan="2"
@@ -87,7 +87,7 @@ export function FeaturesSection() {
                     <FeatureBentoCard
                         title="Resilient Circuit Breaker"
                         description="Avoid thread pool saturation when your databases fail. RateLock automatically halts queries, redirects calls to fail-safes, and probes recovery periodically."
-                        icon="solar:electricity-bold-duotone"
+                        icon="solar:plug-circle-bold-duotone"
                         iconColor="text-amber-500"
                         iconBgColor="bg-amber-500/10"
                     >

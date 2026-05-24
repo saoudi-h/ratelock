@@ -23,7 +23,7 @@ export const CardBentoBase = ({
           pointer-events-none absolute inset-x-0 top-0 h-3/5 rounded-3xl
           bg-linear-to-b from-background to-transparent
         `} />
-        <div className={cn('relative size-full', className)}>
+        <div className={cn('relative size-full flex flex-col justify-between', className)}>
             {children}
         </div>
       </div>
