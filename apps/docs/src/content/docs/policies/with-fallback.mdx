@@ -25,7 +25,7 @@ const throwPolicy = withFallback(limiter, { fallback: 'throw' })
 | Policy | Behavior | Use Case |
 |--------|----------|----------|
 | `'allow'` | Returns `{ allowed: true }` on error | Prefer availability over strict rate limiting |
-| `'deny'` | Returns `{ allowed: false }` on error | Prefer safety — better to deny than allow abuse |
+| `'deny'` | Returns `{ allowed: false }` on error | Prefer safety - better to deny than allow abuse |
 | `'throw'` | Re-throws the error | Let the caller handle the error |
 
 ## Built-in Alternative

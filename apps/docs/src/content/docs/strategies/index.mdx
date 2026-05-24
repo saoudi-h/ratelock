@@ -76,7 +76,7 @@ const limiter = await individualFixedWindow({
 
 ## Choosing a Strategy
 
-- **Start with Fixed Window** — it's the simplest and works for most cases
+- **Start with Fixed Window** - it's the simplest and works for most cases
 - **Use Sliding Window** if you notice bursts at window boundaries
 - **Use Token Bucket** if you want to allow occasional bursts
 - **Use Individual Fixed Window** if each user should have their own window start time

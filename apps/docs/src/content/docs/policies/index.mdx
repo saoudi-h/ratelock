@@ -150,7 +150,7 @@ withFallback(             ← catches errors from everything below
 If you use built-in policy options at creation time, avoid wrapping the same limiter with a standalone policy of the same type:
 
 ```typescript
-// ❌ Don't do this — double caching with different configs
+// ❌ Don't do this - double caching with different configs
 const limiter = await fixedWindow({
     url: 'redis://...',
     cache: { maxSize: 1000, ttlMs: 30_000 },  // built-in cache
@@ -161,4 +161,4 @@ const wrapped = withCache(limiter, { maxSize: 500, ttlMs: 10_000 }) // standalon
 
 **What happens:** Both caches run, resulting in redundant memory lookups and conflicting TTLs. The behavior is predictable (outer cache checks first) but wasteful and confusing.
 
-**Rule:** Choose one approach per policy type — either built-in OR standalone, not both.
+**Rule:** Choose one approach per policy type - either built-in OR standalone, not both.

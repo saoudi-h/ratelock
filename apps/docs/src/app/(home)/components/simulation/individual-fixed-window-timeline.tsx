@@ -125,7 +125,7 @@ export function IndividualFixedWindowTimeline({
                   inline-flex items-center gap-1 rounded-md border border-border/40
                   bg-background/60 backdrop-blur-md px-2 py-0.5 text-[10px] font-mono text-muted-foreground shadow-2xs
                 ">
-                    Remaining: <span className="text-foreground font-bold tabular-nums">{lastResult?.remaining ?? '—'}</span>
+                    Remaining: <span className="text-foreground font-bold tabular-nums">{lastResult?.remaining ?? '-'}</span>
                 </span>
                 <span className="
                   inline-flex items-center gap-1 rounded-md border border-border/40

@@ -17,7 +17,7 @@ function detectDriver(raw: unknown): 'redis' | 'ioredis' {
         // ioredis v5 has 'status' and 'connector'; node-redis has 'isOpen'
         if ('connector' in raw) return 'ioredis'
         if ('isOpen' in raw) return 'redis'
-        // Both have 'ping' — check after more specific properties
+        // Both have 'ping' - check after more specific properties
         if ('status' in raw) return 'ioredis'
         if ('ping' in raw) return 'redis'
     }

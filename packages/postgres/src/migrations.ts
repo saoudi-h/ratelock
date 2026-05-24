@@ -28,14 +28,14 @@ export async function runMigrations(
   `)
 
     // Migrate last_refill from TIMESTAMPTZ to DOUBLE PRECISION (v0.1 → v0.2)
-    // Only runs if the column type is wrong — safe for repeated execution
+    // Only runs if the column type is wrong - safe for repeated execution
     try {
         const cols = await driver.query<{ data_type: string }>(
             `SELECT data_type FROM information_schema.columns
        WHERE table_schema = '${SCHEMA}' AND table_name = 'token_bucket' AND column_name = 'last_refill'`
         )
         if (cols.length > 0 && cols[0]!.data_type !== 'double precision') {
-            // Legacy table has TIMESTAMPTZ — rebuild it
+            // Legacy table has TIMESTAMPTZ - rebuild it
             await driver.query(`DROP TABLE IF EXISTS ${SCHEMA}.token_bucket CASCADE`)
         }
     } catch {

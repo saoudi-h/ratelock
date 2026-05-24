@@ -73,7 +73,7 @@ Using the table-level `UNLOGGED` flag during table creation (`CREATE UNLOGGED TA
 
 - **Mechanism**: PostgreSQL completely bypasses writing transaction logs (WAL) **only** for these specific tables.
 - **Safety**: **100% safe for other tables.** All other colocated tables in the database continue to write logs to WAL normally with full ACID durability (`fsync = on`, `synchronous_commit = on` are preserved).
-- **Behavior on Crash**: If the PostgreSQL server crashes, `UNLOGGED` tables are automatically truncated (emptied) upon restart. For rate limit counters, this is perfectly acceptable—starting with empty tables simply resets the transient client rate quotas, which is identical to the behavior of Redis or in-memory caches on restart.
+- **Behavior on Crash**: If the PostgreSQL server crashes, `UNLOGGED` tables are automatically truncated (emptied) upon restart. For rate limit counters, this is perfectly acceptable-starting with empty tables simply resets the transient client rate quotas, which is identical to the behavior of Redis or in-memory caches on restart.
 
 ---
 

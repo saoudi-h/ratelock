@@ -7,7 +7,7 @@
 
 ---
 
-> **Note:** `@ratelock/core` is primarily an internal package. You typically don't need to install it directly — it's pulled in automatically by storage adapters like `@ratelock/local`, `@ratelock/redis`, and `@ratelock/postgres`.
+> **Note:** `@ratelock/core` is primarily an internal package. You typically don't need to install it directly - it's pulled in automatically by storage adapters like `@ratelock/local`, `@ratelock/redis`, and `@ratelock/postgres`.
 
 ## What's Inside
 
@@ -15,9 +15,9 @@ This package provides the shared types, validation utilities, and composable dec
 
 ### Types
 
-- `Limiter<T>` — The universal limiter interface
-- `FixedWindowResult`, `SlidingWindowResult`, `TokenBucketResult` — Result types for each strategy
-- `FixedWindowOptions`, `SlidingWindowOptions`, `TokenBucketOptions` — Configuration types
+- `Limiter<T>` - The universal limiter interface
+- `FixedWindowResult`, `SlidingWindowResult`, `TokenBucketResult` - Result types for each strategy
+- `FixedWindowOptions`, `SlidingWindowOptions`, `TokenBucketOptions` - Configuration types
 
 ### Decorators
 
