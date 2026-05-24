@@ -31,13 +31,7 @@ export type PostgresLimiterBaseConfig = {
      */
     pool?: PgPoolLike
     /**
-     * PostgreSQL connection string (e.g., `postgres://user:pass@localhost:5432/mydb`).
-     * Interchangeable with `url`.
-     */
-    connectionString?: string
-    /**
-     * PostgreSQL connection URL.
-     * Interchangeable with `connectionString`.
+     * PostgreSQL connection URL (e.g., `postgres://user:pass@localhost:5432/mydb`).
      */
     url?: string
     /**

@@ -15,13 +15,13 @@ npm install @ratelock/postgres pg
 
 ## Quick Start
 
-### With a Connection String
+### With a Connection URL
 
 ```typescript
 import { fixedWindow } from '@ratelock/postgres'
 
 const limiter = await fixedWindow({
-    connectionString: 'postgres://user:pass@localhost:5432/mydb',
+    url: 'postgres://user:pass@localhost:5432/mydb',
     limit: 100,
     windowMs: 60_000,
 })
@@ -59,7 +59,7 @@ const limiter = await fixedWindow({
 
 ## Configuration Options
 
-All limiters in the PostgreSQL engine accept these shared base options (supporting both `connectionString` and `url` interchangeably):
+All limiters in the PostgreSQL engine accept these shared base options:
 
 <AutoTypeTable
   path="../../packages/postgres/src/types.ts"
@@ -72,7 +72,7 @@ All limiters accept optional resilience configurations at creation time:
 
 ```typescript
 const limiter = await fixedWindow({
-    connectionString: 'postgres://...',
+    url: 'postgres://...',
     limit: 100,
     windowMs: 60_000,
     cache: { maxSize: 1000, ttlMs: 30_000 },
@@ -104,7 +104,7 @@ Skip auto-migrations if you manage schema yourself:
 
 ```typescript
 const limiter = await fixedWindow({
-    connectionString: 'postgres://...',
+    url: 'postgres://...',
     limit: 100,
     windowMs: 60_000,
     skipMigrations: true,
@@ -117,7 +117,7 @@ For better write performance at the cost of crash safety, use unlogged tables:
 
 ```typescript
 const limiter = await fixedWindow({
-    connectionString: 'postgres://...',
+    url: 'postgres://...',
     limit: 100,
     windowMs: 60_000,
     unlogged: true,
@@ -160,7 +160,7 @@ For advanced use cases (conditional policies, dynamic composition), import stand
 ```typescript
 import { withCache, withRetry } from '@ratelock/postgres'
 
-const limiter = await fixedWindow({ connectionString: 'postgres://...', limit: 100, windowMs: 60_000 })
+const limiter = await fixedWindow({ url: 'postgres://...', limit: 100, windowMs: 60_000 })
 const cached = withCache(limiter, { maxSize: 500, ttlMs: 10_000 })
 ```
 

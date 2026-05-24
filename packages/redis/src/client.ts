@@ -156,9 +156,8 @@ export async function createConnection(
         }
     }
 
-    const redisUrl = config.url ?? config.connectionString
-    if (redisUrl) {
-        const raw = await loadFromUrl(redisUrl, config.driver)
+    if (config.url) {
+        const raw = await loadFromUrl(config.url, config.driver)
         return { client: adaptClient(raw.client), disconnect: raw.disconnect }
     }
 

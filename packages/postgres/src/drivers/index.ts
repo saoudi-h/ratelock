@@ -31,14 +31,13 @@ export async function createConnection(
         }
     }
 
-    const pgConnectionString = config.connectionString ?? config.url
-    if (pgConnectionString) {
+    if (config.url) {
         const driver = config.driver ?? 'postgres'
         if (driver === 'postgres') {
             try {
                 const mod = await import('postgres')
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                const sql = (mod.default ?? mod)(pgConnectionString)
+                const sql = (mod.default ?? mod)(config.url)
                 return { driver: postgresDriver(sql), end: () => sql.end() }
             } catch {
                 if (config.driver === 'postgres')
@@ -50,7 +49,7 @@ export async function createConnection(
                 const pg = await import('pg')
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 const Pool = (pg.default ?? pg).Pool
-                const pool = new Pool({ connectionString: pgConnectionString })
+                const pool = new Pool({ connectionString: config.url })
                 return { driver: pgDriver(pool), end: () => pool.end() }
             } catch {
                 if (config.driver === 'pg') throw new Error('pg package not found')
@@ -64,9 +63,9 @@ export async function createConnection(
     }
 
     throw new Error(
-        'Provide a PostgreSQL client or connection string:\n' +
+        'Provide a PostgreSQL client or connection URL:\n' +
             '  fixedWindow({ sql: postgresClient, ... })\n' +
             '  fixedWindow({ pool: pgPool, ... })\n' +
-            '  fixedWindow({ connectionString: "postgres://...", ... })'
+            '  fixedWindow({ url: "postgres://...", ... })'
     )
 }

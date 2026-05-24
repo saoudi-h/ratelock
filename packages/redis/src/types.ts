@@ -20,14 +20,8 @@ export type RedisLimiterBaseConfig = {
     client?: RedisClientLike
     /**
      * Redis connection URL (e.g., `redis://localhost:6379`).
-     * Interchangeable with `connectionString`.
      */
     url?: string
-    /**
-     * Redis connection string (e.g., `redis://localhost:6379`).
-     * Interchangeable with `url`.
-     */
-    connectionString?: string
     /**
      * Explicitly specify the underlying driver: `'redis'` (node-redis) or `'ioredis'`.
      * Automatically detected if omitted.
