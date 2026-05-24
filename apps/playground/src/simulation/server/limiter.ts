@@ -1,18 +1,18 @@
 'use server'
 import type { RateLimitResult, StorageConfig, StrategyConfig } from '@/simulation/types'
 import { validateStorageConfig, validateStrategyConfig } from '@/simulation/types/validation'
-// Rate limiter adapters
+// Rate limiter engines
 import {
-    createFixedWindowLimiter as createLocalFixedWindow,
-    createIndividualFixedWindowLimiter as createLocalIndividualFixedWindow,
-    createSlidingWindowLimiter as createLocalSlidingWindow,
-    createTokenBucketLimiter as createLocalTokenBucket,
+    fixedWindow as createLocalFixedWindow,
+    individualFixedWindow as createLocalIndividualFixedWindow,
+    slidingWindow as createLocalSlidingWindow,
+    tokenBucket as createLocalTokenBucket,
 } from '@ratelock/local'
 import {
-    createFixedWindowLimiter as createRedisFixedWindow,
-    createIndividualFixedWindowLimiter as createRedisIndividualFixedWindow,
-    createSlidingWindowLimiter as createRedisSlidingWindow,
-    createTokenBucketLimiter as createRedisTokenBucket,
+    fixedWindow as createRedisFixedWindow,
+    individualFixedWindow as createRedisIndividualFixedWindow,
+    slidingWindow as createRedisSlidingWindow,
+    tokenBucket as createRedisTokenBucket,
 } from '@ratelock/redis'
 
 /**

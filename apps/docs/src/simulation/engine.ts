@@ -1,8 +1,8 @@
 import {
-    createFixedWindowLimiter,
-    createSlidingWindowLimiter,
-    createTokenBucketLimiter,
-    createIndividualFixedWindowLimiter,
+    fixedWindow,
+    slidingWindow,
+    tokenBucket,
+    individualFixedWindow,
     type Limiter,
     type FixedWindowResult,
     type SlidingWindowResult,
@@ -24,19 +24,19 @@ async function createLimiter(strategyId: StrategyId, config: StrategySpecificCon
     switch (strategyId) {
         case 'fixed-window': {
             const c = config as FixedWindowConfig
-            return createFixedWindowLimiter({ limit: c.limit, windowMs: c.windowMs })
+            return fixedWindow({ limit: c.limit, windowMs: c.windowMs })
         }
         case 'sliding-window': {
             const c = config as SlidingWindowConfig
-            return createSlidingWindowLimiter({ limit: c.limit, windowMs: c.windowMs })
+            return slidingWindow({ limit: c.limit, windowMs: c.windowMs })
         }
         case 'token-bucket': {
             const c = config as TokenBucketConfig
-            return createTokenBucketLimiter({ capacity: c.capacity, refillRate: c.refillRate })
+            return tokenBucket({ capacity: c.capacity, refillRate: c.refillRate })
         }
         case 'individual-fixed-window': {
             const c = config as IndividualFixedWindowConfig
-            return createIndividualFixedWindowLimiter({ limit: c.limit, windowMs: c.windowMs })
+            return individualFixedWindow({ limit: c.limit, windowMs: c.windowMs })
         }
     }
 }

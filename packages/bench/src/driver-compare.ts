@@ -1,4 +1,4 @@
-import { createFixedWindowLimiter as createLocalFixed } from '@ratelock/local'
+import { fixedWindow as createLocalFixed } from '@ratelock/local'
 import { performance } from 'perf_hooks'
 
 async function bench(name: string, check: (id: string) => Promise<unknown>, durationMs = 3000) {
@@ -60,7 +60,7 @@ async function main() {
         const { createClient } = await import('redis')
         const c1 = createClient({ url: 'redis://:testpassword@localhost:6380' })
         await c1.connect()
-        const { createFixedWindowLimiter: r1 } = await import('@ratelock/redis')
+        const { fixedWindow: r1 } = await import('@ratelock/redis')
         const l1 = await r1({ client: c1, limit: 10000, windowMs: 60000 })
         await bench('redis        (node-redis)', id => l1.check(id))
         await c1.quit()
@@ -71,7 +71,7 @@ async function main() {
     try {
         const { default: IORedis } = await import('ioredis')
         const c2 = new IORedis('redis://:testpassword@localhost:6380')
-        const { createFixedWindowLimiter: r2 } = await import('@ratelock/redis')
+        const { fixedWindow: r2 } = await import('@ratelock/redis')
         const l2 = await r2({ client: c2, limit: 10000, windowMs: 60000 })
         await bench('redis        (ioredis)', id => l2.check(id))
         c2.disconnect()
@@ -83,7 +83,7 @@ async function main() {
     try {
         const postgres = (await import('postgres')).default
         const p1 = postgres('postgres://ratelock:ratelock@localhost:5433/ratelock_bench')
-        const { createFixedWindowLimiter: pg1 } = await import('@ratelock/postgres')
+        const { fixedWindow: pg1 } = await import('@ratelock/postgres')
         const l3 = await pg1({ sql: p1, limit: 10000, windowMs: 60000, skipMigrations: true })
         await bench('postgresql   (postgres.js)', id => l3.check(id))
         await p1.end()
@@ -97,7 +97,7 @@ async function main() {
         const pool = new pg.Pool({
             connectionString: 'postgres://ratelock:ratelock@localhost:5433/ratelock_bench',
         })
-        const { createFixedWindowLimiter: pg2 } = await import('@ratelock/postgres')
+        const { fixedWindow: pg2 } = await import('@ratelock/postgres')
         const l4 = await pg2({ pool, limit: 10000, windowMs: 60000, skipMigrations: true })
         await bench('postgresql   (pg)', id => l4.check(id))
         await pool.end()

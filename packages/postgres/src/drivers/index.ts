@@ -66,8 +66,8 @@ export async function createConnection(config: {
 
     throw new Error(
         'Provide a PostgreSQL client or connection string:\n' +
-            '  createFixedWindowLimiter({ sql: postgresClient, ... })\n' +
-            '  createFixedWindowLimiter({ pool: pgPool, ... })\n' +
-            '  createFixedWindowLimiter({ connectionString: "postgres://...", ... })'
+            '  fixedWindow({ sql: postgresClient, ... })\n' +
+            '  fixedWindow({ pool: pgPool, ... })\n' +
+            '  fixedWindow({ connectionString: "postgres://...", ... })'
     )
 }

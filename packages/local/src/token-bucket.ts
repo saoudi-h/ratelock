@@ -1,14 +1,29 @@
-import type { Limiter, TokenBucketOptions, TokenBucketResult } from '@ratelock/core'
-import { validateTokenBucketOptions } from '@ratelock/core'
+import type {
+    CircuitBreakerConfig,
+    FallbackPolicy,
+    Limiter,
+    RetryConfig,
+    TokenBucketOptions,
+    TokenBucketResult,
+} from '@ratelock/core'
+import {
+    validateTokenBucketOptions,
+    withCircuitBreaker,
+    withFallback,
+    withRetry,
+} from '@ratelock/core'
 
 type Bucket = { tokens: number; lastRefill: number }
 
 export type TokenBucketLimiterConfig = TokenBucketOptions & {
     prefix?: string
     maxSize?: number
+    retry?: RetryConfig
+    circuitBreaker?: CircuitBreakerConfig
+    fallback?: FallbackPolicy
 }
 
-export async function createTokenBucketLimiter(
+export async function tokenBucket(
     config: TokenBucketLimiterConfig
 ): Promise<Limiter<TokenBucketResult>> {
     validateTokenBucketOptions(config)
@@ -27,7 +42,7 @@ export async function createTokenBucketLimiter(
         }
     }
 
-    const limiter: Limiter<TokenBucketResult> = {
+    let limiter: Limiter<TokenBucketResult> = {
         async check(id: string): Promise<TokenBucketResult> {
             const key = `${prefix}:${id}`
             const now = Date.now()
@@ -75,6 +90,10 @@ export async function createTokenBucketLimiter(
             state.clear()
         },
     }
+
+    if (config.retry) limiter = withRetry(limiter, config.retry)
+    if (config.circuitBreaker) limiter = withCircuitBreaker(limiter, config.circuitBreaker)
+    if (config.fallback) limiter = withFallback(limiter, config.fallback)
 
     return limiter
 }

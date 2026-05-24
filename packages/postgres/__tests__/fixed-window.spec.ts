@@ -1,12 +1,12 @@
 import { fixedWindowContract } from '@ratelock/test-utils'
 import { describe } from 'vitest'
-import { createFixedWindowLimiter } from '../src/fixed-window'
+import { fixedWindow } from '../src/fixed-window'
 import { MockPgDriver } from './driver.mock'
 
 describe('@ratelock/postgres - FixedWindow', () => {
     fixedWindowContract(async opts => {
         const driver = new MockPgDriver()
-        const limiter = await createFixedWindowLimiter({
+        const limiter = await fixedWindow({
             ...opts,
             sql: driver,
             skipMigrations: true,

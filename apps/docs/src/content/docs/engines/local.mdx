@@ -1,9 +1,9 @@
 ---
-title: Local Adapter
+title: Local Engine
 description: Zero-dependency, in-memory rate limiting for single-process apps.
 ---
 
-The Local adapter stores rate limit state in memory using JavaScript `Map` objects. It has zero external dependencies and provides sub-millisecond latency.
+The Local engine stores rate limit state in memory using JavaScript `Map` objects. It has zero external dependencies and provides sub-millisecond latency.
 
 ## Installation
 
@@ -15,13 +15,13 @@ npm install @ratelock/local
 
 ```typescript
 import {
-    createFixedWindowLimiter,
-    createSlidingWindowLimiter,
-    createTokenBucketLimiter,
-    createIndividualFixedWindowLimiter,
+    fixedWindow,
+    slidingWindow,
+    tokenBucket,
+    individualFixedWindow,
 } from '@ratelock/local'
 
-const limiter = await createFixedWindowLimiter({
+const limiter = await fixedWindow({
     limit: 100,
     windowMs: 60_000,
 })
@@ -33,10 +33,10 @@ const result = await limiter.check('user:123')
 
 | Function | Strategy |
 |----------|----------|
-| `createFixedWindowLimiter` | Fixed Window |
-| `createSlidingWindowLimiter` | Sliding Window |
-| `createTokenBucketLimiter` | Token Bucket |
-| `createIndividualFixedWindowLimiter` | Individual Fixed Window |
+| `fixedWindow` | Fixed Window |
+| `slidingWindow` | Sliding Window |
+| `tokenBucket` | Token Bucket |
+| `individualFixedWindow` | Individual Fixed Window |
 
 ## Configuration Options
 
@@ -49,38 +49,43 @@ All limiters accept these common options:
 
 Strategy-specific options are documented in the [Strategies](/docs/strategies) section.
 
-## Built-in Decorators
+## Built-in Resilience Policies
 
-All limiters accept optional decorator configurations at creation time:
+All limiters accept optional resilience configurations at creation time:
 
 ```typescript
-const limiter = await createFixedWindowLimiter({
+const limiter = await fixedWindow({
     limit: 100,
     windowMs: 60_000,
-    cache: { maxSize: 1000, ttlMs: 30_000 },
+    // Automatically applies resilience wrappers in-house
     retry: { maxAttempts: 3 },
+    fallback: 'allow', // fallback to allow if the limiter errors
 })
 ```
 
 | Option | Type | Description |
 |--------|------|-------------|
-| `cache` | `CacheConfig` | Cache denied results to reduce overhead |
 | `retry` | `RetryConfig` | Retry transient failures with exponential backoff |
 | `circuitBreaker` | `CircuitBreakerConfig` | Stop calling after consecutive failures |
-| `errorPolicy` | `'throw' \| 'allow' \| 'deny'` | Behavior when the limiter throws |
+| `fallback` | `'throw' \| 'allow' \| 'deny'` | Behavior when the limiter throws |
 
-## Standalone Decorators (Advanced)
+> **Note:** The Local engine runs entirely in memory and cannot fail due to network drops, so built-in `cache` is not supported (the engine itself has no network latency to cache).
 
-For advanced use cases, import standalone decorators directly:
+## Standalone Policies (Advanced)
+
+For advanced use cases, import standalone resilience wrappers directly:
 
 ```typescript
-import { withCache, withRetry } from '@ratelock/local'
+import { withFallback, withRetry } from '@ratelock/local'
 
-const limiter = await createFixedWindowLimiter({ limit: 100, windowMs: 60_000 })
-const cached = withCache(limiter, { maxSize: 500, ttlMs: 10_000 })
+const limiter = await fixedWindow({ limit: 100, windowMs: 60_000 })
+const withResilience = withFallback(
+    withRetry(limiter, { maxAttempts: 3 }),
+    { fallback: 'allow' }
+)
 ```
 
-See [Standalone Decorators](/docs/decorators) for full documentation and when to use standalone vs built-in.
+See [Resilience Policies](/docs/policies) for full documentation and when to use standalone vs built-in.
 
 ## When to Use
 

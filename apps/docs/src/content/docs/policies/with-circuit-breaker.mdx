@@ -3,14 +3,14 @@ title: withCircuitBreaker
 description: Stop calling a failing backend to prevent cascading failures.
 ---
 
-The `withCircuitBreaker` decorator implements the circuit breaker pattern. When the backend fails too many times, it "opens" the circuit and immediately rejects requests without calling the backend, giving it time to recover.
+The `withCircuitBreaker` policy implements the circuit breaker pattern. When the backend fails too many times, it "opens" the circuit and immediately rejects requests without calling the backend, giving it time to recover.
 
 ## Usage
 
 ```typescript
-import { withCircuitBreaker } from '@ratelock/redis'
+import { fixedWindow, withCircuitBreaker } from '@ratelock/redis'
 
-const limiter = await createFixedWindowLimiter({ ... })
+const limiter = await fixedWindow({ ... })
 const circuitBreaker = withCircuitBreaker(limiter, {
     failureThreshold: 5,      // open after 5 consecutive failures
     recoveryTimeoutMs: 30_000, // wait 30s before trying again
@@ -28,7 +28,7 @@ const circuitBreaker = withCircuitBreaker(limiter, {
 |-------|----------|
 | **Closed** | Normal operation. Requests go through to the backend. |
 | **Open** | Requests are rejected immediately. No backend calls. |
-| **Half-Open** | One probe request is allowed. If it succeeds, circuit closes. If it fails, circuit reopens. |
+| **Half-Open** | One probe request is allowed. If it succeeds, the circuit closes. If it fails, the circuit reopens. |
 
 ## Error Context
 
@@ -48,7 +48,9 @@ try {
 For most cases, use the built-in `circuitBreaker` option at creation time instead:
 
 ```typescript
-const limiter = await createFixedWindowLimiter({
+import { fixedWindow } from '@ratelock/redis'
+
+const limiter = await fixedWindow({
     url: 'redis://localhost:6379',
     limit: 100,
     windowMs: 60_000,
@@ -56,4 +58,4 @@ const limiter = await createFixedWindowLimiter({
 })
 ```
 
-See [Standalone Decorators](/docs/decorators) for when to use standalone vs built-in.
+See [Resilience Policies](/docs/policies) for when to use standalone vs built-in.

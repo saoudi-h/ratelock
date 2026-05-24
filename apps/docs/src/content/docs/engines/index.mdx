@@ -1,0 +1,52 @@
+---
+title: Storage Engines
+description: Choose the right storage engine for your rate limiting needs.
+---
+
+RateLock storage engines provide the storage layer for rate limit state. Each engine implements all 4 strategies and supports the same API.
+
+## Available Engines
+
+| Engine | Package | Best For |
+|--------|---------|----------|
+| [Local](/docs/engines/local) | `@ratelock/local` | Single-process apps, zero dependencies |
+| [Redis](/docs/engines/redis) | `@ratelock/redis` | Distributed systems, high traffic |
+| [PostgreSQL](/docs/engines/postgres) | `@ratelock/postgres` | Apps already using Postgres |
+
+## Same API, Different Backends
+
+All storage engines expose the same interface:
+
+```typescript
+// All engines support these methods
+const limiter = await fixedWindow({ ... })
+
+await limiter.check('user:123')        // Check single identifier
+await limiter.checkBatch(['a', 'b'])   // Check multiple identifiers
+await limiter.destroy()                // Clean up resources
+```
+
+## Choosing an Engine
+
+- **Start with Local** if you're running a single process or developing locally
+- **Use Redis** if you have multiple servers or need the highest performance
+- **Use PostgreSQL** if you already have Postgres and don't want to add Redis
+
+## Using Multiple Engines
+
+You can mix engines in the same application:
+
+```typescript
+import { fixedWindow as localFixedWindow } from '@ratelock/local'
+import { fixedWindow as redisFixedWindow } from '@ratelock/redis'
+
+// Lightweight in-memory limiter for health checks
+const healthLimiter = await localFixedWindow({ limit: 1000, windowMs: 60_000 })
+
+// Distributed Redis-backed limiter for API endpoints
+const apiLimiter = await redisFixedWindow({
+    url: 'redis://localhost:6379',
+    limit: 100,
+    windowMs: 60_000,
+})
+```

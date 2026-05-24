@@ -8,9 +8,9 @@ description: Get up and running with RateLock in under 2 minutes.
 Create a rate limiter, check requests, and handle the result:
 
 ```typescript
-import { createFixedWindowLimiter } from '@ratelock/local'
+import { fixedWindow } from '@ratelock/local'
 
-const limiter = await createFixedWindowLimiter({
+const limiter = await fixedWindow({
     limit: 100,
     windowMs: 60_000, // 100 requests per minute
 })
@@ -87,5 +87,5 @@ await limiter.destroy()
 ## Next Steps
 
 - Learn about the [4 rate limiting strategies](/docs/strategies)
-- Explore [adapters](/docs/adapters) for Redis and PostgreSQL
-- [Standalone Decorators](/docs/decorators) for advanced use cases
+- Explore [storage engines](/docs/engines) for Redis and PostgreSQL
+- Read about [resilience policies](/docs/policies) for caching, retries, and fallbacks

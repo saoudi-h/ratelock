@@ -30,9 +30,9 @@ export function DynamicCodeExplorer({ strategyId, config, isDark }: DynamicCodeE
     const code = useMemo(() => {
         switch (strategyId) {
             case 'fixed-window':
-                return `import { createFixedWindowLimiter } from '@ratelock/local'
+                return `import { fixedWindow } from '@ratelock/local'
 
-const limiter = createFixedWindowLimiter({
+const limiter = fixedWindow({
   limit: ${config.limit},
   windowMs: ${config.windowMs}, // ${(config.windowMs / 1000).toFixed(1)}s
 })
@@ -43,9 +43,9 @@ if (result.allowed) {
   console.log('Allowed! Remaining:', result.remaining)
 }`
             case 'sliding-window':
-                return `import { createSlidingWindowLimiter } from '@ratelock/local'
+                return `import { slidingWindow } from '@ratelock/local'
 
-const limiter = createSlidingWindowLimiter({
+const limiter = slidingWindow({
   limit: ${config.limit},
   windowMs: ${config.windowMs}, // ${(config.windowMs / 1000).toFixed(1)}s
 })
@@ -56,9 +56,9 @@ if (result.allowed) {
   console.log('Allowed! Remaining:', result.remaining)
 }`
             case 'token-bucket':
-                return `import { createTokenBucketLimiter } from '@ratelock/local'
+                return `import { tokenBucket } from '@ratelock/local'
 
-const limiter = createTokenBucketLimiter({
+const limiter = tokenBucket({
   capacity: ${config.capacity},
   refillRate: ${config.refillRate}, // per second
 })
@@ -69,9 +69,9 @@ if (result.allowed) {
   console.log('Allowed! Tokens:', result.remaining)
 }`
             case 'individual-fixed-window':
-                return `import { createIndividualFixedWindowLimiter } from '@ratelock/local'
+                return `import { individualFixedWindow } from '@ratelock/local'
 
-const limiter = createIndividualFixedWindowLimiter({
+const limiter = individualFixedWindow({
   limit: ${config.limit},
   windowMs: ${config.windowMs}, // ${(config.windowMs / 1000).toFixed(1)}s
 })

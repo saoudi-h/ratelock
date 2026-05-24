@@ -29,9 +29,9 @@ Unlike Fixed Window where all keys share the same window boundaries, each key's 
 ## Usage
 
 ```typescript
-import { createIndividualFixedWindowLimiter } from '@ratelock/local'
+import { individualFixedWindow } from '@ratelock/local'
 
-const limiter = await createIndividualFixedWindowLimiter({
+const limiter = await individualFixedWindow({
     limit: 10,
     windowMs: 60_000, // 10 requests per minute per user
 })

@@ -2,11 +2,11 @@
 
 import { motion } from 'framer-motion'
 import { Icon } from '@iconify/react'
-import { AdapterBentoCard } from '../components/adapter-bento-card'
+import { EngineBentoCard } from '../components/engine-bento-card'
 import { MotionCardBentoBase } from './CardBentoBase'
 
-export function AdaptersSection() {
-    const adapters = [
+export function EnginesSection() {
+    const engines = [
         {
             name: 'Local',
             tagline: 'In-memory Maps, zero dependencies',
@@ -117,9 +117,9 @@ export function AdaptersSection() {
                       md:grid-cols-3
                     "
                 >
-                    {/* Adapters Cards */}
-                    {adapters.map((adapter) => (
-                        <AdapterBentoCard key={adapter.name} {...adapter} />
+                    {/* Engines Cards */}
+                    {engines.map((engine) => (
+                        <EngineBentoCard key={engine.name} {...engine} />
                     ))}
 
                     {/* Bento Box 4: Large Unified Code Swap Tile (Full width on md/lg) */}
@@ -132,11 +132,11 @@ export function AdaptersSection() {
                     >
                             <div>
                             <span className="
-                              inline-flex items-center gap-1.5 rounded-xl border
-                              border-border/40 bg-background px-3 py-1 font-mono
-                              text-[10px] font-bold tracking-wider
-                              text-muted-foreground uppercase shadow-xs
-                              select-none
+                                inline-flex items-center gap-1.5 rounded-xl border
+                                border-border/40 bg-background px-3 py-1 font-mono
+                                text-[10px] font-bold tracking-wider
+                                text-muted-foreground uppercase shadow-xs
+                                select-none
                             ">
                                 <span className="
                                   size-1.5 animate-pulse rounded-full
@@ -157,7 +157,7 @@ export function AdaptersSection() {
                               mt-4 max-w-md text-sm/relaxed
                               text-muted-foreground
                             ">
-                                RateLock encapsulates the host-specific database driver logic inside the adapter packages. Your core limiters, validation hooks, API configurations, and custom retry decorators remain **100% unchanged**.
+                                RateLock encapsulates the host-specific database driver logic inside the engine packages. Your core limiters, validation hooks, API configurations, and resilience policies remain **100% unchanged**.
                             </p>
                             <div className="
                               mt-8 flex flex-wrap gap-5 text-xs font-semibold
@@ -223,7 +223,7 @@ export function AdaptersSection() {
                                       border-border/40 bg-muted/40 p-3.5
                                       text-left shadow-xs
                                     ">
-                                        <span className="text-red-400">import</span> &#123; createFixedWindowLimiter &#125; <span className="
+                                        <span className="text-red-400">import</span> &#123; fixedWindow &#125; <span className="
                                           text-red-400
                                         ">from</span> <span className="
                                           text-emerald-400
@@ -253,12 +253,12 @@ export function AdaptersSection() {
                                       border-border/40 bg-muted/40 p-3.5
                                       text-left shadow-xs
                                     ">
-                                        <span className="text-red-400">import</span> &#123; createFixedWindowLimiter &#125; <span className="
+                                        <span className="text-red-400">import</span> &#123; fixedWindow &#125; <span className="
                                           text-red-400
                                         ">from</span> <span className="
                                           text-emerald-400
                                         ">&apos;@ratelock/redis&apos;</span><br />
-                                        <span className="text-muted-foreground">// Swaps engine underneath. Decorator APIs remain identical!</span>
+                                        <span className="text-muted-foreground">// Swaps engine underneath. Resilience wrappers remain identical!</span>
                                     </div>
                                 </div>
                             </div>

@@ -114,22 +114,21 @@ export function FeaturesSection() {
                         </div>
                     </FeatureBentoCard>
 
-                    {/* Bento Card 3: Code Panel / Decorators (1/3 width) */}
+                    {/* Bento Card 3: Code Panel / Fallbacks (1/3 width) */}
                     <FeatureBentoCard
-                        title="Fallback Decorators"
-                        description="Decorate your limiters with custom fallback logic to guarantee that rate limit operations never throw runtime exceptions to clients during database hiccups."
+                        title="Fallback Policies"
+                        description="Configure your limiters with custom fallback policies to guarantee that rate limit operations never throw runtime exceptions to clients during database hiccups."
                         icon="solar:programming-bold-duotone"
                         iconColor="text-purple-500"
                         iconBgColor="bg-purple-500/10"
                     >
                         {/* Mini Monospaced Code panel */}
                         <div className="mt-6 rounded-2xl border border-border/40 bg-background/50 p-5 font-mono text-[10px] space-y-1.5 overflow-x-auto text-left select-none shadow-sm leading-relaxed">
-                            <div><span className="text-purple-400">const</span> res = <span className="text-blue-400">await</span> limiter</div>
-                            <div className="pl-3">.<span className="text-emerald-400">withFallback</span>(&#123;</div>
-                            <div className="pl-6">allowed: <span className="text-amber-400">true</span>,</div>
-                            <div className="pl-6">remaining: <span className="text-yellow-400">1</span>,</div>
-                            <div className="pl-3">&#125;)</div>
-                            <div className="pl-3">.<span className="text-emerald-400">check</span>(<span className="text-emerald-300">&apos;user:ip&apos;</span>)</div>
+                            <div><span className="text-purple-400">const</span> limiter = <span className="text-blue-400">await</span> <span className="text-emerald-400">fixedWindow</span>(&#123;</div>
+                            <div className="pl-3">limit: <span className="text-yellow-400">100</span>,</div>
+                            <div className="pl-3">windowMs: <span className="text-yellow-400">60_000</span>,</div>
+                            <div className="pl-3"><span className="text-purple-400">fallback</span>: <span className="text-emerald-300">&apos;allow&apos;</span>, <span className="text-muted-foreground">// Fail-open</span></div>
+                            <div>&#125;)</div>
                         </div>
                     </FeatureBentoCard>
 

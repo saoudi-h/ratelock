@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import {
-    createFixedWindowLimiter as createLocalFixed,
-    createIndividualFixedWindowLimiter as createLocalIndividual,
-    createSlidingWindowLimiter as createLocalSliding,
-    createTokenBucketLimiter as createLocalToken,
+    fixedWindow as createLocalFixed,
+    individualFixedWindow as createLocalIndividual,
+    slidingWindow as createLocalSliding,
+    tokenBucket as createLocalToken,
 } from '@ratelock/local'
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import { join } from 'path'
@@ -225,11 +225,10 @@ async function main() {
         const { default: IORedis } = await import('ioredis')
         const redisClient = new IORedis('redis://:testpassword@localhost:6380')
 
-        const { createFixedWindowLimiter: createRedisFixed } = await import('@ratelock/redis')
-        const { createSlidingWindowLimiter: createRedisSliding } = await import('@ratelock/redis')
-        const { createTokenBucketLimiter: createRedisToken } = await import('@ratelock/redis')
-        const { createIndividualFixedWindowLimiter: createRedisIndividual } =
-            await import('@ratelock/redis')
+        const { fixedWindow: createRedisFixed } = await import('@ratelock/redis')
+        const { slidingWindow: createRedisSliding } = await import('@ratelock/redis')
+        const { tokenBucket: createRedisToken } = await import('@ratelock/redis')
+        const { individualFixedWindow: createRedisIndividual } = await import('@ratelock/redis')
 
         const rf = await createRedisFixed({
             client: redisClient,
@@ -324,11 +323,10 @@ async function main() {
             /* empty */
         }
 
-        const { createFixedWindowLimiter: createPgFixed } = await import('@ratelock/postgres')
-        const { createSlidingWindowLimiter: createPgSliding } = await import('@ratelock/postgres')
-        const { createTokenBucketLimiter: createPgToken } = await import('@ratelock/postgres')
-        const { createIndividualFixedWindowLimiter: createPgIndividual } =
-            await import('@ratelock/postgres')
+        const { fixedWindow: createPgFixed } = await import('@ratelock/postgres')
+        const { slidingWindow: createPgSliding } = await import('@ratelock/postgres')
+        const { tokenBucket: createPgToken } = await import('@ratelock/postgres')
+        const { individualFixedWindow: createPgIndividual } = await import('@ratelock/postgres')
 
         const pf = await createPgFixed({
             pool,
@@ -442,7 +440,7 @@ async function main() {
             const redisClient = createClient({ url: 'redis://:testpassword@localhost:6380' })
             await redisClient.connect()
 
-            const { createFixedWindowLimiter: createRedisFixed } = await import('@ratelock/redis')
+            const { fixedWindow: createRedisFixed } = await import('@ratelock/redis')
             const ratelockRedis = await createRedisFixed({
                 client: redisClient,
                 limit: LIMIT,
@@ -482,7 +480,7 @@ async function main() {
             const { default: pg } = (await import('pg')) as any
             const pool = new pg.Pool({ connectionString: pgUrl, max: CONCURRENCY })
 
-            const { createFixedWindowLimiter: createPgFixed } = await import('@ratelock/postgres')
+            const { fixedWindow: createPgFixed } = await import('@ratelock/postgres')
             const ratelockPg = await createPgFixed({
                 pool,
                 limit: LIMIT,
@@ -544,7 +542,7 @@ async function main() {
 
     // 1. Valkey vs Redis 7
     try {
-        const { createFixedWindowLimiter: createRedisFixed } = await import('@ratelock/redis')
+        const { fixedWindow: createRedisFixed } = await import('@ratelock/redis')
         const { createClient } = await import('redis')
         const { default: IORedis } = await import('ioredis')
 
@@ -612,8 +610,8 @@ async function main() {
 
     // 2. pg vs postgres.js
     try {
-        const { createFixedWindowLimiter: createPgFixed } = await import('@ratelock/postgres')
-        const { createTokenBucketLimiter: createPgToken } = await import('@ratelock/postgres')
+        const { fixedWindow: createPgFixed } = await import('@ratelock/postgres')
+        const { tokenBucket: createPgToken } = await import('@ratelock/postgres')
         const pgUrl = 'postgres://ratelock:ratelock@localhost:5433/ratelock_bench'
 
         // postgres.js

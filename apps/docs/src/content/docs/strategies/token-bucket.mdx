@@ -30,9 +30,9 @@ Tokens: 10 ──→ 9 ──→ 8 ──→ 7 ──→ ... ──→ 0 (denied
 ## Usage
 
 ```typescript
-import { createTokenBucketLimiter } from '@ratelock/local'
+import { tokenBucket } from '@ratelock/local'
 
-const limiter = await createTokenBucketLimiter({
+const limiter = await tokenBucket({
     capacity: 10,    // allow bursts of up to 10
     refillRate: 1,   // 1 token per second
 })

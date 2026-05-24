@@ -1,7 +1,7 @@
 import {
     type CacheConfig,
     type CircuitBreakerConfig,
-    type ErrorPolicy,
+    type FallbackPolicy,
     type FixedWindowOptions,
     type FixedWindowResult,
     type Limiter,
@@ -9,7 +9,7 @@ import {
     validateFixedWindowOptions,
     withCache,
     withCircuitBreaker,
-    withErrorPolicy,
+    withFallback,
     withRetry,
 } from '@ratelock/core'
 import { startAutoCleanup } from './cleanup'
@@ -29,10 +29,10 @@ export type FixedWindowLimiterConfig = FixedWindowOptions & {
     cache?: CacheConfig
     retry?: RetryConfig
     circuitBreaker?: CircuitBreakerConfig
-    errorPolicy?: ErrorPolicy
+    fallback?: FallbackPolicy
 }
 
-export async function createFixedWindowLimiter(
+export async function fixedWindow(
     config: FixedWindowLimiterConfig
 ): Promise<Limiter<FixedWindowResult>> {
     validateFixedWindowOptions(config)
@@ -86,7 +86,7 @@ export async function createFixedWindowLimiter(
     if (config.cache) limiter = withCache(limiter, config.cache)
     if (config.retry) limiter = withRetry(limiter, config.retry)
     if (config.circuitBreaker) limiter = withCircuitBreaker(limiter, config.circuitBreaker)
-    if (config.errorPolicy) limiter = withErrorPolicy(limiter, config.errorPolicy)
+    if (config.fallback) limiter = withFallback(limiter, config.fallback)
 
     return limiter
 }

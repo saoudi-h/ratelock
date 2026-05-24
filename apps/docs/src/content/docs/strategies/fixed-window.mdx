@@ -29,9 +29,9 @@ All identifiers share the same window boundaries. At the start of each window, e
 ## Usage
 
 ```typescript
-import { createFixedWindowLimiter } from '@ratelock/local'
+import { fixedWindow } from '@ratelock/local'
 
-const limiter = await createFixedWindowLimiter({
+const limiter = await fixedWindow({
     limit: 100,
     windowMs: 60_000, // 1 minute
 })

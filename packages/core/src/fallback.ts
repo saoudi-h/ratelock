@@ -1,8 +1,8 @@
-import type { BaseResult, ErrorPolicy, Limiter } from './types'
+import type { BaseResult, FallbackPolicy, Limiter } from './types'
 
-export function withErrorPolicy<T extends BaseResult>(
+export function withFallback<T extends BaseResult>(
     limiter: Limiter<T>,
-    policy: ErrorPolicy
+    policy: FallbackPolicy
 ): Limiter<T> {
     const handle = async (id: string): Promise<T> => {
         try {

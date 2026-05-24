@@ -1,19 +1,18 @@
-export { createFixedWindowLimiter } from './fixed-window'
+export { fixedWindow } from './fixed-window'
 export type { FixedWindowLimiterConfig } from './fixed-window'
 
-export { createSlidingWindowLimiter } from './sliding-window'
+export { slidingWindow } from './sliding-window'
 export type { SlidingWindowLimiterConfig } from './sliding-window'
 
-export { createTokenBucketLimiter } from './token-bucket'
+export { tokenBucket } from './token-bucket'
 export type { TokenBucketLimiterConfig } from './token-bucket'
 
-export { createIndividualFixedWindowLimiter } from './individual-fixed-window'
+export { individualFixedWindow } from './individual-fixed-window'
 export type { IndividualFixedWindowLimiterConfig } from './individual-fixed-window'
 
+export { cleanupExpired } from './cleanup'
 export { createConnection, pgDriver, postgresDriver } from './drivers'
 export type { PgDriver } from './drivers/types'
-
-export { cleanupExpired } from './cleanup'
 export { runMigrations } from './migrations'
 
 export type {
@@ -27,5 +26,5 @@ export type {
     TokenBucketResult,
 } from '@ratelock/core'
 
-export { withCache, withCircuitBreaker, withErrorPolicy, withRetry } from '@ratelock/core'
-export type { CacheConfig, CircuitBreakerConfig, ErrorPolicy, RetryConfig } from '@ratelock/core'
+export { withCache, withCircuitBreaker, withFallback, withRetry } from '@ratelock/core'
+export type { CacheConfig, CircuitBreakerConfig, FallbackPolicy, RetryConfig } from '@ratelock/core'

@@ -1,0 +1,46 @@
+---
+title: withFallback
+description: Define behavior when the rate limiter throws an error.
+---
+
+The `withFallback` policy defines what happens when the underlying rate limiter throws an error (e.g. database or network failure). Choose between failing open (allow), failing closed (deny), or propagating the error.
+
+## Usage
+
+```typescript
+import { fixedWindow, withFallback } from '@ratelock/redis'
+
+const limiter = await fixedWindow({ ... })
+
+// Fail-open: allow requests when the backend is unreachable
+const allowPolicy = withFallback(limiter, { fallback: 'allow' })
+
+// Fail-closed: deny requests when the backend is unreachable
+const denyPolicy = withFallback(limiter, { fallback: 'deny' })
+
+// Propagate the error (default behavior without policy wrapper)
+const throwPolicy = withFallback(limiter, { fallback: 'throw' })
+```
+
+| Policy | Behavior | Use Case |
+|--------|----------|----------|
+| `'allow'` | Returns `{ allowed: true }` on error | Prefer availability over strict rate limiting |
+| `'deny'` | Returns `{ allowed: false }` on error | Prefer safety — better to deny than allow abuse |
+| `'throw'` | Re-throws the error | Let the caller handle the error |
+
+## Built-in Alternative
+
+For most cases, use the built-in `fallback` option at creation time instead:
+
+```typescript
+import { fixedWindow } from '@ratelock/redis'
+
+const limiter = await fixedWindow({
+    url: 'redis://localhost:6379',
+    limit: 100,
+    windowMs: 60_000,
+    fallback: 'allow',
+})
+```
+
+See [Resilience Policies](/docs/policies) for when to use standalone vs built-in.

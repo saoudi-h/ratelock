@@ -14,8 +14,8 @@ interface SimulationControlsProps {
     onViewCode: () => void
     onReset: () => void
     controlsRef?: React.RefObject<HTMLDivElement>
-    autoToggleRef?: React.RefObject<HTMLDivElement>
-    sendButtonRef?: React.RefObject<HTMLButtonElement>
+    autoToggleRef?: React.RefObject<HTMLDivElement | null>
+    sendButtonRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 export function SimulationControls({

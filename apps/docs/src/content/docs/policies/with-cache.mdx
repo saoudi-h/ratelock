@@ -1,16 +1,16 @@
 ---
 title: withCache
-description: Cache denied results to reduce backend load.
+description: Cache denied results in memory to reduce backend load.
 ---
 
-The `withCache` decorator caches **denied** (rate-limited) results so subsequent checks for the same identifier return immediately without hitting the backend.
+The `withCache` policy caches **denied** (rate-limited) results so subsequent checks for the same identifier return immediately without hitting the backend.
 
 ## Usage
 
 ```typescript
-import { withCache } from '@ratelock/redis'
+import { fixedWindow, withCache } from '@ratelock/redis'
 
-const limiter = await createFixedWindowLimiter({ ... })
+const limiter = await fixedWindow({ ... })
 const cached = withCache(limiter, {
     maxSize: 1000,   // max cached entries
     ttlMs: 30_000,   // cache entries expire after 30 seconds
@@ -30,14 +30,16 @@ check('user:123') → return cached denied (no backend call)
 check('user:123') → cache expired → check backend again
 ```
 
-Only denied results are cached. Allowed requests always go through to the backend.
+Only denied results are cached. Allowed requests always go through to the backend to ensure precision.
 
 ## Built-in Alternative
 
 For most cases, use the built-in `cache` option at creation time instead:
 
 ```typescript
-const limiter = await createFixedWindowLimiter({
+import { fixedWindow } from '@ratelock/redis'
+
+const limiter = await fixedWindow({
     url: 'redis://localhost:6379',
     limit: 100,
     windowMs: 60_000,
@@ -45,4 +47,4 @@ const limiter = await createFixedWindowLimiter({
 })
 ```
 
-See [Standalone Decorators](/docs/decorators) for when to use standalone vs built-in.
+See [Resilience Policies](/docs/policies) for when to use standalone vs built-in.

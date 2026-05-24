@@ -1,11 +1,6 @@
 'use client'
 import type { RateLimitResult, StorageConfig, StrategyConfig } from '@/simulation/types'
-import {
-    createFixedWindowLimiter,
-    createIndividualFixedWindowLimiter,
-    createSlidingWindowLimiter,
-    createTokenBucketLimiter,
-} from '@ratelock/local'
+import { fixedWindow, individualFixedWindow, slidingWindow, tokenBucket } from '@ratelock/local'
 import { BackendError, type RateLimitBackend } from './types'
 
 /**
@@ -35,28 +30,28 @@ export class LocalBackend implements RateLimitBackend {
             let factoryResult: any
             switch (strategy.type) {
                 case 'fixed-window':
-                    factoryResult = await createFixedWindowLimiter({
+                    factoryResult = await fixedWindow({
                         limit: strategy.config.limit,
                         windowMs: strategy.config.windowMs,
                         maxSize,
                     })
                     break
                 case 'sliding-window':
-                    factoryResult = await createSlidingWindowLimiter({
+                    factoryResult = await slidingWindow({
                         limit: strategy.config.limit,
                         windowMs: strategy.config.windowMs,
                         maxSize,
                     })
                     break
                 case 'token-bucket':
-                    factoryResult = await createTokenBucketLimiter({
+                    factoryResult = await tokenBucket({
                         capacity: strategy.config.capacity,
                         refillRate: strategy.config.refillRate,
                         maxSize,
                     })
                     break
                 case 'individual-fixed-window':
-                    factoryResult = await createIndividualFixedWindowLimiter({
+                    factoryResult = await individualFixedWindow({
                         limit: strategy.config.limit,
                         windowMs: strategy.config.windowMs,
                         maxSize,

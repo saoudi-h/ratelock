@@ -1,4 +1,0 @@
-{
-    "title": "Advanced",
-    "pages": ["index", "with-cache", "with-retry", "with-circuit-breaker", "with-error-policy"]
-}

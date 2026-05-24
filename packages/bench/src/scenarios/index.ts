@@ -1,9 +1,9 @@
 import type { Limiter } from '@ratelock/core'
 import {
-    createFixedWindowLimiter as createLocalFixed,
-    createIndividualFixedWindowLimiter as createLocalIndividual,
-    createSlidingWindowLimiter as createLocalSliding,
-    createTokenBucketLimiter as createLocalToken,
+    fixedWindow as createLocalFixed,
+    individualFixedWindow as createLocalIndividual,
+    slidingWindow as createLocalSliding,
+    tokenBucket as createLocalToken,
 } from '@ratelock/local'
 import type { ScenarioConfig } from '../types'
 
@@ -54,11 +54,10 @@ async function createRedisChecker(config: ScenarioConfig) {
     const client = mod.createClient({ url })
     await client.connect()
 
-    const { createFixedWindowLimiter: createRedisFixed } = await import('@ratelock/redis')
-    const { createSlidingWindowLimiter: createRedisSliding } = await import('@ratelock/redis')
-    const { createTokenBucketLimiter: createRedisToken } = await import('@ratelock/redis')
-    const { createIndividualFixedWindowLimiter: createRedisIndividual } =
-        await import('@ratelock/redis')
+    const { fixedWindow: createRedisFixed } = await import('@ratelock/redis')
+    const { slidingWindow: createRedisSliding } = await import('@ratelock/redis')
+    const { tokenBucket: createRedisToken } = await import('@ratelock/redis')
+    const { individualFixedWindow: createRedisIndividual } = await import('@ratelock/redis')
 
     const opts = { client, limit: config.limit, windowMs: config.windowMs, cache: config.cache }
     let limiter: Limiter<any>
@@ -94,11 +93,10 @@ async function createPostgresChecker(config: ScenarioConfig) {
     const sql = mod.default(url)
     await sql`SELECT 1`
 
-    const { createFixedWindowLimiter: createPgFixed } = await import('@ratelock/postgres')
-    const { createSlidingWindowLimiter: createPgSliding } = await import('@ratelock/postgres')
-    const { createTokenBucketLimiter: createPgToken } = await import('@ratelock/postgres')
-    const { createIndividualFixedWindowLimiter: createPgIndividual } =
-        await import('@ratelock/postgres')
+    const { fixedWindow: createPgFixed } = await import('@ratelock/postgres')
+    const { slidingWindow: createPgSliding } = await import('@ratelock/postgres')
+    const { tokenBucket: createPgToken } = await import('@ratelock/postgres')
+    const { individualFixedWindow: createPgIndividual } = await import('@ratelock/postgres')
 
     const opts = {
         sql,

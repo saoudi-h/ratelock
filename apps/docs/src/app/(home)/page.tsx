@@ -1,7 +1,7 @@
 import { HeroSection } from './sections/hero-section'
 import { FeaturesSection } from './sections/features-section'
 import { SimulationSection } from './sections/simulation-section'
-import { AdaptersSection } from './sections/adapters-section'
+import { EnginesSection } from './sections/engines-section'
 import { FooterSection } from './sections/footer-section'
 
 export default function HomePage() {
@@ -10,7 +10,7 @@ export default function HomePage() {
             <HeroSection />
             <FeaturesSection />
             <SimulationSection />
-            <AdaptersSection />
+            <EnginesSection />
             <FooterSection />
         </main>
     )

@@ -100,7 +100,7 @@ export function HeroSection() {
                               text-muted-foreground
                               md:text-lg
                             ">
-                                An exceptionally precise TypeScript rate limiting suite. Unified decorators, atomic storage backends, and modular resilience built for high-performance networks.
+                                An exceptionally precise TypeScript rate limiting suite. Unified resilience policies, atomic storage backends, and modular protection built for high-performance networks.
                             </p>
                         </div>
 
@@ -224,7 +224,7 @@ export function HeroSection() {
                     >
                         {[
                             { value: '4', label: 'Limiting Strategies', desc: 'Fixed, Sliding, Token Bucket' },
-                            { value: '3', label: 'Storage Adapters', desc: 'Memory, Redis, PostgreSQL' },
+                            { value: '3', label: 'Storage Engines', desc: 'Memory, Redis, PostgreSQL' },
                             { value: '0', label: 'Local Dependencies', desc: 'Zero runtime bundle bloat' },
                             { value: '100%', label: 'Type-Safe Core', desc: 'Engineered with zero leaks' },
                         ].map((stat, i) => (

@@ -107,4 +107,4 @@ export type CircuitBreakerConfig = {
  * - `'allow'`: Silently allow the request.
  * - `'deny'`: Silently deny the request.
  */
-export type ErrorPolicy = 'throw' | 'allow' | 'deny'
+export type FallbackPolicy = 'throw' | 'allow' | 'deny'

@@ -163,7 +163,7 @@ export async function createConnection(config: {
 
     throw new Error(
         'Provide either a Redis client instance or a connection URL.\n' +
-            '  createFixedWindowLimiter({ client: myRedisClient, ... })\n' +
-            '  createFixedWindowLimiter({ url: "redis://localhost:6379", ... })'
+            '  fixedWindow({ client: myRedisClient, ... })\n' +
+            '  fixedWindow({ url: "redis://localhost:6379", ... })'
     )
 }

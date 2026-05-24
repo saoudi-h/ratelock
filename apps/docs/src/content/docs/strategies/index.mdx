@@ -12,9 +12,9 @@ Counts requests in fixed time windows. Simple and memory-efficient.
 **Best for:** General API rate limiting, when you don't need per-key windows.
 
 ```typescript
-import { createFixedWindowLimiter } from '@ratelock/local'
+import { fixedWindow } from '@ratelock/local'
 
-const limiter = await createFixedWindowLimiter({
+const limiter = await fixedWindow({
     limit: 100,
     windowMs: 60_000, // 100 requests per minute
 })
@@ -27,9 +27,9 @@ Smooths out the boundary problem of fixed windows by tracking individual request
 **Best for:** When you need more accurate rate limiting without burst at window boundaries.
 
 ```typescript
-import { createSlidingWindowLimiter } from '@ratelock/local'
+import { slidingWindow } from '@ratelock/local'
 
-const limiter = await createSlidingWindowLimiter({
+const limiter = await slidingWindow({
     limit: 100,
     windowMs: 60_000,
 })
@@ -42,9 +42,9 @@ Allows bursts up to a capacity, then refills tokens at a steady rate.
 **Best for:** APIs that should allow occasional bursts but maintain a steady average rate.
 
 ```typescript
-import { createTokenBucketLimiter } from '@ratelock/local'
+import { tokenBucket } from '@ratelock/local'
 
-const limiter = await createTokenBucketLimiter({
+const limiter = await tokenBucket({
     capacity: 10,    // max burst size
     refillRate: 1,   // 1 token per second
 })
@@ -57,9 +57,9 @@ Like Fixed Window, but each identifier gets its own independent window that star
 **Best for:** Per-user rate limiting where each user's window should start when they first make a request.
 
 ```typescript
-import { createIndividualFixedWindowLimiter } from '@ratelock/local'
+import { individualFixedWindow } from '@ratelock/local'
 
-const limiter = await createIndividualFixedWindowLimiter({
+const limiter = await individualFixedWindow({
     limit: 10,
     windowMs: 60_000,
 })

@@ -3,9 +3,9 @@ title: Installation
 description: Install RateLock packages for your project.
 ---
 
-RateLock is distributed as multiple npm packages. Install only the adapter you need — each one includes all 4 rate limiting strategies.
+RateLock is distributed as multiple npm packages. Install only the storage engine you need — each one includes all 4 rate limiting strategies.
 
-## Choose an Adapter
+## Choose an Engine
 
 ### In-Memory (zero dependencies)
 
@@ -132,21 +132,21 @@ Or with pg:
   </Tab>
 </Tabs>
 
-That's it. Each adapter includes all 4 strategies and built-in decorator support.
+That's it. Each engine includes all 4 strategies and built-in resilience policies support.
 
-## Using Multiple Adapters
+## Using Multiple Engines
 
-You can use different adapters for different rate limiters in the same app:
+You can use different engines for different rate limiters in the same app:
 
 ```typescript
-import { createFixedWindowLimiter as createLocalLimiter } from '@ratelock/local'
-import { createFixedWindowLimiter as createRedisLimiter } from '@ratelock/redis'
+import { fixedWindow as localFixedWindow } from '@ratelock/local'
+import { fixedWindow as redisFixedWindow } from '@ratelock/redis'
 
-// Local limiter for lightweight checks
-const localLimiter = await createLocalLimiter({ limit: 100, windowMs: 60_000 })
+// Local engine for lightweight, in-memory checks
+const localLimiter = await localFixedWindow({ limit: 100, windowMs: 60_000 })
 
-// Redis limiter for distributed checks
-const redisLimiter = await createRedisLimiter({
+// Redis engine for distributed, highly-available checks
+const redisLimiter = await redisFixedWindow({
     url: 'redis://localhost:6379',
     limit: 1000,
     windowMs: 60_000,

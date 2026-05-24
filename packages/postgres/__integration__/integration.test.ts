@@ -6,12 +6,7 @@ import {
 } from '@ratelock/test-utils'
 import postgres from 'postgres'
 import { afterAll, beforeAll, describe } from 'vitest'
-import {
-    createFixedWindowLimiter,
-    createIndividualFixedWindowLimiter,
-    createSlidingWindowLimiter,
-    createTokenBucketLimiter,
-} from '../src'
+import { fixedWindow, individualFixedWindow, slidingWindow, tokenBucket } from '../src'
 
 const POSTGRES_URL =
     process.env.POSTGRES_URL ?? 'postgres://postgres:testpassword@localhost:5434/ratelock_test'
@@ -29,7 +24,7 @@ describe('@ratelock/postgres - Integration', () => {
 
     describe('FixedWindow', () => {
         fixedWindowContract(async opts => {
-            const limiter = await createFixedWindowLimiter({
+            const limiter = await fixedWindow({
                 ...opts,
                 sql,
                 skipMigrations: false,
@@ -40,7 +35,7 @@ describe('@ratelock/postgres - Integration', () => {
 
     describe('SlidingWindow', () => {
         slidingWindowContract(async opts => {
-            const limiter = await createSlidingWindowLimiter({
+            const limiter = await slidingWindow({
                 ...opts,
                 sql,
                 skipMigrations: false,
@@ -51,7 +46,7 @@ describe('@ratelock/postgres - Integration', () => {
 
     describe('TokenBucket', () => {
         tokenBucketContract(async opts => {
-            const limiter = await createTokenBucketLimiter({
+            const limiter = await tokenBucket({
                 ...opts,
                 sql,
                 skipMigrations: false,
@@ -62,7 +57,7 @@ describe('@ratelock/postgres - Integration', () => {
 
     describe('IndividualFixedWindow', () => {
         individualFixedWindowContract(async opts => {
-            const limiter = await createIndividualFixedWindowLimiter({
+            const limiter = await individualFixedWindow({
                 ...opts,
                 sql,
                 skipMigrations: false,

@@ -1,12 +1,27 @@
-import type { Limiter, SlidingWindowOptions, SlidingWindowResult } from '@ratelock/core'
-import { validateSlidingWindowOptions } from '@ratelock/core'
+import type {
+    CircuitBreakerConfig,
+    FallbackPolicy,
+    Limiter,
+    RetryConfig,
+    SlidingWindowOptions,
+    SlidingWindowResult,
+} from '@ratelock/core'
+import {
+    validateSlidingWindowOptions,
+    withCircuitBreaker,
+    withFallback,
+    withRetry,
+} from '@ratelock/core'
 
 export type SlidingWindowLimiterConfig = SlidingWindowOptions & {
     prefix?: string
     maxSize?: number
+    retry?: RetryConfig
+    circuitBreaker?: CircuitBreakerConfig
+    fallback?: FallbackPolicy
 }
 
-export async function createSlidingWindowLimiter(
+export async function slidingWindow(
     config: SlidingWindowLimiterConfig
 ): Promise<Limiter<SlidingWindowResult>> {
     validateSlidingWindowOptions(config)
@@ -25,7 +40,7 @@ export async function createSlidingWindowLimiter(
         }
     }
 
-    const limiter: Limiter<SlidingWindowResult> = {
+    let limiter: Limiter<SlidingWindowResult> = {
         async check(id: string): Promise<SlidingWindowResult> {
             const key = `${prefix}:${id}`
             const now = Date.now()
@@ -59,6 +74,10 @@ export async function createSlidingWindowLimiter(
             state.clear()
         },
     }
+
+    if (config.retry) limiter = withRetry(limiter, config.retry)
+    if (config.circuitBreaker) limiter = withCircuitBreaker(limiter, config.circuitBreaker)
+    if (config.fallback) limiter = withFallback(limiter, config.fallback)
 
     return limiter
 }

@@ -8,16 +8,16 @@ const codeExamples = [
     {
         package: '@ratelock/local',
         strategy: 'fixedWindow',
-        code: `import { createFixedWindowLimiter } from '@ratelock/local'
+        code: `import { fixedWindow } from '@ratelock/local'
 
-const limiter = createFixedWindowLimiter({
-  max: 100,
+const limiter = await fixedWindow({
+  limit: 100,
   windowMs: 60_000,
 })
 
 const result = await limiter.check('user:123')
 
-if (result.success) {
+if (result.allowed) {
   // Request allowed
   console.log(result.remaining) // 99
 }`,
@@ -25,17 +25,17 @@ if (result.success) {
     {
         package: '@ratelock/redis',
         strategy: 'slidingWindow',
-        code: `import { createSlidingWindowLimiter } from '@ratelock/redis'
+        code: `import { slidingWindow } from '@ratelock/redis'
 
-const limiter = createSlidingWindowLimiter({
-  max: 50,
+const limiter = await slidingWindow({
+  limit: 50,
   windowMs: 30_000,
-  redis: createClient(),
+  url: 'redis://localhost:6379',
 })
 
 const result = await limiter.check('api:endpoint')
 
-if (result.success) {
+if (result.allowed) {
   // Request allowed
   console.log(result.remaining) // 49
 }`,
@@ -43,18 +43,17 @@ if (result.success) {
     {
         package: '@ratelock/postgres',
         strategy: 'tokenBucket',
-        code: `import { createTokenBucketLimiter } from '@ratelock/postgres'
+        code: `import { tokenBucket } from '@ratelock/postgres'
 
-const limiter = createTokenBucketLimiter({
+const limiter = await tokenBucket({
   capacity: 200,
   refillRate: 10,
-  refillInterval: 1_000,
-  db: pool,
+  connectionString: 'postgres://...',
 })
 
 const result = await limiter.check('service:auth')
 
-if (result.success) {
+if (result.allowed) {
   // Request allowed
   console.log(result.remaining) // 199
 }`,

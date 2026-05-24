@@ -29,9 +29,9 @@ Instead of resetting at fixed intervals, the window "slides" with time. Only req
 ## Usage
 
 ```typescript
-import { createSlidingWindowLimiter } from '@ratelock/local'
+import { slidingWindow } from '@ratelock/local'
 
-const limiter = await createSlidingWindowLimiter({
+const limiter = await slidingWindow({
     limit: 100,
     windowMs: 60_000,
 })

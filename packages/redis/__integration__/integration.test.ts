@@ -5,19 +5,14 @@ import {
     tokenBucketContract,
 } from '@ratelock/test-utils'
 import { describe, expect, it } from 'vitest'
-import {
-    createFixedWindowLimiter,
-    createIndividualFixedWindowLimiter,
-    createSlidingWindowLimiter,
-    createTokenBucketLimiter,
-} from '../src'
+import { fixedWindow, individualFixedWindow, slidingWindow, tokenBucket } from '../src'
 
 const REDIS_URL = process.env.REDIS_URL ?? 'redis://:testpassword@localhost:6380'
 
 describe('@ratelock/redis - Integration', () => {
     describe('FixedWindow', () => {
         fixedWindowContract(async opts => {
-            const limiter = await createFixedWindowLimiter({
+            const limiter = await fixedWindow({
                 ...opts,
                 url: REDIS_URL,
             })
@@ -27,7 +22,7 @@ describe('@ratelock/redis - Integration', () => {
 
     describe('SlidingWindow', () => {
         slidingWindowContract(async opts => {
-            const limiter = await createSlidingWindowLimiter({
+            const limiter = await slidingWindow({
                 ...opts,
                 url: REDIS_URL,
             })
@@ -37,7 +32,7 @@ describe('@ratelock/redis - Integration', () => {
 
     describe('TokenBucket', () => {
         tokenBucketContract(async opts => {
-            const limiter = await createTokenBucketLimiter({
+            const limiter = await tokenBucket({
                 ...opts,
                 url: REDIS_URL,
             })
@@ -47,7 +42,7 @@ describe('@ratelock/redis - Integration', () => {
 
     describe('IndividualFixedWindow', () => {
         individualFixedWindowContract(async opts => {
-            const limiter = await createIndividualFixedWindowLimiter({
+            const limiter = await individualFixedWindow({
                 ...opts,
                 url: REDIS_URL,
             })
@@ -58,7 +53,7 @@ describe('@ratelock/redis - Integration', () => {
 
 describe('@ratelock/redis - Connection Management', () => {
     it('creates and destroys a limiter without errors', async () => {
-        const limiter = await createFixedWindowLimiter({
+        const limiter = await fixedWindow({
             url: REDIS_URL,
             limit: 10,
             windowMs: 60_000,
@@ -71,7 +66,7 @@ describe('@ratelock/redis - Connection Management', () => {
         const client = createClient({ url: REDIS_URL })
         await client.connect()
 
-        const limiter = await createFixedWindowLimiter({
+        const limiter = await fixedWindow({
             client,
             limit: 10,
             windowMs: 60_000,

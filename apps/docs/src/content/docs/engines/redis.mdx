@@ -1,9 +1,9 @@
 ---
-title: Redis Adapter
+title: Redis Engine
 description: Distributed rate limiting powered by Redis and atomic Lua scripts.
 ---
 
-The Redis adapter uses Redis sorted sets and Lua scripts for atomic, distributed rate limiting. It supports both `redis` (node-redis) and `ioredis` clients.
+The Redis engine uses Redis sorted sets and Lua scripts for atomic, distributed rate limiting. It supports both `redis` (node-redis) and `ioredis` clients.
 
 ## Installation
 
@@ -18,9 +18,9 @@ npm install @ratelock/redis ioredis
 ### With a Connection URL
 
 ```typescript
-import { createFixedWindowLimiter } from '@ratelock/redis'
+import { fixedWindow } from '@ratelock/redis'
 
-const limiter = await createFixedWindowLimiter({
+const limiter = await fixedWindow({
     url: 'redis://localhost:6379',
     limit: 100,
     windowMs: 60_000,
@@ -31,12 +31,12 @@ const limiter = await createFixedWindowLimiter({
 
 ```typescript
 import { createClient } from 'redis'
-import { createFixedWindowLimiter } from '@ratelock/redis'
+import { fixedWindow } from '@ratelock/redis'
 
 const redisClient = createClient({ url: 'redis://localhost:6379' })
 await redisClient.connect()
 
-const limiter = await createFixedWindowLimiter({
+const limiter = await fixedWindow({
     client: redisClient,
     limit: 100,
     windowMs: 60_000,
@@ -48,61 +48,61 @@ const limiter = await createFixedWindowLimiter({
 
 ```typescript
 import IORedis from 'ioredis'
-import { createFixedWindowLimiter } from '@ratelock/redis'
+import { fixedWindow } from '@ratelock/redis'
 
-const limiter = await createFixedWindowLimiter({
+const limiter = await fixedWindow({
     client: new IORedis('redis://localhost:6379'),
     limit: 100,
     windowMs: 60_000,
 })
 ```
 
-## Built-in Decorators
+## Built-in Resilience Policies
 
-All limiters accept optional decorator configurations at creation time:
+All limiters accept optional resilience configurations at creation time:
 
 ```typescript
-const limiter = await createFixedWindowLimiter({
+const limiter = await fixedWindow({
     url: 'redis://localhost:6379',
     limit: 100,
     windowMs: 60_000,
-    cache: { maxSize: 1000, ttlMs: 30_000 },           // Cache denied results
-    retry: { maxAttempts: 3 },                          // Retry transient failures
+    cache: { maxSize: 1000, ttlMs: 30_000 },           // Cache denied results in memory
+    retry: { maxAttempts: 3 },                          // Retry transient Redis failures
     circuitBreaker: { failureThreshold: 5, recoveryTimeoutMs: 30_000 },
-    errorPolicy: 'allow',                               // Fail-open on error
+    fallback: 'allow',                                  // Fail-open if Redis is down
 })
 ```
 
 | Option | Type | Description |
 |--------|------|-------------|
-| `cache` | `CacheConfig` | Cache denied results to reduce Redis load |
+| `cache` | `CacheConfig` | Cache denied results in memory to reduce Redis load |
 | `retry` | `RetryConfig` | Retry transient failures with exponential backoff |
 | `circuitBreaker` | `CircuitBreakerConfig` | Stop calling Redis after consecutive failures |
-| `errorPolicy` | `'throw' \| 'allow' \| 'deny'` | Behavior when the limiter throws |
+| `fallback` | `'throw' \| 'allow' \| 'deny'` | Behavior when the limiter throws |
 
 ## All Strategies
 
 ```typescript
 import {
-    createFixedWindowLimiter,
-    createSlidingWindowLimiter,
-    createTokenBucketLimiter,
-    createIndividualFixedWindowLimiter,
+    fixedWindow,
+    slidingWindow,
+    tokenBucket,
+    individualFixedWindow,
 } from '@ratelock/redis'
 ```
 
-## Standalone Decorators (Advanced)
+## Standalone Policies (Advanced)
 
-For advanced use cases (conditional decorators, dynamic composition), import standalone decorators directly:
+For advanced use cases (conditional policies, dynamic composition), import standalone wrappers directly:
 
 ```typescript
 import { withCache, withRetry } from '@ratelock/redis'
 
-const limiter = await createFixedWindowLimiter({ url: 'redis://...', limit: 100, windowMs: 60_000 })
+const limiter = await fixedWindow({ url: 'redis://...', limit: 100, windowMs: 60_000 })
 const cached = withCache(limiter, { maxSize: 500, ttlMs: 10_000 })
 ```
 
-See [Standalone Decorators](/docs/decorators) for full documentation and when to use standalone vs built-in.
+See [Resilience Policies](/docs/policies) for full documentation and when to use standalone vs built-in.
 
 ## When to Use
 

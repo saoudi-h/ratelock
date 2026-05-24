@@ -7,7 +7,7 @@ RateLock is a modern rate limiting solution for Node.js applications. Whether yo
 
 ## Why RateLock?
 
-Most rate limiting libraries force you into a one-size-fits-all architecture. RateLock takes a different approach: **each storage adapter is a first-class citizen**, designed to leverage the unique strengths of its backend.
+Most rate limiting libraries force you into a one-size-fits-all architecture. RateLock takes a different approach: **each storage engine is a first-class citizen**, designed to leverage the unique strengths of its backend.
 
 - **Redis** uses Lua scripts for atomicity
 - **PostgreSQL** uses UPSERTs for consistency
@@ -16,8 +16,8 @@ Most rate limiting libraries force you into a one-size-fits-all architecture. Ra
 ## Features
 
 - **4 rate limiting strategies**: Fixed Window, Sliding Window, Token Bucket, Individual Fixed Window
-- **3 storage adapters**: In-Memory, Redis, PostgreSQL
-- **Built-in resilience**: Retry with backoff, circuit breaker, error policies, deny cache
+- **3 storage engines**: In-Memory, Redis, PostgreSQL
+- **Built-in resilience**: Retry with backoff, circuit breaker, fallback policies, deny cache
 - **TypeScript first**: Full type safety, no `any` leaks
 - **Dual driver support**: Redis (node-redis or ioredis), PostgreSQL (pg or porsager/postgres)
 - **Batch operations**: Check multiple identifiers in a single call
@@ -25,9 +25,9 @@ Most rate limiting libraries force you into a one-size-fits-all architecture. Ra
 ## Quick Example
 
 ```typescript
-import { createFixedWindowLimiter } from '@ratelock/local'
+import { fixedWindow } from '@ratelock/local'
 
-const limiter = await createFixedWindowLimiter({
+const limiter = await fixedWindow({
     limit: 100,
     windowMs: 60_000, // 100 requests per minute
 })
@@ -44,5 +44,5 @@ if (!result.allowed) {
 - [Install RateLock](/docs/getting-started/installation)
 - [Quick Start guide](/docs/getting-started/quick-start)
 - Explore [rate limiting strategies](/docs/strategies)
-- Choose an [adapter](/docs/adapters)
-- [Standalone Decorators](/docs/decorators) for advanced use cases
+- Choose a [storage engine](/docs/engines)
+- Read about [resilience policies](/docs/policies)

@@ -2,7 +2,7 @@ export type {
     BaseResult,
     CacheConfig,
     CircuitBreakerConfig,
-    ErrorPolicy,
+    FallbackPolicy,
     FixedWindowOptions,
     FixedWindowResult,
     IndividualFixedWindowOptions,
@@ -16,7 +16,7 @@ export type {
 
 export { withCache } from './cache'
 export { withCircuitBreaker } from './circuit-breaker'
-export { withErrorPolicy } from './error-policy'
+export { withFallback } from './fallback'
 export { withRetry } from './retry'
 export {
     validateFixedWindowOptions,

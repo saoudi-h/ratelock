@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Icon } from '@iconify/react'
 import { MotionCardBentoBase } from '../sections/CardBentoBase'
 
-interface AdapterBentoCardProps {
+interface EngineBentoCardProps {
     name: string
     tagline: string
     bestFor: string
@@ -27,7 +27,7 @@ const itemVariants = {
     }
 }
 
-export function AdapterBentoCard({
+export function EngineBentoCard({
     name,
     tagline,
     bestFor,
@@ -35,7 +35,7 @@ export function AdapterBentoCard({
     icon,
     brandIcon,
     color
-}: AdapterBentoCardProps) {
+}: EngineBentoCardProps) {
     return (
         <MotionCardBentoBase 
             variants={itemVariants} 
@@ -43,7 +43,7 @@ export function AdapterBentoCard({
             transition={{ type: 'spring' as const, stiffness: 300, damping: 20 }} 
             className="">
             <div className="">
-                {/* Adapter Header */}
+                {/* Engine Header */}
                 <div className="flex items-center justify-between">
                     <div className={`
                       flex size-11 items-center justify-center rounded-2xl

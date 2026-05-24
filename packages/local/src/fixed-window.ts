@@ -1,14 +1,29 @@
-import type { FixedWindowOptions, FixedWindowResult, Limiter } from '@ratelock/core'
-import { validateFixedWindowOptions } from '@ratelock/core'
+import type {
+    CircuitBreakerConfig,
+    FallbackPolicy,
+    FixedWindowOptions,
+    FixedWindowResult,
+    Limiter,
+    RetryConfig,
+} from '@ratelock/core'
+import {
+    validateFixedWindowOptions,
+    withCircuitBreaker,
+    withFallback,
+    withRetry,
+} from '@ratelock/core'
 
 type Entry = { count: number; reset: number }
 
 export type FixedWindowLimiterConfig = FixedWindowOptions & {
     prefix?: string
     maxSize?: number
+    retry?: RetryConfig
+    circuitBreaker?: CircuitBreakerConfig
+    fallback?: FallbackPolicy
 }
 
-export async function createFixedWindowLimiter(
+export async function fixedWindow(
     config: FixedWindowLimiterConfig
 ): Promise<Limiter<FixedWindowResult>> {
     validateFixedWindowOptions(config)
@@ -25,7 +40,7 @@ export async function createFixedWindowLimiter(
         }
     }
 
-    const limiter: Limiter<FixedWindowResult> = {
+    let limiter: Limiter<FixedWindowResult> = {
         async check(id: string): Promise<FixedWindowResult> {
             const key = `${prefix}:${id}`
             const now = Date.now()
@@ -60,6 +75,10 @@ export async function createFixedWindowLimiter(
             state.clear()
         },
     }
+
+    if (config.retry) limiter = withRetry(limiter, config.retry)
+    if (config.circuitBreaker) limiter = withCircuitBreaker(limiter, config.circuitBreaker)
+    if (config.fallback) limiter = withFallback(limiter, config.fallback)
 
     return limiter
 }

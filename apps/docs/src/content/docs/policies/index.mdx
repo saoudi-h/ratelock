@@ -1,0 +1,164 @@
+---
+title: Resilience Policies
+description: Add caching, retries, circuit breakers, and fallbacks to your limiters.
+---
+
+> **Note:** Most users should use the [built-in resilience options](/docs/engines) at limiter creation time. Standalone wrappers are for advanced scenarios where you need flexibility beyond the defaults.
+
+## Built-in vs Standalone
+
+RateLock offers two ways to add resilience to a limiter:
+
+### Built-in (recommended)
+
+Applied at creation time, configured directly within the limiter factory:
+
+```typescript
+import { fixedWindow } from '@ratelock/redis'
+
+const limiter = await fixedWindow({
+    url: 'redis://localhost:6379',
+    limit: 100,
+    windowMs: 60_000,
+    cache: { maxSize: 1000, ttlMs: 30_000 },
+    retry: { maxAttempts: 3 },
+    fallback: 'allow',
+})
+```
+
+**Pros:** Simple, configured in one place, no wrapping boilerplate.
+**Cons:** Fixed for the lifetime of the limiter.
+
+### Standalone (advanced)
+
+Wrap an existing limiter at any point in your code to compose policies dynamically:
+
+```typescript
+import { fixedWindow } from '@ratelock/redis'
+import { withCache, withRetry } from '@ratelock/redis'
+
+const limiter = await fixedWindow({ ... })
+const wrapped = withCache(withRetry(limiter, { maxAttempts: 3 }), { maxSize: 500 })
+```
+
+**Pros:** Flexible, can vary by context, full control over composition order.
+**Cons:** More verbose, risk of double-wrapping if combined with built-in options.
+
+## When to Use Standalone
+
+### Conditional Policies by Route
+
+Apply different policies to the same limiter depending on the route:
+
+```typescript
+import { slidingWindow, withCache } from '@ratelock/redis'
+
+const limiter = await slidingWindow({
+    url: 'redis://localhost:6379',
+    limit: 100,
+    windowMs: 60_000,
+})
+
+// Public endpoints: add cache to reduce Redis queries on denied requests
+const publicLimiter = withCache(limiter, { maxSize: 1000, ttlMs: 30_000 })
+
+// Auth endpoints: no cache, always check Redis directly
+const authLimiter = limiter
+```
+
+### Contextual Retry
+
+Retry only for critical, write-heavy operations:
+
+```typescript
+import { fixedWindow, withRetry } from '@ratelock/redis'
+
+const limiter = await fixedWindow({ ... })
+
+// Payment endpoint: retry on transient database or network failures
+const paymentLimiter = withRetry(limiter, { maxAttempts: 3 })
+
+// Health check: no retry, fail fast
+const healthLimiter = limiter
+```
+
+### Testing and Mocking Fallbacks
+
+Simulate backend failures or mock behavior in development/testing:
+
+```typescript
+import { fixedWindow, withFallback } from '@ratelock/redis'
+
+const limiter = await fixedWindow({ ... })
+
+// In tests: fail-open to simulate Redis being down
+const testLimiter = withFallback(limiter, { fallback: 'allow' })
+```
+
+### Dynamic Composition Order
+
+Control the precise order of policy application:
+
+```typescript
+import { fixedWindow, withCache, withRetry } from '@ratelock/redis'
+
+const limiter = await fixedWindow({ ... })
+
+// Cache first, then retry (retry only on cache miss)
+const v1 = withRetry(withCache(limiter, cacheConfig), retryConfig)
+
+// Retry first, then cache (cache the result after retries)
+const v2 = withCache(withRetry(limiter, retryConfig), cacheConfig)
+```
+
+## Available Policies
+
+All resilience policies are re-exported from each engine package:
+
+```typescript
+import { withCache, withRetry, withCircuitBreaker, withFallback } from '@ratelock/local'
+// or @ratelock/redis, @ratelock/postgres
+```
+
+| Policy | Purpose |
+|--------|---------|
+| `withCache` | Cache denied results in memory to reduce database load |
+| `withRetry` | Retry transient failures with exponential backoff |
+| `withCircuitBreaker` | Stop calling a failing backend temporarily to give it time to recover |
+| `withFallback` | Define behavior (allow, deny, throw) when the limiter fails |
+
+## Composition Order
+
+Resilience wrappers are applied from the outside in. The outermost wrapper runs first:
+
+```
+withFallback(             ← catches errors from everything below
+  withCircuitBreaker(     ← stops calling if too many failures
+    withRetry(            ← retries on transient errors
+      withCache(          ← caches denied results
+        limiter           ← the actual rate limiter
+      )
+    )
+  )
+)
+```
+
+**Recommended order:** `withFallback` → `withCircuitBreaker` → `withRetry` → `withCache` → `limiter`
+
+## ⚠️ Don't Stack Built-in and Standalone
+
+If you use built-in policy options at creation time, avoid wrapping the same limiter with a standalone policy of the same type:
+
+```typescript
+// ❌ Don't do this — double caching with different configs
+const limiter = await fixedWindow({
+    url: 'redis://...',
+    cache: { maxSize: 1000, ttlMs: 30_000 },  // built-in cache
+})
+
+const wrapped = withCache(limiter, { maxSize: 500, ttlMs: 10_000 }) // standalone cache on top
+```
+
+**What happens:** Both caches run, resulting in redundant memory lookups and conflicting TTLs. The behavior is predictable (outer cache checks first) but wasteful and confusing.
+
+**Rule:** Choose one approach per policy type — either built-in OR standalone, not both.
