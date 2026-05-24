@@ -1,9 +1,5 @@
 import {
-    type CacheConfig,
-    type CircuitBreakerConfig,
-    type FallbackPolicy,
     type Limiter,
-    type RetryConfig,
     type TokenBucketOptions,
     type TokenBucketResult,
     validateTokenBucketOptions,
@@ -15,22 +11,11 @@ import {
 import { startAutoCleanup } from './cleanup'
 import { createConnection } from './drivers'
 import { runMigrations } from './migrations'
+import type { PostgresLimiterBaseConfig } from './types'
 
 const TABLE = 'ratelock.token_bucket'
 
-export type TokenBucketLimiterConfig = TokenBucketOptions & {
-    sql?: unknown
-    pool?: unknown
-    connectionString?: string
-    driver?: 'postgres' | 'pg'
-    skipMigrations?: boolean
-    unlogged?: boolean
-    prefix?: string
-    cache?: CacheConfig
-    retry?: RetryConfig
-    circuitBreaker?: CircuitBreakerConfig
-    fallback?: FallbackPolicy
-}
+export type TokenBucketLimiterConfig = TokenBucketOptions & PostgresLimiterBaseConfig
 
 export async function tokenBucket(
     config: TokenBucketLimiterConfig

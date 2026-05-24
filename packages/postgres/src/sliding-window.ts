@@ -1,9 +1,5 @@
 import {
-    type CacheConfig,
-    type CircuitBreakerConfig,
-    type FallbackPolicy,
     type Limiter,
-    type RetryConfig,
     type SlidingWindowOptions,
     type SlidingWindowResult,
     validateSlidingWindowOptions,
@@ -15,22 +11,11 @@ import {
 import { startAutoCleanup } from './cleanup'
 import { createConnection } from './drivers'
 import { runMigrations } from './migrations'
+import type { PostgresLimiterBaseConfig } from './types'
 
 const TABLE = 'ratelock.sliding_window'
 
-export type SlidingWindowLimiterConfig = SlidingWindowOptions & {
-    sql?: unknown
-    pool?: unknown
-    connectionString?: string
-    driver?: 'postgres' | 'pg'
-    skipMigrations?: boolean
-    unlogged?: boolean
-    prefix?: string
-    cache?: CacheConfig
-    retry?: RetryConfig
-    circuitBreaker?: CircuitBreakerConfig
-    fallback?: FallbackPolicy
-}
+export type SlidingWindowLimiterConfig = SlidingWindowOptions & PostgresLimiterBaseConfig
 
 export async function slidingWindow(
     config: SlidingWindowLimiterConfig

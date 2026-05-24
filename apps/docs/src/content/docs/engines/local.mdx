@@ -40,12 +40,12 @@ const result = await limiter.check('user:123')
 
 ## Configuration Options
 
-All limiters accept these common options:
+All limiters in the Local engine accept these shared base options:
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `prefix` | `string` | Strategy-specific | Key prefix in the internal store |
-| `maxSize` | `number` | `100000` | Max entries before LRU cleanup triggers |
+<AutoTypeTable
+  path="../../packages/local/src/types.ts"
+  type="LocalLimiterBaseConfig"
+/>
 
 Strategy-specific options are documented in the [Strategies](/docs/strategies) section.
 

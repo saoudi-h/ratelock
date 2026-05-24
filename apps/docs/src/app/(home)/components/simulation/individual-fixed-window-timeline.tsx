@@ -36,7 +36,7 @@ export function IndividualFixedWindowTimeline({
         const windowMap = new Map<number, TimelineWindow>()
 
         for (const event of sortedEvents) {
-            const end = event.result?.reset
+            const end = (event.result as any)?.reset
             if (!end) continue
 
             const start = end - windowMs

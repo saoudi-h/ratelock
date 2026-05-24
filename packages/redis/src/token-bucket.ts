@@ -1,9 +1,5 @@
 import {
-    type CacheConfig,
-    type CircuitBreakerConfig,
-    type FallbackPolicy,
     type Limiter,
-    type RetryConfig,
     type TokenBucketOptions,
     type TokenBucketResult,
     validateTokenBucketOptions,
@@ -13,6 +9,7 @@ import {
     withRetry,
 } from '@ratelock/core'
 import { createConnection } from './client'
+import type { RedisLimiterBaseConfig } from './types'
 
 const LUA = `
   local key = KEYS[1]
@@ -36,16 +33,7 @@ const LUA = `
   return {allowed, math.floor(tokens), time_until_next}
 `
 
-export type TokenBucketLimiterConfig = TokenBucketOptions & {
-    client?: unknown
-    url?: string
-    driver?: 'redis' | 'ioredis'
-    prefix?: string
-    cache?: CacheConfig
-    retry?: RetryConfig
-    circuitBreaker?: CircuitBreakerConfig
-    fallback?: FallbackPolicy
-}
+export type TokenBucketLimiterConfig = TokenBucketOptions & RedisLimiterBaseConfig
 
 export async function tokenBucket(
     config: TokenBucketLimiterConfig

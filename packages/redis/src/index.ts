@@ -12,6 +12,7 @@ export type { IndividualFixedWindowLimiterConfig } from './individual-fixed-wind
 
 export { adaptClient, createConnection } from './client'
 export type { RedisClient } from './client'
+export type { RedisClientLike, RedisLimiterBaseConfig } from './types'
 
 export type {
     FixedWindowOptions,

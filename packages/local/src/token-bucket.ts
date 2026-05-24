@@ -1,27 +1,15 @@
-import type {
-    CircuitBreakerConfig,
-    FallbackPolicy,
-    Limiter,
-    RetryConfig,
-    TokenBucketOptions,
-    TokenBucketResult,
-} from '@ratelock/core'
+import type { Limiter, TokenBucketOptions, TokenBucketResult } from '@ratelock/core'
 import {
     validateTokenBucketOptions,
     withCircuitBreaker,
     withFallback,
     withRetry,
 } from '@ratelock/core'
+import type { LocalLimiterBaseConfig } from './types'
 
 type Bucket = { tokens: number; lastRefill: number }
 
-export type TokenBucketLimiterConfig = TokenBucketOptions & {
-    prefix?: string
-    maxSize?: number
-    retry?: RetryConfig
-    circuitBreaker?: CircuitBreakerConfig
-    fallback?: FallbackPolicy
-}
+export type TokenBucketLimiterConfig = TokenBucketOptions & LocalLimiterBaseConfig
 
 export async function tokenBucket(
     config: TokenBucketLimiterConfig

@@ -1,25 +1,13 @@
-import type {
-    CircuitBreakerConfig,
-    FallbackPolicy,
-    Limiter,
-    RetryConfig,
-    SlidingWindowOptions,
-    SlidingWindowResult,
-} from '@ratelock/core'
+import type { Limiter, SlidingWindowOptions, SlidingWindowResult } from '@ratelock/core'
 import {
     validateSlidingWindowOptions,
     withCircuitBreaker,
     withFallback,
     withRetry,
 } from '@ratelock/core'
+import type { LocalLimiterBaseConfig } from './types'
 
-export type SlidingWindowLimiterConfig = SlidingWindowOptions & {
-    prefix?: string
-    maxSize?: number
-    retry?: RetryConfig
-    circuitBreaker?: CircuitBreakerConfig
-    fallback?: FallbackPolicy
-}
+export type SlidingWindowLimiterConfig = SlidingWindowOptions & LocalLimiterBaseConfig
 
 export async function slidingWindow(
     config: SlidingWindowLimiterConfig

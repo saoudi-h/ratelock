@@ -57,6 +57,15 @@ const limiter = await fixedWindow({
 })
 ```
 
+## Configuration Options
+
+All limiters in the Redis engine accept these shared base options (supporting both `url` and `connectionString` interchangeably):
+
+<AutoTypeTable
+  path="../../packages/redis/src/types.ts"
+  type="RedisLimiterBaseConfig"
+/>
+
 ## Built-in Resilience Policies
 
 All limiters accept optional resilience configurations at creation time:

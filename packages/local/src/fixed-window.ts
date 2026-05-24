@@ -1,27 +1,15 @@
-import type {
-    CircuitBreakerConfig,
-    FallbackPolicy,
-    FixedWindowOptions,
-    FixedWindowResult,
-    Limiter,
-    RetryConfig,
-} from '@ratelock/core'
+import type { FixedWindowOptions, FixedWindowResult, Limiter } from '@ratelock/core'
 import {
     validateFixedWindowOptions,
     withCircuitBreaker,
     withFallback,
     withRetry,
 } from '@ratelock/core'
+import type { LocalLimiterBaseConfig } from './types'
 
 type Entry = { count: number; reset: number }
 
-export type FixedWindowLimiterConfig = FixedWindowOptions & {
-    prefix?: string
-    maxSize?: number
-    retry?: RetryConfig
-    circuitBreaker?: CircuitBreakerConfig
-    fallback?: FallbackPolicy
-}
+export type FixedWindowLimiterConfig = FixedWindowOptions & LocalLimiterBaseConfig
 
 export async function fixedWindow(
     config: FixedWindowLimiterConfig

@@ -10,6 +10,8 @@ export type { TokenBucketLimiterConfig } from './token-bucket'
 export { individualFixedWindow } from './individual-fixed-window'
 export type { IndividualFixedWindowLimiterConfig } from './individual-fixed-window'
 
+export type { LocalLimiterBaseConfig } from './types'
+
 export type {
     FixedWindowOptions,
     FixedWindowResult,

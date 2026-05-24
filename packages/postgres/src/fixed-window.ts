@@ -1,11 +1,7 @@
 import {
-    type CacheConfig,
-    type CircuitBreakerConfig,
-    type FallbackPolicy,
     type FixedWindowOptions,
     type FixedWindowResult,
     type Limiter,
-    type RetryConfig,
     validateFixedWindowOptions,
     withCache,
     withCircuitBreaker,
@@ -15,22 +11,11 @@ import {
 import { startAutoCleanup } from './cleanup'
 import { createConnection } from './drivers'
 import { runMigrations } from './migrations'
+import type { PostgresLimiterBaseConfig } from './types'
 
 const TABLE = 'ratelock.fixed_window'
 
-export type FixedWindowLimiterConfig = FixedWindowOptions & {
-    sql?: unknown
-    pool?: unknown
-    connectionString?: string
-    driver?: 'postgres' | 'pg'
-    skipMigrations?: boolean
-    unlogged?: boolean
-    prefix?: string
-    cache?: CacheConfig
-    retry?: RetryConfig
-    circuitBreaker?: CircuitBreakerConfig
-    fallback?: FallbackPolicy
-}
+export type FixedWindowLimiterConfig = FixedWindowOptions & PostgresLimiterBaseConfig
 
 export async function fixedWindow(
     config: FixedWindowLimiterConfig

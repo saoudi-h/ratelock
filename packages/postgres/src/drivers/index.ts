@@ -1,3 +1,4 @@
+import type { PostgresLimiterBaseConfig } from '../types'
 import { pgDriver } from './pg'
 import { postgresDriver } from './postgres'
 import type { PgDriver } from './types'
@@ -10,12 +11,9 @@ function isPgDriver(obj: unknown): obj is PgDriver {
     return typeof obj === 'object' && obj !== null && 'query' in obj
 }
 
-export async function createConnection(config: {
-    sql?: unknown
-    pool?: unknown
-    connectionString?: string
-    driver?: 'postgres' | 'pg'
-}): Promise<{ driver: PgDriver; end: () => Promise<void> }> {
+export async function createConnection(
+    config: PostgresLimiterBaseConfig
+): Promise<{ driver: PgDriver; end: () => Promise<void> }> {
     if (config.sql) {
         if (isPgDriver(config.sql)) {
             return { driver: config.sql, end: async () => {} }
@@ -33,13 +31,14 @@ export async function createConnection(config: {
         }
     }
 
-    if (config.connectionString) {
+    const pgConnectionString = config.connectionString ?? config.url
+    if (pgConnectionString) {
         const driver = config.driver ?? 'postgres'
         if (driver === 'postgres') {
             try {
                 const mod = await import('postgres')
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                const sql = (mod.default ?? mod)(config.connectionString)
+                const sql = (mod.default ?? mod)(pgConnectionString)
                 return { driver: postgresDriver(sql), end: () => sql.end() }
             } catch {
                 if (config.driver === 'postgres')
@@ -51,7 +50,7 @@ export async function createConnection(config: {
                 const pg = await import('pg')
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 const Pool = (pg.default ?? pg).Pool
-                const pool = new Pool({ connectionString: config.connectionString })
+                const pool = new Pool({ connectionString: pgConnectionString })
                 return { driver: pgDriver(pool), end: () => pool.end() }
             } catch {
                 if (config.driver === 'pg') throw new Error('pg package not found')

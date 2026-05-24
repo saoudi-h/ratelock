@@ -1,3 +1,5 @@
+import type { RedisLimiterBaseConfig } from './types'
+
 export interface RedisClient {
     eval(script: string, keys: string[], args: string[]): Promise<unknown>
     get(key: string): Promise<string | null>
@@ -144,11 +146,9 @@ export function adaptClient(raw: unknown): RedisClient {
     }
 }
 
-export async function createConnection(config: {
-    client?: unknown
-    url?: string
-    driver?: 'redis' | 'ioredis'
-}): Promise<{ client: RedisClient; disconnect: () => Promise<void> }> {
+export async function createConnection(
+    config: RedisLimiterBaseConfig
+): Promise<{ client: RedisClient; disconnect: () => Promise<void> }> {
     if (config.client) {
         return {
             client: adaptClient(config.client),
@@ -156,8 +156,9 @@ export async function createConnection(config: {
         }
     }
 
-    if (config.url) {
-        const raw = await loadFromUrl(config.url, config.driver)
+    const redisUrl = config.url ?? config.connectionString
+    if (redisUrl) {
+        const raw = await loadFromUrl(redisUrl, config.driver)
         return { client: adaptClient(raw.client), disconnect: raw.disconnect }
     }
 

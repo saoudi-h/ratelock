@@ -1,9 +1,5 @@
 import {
-    type CacheConfig,
-    type CircuitBreakerConfig,
-    type FallbackPolicy,
     type Limiter,
-    type RetryConfig,
     type SlidingWindowOptions,
     type SlidingWindowResult,
     validateSlidingWindowOptions,
@@ -13,6 +9,7 @@ import {
     withRetry,
 } from '@ratelock/core'
 import { createConnection } from './client'
+import type { RedisLimiterBaseConfig } from './types'
 
 const LUA = `
   local key = KEYS[1]
@@ -35,16 +32,7 @@ const LUA = `
   return {allowed, current + (allowed == 1 and 1 or 0), remaining, ttl, oldest_ts}
 `
 
-export type SlidingWindowLimiterConfig = SlidingWindowOptions & {
-    client?: unknown
-    url?: string
-    driver?: 'redis' | 'ioredis'
-    prefix?: string
-    cache?: CacheConfig
-    retry?: RetryConfig
-    circuitBreaker?: CircuitBreakerConfig
-    fallback?: FallbackPolicy
-}
+export type SlidingWindowLimiterConfig = SlidingWindowOptions & RedisLimiterBaseConfig
 
 export async function slidingWindow(
     config: SlidingWindowLimiterConfig

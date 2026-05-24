@@ -1,11 +1,7 @@
 import {
-    type CacheConfig,
-    type CircuitBreakerConfig,
-    type FallbackPolicy,
     type FixedWindowOptions,
     type FixedWindowResult,
     type Limiter,
-    type RetryConfig,
     validateFixedWindowOptions,
     withCache,
     withCircuitBreaker,
@@ -13,6 +9,7 @@ import {
     withRetry,
 } from '@ratelock/core'
 import { createConnection } from './client'
+import type { RedisLimiterBaseConfig } from './types'
 
 const LUA = `
   local key = KEYS[1]
@@ -31,16 +28,7 @@ const LUA = `
   return {allowed, current, remaining, ttl}
 `
 
-export type FixedWindowLimiterConfig = FixedWindowOptions & {
-    client?: unknown
-    url?: string
-    driver?: 'redis' | 'ioredis'
-    prefix?: string
-    cache?: CacheConfig
-    retry?: RetryConfig
-    circuitBreaker?: CircuitBreakerConfig
-    fallback?: FallbackPolicy
-}
+export type FixedWindowLimiterConfig = FixedWindowOptions & RedisLimiterBaseConfig
 
 export async function fixedWindow(
     config: FixedWindowLimiterConfig

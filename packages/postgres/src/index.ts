@@ -14,6 +14,7 @@ export { cleanupExpired } from './cleanup'
 export { createConnection, pgDriver, postgresDriver } from './drivers'
 export type { PgDriver } from './drivers/types'
 export { runMigrations } from './migrations'
+export type { PgPoolLike, PostgresLimiterBaseConfig, PostgresSqlLike } from './types'
 
 export type {
     FixedWindowOptions,
