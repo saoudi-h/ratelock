@@ -10,6 +10,20 @@ export class MockRedisClient implements RedisClientLike {
     private store = new Map<string, Row>()
     private zsets = new Map<string, ZSet>()
     private hashes = new Map<string, Hash>()
+    private scripts = new Map<string, string>()
+
+    scriptLoad(script: string): string {
+        const hash = 'mocksha1' + Math.random().toString(36).substring(7)
+        this.scripts.set(hash, script)
+        return hash
+    }
+
+    async evalSha(sha1: string, options: { keys: string[]; arguments: string[] }): Promise<unknown> {
+        if (!this.scripts.has(sha1)) {
+            throw new Error('NOSCRIPT No matching script. Please use EVAL.')
+        }
+        return this.eval(this.scripts.get(sha1)!, options)
+    }
 
     private cleanExpired(now: number) {
         for (const [key, val] of this.store.entries()) {
@@ -38,7 +52,7 @@ export class MockRedisClient implements RedisClientLike {
             const key = keys[0]!
             const windowMs = parseInt(args[0]!, 10)
             const limit = parseInt(args[1]!, 10)
-            const now = parseInt(args[2]!, 10)
+            const now = Date.now()
 
             this.cleanExpired(now)
 
@@ -56,7 +70,7 @@ export class MockRedisClient implements RedisClientLike {
             const allowed = current <= limit ? 1 : 0
             const remaining = Math.max(0, limit - current)
 
-            return [allowed, current, remaining, ttl]
+            return [allowed, current, remaining, ttl, now]
         }
 
         // 2. Sliding Window script
@@ -64,8 +78,8 @@ export class MockRedisClient implements RedisClientLike {
             const key = keys[0]!
             const windowMs = parseInt(args[0]!, 10)
             const limit = parseInt(args[1]!, 10)
-            const now = parseInt(args[2]!, 10)
-            const uid = args[3]!
+            const uid = args[2]!
+            const now = Date.now()
 
             this.cleanExpired(now)
 
@@ -88,7 +102,7 @@ export class MockRedisClient implements RedisClientLike {
             const ttl = zset.expiresAt - now
             const oldestTs = zset.elements.length > 0 ? zset.elements[0]!.score : now - windowMs
 
-            return [allowed, current + (allowed === 1 ? 1 : 0), remaining, ttl, oldestTs]
+            return [allowed, current + (allowed === 1 ? 1 : 0), remaining, ttl, oldestTs, now]
         }
 
         // 3. Token Bucket script
@@ -96,7 +110,7 @@ export class MockRedisClient implements RedisClientLike {
             const key = keys[0]!
             const capacity = parseInt(args[0]!, 10)
             const refillRate = parseInt(args[1]!, 10)
-            const now = parseInt(args[2]!, 10)
+            const now = Date.now()
 
             this.cleanExpired(now)
 
@@ -141,7 +155,7 @@ export class MockRedisClient implements RedisClientLike {
             const countKey = keys[1]!
             const windowMs = parseInt(args[0]!, 10)
             const limit = parseInt(args[1]!, 10)
-            const now = parseInt(args[2]!, 10)
+            const now = Date.now()
 
             this.cleanExpired(now)
 
@@ -258,10 +272,20 @@ export class MockRedisClient implements RedisClientLike {
             del: (...keys: string[]): void => {
                 ops.push(() => this.del(...keys))
             },
+            evalSha: (sha1: string, options: { keys: string[]; arguments: string[] }): void => {
+                ops.push(() => this.evalSha(sha1, options))
+            },
+            eval: (script: string, options: { keys: string[]; arguments: string[] }): void => {
+                ops.push(() => this.eval(script, options))
+            },
             exec: async (): Promise<unknown[]> => {
                 const results: unknown[] = []
                 for (const op of ops) {
-                    results.push(await op())
+                    try {
+                        results.push(await op())
+                    } catch (e) {
+                        results.push(e)
+                    }
                 }
                 return results
             },

@@ -2,6 +2,8 @@ import type { RedisLimiterBaseConfig } from './types'
 
 export interface RedisClient {
     eval(script: string, keys: string[], args: string[]): Promise<unknown>
+    evalsha(sha1: string, keys: string[], args: string[]): Promise<unknown>
+    loadScript(script: string): Promise<string>
     get(key: string): Promise<string | null>
     set(key: string, value: string, ttlMs: number): Promise<void>
     del(...keys: string[]): Promise<number>
@@ -10,6 +12,11 @@ export interface RedisClient {
         get(key: string): void
         set(key: string, value: string, ttlMs: number): void
         del(...keys: string[]): void
+        exec(): Promise<unknown[]>
+    }
+    pipeline(): {
+        evalsha(sha1: string, keys: string[], args: string[]): void
+        eval(script: string, keys: string[], args: string[]): void
         exec(): Promise<unknown[]>
     }
 }
@@ -79,6 +86,23 @@ export function adaptClient(raw: unknown): RedisClient {
             return client.eval(script, keys.length, ...keys, ...args)
         },
 
+        async evalsha(sha1, keys, args): Promise<unknown> {
+            if (driver === 'redis') {
+                const client = raw as any
+                return client.evalSha(sha1, { keys, arguments: args })
+            }
+            const client = raw as any
+            return client.evalsha(sha1, keys.length, ...keys, ...args)
+        },
+
+        async loadScript(script: string): Promise<string> {
+            const client = raw as any
+            if (driver === 'redis') {
+                return client.scriptLoad(script)
+            }
+            return client.script('load', script)
+        },
+
         async get(key: string): Promise<string | null> {
             const client = raw as any
             return client.get(key)
@@ -94,6 +118,7 @@ export function adaptClient(raw: unknown): RedisClient {
         },
 
         async del(...keys: string[]): Promise<number> {
+            if (keys.length === 0) return 0
             const client = raw as any
             return client.del(keys)
         },
@@ -121,25 +146,53 @@ export function adaptClient(raw: unknown): RedisClient {
                     }
                 },
                 del(...keys: string[]) {
-                    if (driver === 'redis') {
-                        m.del(keys)
-                    } else {
-                        m.del(keys)
-                    }
+                    if (keys.length === 0) return
+                    m.del(keys)
                 },
                 async exec(): Promise<unknown[]> {
                     const results = await m.exec()
                     if (!results) return []
-                    if (driver === 'ioredis') {
-                        return results.map((r: any) => {
-                            if (Array.isArray(r)) {
-                                if (r[0]) throw r[0]
-                                return r[1]
-                            }
-                            return r
-                        })
+                    const mapped = driver === 'ioredis' 
+                        ? results.map((r: any) => (Array.isArray(r) ? (r[0] ? r[0] : r[1]) : r))
+                        : results
+
+                    for (const r of mapped) {
+                        if (r instanceof Error) throw r
                     }
-                    return results
+                    return mapped
+                },
+            }
+        },
+
+        pipeline(): any {
+            const client = raw as any
+            const p = driver === 'ioredis' ? client.pipeline() : client.multi()
+            return {
+                evalsha(sha1: string, keys: string[], args: string[]) {
+                    if (driver === 'redis') {
+                        p.evalSha(sha1, { keys, arguments: args })
+                    } else {
+                        p.evalsha(sha1, keys.length, ...keys, ...args)
+                    }
+                },
+                eval(script: string, keys: string[], args: string[]) {
+                    if (driver === 'redis') {
+                        p.eval(script, { keys, arguments: args })
+                    } else {
+                        p.eval(script, keys.length, ...keys, ...args)
+                    }
+                },
+                async exec(): Promise<unknown[]> {
+                    const results = await p.exec()
+                    if (!results) return []
+                    const mapped = driver === 'ioredis' 
+                        ? results.map((r: any) => (Array.isArray(r) ? (r[0] ? r[0] : r[1]) : r))
+                        : results
+
+                    for (const r of mapped) {
+                        if (r instanceof Error) throw r
+                    }
+                    return mapped
                 },
             }
         },
