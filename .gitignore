@@ -43,3 +43,7 @@ packages/bench/results/*.json
 
 # Husky
 .husky
+
+# Temporary Session Files
+conclusions.md
+tmp/
