@@ -18,6 +18,10 @@ export class MockPgDriver implements PgDriver {
         if (normalized.includes('CREATE TABLE')) return [] as T[]
         if (normalized.includes('CREATE INDEX')) return [] as T[]
 
+        if (normalized.includes('WITH input AS')) {
+            return this.handleBatchUpsert(normalized, params ?? []) as T[]
+        }
+
         if (normalized.includes('INSERT INTO') && normalized.includes('ON CONFLICT')) {
             return this.handleUpsert(normalized, params ?? []) as T[]
         }
@@ -63,6 +67,52 @@ export class MockPgDriver implements PgDriver {
         return []
     }
 
+    private handleBatchUpsert(sql: string, params: unknown[]): Row[] {
+        const keys = params[0] as string[]
+        
+        if (sql.includes('individual_fixed_window')) {
+            const intervalStr = params[1] as string
+            const windowMs =
+                typeof intervalStr === 'string' ? parseInt(intervalStr.split(' ')[0]!, 10) : 60000
+            return keys.flatMap(key => {
+                const res = this.individualFixedWindowUpsert(key, windowMs)
+                return res.map(r => ({ ...r, key }))
+            })
+        }
+        if (sql.includes('fixed_window')) {
+            const intervalVal = params[1]
+            const windowMs =
+                typeof intervalVal === 'number'
+                    ? intervalVal
+                    : typeof intervalVal === 'string'
+                      ? parseInt(intervalVal.split(' ')[0]!, 10)
+                      : 60000
+            return keys.flatMap(key => {
+                const res = this.fixedWindowUpsert(key, windowMs)
+                return res.map(r => ({ ...r, key }))
+            })
+        }
+        if (sql.includes('sliding_window')) {
+            const intervalStr = params[1] as string
+            const windowMs =
+                typeof intervalStr === 'string' ? parseInt(intervalStr.split(' ')[0]!, 10) : 60000
+            return keys.flatMap(key => {
+                const res = this.slidingWindowUpsert(key, windowMs)
+                return res.map(r => ({ ...r, key }))
+            })
+        }
+        if (sql.includes('token_bucket')) {
+            const capacity = params[2] as number
+            const refillRate = params[3] as number
+            return keys.flatMap(key => {
+                const res = this.tokenBucketUpsert(key, capacity, refillRate)
+                return res.map(r => ({ ...r, key }))
+            })
+        }
+        
+        return []
+    }
+
     private handleUpsert(sql: string, params: unknown[]): Row[] {
         const key = params[0] as string
 
@@ -89,8 +139,8 @@ export class MockPgDriver implements PgDriver {
             return this.slidingWindowUpsert(key, windowMs)
         }
         if (sql.includes('token_bucket')) {
-            const capacity = params[1] as number
-            const refillRate = params[2] as number
+            const capacity = params[2] as number
+            const refillRate = params[3] as number
             return this.tokenBucketUpsert(key, capacity, refillRate)
         }
 
@@ -163,12 +213,12 @@ export class MockPgDriver implements PgDriver {
         if (!existing) {
             // Step 2: INSERT
             table.set(key, {
-                tokens: capacity,
+                tokens: capacity - 1, // Fix: subtract 1 immediately since it was consumed
                 last_refill: now,
                 capacity,
                 refill_rate: refillRate,
             })
-            return [this.tokenBucketConsume(key)]
+            return [{ tokens: capacity - 1, capacity, refill_rate: refillRate, last_refill: now, allowed: true }]
         }
 
         // Step 1: UPDATE (conditional consumption)
@@ -176,11 +226,12 @@ export class MockPgDriver implements PgDriver {
         const refilled = (existing.tokens as number) + elapsed * (existing.refill_rate as number)
 
         if (refilled >= 1) {
-            return [this.tokenBucketConsume(key)]
+            const consumed = this.tokenBucketConsume(key)
+            return [{ ...consumed, capacity, refill_rate: refillRate, last_refill: table.get(key)!.last_refill, allowed: true }]
         }
 
         // Step 3: no tokens available
-        return []
+        return [{ tokens: refilled, capacity, refill_rate: refillRate, last_refill: existing.last_refill, allowed: false }]
     }
 
     private tokenBucketConsume(key: string): Row {

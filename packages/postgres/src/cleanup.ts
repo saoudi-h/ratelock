@@ -18,8 +18,8 @@ export async function cleanupExpired(driver: PgDriver): Promise<number> {
     let total = 0
     for (const { table, column } of TABLES) {
         try {
-            const rows = await driver.query<{ key: string }>(
-                `DELETE FROM ${table} WHERE ${column} < NOW() - INTERVAL '1 hour' RETURNING key`
+            const rows = await driver.query(
+                `DELETE FROM ${table} WHERE ${column} < NOW() - INTERVAL '1 hour' RETURNING 1`
             )
             total += rows.length
         } catch {
