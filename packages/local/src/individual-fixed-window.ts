@@ -20,12 +20,26 @@ export async function individualFixedWindow(
     const state = new Map<string, Entry>()
     let ops = 0
 
+    let sweepIterator = state.keys()
+
     const sweep = () => {
         const now = Date.now()
         let scanned = 0
-        for (const [key, entry] of state) {
-            if (now >= entry.start + windowMs) state.delete(key)
-            if (++scanned >= 100) break
+        while (scanned < 100 && state.size > 0) {
+            let next = sweepIterator.next()
+            if (next.done) {
+                sweepIterator = state.keys()
+                next = sweepIterator.next()
+                if (next.done) break
+            }
+            const key = next.value
+            const entry = state.get(key)
+            if (entry && now >= entry.start + windowMs) state.delete(key)
+            scanned++
+        }
+        if (state.size > maxSize) {
+            const first = state.keys().next().value
+            if (first) state.delete(first)
         }
     }
 
@@ -38,7 +52,7 @@ export async function individualFixedWindow(
             if (!entry || now >= entry.start + windowMs) {
                 entry = { count: 1, start: now }
                 state.set(key, entry)
-                if (++ops % 1000 === 0 && state.size > maxSize) sweep()
+                if (++ops % 100 === 0) sweep()
                 return {
                     allowed: true,
                     remaining: limit - 1,

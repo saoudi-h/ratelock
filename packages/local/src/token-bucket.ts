@@ -19,14 +19,30 @@ export async function tokenBucket(
     const state = new Map<string, Bucket>()
     let ops = 0
 
+    let sweepIterator = state.keys()
+
     const sweep = () => {
         const now = Date.now()
         let scanned = 0
-        for (const [key, bucket] of state) {
-            const elapsed = (now - bucket.lastRefill) / 1000
-            const tokens = Math.min(capacity, bucket.tokens + elapsed * refillRate)
-            if (tokens >= capacity) state.delete(key)
-            if (++scanned >= 100) break
+        while (scanned < 100 && state.size > 0) {
+            let next = sweepIterator.next()
+            if (next.done) {
+                sweepIterator = state.keys()
+                next = sweepIterator.next()
+                if (next.done) break
+            }
+            const key = next.value
+            const bucket = state.get(key)
+            if (bucket) {
+                const elapsed = (now - bucket.lastRefill) / 1000
+                const tokens = Math.min(capacity, bucket.tokens + elapsed * refillRate)
+                if (tokens >= capacity) state.delete(key)
+            }
+            scanned++
+        }
+        if (state.size > maxSize) {
+            const first = state.keys().next().value
+            if (first) state.delete(first)
         }
     }
 
@@ -39,7 +55,7 @@ export async function tokenBucket(
             if (!bucket) {
                 bucket = { tokens: capacity - 1, lastRefill: now }
                 state.set(key, bucket)
-                if (++ops % 1000 === 0 && state.size > maxSize) sweep()
+                if (++ops % 100 === 0) sweep()
                 return {
                     allowed: true,
                     remaining: capacity - 1,

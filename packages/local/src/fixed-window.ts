@@ -19,12 +19,26 @@ export async function fixedWindow(
     const state = new Map<string, Entry>()
     let ops = 0
 
+    let sweepIterator = state.keys()
+
     const sweep = () => {
         const now = Date.now()
         let scanned = 0
-        for (const [key, entry] of state) {
-            if (now >= entry.reset) state.delete(key)
-            if (++scanned >= 100) break
+        while (scanned < 100 && state.size > 0) {
+            let next = sweepIterator.next()
+            if (next.done) {
+                sweepIterator = state.keys()
+                next = sweepIterator.next()
+                if (next.done) break
+            }
+            const key = next.value
+            const entry = state.get(key)
+            if (entry && now >= entry.reset) state.delete(key)
+            scanned++
+        }
+        if (state.size > maxSize) {
+            const first = state.keys().next().value
+            if (first) state.delete(first)
         }
     }
 
@@ -39,7 +53,7 @@ export async function fixedWindow(
 
             if (!entry || now >= entry.reset) {
                 state.set(key, { count: 1, reset })
-                if (++ops % 1000 === 0 && state.size > maxSize) sweep()
+                if (++ops % 100 === 0) sweep()
                 return { allowed: true, remaining: limit - 1, reset }
             }
 

@@ -17,14 +17,30 @@ export async function slidingWindow(
     const state = new Map<string, number[]>()
     let ops = 0
 
+    let sweepIterator = state.keys()
+
     const sweep = () => {
         const cutoff = Date.now() - windowMs
         let scanned = 0
-        for (const [key, timestamps] of state) {
-            const filtered = timestamps.filter(ts => ts > cutoff)
-            if (filtered.length === 0) state.delete(key)
-            else state.set(key, filtered)
-            if (++scanned >= 100) break
+        while (scanned < 100 && state.size > 0) {
+            let next = sweepIterator.next()
+            if (next.done) {
+                sweepIterator = state.keys()
+                next = sweepIterator.next()
+                if (next.done) break
+            }
+            const key = next.value
+            const timestamps = state.get(key)
+            if (timestamps) {
+                const filtered = timestamps.filter(ts => ts > cutoff)
+                if (filtered.length === 0) state.delete(key)
+                else state.set(key, filtered)
+            }
+            scanned++
+        }
+        if (state.size > maxSize) {
+            const first = state.keys().next().value
+            if (first) state.delete(first)
         }
     }
 
@@ -42,9 +58,9 @@ export async function slidingWindow(
 
             state.set(key, timestamps)
 
-            if (++ops % 1000 === 0 && state.size > maxSize) sweep()
+            if (++ops % 100 === 0) sweep()
 
-            const oldest = timestamps.length > 0 ? Math.min(...timestamps) : now
+            const oldest = timestamps.length > 0 ? timestamps[0]! : now
 
             return {
                 allowed,
