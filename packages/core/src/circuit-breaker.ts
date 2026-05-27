@@ -1,7 +1,19 @@
 import type { CircuitBreakerConfig, Limiter } from './types'
-
+import { CircuitBreakerOpenError } from './errors'
 type CircuitState = 'closed' | 'open' | 'half-open'
 
+/**
+ * Decorates a rate limiter with a Circuit Breaker resilience policy.
+ * 
+ * **State Machine Behavior:**
+ * - `closed`: Requests are forwarded directly. Consecutive downstream database/network failures increment a counter.
+ * - `open`: Tripped when failure threshold is exceeded. Instantly rejects requests with a `CircuitBreakerOpenError` to avoid cascading failures.
+ * - `half-open`: Automatically entered after a `recoveryTimeoutMs` cooldown. A single successful probe transitions state back to `closed`, while any failure trips it back to `open`.
+ * 
+ * @param limiter The downstream RateLimiter engine to protect.
+ * @param config Settings specifying the failure threshold and recovery timeout.
+ * @returns A protected RateLimiter engine with Circuit Breaker policy.
+ */
 export function withCircuitBreaker<T>(
     limiter: Limiter<T>,
     config: CircuitBreakerConfig
@@ -9,33 +21,29 @@ export function withCircuitBreaker<T>(
     let state: CircuitState = 'closed'
     let failureCount = 0
     let lastFailureTime = 0
-    let lastError: unknown = undefined
-    let isProbing = false
 
     const tryTransition = (): void => {
         if (state === 'open') {
-            if (Date.now() - lastFailureTime >= config.recoveryTimeoutMs && !isProbing) {
+            if (Date.now() - lastFailureTime >= config.recoveryTimeoutMs) {
                 state = 'half-open'
-                isProbing = true
             } else {
-                throw new Error('Circuit breaker is open', { cause: lastError })
+                throw new CircuitBreakerOpenError()
             }
+        } else if (state === 'half-open') {
+            throw new CircuitBreakerOpenError()
         }
     }
 
     const onSuccess = (): void => {
+        failureCount = 0
         if (state === 'half-open') {
             state = 'closed'
-            failureCount = 0
-            isProbing = false
         }
     }
 
-    const onFailure = (err: unknown): void => {
+    const onFailure = (): void => {
         failureCount++
         lastFailureTime = Date.now()
-        lastError = err
-        isProbing = false
         if (failureCount >= config.failureThreshold) {
             state = 'open'
         }
@@ -48,7 +56,7 @@ export function withCircuitBreaker<T>(
             onSuccess()
             return result
         } catch (err) {
-            onFailure(err)
+            onFailure()
             throw err
         }
     }
@@ -60,7 +68,7 @@ export function withCircuitBreaker<T>(
             onSuccess()
             return result
         } catch (err) {
-            onFailure(err)
+            onFailure()
             throw err
         }
     }

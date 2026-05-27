@@ -23,3 +23,4 @@ export {
     validateSlidingWindowOptions,
     validateTokenBucketOptions,
 } from './validate'
+export { RatelockError, CircuitBreakerOpenError } from './errors'

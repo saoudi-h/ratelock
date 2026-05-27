@@ -8,6 +8,18 @@ function isDeniedResult(value: unknown): value is BaseResult & { allowed: false 
     )
 }
 
+/**
+ * Wrap a rate limiter with a local in-memory cache decorator.
+ * 
+ * **DDoS Shield Architecture:**
+ * - Caches ONLY blocked/denied results (`allowed: false`) for `ttlMs` (e.g., 100ms or 1s).
+ * - Instantaneously intercepts subsequent spam/DDoS requests in-memory without hitting downstream databases.
+ * - Does NOT cache allowed results (`allowed: true`) to ensure rate counts increment accurately.
+ * 
+ * @param limiter The downstream RateLimiter engine to decorate.
+ * @param config Optional cache settings specifying `ttlMs` and `maxSize`.
+ * @returns An decorated RateLimiter engine with memory caching.
+ */
 export function withCache<T>(limiter: Limiter<T>, config?: CacheConfig): Limiter<T> {
     if (!config) return limiter
 
@@ -24,7 +36,7 @@ export function withCache<T>(limiter: Limiter<T>, config?: CacheConfig): Limiter
     }
 
     const set = (id: string, value: T) => {
-        if (cache.size >= config.maxSize) {
+        if (!cache.has(id) && cache.size >= config.maxSize) {
             const first = cache.keys().next().value
             if (first) cache.delete(first)
         }
