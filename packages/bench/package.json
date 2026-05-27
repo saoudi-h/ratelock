@@ -5,6 +5,7 @@
     "scripts": {
         "bench:local": "tsx src/index.ts",
         "bench:full": "tsx src/run-benchmarks.ts",
+        "bench:fair": "taskset -c 0 tsx src/run-benchmarks.ts",
         "bench": "tsx src/index.ts",
         "lint": "eslint . --max-warnings 0",
         "lint:fix": "eslint . --max-warnings 0 --fix",

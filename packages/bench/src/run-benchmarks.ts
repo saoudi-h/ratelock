@@ -5,6 +5,7 @@ import {
     slidingWindow as createLocalSliding,
     tokenBucket as createLocalToken,
 } from '@ratelock/local'
+import { withCache, withCircuitBreaker, withFallback, withRetry } from '@ratelock/core'
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { performance } from 'perf_hooks'
@@ -14,6 +15,7 @@ const DURATION_MS = parseInt(process.env.BENCH_DURATION ?? '2000', 10)
 const CONCURRENCY = parseInt(process.env.BENCH_CONCURRENCY ?? '15', 10)
 const LIMIT = 1000
 const WINDOW_MS = 60000
+const LATENCY_MS = parseInt(process.env.BENCH_LATENCY_MS ?? '0', 10)
 const OUT_DIR = join(process.cwd(), 'results')
 
 // Interface definitions
@@ -72,8 +74,22 @@ async function runHarness(
                 )
             }
 
+            const isLocal =
+                name.toLowerCase().includes('local') ||
+                name.toLowerCase().includes('memory') ||
+                name.toLowerCase().includes('raw') ||
+                name.toLowerCase().includes('cache') ||
+                name.toLowerCase().includes('fallback') ||
+                name.toLowerCase().includes('retry') ||
+                name.toLowerCase().includes('circuitbreaker') ||
+                name.toLowerCase().includes('decorator')
+            const shouldApplyLatency = !isLocal && LATENCY_MS > 0
+
             const t0 = performance.now()
             try {
+                if (shouldApplyLatency) {
+                    await new Promise(r => setTimeout(r, LATENCY_MS))
+                }
                 const res = await checkFn(idOrIds)
                 const elapsed = performance.now() - t0
                 latencies.push(elapsed)
@@ -152,6 +168,7 @@ async function main() {
     console.log(`  Concurrency: ${CONCURRENCY} workers`)
     console.log(`  Limit:       ${LIMIT} requests per window`)
     console.log(`  Window:      ${WINDOW_MS}ms`)
+    console.log(`  Latency Sim: ${LATENCY_MS > 0 ? LATENCY_MS + 'ms simulated delay' : 'disabled'}`)
     console.log(`  Environment: Node.js ${process.version} on ${process.platform}/${process.arch}`)
     console.log(`  ==============================================================\n`)
 
@@ -310,14 +327,14 @@ async function main() {
     const pgStrategyMetrics: BenchMetrics[] = []
 
     try {
-        const pgUrl = 'postgres://ratelock:ratelock@localhost:5433/ratelock_bench'
+        const pgUrl = 'postgres://postgres:testpassword@localhost:5434/ratelock_test'
         const { default: pg } = (await import('pg')) as any
         const pool = new pg.Pool({ connectionString: pgUrl, max: CONCURRENCY })
 
-        // Truncate tables to ensure a clean benchmark run state
+        // Drop tables to force recreation as UNLOGGED tables
         try {
             await pool.query(
-                'TRUNCATE TABLE ratelock.fixed_window, ratelock.sliding_window, ratelock.token_bucket, ratelock.individual_fixed_window CASCADE'
+                'DROP TABLE IF EXISTS ratelock.fixed_window, ratelock.sliding_window, ratelock.token_bucket, ratelock.individual_fixed_window CASCADE'
             )
         } catch {
             /* empty */
@@ -333,24 +350,28 @@ async function main() {
             limit: LIMIT,
             windowMs: WINDOW_MS,
             skipMigrations: false,
+            unlogged: true,
         })
         const ps = await createPgSliding({
             pool,
             limit: LIMIT,
             windowMs: WINDOW_MS,
-            skipMigrations: true,
+            skipMigrations: false,
+            unlogged: true,
         })
         const pt = await createPgToken({
             pool,
             capacity: LIMIT,
             refillRate: LIMIT / 60,
-            skipMigrations: true,
+            skipMigrations: false,
+            unlogged: true,
         })
         const pi = await createPgIndividual({
             pool,
             limit: LIMIT,
             windowMs: WINDOW_MS,
-            skipMigrations: true,
+            skipMigrations: false,
+            unlogged: true,
         })
 
         // Diverse Keys Scenario
@@ -476,7 +497,7 @@ async function main() {
 
         // Postgres backend comparison
         try {
-            const pgUrl = 'postgres://ratelock:ratelock@localhost:5433/ratelock_bench'
+            const pgUrl = 'postgres://postgres:testpassword@localhost:5434/ratelock_test'
             const { default: pg } = (await import('pg')) as any
             const pool = new pg.Pool({ connectionString: pgUrl, max: CONCURRENCY })
 
@@ -486,6 +507,7 @@ async function main() {
                 limit: LIMIT,
                 windowMs: WINDOW_MS,
                 skipMigrations: true,
+                unlogged: true,
             })
 
             const rlfPg = await new Promise<any>((resolve, reject) => {
@@ -502,6 +524,13 @@ async function main() {
                     }
                 )
             })
+
+            // Alter RLF table to UNLOGGED for a fair WAL-bypassed comparison
+            try {
+                await pool.query('ALTER TABLE rlfl_postgres_fixed SET UNLOGGED')
+            } catch (e: any) {
+                console.log(`  ⚠️ Failed to alter RLF table to UNLOGGED: ${e.message}`)
+            }
 
             compMetrics.push(
                 await runHarness('RateLock Postgres Fixed Window (Spam)', 'extreme-spam', id =>
@@ -546,73 +575,84 @@ async function main() {
         const { createClient } = await import('redis')
         const { default: IORedis } = await import('ioredis')
 
-        // Redis 7 (node-redis vs ioredis)
-        const r1 = createClient({ url: 'redis://:testpassword@localhost:6380' })
-        await r1.connect()
-        const redisNodeFixed = await createRedisFixed({
-            client: r1,
-            limit: LIMIT,
-            windowMs: WINDOW_MS,
-        })
+        // Redis 8 (node-redis vs ioredis)
+        try {
+            const r1 = createClient({ url: 'redis://:testpassword@localhost:6380' })
+            await r1.connect()
+            const redisNodeFixed = await createRedisFixed({
+                client: r1,
+                limit: LIMIT,
+                windowMs: WINDOW_MS,
+            })
 
-        const r2 = new IORedis('redis://:testpassword@localhost:6380')
-        const redisIoFixed = await createRedisFixed({
-            client: r2,
-            limit: LIMIT,
-            windowMs: WINDOW_MS,
-        })
+            const r2 = new IORedis('redis://:testpassword@localhost:6380')
+            const redisIoFixed = await createRedisFixed({
+                client: r2,
+                limit: LIMIT,
+                windowMs: WINDOW_MS,
+            })
+
+            driverMetrics.push(
+                await runHarness('Redis 8 (node-redis client) (Spam)', 'extreme-spam', id =>
+                    redisNodeFixed.check(id as string)
+                )
+            )
+            driverMetrics.push(
+                await runHarness('Redis 8 (ioredis client) (Spam)', 'extreme-spam', id =>
+                    redisIoFixed.check(id as string)
+                )
+            )
+
+            // Cleanup Redis 7 connections
+            await r1.quit()
+            r2.disconnect()
+        } catch (e: any) {
+            console.log(`  ⚠️ Redis 7 node-redis vs ioredis benchmark skipped: ${e.message}`)
+        }
 
         // Valkey 8 (node-redis vs ioredis)
-        const v1 = createClient({ url: 'redis://:testpassword@localhost:6381' })
-        await v1.connect()
-        const valkeyNodeFixed = await createRedisFixed({
-            client: v1,
-            limit: LIMIT,
-            windowMs: WINDOW_MS,
-        })
+        try {
+            const v1 = createClient({ url: 'redis://:testpassword@localhost:6381' })
+            await v1.connect()
+            const valkeyNodeFixed = await createRedisFixed({
+                client: v1,
+                limit: LIMIT,
+                windowMs: WINDOW_MS,
+            })
 
-        const v2 = new IORedis('redis://:testpassword@localhost:6381')
-        const valkeyIoFixed = await createRedisFixed({
-            client: v2,
-            limit: LIMIT,
-            windowMs: WINDOW_MS,
-        })
+            const v2 = new IORedis('redis://:testpassword@localhost:6381')
+            const valkeyIoFixed = await createRedisFixed({
+                client: v2,
+                limit: LIMIT,
+                windowMs: WINDOW_MS,
+            })
 
-        driverMetrics.push(
-            await runHarness('Redis 7 (node-redis client) (Spam)', 'extreme-spam', id =>
-                redisNodeFixed.check(id as string)
+            driverMetrics.push(
+                await runHarness('Valkey 8 (node-redis client) (Spam)', 'extreme-spam', id =>
+                    valkeyNodeFixed.check(id as string)
+                )
             )
-        )
-        driverMetrics.push(
-            await runHarness('Redis 7 (ioredis client) (Spam)', 'extreme-spam', id =>
-                redisIoFixed.check(id as string)
+            driverMetrics.push(
+                await runHarness('Valkey 8 (ioredis client) (Spam)', 'extreme-spam', id =>
+                    valkeyIoFixed.check(id as string)
+                )
             )
-        )
-        driverMetrics.push(
-            await runHarness('Valkey 8 (node-redis client) (Spam)', 'extreme-spam', id =>
-                valkeyNodeFixed.check(id as string)
-            )
-        )
-        driverMetrics.push(
-            await runHarness('Valkey 8 (ioredis client) (Spam)', 'extreme-spam', id =>
-                valkeyIoFixed.check(id as string)
-            )
-        )
 
-        // Cleanup Redis/Valkey connections
-        await r1.quit()
-        r2.disconnect()
-        await v1.quit()
-        v2.disconnect()
+            // Cleanup Valkey connections
+            await v1.quit()
+            v2.disconnect()
+        } catch (e: any) {
+            console.log(`  ⚠️ Valkey vs Redis benchmark skipped: ${e.message}`)
+        }
     } catch (e: any) {
-        console.log(`  ⚠️ Valkey vs Redis benchmark skipped: ${e.message}`)
+        console.log(`  ⚠️ Matrix 5: Redis client drivers battle skipped: ${e.message}`)
     }
 
     // 2. pg vs postgres.js
     try {
         const { fixedWindow: createPgFixed } = await import('@ratelock/postgres')
         const { tokenBucket: createPgToken } = await import('@ratelock/postgres')
-        const pgUrl = 'postgres://ratelock:ratelock@localhost:5433/ratelock_bench'
+        const pgUrl = 'postgres://postgres:testpassword@localhost:5434/ratelock_test'
 
         // postgres.js
         const postgres = (await import('postgres')).default
@@ -622,28 +662,50 @@ async function main() {
             limit: LIMIT,
             windowMs: WINDOW_MS,
             skipMigrations: true,
+            unlogged: true,
         })
         const pgjsToken = await createPgToken({
             sql,
             capacity: LIMIT,
             refillRate: LIMIT / 60,
             skipMigrations: true,
+            unlogged: true,
         })
 
         // pg (node-postgres)
         const { default: pg } = (await import('pg')) as any
         const pool = new pg.Pool({ connectionString: pgUrl, max: CONCURRENCY })
-        const pgNodeFixed = await createPgFixed({
+        
+        // Logged Table Setup
+        try {
+            await pool.query('DROP TABLE IF EXISTS ratelock.fixed_window CASCADE')
+        } catch {}
+        const pgNodeFixedLogged = await createPgFixed({
             pool,
             limit: LIMIT,
             windowMs: WINDOW_MS,
-            skipMigrations: true,
+            skipMigrations: false,
+            unlogged: false,
         })
+
+        // Unlogged Table Setup
+        try {
+            await pool.query('DROP TABLE IF EXISTS ratelock.fixed_window CASCADE')
+        } catch {}
+        const pgNodeFixedUnlogged = await createPgFixed({
+            pool,
+            limit: LIMIT,
+            windowMs: WINDOW_MS,
+            skipMigrations: false,
+            unlogged: true,
+        })
+
         const pgNodeToken = await createPgToken({
             pool,
             capacity: LIMIT,
             refillRate: LIMIT / 60,
             skipMigrations: true,
+            unlogged: true,
         })
 
         driverMetrics.push(
@@ -652,8 +714,13 @@ async function main() {
             )
         )
         driverMetrics.push(
-            await runHarness('node-postgres - Fixed Window (Diverse)', 'diverse-keys', id =>
-                pgNodeFixed.check(id as string)
+            await runHarness('node-postgres - Fixed Window (Logged) (Diverse)', 'diverse-keys', id =>
+                pgNodeFixedLogged.check(id as string)
+            )
+        )
+        driverMetrics.push(
+            await runHarness('node-postgres - Fixed Window (Unlogged) (Diverse)', 'diverse-keys', id =>
+                pgNodeFixedUnlogged.check(id as string)
             )
         )
         driverMetrics.push(
@@ -686,6 +753,66 @@ async function main() {
 
     printTable('Driver & Engine Battle Comparison', driverMetrics)
     reports['driver-engine-battle'] = driverMetrics
+
+    // ==========================================
+    // MATRIX 6: DECORATOR PERFORMANCE & RESILIENCE INFLUENCE
+    // ==========================================
+    console.log(`\nRunning Matrix 6: Decorator Performance & Resilience Influence...`)
+    const decMetrics: BenchMetrics[] = []
+
+    const baseFw = await createLocalFixed({ limit: LIMIT, windowMs: WINDOW_MS })
+
+    // 1. Raw Baseline
+    decMetrics.push(
+        await runHarness('Raw Fixed Window (Diverse)', 'diverse-keys', id =>
+            baseFw.check(id as string)
+        )
+    )
+    decMetrics.push(
+        await runHarness('Raw Fixed Window (Extreme Spam)', 'extreme-spam', id =>
+            baseFw.check(id as string)
+        )
+    )
+
+    // 2. withCache
+    const cachedFw = withCache(baseFw, { ttlMs: 100, maxSize: 1000 })
+    decMetrics.push(
+        await runHarness('Fixed Window + withCache (Diverse)', 'diverse-keys', id =>
+            cachedFw.check(id as string)
+        )
+    )
+    decMetrics.push(
+        await runHarness('Fixed Window + withCache (Extreme Spam)', 'extreme-spam', id =>
+            cachedFw.check(id as string)
+        )
+    )
+
+    // 3. withCircuitBreaker
+    const cbFw = withCircuitBreaker(baseFw, { failureThreshold: 3, recoveryTimeoutMs: 1000 })
+    decMetrics.push(
+        await runHarness('Fixed Window + withCircuitBreaker (Diverse)', 'diverse-keys', id =>
+            cbFw.check(id as string)
+        )
+    )
+
+    // 4. withFallback
+    const fbFw = withFallback(baseFw, 'allow', { remaining: 0, reset: Date.now() + WINDOW_MS })
+    decMetrics.push(
+        await runHarness('Fixed Window + withFallback (Diverse)', 'diverse-keys', id =>
+            fbFw.check(id as string)
+        )
+    )
+
+    // 5. withRetry
+    const retryFw = withRetry(baseFw, { maxAttempts: 2, baseDelayMs: 1, maxDelayMs: 5 })
+    decMetrics.push(
+        await runHarness('Fixed Window + withRetry (Diverse)', 'diverse-keys', id =>
+            retryFw.check(id as string)
+        )
+    )
+
+    printTable('Decorator Performance & Resilience Influence', decMetrics)
+    reports['decorator-influence'] = decMetrics
 
     // ==========================================
     // SAVE RESULTS & WRITE REPORT
