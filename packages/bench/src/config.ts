@@ -17,7 +17,7 @@ export const config: BenchmarkConfig = {
     limit: parseInt(process.env.BENCH_LIMIT ?? '1000', 10),
     windowMs: parseInt(process.env.BENCH_WINDOW_MS ?? '60000', 10),
     postgresUrl:
-        process.env.POSTGRES_URL ?? 'postgres://postgres:testpassword@localhost:5434/ratelock_test',
+        process.env.POSTGRES_URL ?? 'postgres://ratelock:ratelock@localhost:5433/ratelock_bench',
     redisUrl: process.env.REDIS_URL ?? 'redis://:testpassword@localhost:6380',
     valkeyUrl: process.env.VALKEY_URL ?? 'redis://:testpassword@localhost:6381',
     benchUnlogged: process.env.BENCH_UNLOGGED !== 'false',
