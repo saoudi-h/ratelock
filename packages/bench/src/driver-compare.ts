@@ -82,7 +82,9 @@ async function main() {
     // 3. PostgreSQL drivers
     try {
         const postgres = (await import('postgres')).default
-        const p1 = postgres('postgres://ratelock:ratelock@localhost:5433/ratelock_bench')
+        const p1 = postgres('postgres://ratelock:ratelock@localhost:5433/ratelock_bench', {
+            onnotice: () => {},
+        })
         const { fixedWindow: pg1 } = await import('@ratelock/postgres')
         const l3 = await pg1({ sql: p1, limit: 10000, windowMs: 60000, skipMigrations: true })
         await bench('postgresql   (postgres.js)', id => l3.check(id))

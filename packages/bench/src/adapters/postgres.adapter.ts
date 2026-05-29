@@ -67,6 +67,7 @@ export class PostgresAdapter implements BenchmarkAdapter {
             const sqlForCleanup = postgres(config.postgresUrl, {
                 max: 1,
                 connect_timeout: 1,
+                onnotice: () => {},
             })
             try {
                 await sqlForCleanup`DROP TABLE IF EXISTS ratelock.fixed_window, ratelock.sliding_window, ratelock.token_bucket, ratelock.individual_fixed_window CASCADE`
@@ -80,6 +81,7 @@ export class PostgresAdapter implements BenchmarkAdapter {
             this.sqlClient = postgres(config.postgresUrl, {
                 max: config.benchConcurrency,
                 connect_timeout: 1,
+                onnotice: () => {},
             })
         }
 
