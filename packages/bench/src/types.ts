@@ -1,3 +1,15 @@
+export type BenchMetrics = {
+    name: string
+    throughput: number
+    successRate: number
+    allowedCount: number
+    latAvg: number
+    latP50: number
+    latP95: number
+    latP99: number
+    totalReqs: number
+}
+
 export type Backend = 'local' | 'redis' | 'postgres'
 export type Strategy =
     | 'fixed-window'

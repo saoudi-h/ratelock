@@ -1,6 +1,8 @@
-import { writeFileSync } from 'fs'
-import { join } from 'path'
-import type { BenchmarkResult, BenchmarkSuite } from '../types'
+import type { BenchmarkResult } from '../types'
+
+export * from './console.reporter'
+export * from './json.reporter'
+export * from './markdown.reporter'
 
 export function reportConsole(result: BenchmarkResult): void {
     const l = result.latencyMs
@@ -19,12 +21,6 @@ export function reportConsole(result: BenchmarkResult): void {
     )
     if (result.error) console.log(`  Error:       ${result.error}`)
     console.log()
-}
-
-export function reportJson(suite: BenchmarkSuite, outDir: string): void {
-    const file = join(outDir, `benchmark-${Date.now()}.json`)
-    writeFileSync(file, JSON.stringify(suite, null, 2))
-    console.log(`  Results saved to ${file}`)
 }
 
 function fmt(n: number): string {

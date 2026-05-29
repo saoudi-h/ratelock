@@ -7,6 +7,12 @@ import {
 } from '@ratelock/local'
 import type { ScenarioConfig } from '../types'
 
+export * from './batch-check.scenario'
+export * from './diverse-keys.scenario'
+export * from './extreme-spam.scenario'
+export * from './realistic-mix.scenario'
+export * from './types'
+
 export async function createScenarioChecker(
     config: ScenarioConfig
 ): Promise<(id: string) => Promise<unknown>> {

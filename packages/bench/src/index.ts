@@ -1,25 +1,45 @@
 #!/usr/bin/env node
 import { existsSync, mkdirSync } from 'fs'
 import { join } from 'path'
+import { config } from './config'
+import { runMatrix1, runMatrix2, runMatrix3, runMatrix4, runMatrix5, runMatrix6 } from './matrices'
+import { printTable, saveMarkdownReport, saveRawJson } from './reporters'
+import { runHarness } from './runner'
+import type { BenchMetrics } from './types'
+
+// For legacy runner backward-compatibility
 import { reportConsole, reportJson } from './reporters'
 import { Runner } from './runner'
 import { createScenarioChecker } from './scenarios'
 import type { Backend, BenchmarkSuite, ScenarioConfig, Strategy } from './types'
 
-const BACKENDS: Backend[] = ['local']
-const STRATEGIES: Strategy[] = [
-    'fixed-window',
-    'sliding-window',
-    'token-bucket',
-    'individual-fixed-window',
-]
-const DURATION_MS = parseInt(process.env.BENCH_DURATION ?? '3000', 10)
-const CONCURRENCY = parseInt(process.env.BENCH_CONCURRENCY ?? '10', 10)
-const LIMIT = parseInt(process.env.BENCH_LIMIT ?? '10000', 10)
-const WINDOW_MS = parseInt(process.env.BENCH_WINDOW_MS ?? '60000', 10)
 const OUT_DIR = process.env.BENCH_OUT ?? join(process.cwd(), 'results')
 
-async function main() {
+async function runLegacy() {
+    const BACKENDS: Backend[] = ['local']
+    const STRATEGIES: Strategy[] = [
+        'fixed-window',
+        'sliding-window',
+        'token-bucket',
+        'individual-fixed-window',
+    ]
+    const DURATION_MS = config.benchDuration
+    const CONCURRENCY = config.benchConcurrency
+    const LIMIT = config.limit
+    const WINDOW_MS = config.windowMs
+
+    const getBackends = (): Backend[] => {
+        const raw = process.env.BENCH_BACKENDS
+        if (!raw) return BACKENDS
+        return raw.split(',').map(s => s.trim()) as Backend[]
+    }
+
+    const getStrategies = (): Strategy[] => {
+        const raw = process.env.BENCH_STRATEGIES
+        if (!raw) return STRATEGIES
+        return raw.split(',').map(s => s.trim()) as Strategy[]
+    }
+
     const backends = getBackends()
     const strategies = getStrategies()
 
@@ -52,7 +72,7 @@ async function main() {
         for (const strategy of strategies) {
             const name = `${backend}/${strategy}`
 
-            const config: ScenarioConfig = {
+            const scenarioConfig: ScenarioConfig = {
                 name,
                 backend,
                 strategy,
@@ -64,8 +84,8 @@ async function main() {
 
             try {
                 process.stdout.write(`  Running ${name}... `)
-                const check = await createScenarioChecker(config)
-                const result = await runner.runScenario(check, config)
+                const check = await createScenarioChecker(scenarioConfig)
+                const result = await runner.runScenario(check, scenarioConfig)
                 suite.results.push(result)
                 process.stdout.write('done\n')
                 reportConsole(result)
@@ -99,16 +119,137 @@ async function main() {
     console.log()
 }
 
-function getBackends(): Backend[] {
-    const raw = process.env.BENCH_BACKENDS
-    if (!raw) return BACKENDS
-    return raw.split(',').map(s => s.trim()) as Backend[]
+async function runFullSuite() {
+    console.log(`\n  ==============================================================`)
+    console.log(`         RateLock High-Fidelity Standardized Benchmarks`)
+    console.log(`  ==============================================================`)
+    console.log(`  Duration:    ${config.benchDuration}ms per scenario`)
+    console.log(`  Concurrency: ${config.benchConcurrency} workers`)
+    console.log(`  Limit:       ${config.limit} requests per window`)
+    console.log(`  Window:      ${config.windowMs}ms`)
+    console.log(
+        `  Latency Sim: ${config.benchLatencyMs > 0 ? config.benchLatencyMs + 'ms simulated delay' : 'disabled'}`
+    )
+    console.log(`  Environment: Node.js ${process.version} on ${process.platform}/${process.arch}`)
+    console.log(`  ==============================================================\n`)
+
+    const reports: Record<string, BenchMetrics[]> = {}
+
+    // Run Matrix 1
+    const m1 = await runMatrix1(runHarness)
+    printTable('Local Memory Strategy & Scenario Comparison', m1)
+    reports['local-algorithms'] = m1
+
+    // Run Matrix 2
+    const m2 = await runMatrix2(runHarness)
+    if (m2.length > 0) {
+        printTable('Redis Strategy & Scenario Comparison', m2)
+        reports['redis-strategies'] = m2
+    }
+
+    // Run Matrix 3
+    const m3 = await runMatrix3(runHarness)
+    if (m3.length > 0) {
+        printTable('Postgres Strategy & Scenario Comparison', m3)
+        reports['postgres-strategies'] = m3
+    }
+
+    // Run Matrix 4
+    const m4 = await runMatrix4(runHarness)
+    if (m4.length > 0) {
+        printTable('RateLock vs rate-limiter-flexible Baseline Comparison', m4)
+        reports['package-comparison'] = m4
+    }
+
+    // Run Matrix 5
+    const m5 = await runMatrix5(runHarness)
+    if (m5.length > 0) {
+        printTable('Driver & Engine Battle Comparison', m5)
+        reports['driver-engine-battle'] = m5
+    }
+
+    // Run Matrix 6
+    const m6 = await runMatrix6(runHarness)
+    printTable('Decorator Performance & Resilience Influence', m6)
+    reports['decorator-influence'] = m6
+
+    // Write reports
+    saveRawJson(reports, OUT_DIR)
+    saveMarkdownReport(reports, OUT_DIR)
+
+    console.log(`\n  ==============================================================`)
+    console.log(`  Benchmark Suite Completed Successfully!`)
+    console.log(`  Raw metrics saved to:      results/benchmarks_raw.json`)
+    console.log(`  Detailed Markdown Report:  results/benchmark_report.md`)
+    console.log(`  ==============================================================\n`)
 }
 
-function getStrategies(): Strategy[] {
-    const raw = process.env.BENCH_STRATEGIES
-    if (!raw) return STRATEGIES
-    return raw.split(',').map(s => s.trim()) as Strategy[]
+async function main() {
+    const args = process.argv.slice(2)
+    const isLegacy =
+        args.includes('--legacy') || args.includes('--local') || process.env.BENCH_LEGACY === 'true'
+
+    if (isLegacy) {
+        await runLegacy()
+        return
+    }
+
+    // Support running specific matrix: --matrix <1-6>
+    const matrixIdx = args.indexOf('--matrix')
+    if (matrixIdx !== -1 && args[matrixIdx + 1]) {
+        const num = parseInt(args[matrixIdx + 1]!, 10)
+        console.log(`Running Matrix ${num} specifically...`)
+        const reports: Record<string, BenchMetrics[]> = {}
+        let metrics: BenchMetrics[] = []
+        let title = ''
+        let key = ''
+
+        switch (num) {
+            case 1:
+                metrics = await runMatrix1(runHarness)
+                title = 'Local Memory Strategy & Scenario Comparison'
+                key = 'local-algorithms'
+                break
+            case 2:
+                metrics = await runMatrix2(runHarness)
+                title = 'Redis Strategy & Scenario Comparison'
+                key = 'redis-strategies'
+                break
+            case 3:
+                metrics = await runMatrix3(runHarness)
+                title = 'Postgres Strategy & Scenario Comparison'
+                key = 'postgres-strategies'
+                break
+            case 4:
+                metrics = await runMatrix4(runHarness)
+                title = 'RateLock vs rate-limiter-flexible Baseline Comparison'
+                key = 'package-comparison'
+                break
+            case 5:
+                metrics = await runMatrix5(runHarness)
+                title = 'Driver & Engine Battle Comparison'
+                key = 'driver-engine-battle'
+                break
+            case 6:
+                metrics = await runMatrix6(runHarness)
+                title = 'Decorator Performance & Resilience Influence'
+                key = 'decorator-influence'
+                break
+            default:
+                console.error(`Invalid matrix number: ${num}`)
+                process.exit(1)
+        }
+
+        if (metrics.length > 0) {
+            printTable(title, metrics)
+            reports[key] = metrics
+            saveRawJson(reports, OUT_DIR)
+            saveMarkdownReport(reports, OUT_DIR)
+        }
+        return
+    }
+
+    await runFullSuite()
 }
 
 main().catch(console.error)
