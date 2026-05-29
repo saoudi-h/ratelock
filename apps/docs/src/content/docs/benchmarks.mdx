@@ -1,0 +1,136 @@
+---
+title: Benchmarks & Performance
+description: Comprehensive performance analysis, architectural trade-offs, and competitive comparisons.
+---
+
+RateLock is engineered from the ground up for maximum throughput and minimal latency overhead. Rather than imposing a single generic database layer, every RateLock storage engine is uniquely optimized to exploit the strengths of its underlying backend.
+
+To ensure scientific accuracy and transparency, we run a high-fidelity standard benchmark suite comparing RateLock’s strategies, backends, and resilience decorators under heavy concurrency.
+
+---
+
+## 📊 Summary of Performance (TL;DR)
+
+If you are deciding on a rate-limiting architecture, these are the core findings:
+
+- **In-Memory Speed**: Memory strategies easily achieve over **2.4 Million ops/sec** per node.
+- **Competitor Speedups**: RateLock is **3.5x faster** than `rate-limiter-flexible` in memory, and **5.5x faster** when backed by Redis.
+- **Deny Cache (`withCache`)**: Under heavy spam, our Deny Cache decorator intercepts repeat requests in-memory before they hit your database, increasing spam check throughput from ~1,000 ops/sec to **2.4 Million ops/sec**, shielding your database entirely.
+- **Postgres Optimization**: Switching PostgreSQL rate-limiting tables to `UNLOGGED` increases throughput by **~20%** by eliminating transactional write-ahead logging to disk.
+
+---
+
+## 1. Local Memory Strategy Trade-offs
+
+Choosing a rate-limiting strategy involves a fundamental engineering trade-off between **precision** and **performance**.
+
+| Strategy             | Throughput (Ops/sec) | Average Latency | Algorithmic Complexity            |
+| :------------------- | :------------------- | :-------------- | :-------------------------------- |
+| **Fixed Window**     | **2,416,711**        | 0.03ms          | $O(1)$ Counter increments         |
+| **Token Bucket**     | **2,374,650**        | 0.03ms          | $O(1)$ Time-based math            |
+| **Individual Fixed** | **2,502,058**        | 0.03ms          | $O(1)$ Dynamic counters           |
+| **Sliding Window**   | **58,799**           | 1.36ms          | $O(N)$ Array timestamp operations |
+
+> [!IMPORTANT]
+> **The Sliding Window Overhead**
+> Sliding Window rate limiting provides absolute precision by checking a moving window at the exact millisecond. To do this, it must store a timestamp for _every single hit_ inside an array (or a Sorted Set in Redis) and filter out expired timestamps on every request.
+>
+> While extremely accurate, this introduces $O(N)$ array allocation and processing overhead, making it slower (~60,000 ops/sec) than $O(1)$ counter-based strategies like Fixed Window or Token Bucket (~2.4 Million ops/sec). For most high-throughput applications, **Token Bucket** represents the best balance between precision and performance.
+
+---
+
+## 2. Competitive Analysis: RateLock vs Competitors
+
+We benchmarked RateLock against the industry standard `rate-limiter-flexible` (RLF) under an **Extreme Spam** scenario (80 concurrent workers pounding a single key).
+
+### In-Memory Counter Engines
+
+RateLock’s local memory engine leverages a zero-copy direct native JS Map design.
+
+- **RateLock Local Fixed Window**: **2,166,631 ops/sec** (Avg Latency: 0.04ms)
+- **rate-limiter-flexible Memory**: **594,228 ops/sec** (Avg Latency: 0.13ms)
+- **Performance Gain**: **RateLock is 3.6x faster**
+
+---
+
+### Redis Distributed Engines
+
+RateLock’s Redis engine utilizes highly optimized, atomic single-eval Lua pipelines, whereas competitors incur heavier object wrapping and multiple check round-trips.
+
+- **RateLock Redis Fixed Window**: **131,650 ops/sec** (Avg Latency: 0.61ms)
+- **rate-limiter-flexible Redis**: **23,221 ops/sec** (Avg Latency: 3.35ms)
+- **Performance Gain**: **RateLock is 5.6x faster**
+
+> [!NOTE]
+> **Competitor Strategy Limitations**
+> While `rate-limiter-flexible` is an excellent package with diverse storage engines, it only implements a single generic Fixed Window algorithm across Redis/Postgres, making it impossible to evaluate or swap to Token Bucket or Sliding Window algorithms on those databases.
+
+---
+
+## 3. Storage & Drivers Engine Battle
+
+When scaling out your infrastructure, the choice of storage backend dictates your maximum rate-limiting capacity.
+
+```
+In-Memory    [████████████████████████████████████████] 2,400,000 ops/sec
+Redis/Valkey [██] 130,000 ops/sec
+Postgres     [] 7,700 ops/sec
+```
+
+### PostgreSQL: Logged vs Unlogged Tables
+
+If you are using PostgreSQL as your rate-limiting storage, table logging has a massive impact on write performance:
+
+- **node-postgres - Fixed Window (Unlogged)**: **7,723 ops/sec** (Avg Latency: 10.3ms)
+- **node-postgres - Fixed Window (Logged)**: **6,539 ops/sec** (Avg Latency: 12.1ms)
+- **Performance Gain**: **~18% higher throughput**
+
+> [!TIP]
+> **Why Unlogged Tables Work**
+> Rate limiting represents high-frequency, ephemeral write traffic. By altering your rate-limiting tables to `UNLOGGED` in Postgres, you instruct the database to skip writing to the Write-Ahead Log (WAL). If the database crashes, the tables are simply truncated, which is completely acceptable for transient rate-limiting counters, and spares your SSDs/disks from excessive write wear.
+
+---
+
+## 4. Resilience Policies (Decorators Overhead)
+
+RateLock is unique in providing built-in, composable resilience decorators (`withCache`, `withCircuitBreaker`, `withFallback`, `withRetry`) to wrap around your storage limiters.
+
+Many developers worry that wrapping their limiters in multiple shields adds CPU overhead. Our benchmarks show that the overhead is practically non-existent, and in spam scenarios, it actually **massively accelerates** your system:
+
+| Limiter Layer Configuration               | Throughput (Ops/sec) | Latency Overhead                       |
+| :---------------------------------------- | :------------------- | :------------------------------------- |
+| **Raw Local Fixed Window**                | **1,088,680**        | Reference                              |
+| **Fixed Window + withCircuitBreaker**     | **1,195,936**        | < 1% difference                        |
+| **Fixed Window + withFallback**           | **1,115,179**        | < 1% difference                        |
+| **Fixed Window + withRetry**              | **828,946**          | Insignificant (under retry simulation) |
+| **Fixed Window + withCache (Deny Cache)** | **2,418,094**        | **2.2x Faster!**                       |
+
+### 🛡️ The Superpower of `withCache` (Deny Cache)
+
+When wrapping a database-backed limiter (e.g. Postgres or Redis) in the `withCache` policy, RateLock maintains a tiny, rapid, short-lived in-memory cache of denied requests.
+
+If a malicious client spams your API, the very first blocked request records a transient "denied" entry in memory. Subsequent spammed requests are instantly blocked in-memory without ever querying Postgres or Redis!
+
+- Without Deny Cache: Spammed requests hit Postgres, capping at **1,200 ops/sec** and stressing your DB.
+- With Deny Cache: Spammed requests are intercepted in-memory, climbing to **2,418,094 ops/sec**!
+- **This completely shields your databases and Redis clusters from Denial-of-Service (DoS) abuse.**
+
+---
+
+## 5. Run the Benchmarks Locally
+
+We believe in full auditability. You can run these exact same benchmarks on your own machine in a single command. The suite automatically manages Postgres, Redis, and Valkey containers via Docker, runs the tests, compiles the reports, and tears down cleanly.
+
+```bash
+# Clone the repository
+git clone https://github.com/saoudi-h/ratelock.git
+cd ratelock
+
+# Install dependencies
+pnpm install
+
+# Run the standardized benchmark suite
+pnpm --filter @ratelock/bench bench:full
+```
+
+The benchmark suite code is fully modular and parameters can be adjusted in the benchmark package at [packages/bench/src/](file:///home/hakim/projects/ratelock/packages/bench/src/).
