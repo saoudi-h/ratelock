@@ -21,7 +21,7 @@ export function PerformanceSection() {
     const [activeBackend, setActiveBackend] = useState<BackendType>('memory')
     const [denyCacheFlooded, setDenyCacheFlooded] = useState(false)
 
-    // Interval to toggle Deny Cache animation state for eye-catching micro-animation loop
+    // Interval to toggle Deny Cache animation state for the micro-animation
     useEffect(() => {
         const interval = setInterval(() => {
             setDenyCacheFlooded(prev => !prev)
@@ -39,9 +39,9 @@ export function PerformanceSection() {
         }
     > = {
         memory: {
-            title: 'In-Memory Counter Speed',
-            description: 'Zero network overhead and immediate Map lookup arithmetic.',
-            multiplier: '3.6x faster',
+            title: 'In-Memory Counter Throughput',
+            description: 'In-memory JS Maps with zero network round-trips.',
+            multiplier: '3.6x higher',
             metrics: [
                 {
                     name: 'RateLock Local Fixed Window',
@@ -60,9 +60,9 @@ export function PerformanceSection() {
             ],
         },
         redis: {
-            title: 'Distributed Redis Pipelines',
-            description: 'Atomic single-eval Lua pipeline execution for clustered microservices.',
-            multiplier: '5.6x faster',
+            title: 'Distributed Redis Throughput',
+            description: 'Atomic Lua scripts executed directly on the Redis thread.',
+            multiplier: '5.6x higher',
             metrics: [
                 {
                     name: 'RateLock Redis Fixed Window',
@@ -81,9 +81,9 @@ export function PerformanceSection() {
             ],
         },
         postgres: {
-            title: 'Transactional Postgres Drivers',
-            description: 'Comparing write-ahead logging vs unlogged tables in node-postgres.',
-            multiplier: '18% faster',
+            title: 'PostgreSQL Driver Comparison',
+            description: 'Comparing write-ahead logging against unlogged tables in node-postgres.',
+            multiplier: '18% higher',
             metrics: [
                 {
                     name: 'RateLock Fixed Window (Unlogged)',
@@ -132,25 +132,11 @@ export function PerformanceSection() {
 
     return (
         <section className="relative overflow-hidden border-b border-border/40 bg-background/50">
-            {/* Ambient Background Lights */}
-            <div
-                className="
-              absolute -top-40 right-0 -z-10 h-96 w-96 rounded-full
-              bg-primary/5 blur-3xl
-            "
-            />
-            <div
-                className="
-              absolute -bottom-40 -left-40 -z-10 h-96 w-96 rounded-full
-              bg-emerald-500/5 blur-3xl
-            "
-            />
+            {/* Background Lights */}
+            <div className="absolute -top-40 right-0 -z-10 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
+            <div className="absolute -bottom-40 -left-40 -z-10 h-96 w-96 rounded-full bg-emerald-500/5 blur-3xl" />
 
-            <div
-                className="
-              mx-auto max-w-7xl px-6 py-20
-              md:py-28
-            ">
+            <div className="mx-auto max-w-7xl px-6 py-20 md:py-28">
                 {/* Section Header */}
                 <div className="mb-16 max-w-3xl">
                     <span
@@ -159,28 +145,15 @@ export function PerformanceSection() {
                       border-emerald-500/20 bg-emerald-500/5 px-3 py-1 text-xs
                       font-semibold text-emerald-500 select-none
                     ">
-                        <Icon
-                            icon="solar:bolt-bold-duotone"
-                            className="
-                          size-3.5 animate-pulse
-                        "
-                        />
+                        <Icon icon="solar:bolt-bold-duotone" className="size-3.5 animate-pulse" />
                         Performance
                     </span>
-                    <h2
-                        className="
-                      mt-4 font-heading text-4xl/tight font-semibold
-                      tracking-tight
-                      md:text-5xl
-                    ">
-                        Engineered for absolute speed.
+                    <h2 className="mt-4 font-heading text-4xl/tight font-semibold tracking-tight md:text-5xl">
+                        Throughput and latency metrics.
                     </h2>
-                    <p
-                        className="
-                      mt-4 max-w-lg leading-relaxed text-muted-foreground
-                    ">
-                        Benchmark data showing exactly how RateLock maximizes throughput and
-                        minimises database pressure compared to the industry standard.
+                    <p className="mt-4 max-w-lg leading-relaxed text-muted-foreground">
+                        Performance data from our standard benchmark suite comparing RateLock to
+                        industry solutions under concurrent workloads.
                     </p>
                 </div>
 
@@ -190,16 +163,11 @@ export function PerformanceSection() {
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: '-60px' }}
-                    className="
-                      grid grid-cols-1 gap-6
-                      lg:grid-cols-12
-                    ">
-                    {/* Bento Box 1: Interactive Comparison Charts (Takes 7 columns on large desktop) */}
+                    className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+                    {/* Bento Box 1: Interactive Comparison Charts */}
                     <MotionCardBentoBase
                         variants={itemVariants}
-                        wrapperClassName="
-                          lg:col-span-7 flex flex-col justify-between
-                        "
+                        wrapperClassName="lg:col-span-7 flex flex-col justify-between"
                         className="gap-8">
                         {/* Selector Header */}
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -215,16 +183,12 @@ export function PerformanceSection() {
                                     Compare Backends
                                 </span>
                                 <h3 className="mt-3 font-heading text-xl font-bold text-foreground">
-                                    Throughput Battle
+                                    Throughput Comparison
                                 </h3>
                             </div>
 
                             {/* Backend Selection Tabs */}
-                            <div
-                                className="
-                              flex rounded-xl border border-border/40 bg-muted/40 p-1
-                              shadow-xs
-                            ">
+                            <div className="flex rounded-xl border border-border/40 bg-muted/40 p-1 shadow-xs">
                                 {(['memory', 'redis', 'postgres'] as BackendType[]).map(type => (
                                     <button
                                         key={type}
@@ -270,11 +234,7 @@ export function PerformanceSection() {
                                                       ${metric.isRateLock ? 'text-foreground font-bold' : 'text-muted-foreground'}
                                                     `}>
                                                         {metric.isRateLock && (
-                                                            <span
-                                                                className="
-                                                              size-1.5 rounded-full bg-emerald-500 animate-pulse
-                                                            "
-                                                            />
+                                                            <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
                                                         )}
                                                         {metric.name}
                                                     </span>
@@ -324,11 +284,11 @@ export function PerformanceSection() {
                                     className="size-4 text-emerald-500"
                                 />
                                 <span>
-                                    RateLock is{' '}
+                                    RateLock throughput is{' '}
                                     <strong className="text-foreground">
                                         {currentBackend.multiplier}
                                     </strong>{' '}
-                                    under this workload.
+                                    higher under this workload.
                                 </span>
                             </div>
                             <span className="font-mono text-[10px] text-muted-foreground/60 select-none">
@@ -337,12 +297,10 @@ export function PerformanceSection() {
                         </div>
                     </MotionCardBentoBase>
 
-                    {/* Bento Box 2: Deny Cache Visual Demonstration (Takes 5 columns on large desktop) */}
+                    {/* Bento Box 2: Deny Cache Visual Demonstration */}
                     <MotionCardBentoBase
                         variants={itemVariants}
-                        wrapperClassName="
-                          lg:col-span-5 flex flex-col justify-between
-                        "
+                        wrapperClassName="lg:col-span-5 flex flex-col justify-between"
                         className="gap-8">
                         <div>
                             <span
@@ -361,15 +319,13 @@ export function PerformanceSection() {
                                 />
                                 {denyCacheFlooded ? 'Shield Active' : 'Spam incoming'}
                             </span>
-                            <h3
-                                className="
-                              mt-3 font-heading text-xl font-bold text-foreground
-                            ">
-                                The Deny Cache Power
+                            <h3 className="mt-3 font-heading text-xl font-bold text-foreground">
+                                Spam Protection with Deny Cache
                             </h3>
                             <p className="mt-2 text-xs/relaxed text-muted-foreground">
-                                Under spam, the `withCache` decorator shields your core databases
-                                entirely. Repeat denied requests are instantly blocked in-memory.
+                                The `withCache` decorator stores blocked keys in a local,
+                                short-lived cache. Subsequent requests fail immediately in memory,
+                                preventing network round-trips to your database.
                             </p>
                         </div>
 
@@ -382,10 +338,7 @@ export function PerformanceSection() {
                           select-none
                         ">
                             {/* Client Block */}
-                            <div
-                                className="
-                              absolute top-6 flex flex-col items-center gap-1
-                            ">
+                            <div className="absolute top-6 flex flex-col items-center gap-1">
                                 <Icon
                                     icon="solar:user-bold-duotone"
                                     className="size-6 text-muted-foreground"
@@ -396,10 +349,7 @@ export function PerformanceSection() {
                             </div>
 
                             {/* Database Server Block */}
-                            <div
-                                className="
-                              absolute bottom-6 flex flex-col items-center gap-1
-                            ">
+                            <div className="absolute bottom-6 flex flex-col items-center gap-1">
                                 <Icon
                                     icon="solar:database-bold-duotone"
                                     className="size-6 text-muted-foreground"
@@ -531,17 +481,11 @@ export function PerformanceSection() {
                           justify-center gap-2 rounded-2xl bg-foreground
                           px-6 text-sm font-semibold text-background
                           shadow-sm transition-all duration-200
-                          select-none
-                          hover:bg-foreground/90
+                          select-none hover:bg-foreground/90
                           active:scale-95
                         ">
                         <span>Explore Full Benchmarks & Methodologies</span>
-                        <ArrowRightBold
-                            className="
-                          size-4 transition-transform
-                          group-hover:translate-x-0.5
-                        "
-                        />
+                        <ArrowRightBold className="size-4 transition-transform group-hover:translate-x-0.5" />
                     </Link>
                 </div>
             </div>
