@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 export function AnimatedHeading({
     children,
@@ -37,8 +37,7 @@ export function AnimatedHeading({
                         ease: [0.25, 0.1, 0.25, 1],
                         delay: i * 0.08,
                     }}
-                    className="mr-[0.25em] inline-block"
-                >
+                    className="mr-[0.25em] inline-block">
                     {word}
                 </motion.span>
             ))}

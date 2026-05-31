@@ -25,15 +25,13 @@ export default function NotFound() {
                     <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
                         <Link
                             href="/"
-                            className="inline-flex items-center justify-center rounded-md bg-fd-primary px-4 py-2 text-sm font-medium text-fd-primary-foreground shadow transition-colors hover:bg-fd-primary/90"
-                        >
+                            className="inline-flex items-center justify-center rounded-md bg-fd-primary px-4 py-2 text-sm font-medium text-fd-primary-foreground shadow transition-colors hover:bg-fd-primary/90">
                             Go Home
                         </Link>
                         {hasHistory && (
                             <button
                                 onClick={() => window.history.back()}
-                                className="inline-flex items-center justify-center rounded-md border bg-fd-background px-4 py-2 text-sm font-medium transition-colors hover:bg-fd-muted"
-                            >
+                                className="inline-flex items-center justify-center rounded-md border bg-fd-background px-4 py-2 text-sm font-medium transition-colors hover:bg-fd-muted">
                                 Go Back
                             </button>
                         )}

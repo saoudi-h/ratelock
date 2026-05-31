@@ -45,8 +45,8 @@ Allows bursts up to a capacity, then refills tokens at a steady rate.
 import { tokenBucket } from '@ratelock/local'
 
 const limiter = await tokenBucket({
-    capacity: 10,    // max burst size
-    refillRate: 1,   // 1 token per second
+    capacity: 10, // max burst size
+    refillRate: 1, // 1 token per second
 })
 ```
 
@@ -67,12 +67,12 @@ const limiter = await individualFixedWindow({
 
 ## Strategy Comparison
 
-| Strategy | Memory | Accuracy | Burst Support | Per-Key Window |
-|----------|--------|----------|---------------|----------------|
-| Fixed Window | Low | Good | No | Shared |
-| Sliding Window | Medium | Excellent | No | Shared |
-| Token Bucket | Low | Good | Yes | Shared |
-| Individual Fixed Window | Low | Good | No | Independent |
+| Strategy                | Memory | Accuracy  | Burst Support | Per-Key Window |
+| ----------------------- | ------ | --------- | ------------- | -------------- |
+| Fixed Window            | Low    | Good      | No            | Shared         |
+| Sliding Window          | Medium | Excellent | No            | Shared         |
+| Token Bucket            | Low    | Good      | Yes           | Shared         |
+| Individual Fixed Window | Low    | Good      | No            | Independent    |
 
 ## Choosing a Strategy
 

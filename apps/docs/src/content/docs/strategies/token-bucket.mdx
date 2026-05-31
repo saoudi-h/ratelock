@@ -22,10 +22,7 @@ Tokens: 10 ──→ 9 ──→ 8 ──→ 7 ──→ ... ──→ 0 (denied
 
 Options for the Token Bucket strategy:
 
-<AutoTypeTable
-  path="../../packages/core/src/types.ts"
-  type="TokenBucketOptions"
-/>
+<AutoTypeTable path="../../packages/core/src/types.ts" type="TokenBucketOptions" />
 
 ## Usage
 
@@ -33,8 +30,8 @@ Options for the Token Bucket strategy:
 import { tokenBucket } from '@ratelock/local'
 
 const limiter = await tokenBucket({
-    capacity: 10,    // allow bursts of up to 10
-    refillRate: 1,   // 1 token per second
+    capacity: 10, // allow bursts of up to 10
+    refillRate: 1, // 1 token per second
 })
 
 const result = await limiter.check('user:123')
@@ -45,10 +42,7 @@ const result = await limiter.check('user:123')
 
 The check result returned by the Token Bucket limiter:
 
-<AutoTypeTable
-  path="../../packages/core/src/types.ts"
-  type="TokenBucketResult"
-/>
+<AutoTypeTable path="../../packages/core/src/types.ts" type="TokenBucketResult" />
 
 ## Calculating Retry-After
 
@@ -70,11 +64,13 @@ if (!result.allowed) {
 ## Pros and Cons
 
 **Pros:**
+
 - Natural burst support
 - Smooth traffic shaping
 - Predictable refill behavior
 
 **Cons:**
+
 - Requires understanding of token bucket semantics
 - Burst capacity can be confusing for users
 

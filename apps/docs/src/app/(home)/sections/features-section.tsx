@@ -1,7 +1,7 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import { Icon } from '@iconify/react'
+import { motion } from 'framer-motion'
 import { FeatureBentoCard } from '../components/feature-bento-card'
 
 export function FeaturesSection() {
@@ -11,9 +11,9 @@ export function FeaturesSection() {
             opacity: 1,
             transition: {
                 staggerChildren: 0.1,
-                delayChildren: 0.05
-            }
-        }
+                delayChildren: 0.05,
+            },
+        },
     }
 
     return (
@@ -22,7 +22,10 @@ export function FeaturesSection() {
                 {/* Section Header */}
                 <div className="mb-16 max-w-2xl">
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary select-none">
-                        <Icon icon="solar:shield-up-bold-duotone" className="size-3.5 animate-pulse" />
+                        <Icon
+                            icon="solar:shield-up-bold-duotone"
+                            className="size-3.5 animate-pulse"
+                        />
                         Network Resilience
                     </span>
                     <h2 className="mt-4 font-heading text-4xl font-semibold tracking-tight md:text-5xl leading-tight">
@@ -31,7 +34,10 @@ export function FeaturesSection() {
                         network resilience.
                     </h2>
                     <p className="mt-4 max-w-lg text-muted-foreground leading-relaxed">
-                        A rate limiter should stay robust when your database is under load or temporarily unreachable. RateLock includes built-in policies like retries, circuit breakers, and local memory caching to help you handle transient errors gracefully.
+                        A rate limiter should stay robust when your database is under load or
+                        temporarily unreachable. RateLock includes built-in policies like retries,
+                        circuit breakers, and local memory caching to help you handle transient
+                        errors gracefully.
                     </p>
                 </div>
 
@@ -41,8 +47,7 @@ export function FeaturesSection() {
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: '-60px' }}
-                    className="grid gap-6 grid-cols-1 md:grid-cols-3"
-                >
+                    className="grid gap-6 grid-cols-1 md:grid-cols-3">
                     {/* Bento Card 1: Deny Cache Shield (2/3 width) */}
                     <FeatureBentoCard
                         title="Deny-Only Cache Shield"
@@ -51,12 +56,13 @@ export function FeaturesSection() {
                         iconColor="text-emerald-500"
                         iconBgColor="bg-emerald-500/10"
                         colSpan="2"
-                        footerTags={["Bypasses database queries", "Configurable TTL limits"]}
-                    >
+                        footerTags={['Bypasses database queries', 'Configurable TTL limits']}>
                         {/* Telemetry graphic */}
                         <div className="w-full rounded-2xl border border-border/40 bg-background/50 p-4 font-mono text-[10px] space-y-3 shadow-sm select-none mt-2">
                             <div className="flex items-center justify-between border-b border-border/20 pb-2">
-                                <span className="font-bold text-muted-foreground/60 uppercase tracking-wider text-[8px]">DoS mitigation active</span>
+                                <span className="font-bold text-muted-foreground/60 uppercase tracking-wider text-[8px]">
+                                    DoS mitigation active
+                                </span>
                                 <span className="flex items-center gap-1 text-[8px] font-bold text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-md">
                                     <span className="size-1 rounded-full bg-emerald-500 animate-pulse" />
                                     Protected
@@ -64,20 +70,32 @@ export function FeaturesSection() {
                             </div>
                             <div className="space-y-1.5">
                                 <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Blocked Request IP:</span>
-                                    <span className="font-bold text-red-500 font-mono">192.168.1.92</span>
+                                    <span className="text-muted-foreground">
+                                        Blocked Request IP:
+                                    </span>
+                                    <span className="font-bold text-red-500 font-mono">
+                                        192.168.1.92
+                                    </span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Local Cache State:</span>
-                                    <span className="font-bold text-emerald-500 font-mono">Cached (Deny)</span>
+                                    <span className="text-muted-foreground">
+                                        Local Cache State:
+                                    </span>
+                                    <span className="font-bold text-emerald-500 font-mono">
+                                        Cached (Deny)
+                                    </span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground">Database Query:</span>
-                                    <span className="font-bold text-muted-foreground font-mono">Bypassed (0 queries)</span>
+                                    <span className="font-bold text-muted-foreground font-mono">
+                                        Bypassed (0 queries)
+                                    </span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground">Response Latency:</span>
-                                    <span className="font-bold text-emerald-500 font-mono">0.02ms (Local)</span>
+                                    <span className="font-bold text-emerald-500 font-mono">
+                                        0.02ms (Local)
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -89,8 +107,7 @@ export function FeaturesSection() {
                         description="Avoid thread pool saturation when your databases fail. RateLock automatically halts queries, redirects calls to fail-safes, and probes recovery periodically."
                         icon="solar:plug-circle-bold-duotone"
                         iconColor="text-amber-500"
-                        iconBgColor="bg-amber-500/10"
-                    >
+                        iconBgColor="bg-amber-500/10">
                         {/* Visual representation of Circuit Breaker Cockpit */}
                         <div className="mt-6 rounded-2xl border border-border/40 bg-background/50 p-4 font-mono text-[10px] space-y-2.5 select-none shadow-sm">
                             <div className="text-[8px] uppercase font-bold text-muted-foreground/60 tracking-wider border-b border-border/20 pb-1.5">
@@ -100,7 +117,9 @@ export function FeaturesSection() {
                                 <span className="text-muted-foreground/80">State:</span>
                                 <div className="flex items-center gap-1.5">
                                     <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
-                                    <span className="font-bold text-amber-500 uppercase tracking-wide">Half-Open</span>
+                                    <span className="font-bold text-amber-500 uppercase tracking-wide">
+                                        Half-Open
+                                    </span>
                                 </div>
                             </div>
                             <div className="flex items-center justify-between">
@@ -120,14 +139,25 @@ export function FeaturesSection() {
                         description="Configure your limiters with custom fallback policies to guarantee that rate limit operations never throw runtime exceptions to clients during database hiccups."
                         icon="solar:programming-bold-duotone"
                         iconColor="text-purple-500"
-                        iconBgColor="bg-purple-500/10"
-                    >
+                        iconBgColor="bg-purple-500/10">
                         {/* Mini Monospaced Code panel */}
                         <div className="mt-6 rounded-2xl border border-border/40 bg-background/50 p-5 font-mono text-[10px] space-y-1.5 overflow-x-auto text-left select-none shadow-sm leading-relaxed">
-                            <div><span className="text-purple-400">const</span> limiter = <span className="text-blue-400">await</span> <span className="text-emerald-400">fixedWindow</span>(&#123;</div>
-                            <div className="pl-3">limit: <span className="text-yellow-400">100</span>,</div>
-                            <div className="pl-3">windowMs: <span className="text-yellow-400">60_000</span>,</div>
-                            <div className="pl-3"><span className="text-purple-400">fallback</span>: <span className="text-emerald-300">&apos;allow&apos;</span>, <span className="text-muted-foreground">// Fail-open</span></div>
+                            <div>
+                                <span className="text-purple-400">const</span> limiter ={' '}
+                                <span className="text-blue-400">await</span>{' '}
+                                <span className="text-emerald-400">fixedWindow</span>(&#123;
+                            </div>
+                            <div className="pl-3">
+                                limit: <span className="text-yellow-400">100</span>,
+                            </div>
+                            <div className="pl-3">
+                                windowMs: <span className="text-yellow-400">60_000</span>,
+                            </div>
+                            <div className="pl-3">
+                                <span className="text-purple-400">fallback</span>:{' '}
+                                <span className="text-emerald-300">&apos;allow&apos;</span>,{' '}
+                                <span className="text-muted-foreground">// Fail-open</span>
+                            </div>
                             <div>&#125;)</div>
                         </div>
                     </FeatureBentoCard>
@@ -140,8 +170,7 @@ export function FeaturesSection() {
                         iconColor="text-sky-500"
                         iconBgColor="bg-sky-500/10"
                         colSpan="2"
-                        footerTags={["Granular retry policies", "Fully custom error callbacks"]}
-                    >
+                        footerTags={['Granular retry policies', 'Fully custom error callbacks']}>
                         {/* Policies description cards grid */}
                         <div className="grid gap-3 w-full mt-2">
                             <div className="rounded-2xl border border-border/40 bg-background/40 p-3 flex items-start gap-3 select-none hover:border-primary/20 transition-colors duration-300 shadow-xs">
@@ -149,8 +178,13 @@ export function FeaturesSection() {
                                     O
                                 </div>
                                 <div>
-                                    <div className="font-heading text-xs font-bold text-foreground">Fail-Open (Recommended)</div>
-                                    <div className="mt-0.5 text-xs text-muted-foreground leading-relaxed">Bypasses database failures. Ensures legitimate customers are never locked out of your application during downtime.</div>
+                                    <div className="font-heading text-xs font-bold text-foreground">
+                                        Fail-Open (Recommended)
+                                    </div>
+                                    <div className="mt-0.5 text-xs text-muted-foreground leading-relaxed">
+                                        Bypasses database failures. Ensures legitimate customers are
+                                        never locked out of your application during downtime.
+                                    </div>
                                 </div>
                             </div>
                             <div className="rounded-2xl border border-border/40 bg-background/40 p-3 flex items-start gap-3 select-none hover:border-primary/20 transition-colors duration-300 shadow-xs">
@@ -158,8 +192,14 @@ export function FeaturesSection() {
                                     C
                                 </div>
                                 <div>
-                                    <div className="font-heading text-xs font-bold text-foreground">Fail-Closed</div>
-                                    <div className="mt-0.5 text-xs text-muted-foreground leading-relaxed">Blocks all requests if rate limiting state is offline. Prevents catastrophic security leakages during infrastructure congestion.</div>
+                                    <div className="font-heading text-xs font-bold text-foreground">
+                                        Fail-Closed
+                                    </div>
+                                    <div className="mt-0.5 text-xs text-muted-foreground leading-relaxed">
+                                        Blocks all requests if rate limiting state is offline.
+                                        Prevents catastrophic security leakages during
+                                        infrastructure congestion.
+                                    </div>
                                 </div>
                             </div>
                         </div>

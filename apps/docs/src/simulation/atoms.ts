@@ -1,8 +1,8 @@
 import { atom } from 'jotai'
 import { atomFamily } from 'jotai/utils'
-import type { StrategyId, StrategyConfig, StrategySpecificConfig, RequestEvent } from './types'
-import { DEFAULT_CONFIGS } from './types'
 import { destroyLimiter } from './engine'
+import type { RequestEvent, StrategyConfig, StrategyId, StrategySpecificConfig } from './types'
+import { DEFAULT_CONFIGS } from './types'
 
 const MAX_EVENTS = 160
 
@@ -42,7 +42,7 @@ export const resetSimulationAtom = atom(null, async (get, set, strategyId: Strat
 })
 
 export const updateConfigAtom = atom(
-    (get) => get(configAtom),
+    get => get(configAtom),
     (get, set, strategyId: StrategyId, updates: Partial<StrategySpecificConfig>) => {
         const current = get(configAtom)
         const strategyConfig = current[strategyId]

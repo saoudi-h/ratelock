@@ -7,11 +7,15 @@ RateLock optimizes each storage engine natively to achieve high throughput and l
 
 This page shows performance data from our standardized benchmark suite under concurrent workloads.
 
+> [!WARNING]
+> **Hardware Dependency**
+> The absolute numbers listed below represent results on a specific reference test machine (AMD Ryzen 7 5800X, 32GB RAM, Node.js v25 on Linux x64). These values are not absolute physical limits. Actual throughput and latency vary depending on your CPU, memory speed, network conditions, and database configuration. Use these metrics as a relative comparison of algorithmic efficiency.
+
 ---
 
 ## Performance Summary
 
-These metrics reflect concurrent rate-limiting operations:
+These metrics reflect concurrent rate-limiting operations on our reference test machine:
 
 - **In-Memory Throughput**: Memory counter strategies handle between 1.2M and 2.5M operations per second per node depending on key distribution.
 - **Competitor Comparison**: RateLock Fixed Window throughput is higher than `rate-limiter-flexible` (3.6x in memory, 5.6x over Redis).
@@ -24,12 +28,12 @@ These metrics reflect concurrent rate-limiting operations:
 
 Rate-limiting strategies balance mathematical precision against CPU overhead.
 
-| Strategy             | Throughput (Ops/sec) | Average Latency | Algorithmic Complexity            |
-| :------------------- | :------------------- | :-------------- | :-------------------------------- |
-| **Fixed Window**     | **2,416,711**        | 0.03ms          | $O(1)$ Counter increments         |
-| **Token Bucket**     | **2,374,650**        | 0.03ms          | $O(1)$ Time-based math            |
-| **Individual Fixed** | **2,502,058**        | 0.03ms          | $O(1)$ Dynamic counters           |
-| **Sliding Window**   | **58,799**           | 1.36ms          | $O(N)$ Array timestamp operations |
+| Strategy | Throughput (Ops/sec) | Average Latency | Algorithmic Complexity |
+| :--- | :--- | :--- | :--- |
+| **Fixed Window** | **2,416,711** | 0.03ms | $O(1)$ Counter increments |
+| **Token Bucket** | **2,374,650** | 0.03ms | $O(1)$ Time-based math |
+| **Individual Fixed** | **2,502,058** | 0.03ms | $O(1)$ Dynamic counters |
+| **Sliding Window** | **58,799** | 1.36ms | $O(N)$ Array timestamp operations |
 
 > [!IMPORTANT]
 > **Sliding Window Array Overhead**
@@ -45,7 +49,7 @@ We compared RateLock against `rate-limiter-flexible` (RLF) in a high-concurrency
 
 ### In-Memory Counter Engines
 
-RateLock uses direct key lookups in a native JavaScript `Map` to avoid object allocation.
+RateLock uses direct key lookups in a native JavaScript `Map` to avoid object allocation. RLF performs validation checks, runs state validations, and instantiates custom classes (`new RateLimiterRes()`) on every request.
 
 - **RateLock Local Fixed Window**: **2,166,631 ops/sec** (Avg Latency: 0.04ms)
 - **rate-limiter-flexible Memory**: **594,228 ops/sec** (Avg Latency: 0.13ms)
@@ -55,11 +59,20 @@ RateLock uses direct key lookups in a native JavaScript `Map` to avoid object al
 
 ### Redis Distributed Engines
 
-RateLock executes a single Lua script for Redis checks. The script runs atomically on the Redis thread, returning the limit decision in a single round-trip. Competitors often perform multiple Redis queries or wrap results in complex client objects, increasing network overhead.
+While both packages use Lua scripts to execute atomic checks in Redis, they differ in network transport and serialization overhead:
 
 - **RateLock Redis Fixed Window**: **131,650 ops/sec** (Avg Latency: 0.61ms)
 - **rate-limiter-flexible Redis**: **23,221 ops/sec** (Avg Latency: 3.35ms)
 - **Throughput ratio**: RateLock handles 5.6x more operations.
+
+#### Factual Analysis of the Performance Difference
+
+Examination of `rate-limiter-flexible`'s implementation (`RateLimiterRedis.js`) reveals several factors that introduce CPU and network overhead:
+
+1. **Lua Script Execution**: RLF uses the full Lua script string inside `eval` calls on every check for several client libraries (such as node-redis). This transmits the entire script string over the network on every request and forces Redis to recompile the script. RateLock uses `evalsha` to send a 40-character SHA1 hash of the pre-loaded script, reducing payload size and skipping database recompilation.
+2. **Regex Validation**: RLF executes regular expression matches on point arguments (e.g., `RegExp("^[1-9][0-9]*$")`) on every rate-limiting request. This creates CPU overhead in the JS runtime under concurrent loads.
+3. **Connection Status Checks**: RLF performs dynamic connection checks (`_isRedisReady`) on every operation, accessing internal client states which adds microsecond delays.
+4. **Instantiation Overhead**: RLF instantiates a new `RateLimiterRes` class instance and parses strings to integers on every response. RateLock returns simple, raw JavaScript objects, avoiding garbage collection pressure.
 
 > [!NOTE]
 > **Strategy Availability**
@@ -95,13 +108,13 @@ Write logging directly affects PostgreSQL rate-limiting throughput.
 
 You can wrap rate limiters in resilience decorators (`withCache`, `withCircuitBreaker`, `withFallback`, `withRetry`). These decorators add negligible CPU overhead. In spam scenarios, the `withCache` decorator increases overall throughput by intercepting requests in memory.
 
-| Limiter Layer Configuration               | Throughput (Ops/sec) | Latency Overhead       |
-| :---------------------------------------- | :------------------- | :--------------------- |
-| **Raw Local Fixed Window**                | **1,088,680**        | Reference              |
-| **Fixed Window + withCircuitBreaker**     | **1,195,936**        | < 1% difference        |
-| **Fixed Window + withFallback**           | **1,115,179**        | < 1% difference        |
-| **Fixed Window + withRetry**              | **828,946**          | Under retry simulation |
-| **Fixed Window + withCache (Deny Cache)** | **2,418,094**        | 2.2x Increase          |
+| Limiter Layer Configuration | Throughput (Ops/sec) | Latency Overhead |
+| :--- | :--- | :--- |
+| **Raw Local Fixed Window** | **1,088,680** | Reference |
+| **Fixed Window + withCircuitBreaker** | **1,195,936** | < 1% difference |
+| **Fixed Window + withFallback** | **1,115,179** | < 1% difference |
+| **Fixed Window + withRetry** | **828,946** | Under retry simulation |
+| **Fixed Window + withCache (Deny Cache)** | **2,418,094** | 2.2x Increase |
 
 ### Intercepting Spam in Memory (`withCache`)
 

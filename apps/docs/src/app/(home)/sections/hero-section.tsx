@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { motion } from 'framer-motion'
 import { Icon } from '@iconify/react'
 import { ArrowRightBold } from '@solar-icons/react-perf'
+import { motion } from 'framer-motion'
+import Link from 'next/link'
+import { useState } from 'react'
 import { AnimatedCodePanel } from '../components/animated-code-panel'
 import { CardBentoBase } from './CardBentoBase'
 
@@ -23,9 +23,9 @@ export function HeroSection() {
             opacity: 1,
             transition: {
                 staggerChildren: 0.1,
-                delayChildren: 0.05
-            }
-        }
+                delayChildren: 0.05,
+            },
+        },
     }
 
     const itemVariants = {
@@ -36,14 +36,15 @@ export function HeroSection() {
             transition: {
                 type: 'spring' as const,
                 stiffness: 110,
-                damping: 14
-            }
-        }
+                damping: 14,
+            },
+        },
     }
 
     return (
         <section className="relative overflow-hidden bg-background">
-            <div className="
+            <div
+                className="
               relative mx-auto max-w-7xl px-6 py-12
               md:py-20
               lg:py-24
@@ -55,35 +56,37 @@ export function HeroSection() {
                     className="
                       grid grid-cols-1 gap-6
                       lg:grid-cols-12
-                    "
-                >
+                    ">
                     {/* Hero Text Content (Left side, takes 7 columns on desktop to leave 5 for code) */}
                     <motion.div
                         variants={itemVariants}
                         className="
                           relative flex flex-col justify-center py-6
                           lg:col-span-7 lg:pr-8
-                        "
-                    >
+                        ">
                         <div>
                             {/* Version Tag */}
                             <div className="mb-8">
-                                <span className="
+                                <span
+                                    className="
                                   inline-flex items-center gap-2 rounded-xl
                                   border border-border/40 bg-card/50 px-3 py-1.5
                                   font-mono text-xs font-semibold
                                   text-muted-foreground shadow-xs select-none
                                 ">
-                                    <span className="
+                                    <span
+                                        className="
                                       size-1.5 animate-pulse rounded-full
                                       bg-primary
-                                    " />
+                                    "
+                                    />
                                     v0.2 • Open Source
                                 </span>
                             </div>
 
                             {/* Crisp Value Prop Title */}
-                            <h1 className="
+                            <h1
+                                className="
                               font-heading text-5xl leading-[0.95] font-black
                               tracking-tight
                               sm:text-6xl
@@ -95,17 +98,21 @@ export function HeroSection() {
                             </h1>
 
                             {/* Bullet-proof Subtitle */}
-                            <p className="
+                            <p
+                                className="
                               mt-6 max-w-xl text-base/relaxed
                               text-muted-foreground
                               md:text-lg
                             ">
-                                An exceptionally precise TypeScript rate limiting suite. Unified resilience policies, atomic storage backends, and modular protection built for high-performance networks.
+                                An exceptionally precise TypeScript rate limiting suite. Unified
+                                resilience policies, atomic storage backends, and modular protection
+                                built for high-performance networks.
                             </p>
                         </div>
 
                         {/* Interactive Installation Command & Action CTAs */}
-                        <div className="
+                        <div
+                            className="
                           mt-10 space-y-4
                           sm:flex sm:flex-wrap sm:items-center sm:gap-4
                           sm:space-y-0
@@ -121,13 +128,14 @@ export function HeroSection() {
                                   select-none
                                   hover:bg-foreground/90
                                   active:scale-95
-                                "
-                            >
+                                ">
                                 <span>Get Started</span>
-                                <ArrowRightBold className="
+                                <ArrowRightBold
+                                    className="
                                   size-4 transition-transform
                                   group-hover:translate-x-0.5
-                                " />
+                                "
+                                />
                             </Link>
 
                             {/* GitHub secondary CTA */}
@@ -143,8 +151,7 @@ export function HeroSection() {
                                   transition-all duration-200 select-none
                                   hover:bg-muted
                                   active:scale-95
-                                "
-                            >
+                                ">
                                 <Icon icon="mdi:github" className="size-4" />
                                 <span>GitHub</span>
                             </a>
@@ -163,25 +170,33 @@ export function HeroSection() {
                                   active:scale-95
                                   sm:w-auto
                                 "
-                                title="Copy install command"
-                            >
-                                <span className="
+                                title="Copy install command">
+                                <span
+                                    className="
                                   mr-1 text-primary opacity-70
                                   transition-opacity
                                   group-hover:opacity-100
-                                ">$</span>
+                                ">
+                                    $
+                                </span>
                                 <span>npm i @ratelock/local</span>
                                 <div className="mx-1 h-4 w-px bg-border/40" />
                                 {copied ? (
-                                    <Icon icon="lucide:check" className="
+                                    <Icon
+                                        icon="lucide:check"
+                                        className="
                                       size-4 text-emerald-500
-                                    " />
+                                    "
+                                    />
                                 ) : (
-                                    <Icon icon="lucide:copy" className="
+                                    <Icon
+                                        icon="lucide:copy"
+                                        className="
                                       size-3.5 text-muted-foreground
                                       transition-colors
                                       group-hover:text-foreground
-                                    " />
+                                    "
+                                    />
                                 )}
                             </button>
                         </div>
@@ -194,18 +209,17 @@ export function HeroSection() {
                           relative flex w-full flex-col items-center
                           justify-center
                           lg:col-span-5 lg:items-end
-                        "
-                    >
-                        <div className="
+                        ">
+                        <div
+                            className="
                           w-full max-w-125 transform transition-transform
                           duration-500
                           hover:scale-[1.02]
                           lg:max-w-none
                         ">
-
-                                <div className="w-full">
-                                    <AnimatedCodePanel />
-                                </div>
+                            <div className="w-full">
+                                <AnimatedCodePanel />
+                            </div>
                         </div>
                     </motion.div>
 
@@ -215,13 +229,28 @@ export function HeroSection() {
                         className="
                           mt-6 grid grid-cols-2 gap-6
                           lg:col-span-12 lg:grid-cols-4
-                        "
-                    >
+                        ">
                         {[
-                            { value: '4', label: 'Limiting Strategies', desc: 'Fixed, Sliding, Token Bucket' },
-                            { value: '3', label: 'Storage Engines', desc: 'Memory, Redis, PostgreSQL' },
-                            { value: 'Built-in', label: 'Resilience Policies', desc: 'Retry, circuit breaker, & fallback options' },
-                            { value: 'TypeScript', label: 'Native Typings', desc: 'Robust auto-complete & type safety' },
+                            {
+                                value: '4',
+                                label: 'Limiting Strategies',
+                                desc: 'Fixed, Sliding, Token Bucket',
+                            },
+                            {
+                                value: '3',
+                                label: 'Storage Engines',
+                                desc: 'Memory, Redis, PostgreSQL',
+                            },
+                            {
+                                value: 'Built-in',
+                                label: 'Resilience Policies',
+                                desc: 'Retry, circuit breaker, & fallback options',
+                            },
+                            {
+                                value: 'TypeScript',
+                                label: 'Native Typings',
+                                desc: 'Robust auto-complete & type safety',
+                            },
                         ].map((stat, i) => {
                             const isLong = stat.value.length > 6
                             const fontSizeClass = isLong
@@ -229,7 +258,8 @@ export function HeroSection() {
                                 : 'text-5xl md:text-6xl'
                             return (
                                 <CardBentoBase key={i}>
-                                    <div className={`
+                                    <div
+                                        className={`
                                       font-heading leading-none font-black
                                       tracking-tighter text-foreground/50
                                       transition-colors duration-200 text-shadow-xs
@@ -238,21 +268,23 @@ export function HeroSection() {
                                     `}>
                                         {stat.value}
                                     </div>
-                                <div className="mt-6 pt-4">
-                                    <div className="
+                                    <div className="mt-6 pt-4">
+                                        <div
+                                            className="
                                       text-xs font-bold tracking-wider
                                       text-muted-foreground uppercase
                                     ">
-                                        {stat.label}
-                                    </div>
-                                    <div className="
+                                            {stat.label}
+                                        </div>
+                                        <div
+                                            className="
                                       mt-1.5 text-[11px] leading-normal
                                       font-medium text-muted-foreground/70
                                     ">
-                                        {stat.desc}
+                                            {stat.desc}
+                                        </div>
                                     </div>
-                                </div>
-                            </CardBentoBase>
+                                </CardBentoBase>
                             )
                         })}
                     </motion.div>
@@ -261,4 +293,3 @@ export function HeroSection() {
         </section>
     )
 }
-

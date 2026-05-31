@@ -57,9 +57,11 @@ return new Response(body, {
         'X-RateLimit-Limit': String(limit),
         'X-RateLimit-Remaining': String(result.remaining),
         'X-RateLimit-Reset': String(result.reset),
-        ...(result.allowed ? {} : {
-            'Retry-After': String(Math.ceil((result.reset - Date.now()) / 1000)),
-        }),
+        ...(result.allowed
+            ? {}
+            : {
+                  'Retry-After': String(Math.ceil((result.reset - Date.now()) / 1000)),
+              }),
     },
 })
 ```

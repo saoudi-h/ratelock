@@ -1,6 +1,10 @@
 import type { FixedWindowResult, SlidingWindowResult, TokenBucketResult } from '@ratelock/local'
 
-export type StrategyId = 'fixed-window' | 'sliding-window' | 'token-bucket' | 'individual-fixed-window'
+export type StrategyId =
+    | 'fixed-window'
+    | 'sliding-window'
+    | 'token-bucket'
+    | 'individual-fixed-window'
 
 export type SimulationResult = FixedWindowResult | SlidingWindowResult | TokenBucketResult
 
@@ -34,7 +38,11 @@ export interface IndividualFixedWindowConfig {
     windowMs: number
 }
 
-export type StrategySpecificConfig = FixedWindowConfig | SlidingWindowConfig | TokenBucketConfig | IndividualFixedWindowConfig
+export type StrategySpecificConfig =
+    | FixedWindowConfig
+    | SlidingWindowConfig
+    | TokenBucketConfig
+    | IndividualFixedWindowConfig
 
 export type StrategyConfig = Record<StrategyId, StrategySpecificConfig>
 

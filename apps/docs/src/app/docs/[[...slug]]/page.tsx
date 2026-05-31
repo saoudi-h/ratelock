@@ -1,10 +1,14 @@
 import { Rate } from '@/components/ui-blocks/rate'
 import { onRateAction } from '@/lib/github'
-import { getMDXComponents } from '@/mdx-components'
 import { source } from '@/lib/source'
+import { getMDXComponents } from '@/mdx-components'
+import {
+    DocsPage,
+    MarkdownCopyButton,
+    PageLastUpdate,
+    ViewOptionsPopover,
+} from 'fumadocs-ui/layouts/docs/page'
 import { createRelativeLink } from 'fumadocs-ui/mdx'
-import { DocsPage, PageLastUpdate } from 'fumadocs-ui/layouts/docs/page'
-import { MarkdownCopyButton, ViewOptionsPopover } from 'fumadocs-ui/layouts/docs/page'
 import { DocsBody, DocsDescription, DocsTitle } from 'fumadocs-ui/page'
 import { notFound } from 'next/navigation'
 

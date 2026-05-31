@@ -19,17 +19,14 @@ const circuitBreaker = withCircuitBreaker(limiter, {
 
 ## Configuration Options
 
-<AutoTypeTable
-  path="../../packages/core/src/types.ts"
-  type="CircuitBreakerConfig"
-/>
+<AutoTypeTable path="../../packages/core/src/types.ts" type="CircuitBreakerConfig" />
 
 ## States
 
-| State | Behavior |
-|-------|----------|
-| **Closed** | Normal operation. Requests go through to the backend. |
-| **Open** | Requests are rejected immediately. No backend calls. |
+| State         | Behavior                                                                                            |
+| ------------- | --------------------------------------------------------------------------------------------------- |
+| **Closed**    | Normal operation. Requests go through to the backend.                                               |
+| **Open**      | Requests are rejected immediately. No backend calls.                                                |
 | **Half-Open** | One probe request is allowed. If it succeeds, the circuit closes. If it fails, the circuit reopens. |
 
 ## Error Context
@@ -40,8 +37,8 @@ When the circuit is open, the thrown error includes the last error as its cause:
 try {
     await limiter.check('user:123')
 } catch (err) {
-    console.log(err.message)     // "Circuit breaker is open"
-    console.log(err.cause)       // The original error that opened the circuit
+    console.log(err.message) // "Circuit breaker is open"
+    console.log(err.cause) // The original error that opened the circuit
 }
 ```
 

@@ -61,10 +61,7 @@ const limiter = await fixedWindow({
 
 All limiters in the Redis engine accept these shared base options:
 
-<AutoTypeTable
-  path="../../packages/redis/src/types.ts"
-  type="RedisLimiterBaseConfig"
-/>
+<AutoTypeTable path="../../packages/redis/src/types.ts" type="RedisLimiterBaseConfig" />
 
 ## Built-in Resilience Policies
 
@@ -75,29 +72,24 @@ const limiter = await fixedWindow({
     url: 'redis://localhost:6379',
     limit: 100,
     windowMs: 60_000,
-    cache: { maxSize: 1000, ttlMs: 30_000 },           // Cache denied results in memory
-    retry: { maxAttempts: 3 },                          // Retry transient Redis failures
+    cache: { maxSize: 1000, ttlMs: 30_000 }, // Cache denied results in memory
+    retry: { maxAttempts: 3 }, // Retry transient Redis failures
     circuitBreaker: { failureThreshold: 5, recoveryTimeoutMs: 30_000 },
-    fallback: 'allow',                                  // Fail-open if Redis is down
+    fallback: 'allow', // Fail-open if Redis is down
 })
 ```
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `cache` | `CacheConfig` | Cache denied results in memory to reduce Redis load |
-| `retry` | `RetryConfig` | Retry transient failures with exponential backoff |
-| `circuitBreaker` | `CircuitBreakerConfig` | Stop calling Redis after consecutive failures |
-| `fallback` | `'throw' \| 'allow' \| 'deny'` | Behavior when the limiter throws |
+| Option           | Type                           | Description                                         |
+| ---------------- | ------------------------------ | --------------------------------------------------- |
+| `cache`          | `CacheConfig`                  | Cache denied results in memory to reduce Redis load |
+| `retry`          | `RetryConfig`                  | Retry transient failures with exponential backoff   |
+| `circuitBreaker` | `CircuitBreakerConfig`         | Stop calling Redis after consecutive failures       |
+| `fallback`       | `'throw' \| 'allow' \| 'deny'` | Behavior when the limiter throws                    |
 
 ## All Strategies
 
 ```typescript
-import {
-    fixedWindow,
-    slidingWindow,
-    tokenBucket,
-    individualFixedWindow,
-} from '@ratelock/redis'
+import { fixedWindow, slidingWindow, tokenBucket, individualFixedWindow } from '@ratelock/redis'
 ```
 
 ## Standalone Policies (Advanced)
@@ -118,34 +110,34 @@ See [Resilience Policies](/docs/policies) for full documentation and when to use
 The factory functions in `@ratelock/redis` expect configuration objects matching these strict TypeScript shapes:
 
 <Tabs items={['fixedWindow', 'slidingWindow', 'tokenBucket', 'individualFixedWindow']}>
-  <Tab value="fixedWindow">
-    ### FixedWindowLimiterConfig
-    <AutoTypeTable
-      path="../../packages/redis/src/fixed-window.ts"
-      type="FixedWindowLimiterConfig"
-    />
-  </Tab>
-  <Tab value="slidingWindow">
-    ### SlidingWindowLimiterConfig
-    <AutoTypeTable
-      path="../../packages/redis/src/sliding-window.ts"
-      type="SlidingWindowLimiterConfig"
-    />
-  </Tab>
-  <Tab value="tokenBucket">
-    ### TokenBucketLimiterConfig
-    <AutoTypeTable
-      path="../../packages/redis/src/token-bucket.ts"
-      type="TokenBucketLimiterConfig"
-    />
-  </Tab>
-  <Tab value="individualFixedWindow">
-    ### IndividualFixedWindowLimiterConfig
-    <AutoTypeTable
-      path="../../packages/redis/src/individual-fixed-window.ts"
-      type="IndividualFixedWindowLimiterConfig"
-    />
-  </Tab>
+    <Tab value="fixedWindow">
+        ### FixedWindowLimiterConfig
+        <AutoTypeTable
+            path="../../packages/redis/src/fixed-window.ts"
+            type="FixedWindowLimiterConfig"
+        />
+    </Tab>
+    <Tab value="slidingWindow">
+        ### SlidingWindowLimiterConfig
+        <AutoTypeTable
+            path="../../packages/redis/src/sliding-window.ts"
+            type="SlidingWindowLimiterConfig"
+        />
+    </Tab>
+    <Tab value="tokenBucket">
+        ### TokenBucketLimiterConfig
+        <AutoTypeTable
+            path="../../packages/redis/src/token-bucket.ts"
+            type="TokenBucketLimiterConfig"
+        />
+    </Tab>
+    <Tab value="individualFixedWindow">
+        ### IndividualFixedWindowLimiterConfig
+        <AutoTypeTable
+            path="../../packages/redis/src/individual-fixed-window.ts"
+            type="IndividualFixedWindowLimiterConfig"
+        />
+    </Tab>
 </Tabs>
 
 ## Valkey Compatibility

@@ -61,10 +61,7 @@ const limiter = await fixedWindow({
 
 All limiters in the PostgreSQL engine accept these shared base options:
 
-<AutoTypeTable
-  path="../../packages/postgres/src/types.ts"
-  type="PostgresLimiterBaseConfig"
-/>
+<AutoTypeTable path="../../packages/postgres/src/types.ts" type="PostgresLimiterBaseConfig" />
 
 ## Built-in Resilience Policies
 
@@ -82,12 +79,12 @@ const limiter = await fixedWindow({
 })
 ```
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `cache` | `CacheConfig` | Cache denied results in memory to reduce database load |
-| `retry` | `RetryConfig` | Retry transient failures with exponential backoff |
-| `circuitBreaker` | `CircuitBreakerConfig` | Stop calling the database after consecutive failures |
-| `fallback` | `'throw' \| 'allow' \| 'deny'` | Behavior when the limiter throws |
+| Option           | Type                           | Description                                            |
+| ---------------- | ------------------------------ | ------------------------------------------------------ |
+| `cache`          | `CacheConfig`                  | Cache denied results in memory to reduce database load |
+| `retry`          | `RetryConfig`                  | Retry transient failures with exponential backoff      |
+| `circuitBreaker` | `CircuitBreakerConfig`         | Stop calling the database after consecutive failures   |
+| `fallback`       | `'throw' \| 'allow' \| 'deny'` | Behavior when the limiter throws                       |
 
 ## Auto-Migrations
 
@@ -171,34 +168,34 @@ See [Resilience Policies](/docs/policies) for full documentation and when to use
 The factory functions in `@ratelock/postgres` expect configuration objects matching these strict TypeScript shapes:
 
 <Tabs items={['fixedWindow', 'slidingWindow', 'tokenBucket', 'individualFixedWindow']}>
-  <Tab value="fixedWindow">
-    ### FixedWindowLimiterConfig
-    <AutoTypeTable
-      path="../../packages/postgres/src/fixed-window.ts"
-      type="FixedWindowLimiterConfig"
-    />
-  </Tab>
-  <Tab value="slidingWindow">
-    ### SlidingWindowLimiterConfig
-    <AutoTypeTable
-      path="../../packages/postgres/src/sliding-window.ts"
-      type="SlidingWindowLimiterConfig"
-    />
-  </Tab>
-  <Tab value="tokenBucket">
-    ### TokenBucketLimiterConfig
-    <AutoTypeTable
-      path="../../packages/postgres/src/token-bucket.ts"
-      type="TokenBucketLimiterConfig"
-    />
-  </Tab>
-  <Tab value="individualFixedWindow">
-    ### IndividualFixedWindowLimiterConfig
-    <AutoTypeTable
-      path="../../packages/postgres/src/individual-fixed-window.ts"
-      type="IndividualFixedWindowLimiterConfig"
-    />
-  </Tab>
+    <Tab value="fixedWindow">
+        ### FixedWindowLimiterConfig
+        <AutoTypeTable
+            path="../../packages/postgres/src/fixed-window.ts"
+            type="FixedWindowLimiterConfig"
+        />
+    </Tab>
+    <Tab value="slidingWindow">
+        ### SlidingWindowLimiterConfig
+        <AutoTypeTable
+            path="../../packages/postgres/src/sliding-window.ts"
+            type="SlidingWindowLimiterConfig"
+        />
+    </Tab>
+    <Tab value="tokenBucket">
+        ### TokenBucketLimiterConfig
+        <AutoTypeTable
+            path="../../packages/postgres/src/token-bucket.ts"
+            type="TokenBucketLimiterConfig"
+        />
+    </Tab>
+    <Tab value="individualFixedWindow">
+        ### IndividualFixedWindowLimiterConfig
+        <AutoTypeTable
+            path="../../packages/postgres/src/individual-fixed-window.ts"
+            type="IndividualFixedWindowLimiterConfig"
+        />
+    </Tab>
 </Tabs>
 
 ## When to Use

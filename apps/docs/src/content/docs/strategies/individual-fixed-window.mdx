@@ -21,10 +21,7 @@ Unlike Fixed Window where all keys share the same window boundaries, each key's 
 
 Options for the Individual Fixed Window strategy:
 
-<AutoTypeTable
-  path="../../packages/core/src/types.ts"
-  type="IndividualFixedWindowOptions"
-/>
+<AutoTypeTable path="../../packages/core/src/types.ts" type="IndividualFixedWindowOptions" />
 
 ## Usage
 
@@ -42,20 +39,20 @@ const result = await limiter.check('user:123')
 
 ## Result Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `allowed` | `boolean` | Whether the request is allowed |
-| `remaining` | `number` | Requests remaining in this key's window |
-| `reset` | `number` | Epoch timestamp (ms) when this key's window resets |
+| Field       | Type      | Description                                        |
+| ----------- | --------- | -------------------------------------------------- |
+| `allowed`   | `boolean` | Whether the request is allowed                     |
+| `remaining` | `number`  | Requests remaining in this key's window            |
+| `reset`     | `number`  | Epoch timestamp (ms) when this key's window resets |
 
 ## Fixed Window vs Individual Fixed Window
 
-| Scenario | Fixed Window | Individual Fixed Window |
-|----------|-------------|------------------------|
-| User joins at 0:55 | Gets 5 seconds of window | Gets full 60-second window |
-| Window reset | All keys reset together | Each key resets independently |
-| Memory | Lower | Slightly higher (tracks per-key reset) |
-| Fairness | Less fair to late joiners | Fair to all users |
+| Scenario           | Fixed Window              | Individual Fixed Window                |
+| ------------------ | ------------------------- | -------------------------------------- |
+| User joins at 0:55 | Gets 5 seconds of window  | Gets full 60-second window             |
+| Window reset       | All keys reset together   | Each key resets independently          |
+| Memory             | Lower                     | Slightly higher (tracks per-key reset) |
+| Fairness           | Less fair to late joiners | Fair to all users                      |
 
 ## When to Use
 

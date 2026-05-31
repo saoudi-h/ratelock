@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, type ReactNode, type MouseEvent } from 'react'
+import { useRef, useState, type MouseEvent, type ReactNode } from 'react'
 
 interface SpotlightCardProps {
     children: ReactNode
@@ -31,8 +31,7 @@ export function SpotlightCard({ children, className = '' }: SpotlightCardProps) 
               relative overflow-hidden rounded-2xl border border-border/70 bg-card p-8
               transition-all duration-300 hover:shadow-lg hover:border-primary/20
               ${className}
-            `}
-        >
+            `}>
             {isFocused && (
                 <div
                     className="pointer-events-none absolute -inset-px rounded-2xl transition-opacity duration-300"

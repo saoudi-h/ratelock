@@ -75,9 +75,7 @@ export async function onRateAction(url: string, feedback: Feedback): Promise<Act
     const destination = await getFeedbackDestination()
     if (!octokit || !destination) throw new Error('GitHub comment integration is not configured.')
 
-    const category = destination.discussionCategories.nodes.find(
-        node => node.name === DocsCategory
-    )
+    const category = destination.discussionCategories.nodes.find(node => node.name === DocsCategory)
 
     if (!category)
         throw new Error(`Please create a "${DocsCategory}" category in GitHub Discussions`)

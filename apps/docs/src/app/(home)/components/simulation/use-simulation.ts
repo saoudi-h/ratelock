@@ -1,14 +1,14 @@
-import { useEffect, useRef, useCallback, useState } from 'react'
-import { useAtomValue, useSetAtom } from 'jotai'
-import type { StrategyId, StrategySpecificConfig } from '@/simulation/types'
 import {
-    eventsAtomFamily,
-    autoRequestsAtomFamily,
-    autoIntervalAtomFamily,
-    configAtom,
     addEventAtom,
+    autoIntervalAtomFamily,
+    autoRequestsAtomFamily,
+    configAtom,
+    eventsAtomFamily,
 } from '@/simulation/atoms'
 import { checkRateLimit } from '@/simulation/engine'
+import type { StrategyId, StrategySpecificConfig } from '@/simulation/types'
+import { useAtomValue, useSetAtom } from 'jotai'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 let eventIdCounter = 0
 

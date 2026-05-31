@@ -14,12 +14,7 @@ npm install @ratelock/local
 ## Quick Start
 
 ```typescript
-import {
-    fixedWindow,
-    slidingWindow,
-    tokenBucket,
-    individualFixedWindow,
-} from '@ratelock/local'
+import { fixedWindow, slidingWindow, tokenBucket, individualFixedWindow } from '@ratelock/local'
 
 const limiter = await fixedWindow({
     limit: 100,
@@ -31,21 +26,18 @@ const result = await limiter.check('user:123')
 
 ## All Strategies
 
-| Function | Strategy |
-|----------|----------|
-| `fixedWindow` | Fixed Window |
-| `slidingWindow` | Sliding Window |
-| `tokenBucket` | Token Bucket |
+| Function                | Strategy                |
+| ----------------------- | ----------------------- |
+| `fixedWindow`           | Fixed Window            |
+| `slidingWindow`         | Sliding Window          |
+| `tokenBucket`           | Token Bucket            |
 | `individualFixedWindow` | Individual Fixed Window |
 
 ## Configuration Options
 
 All limiters in the Local engine accept these shared base options:
 
-<AutoTypeTable
-  path="../../packages/local/src/types.ts"
-  type="LocalLimiterBaseConfig"
-/>
+<AutoTypeTable path="../../packages/local/src/types.ts" type="LocalLimiterBaseConfig" />
 
 Strategy-specific options are documented in the [Strategies](/docs/strategies) section.
 
@@ -63,11 +55,11 @@ const limiter = await fixedWindow({
 })
 ```
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `retry` | `RetryConfig` | Retry transient failures with exponential backoff |
-| `circuitBreaker` | `CircuitBreakerConfig` | Stop calling after consecutive failures |
-| `fallback` | `'throw' \| 'allow' \| 'deny'` | Behavior when the limiter throws |
+| Option           | Type                           | Description                                       |
+| ---------------- | ------------------------------ | ------------------------------------------------- |
+| `retry`          | `RetryConfig`                  | Retry transient failures with exponential backoff |
+| `circuitBreaker` | `CircuitBreakerConfig`         | Stop calling after consecutive failures           |
+| `fallback`       | `'throw' \| 'allow' \| 'deny'` | Behavior when the limiter throws                  |
 
 > **Note:** The Local engine runs entirely in memory and cannot fail due to network drops, so built-in `cache` is not supported (the engine itself has no network latency to cache).
 
@@ -79,10 +71,7 @@ For advanced use cases, import standalone resilience wrappers directly:
 import { withFallback, withRetry } from '@ratelock/local'
 
 const limiter = await fixedWindow({ limit: 100, windowMs: 60_000 })
-const withResilience = withFallback(
-    withRetry(limiter, { maxAttempts: 3 }),
-    { fallback: 'allow' }
-)
+const withResilience = withFallback(withRetry(limiter, { maxAttempts: 3 }), { fallback: 'allow' })
 ```
 
 See [Resilience Policies](/docs/policies) for full documentation and when to use standalone vs built-in.
@@ -92,34 +81,34 @@ See [Resilience Policies](/docs/policies) for full documentation and when to use
 The factory functions in `@ratelock/local` expect configuration objects matching these strict TypeScript shapes:
 
 <Tabs items={['fixedWindow', 'slidingWindow', 'tokenBucket', 'individualFixedWindow']}>
-  <Tab value="fixedWindow">
-    ### FixedWindowLimiterConfig
-    <AutoTypeTable
-      path="../../packages/local/src/fixed-window.ts"
-      type="FixedWindowLimiterConfig"
-    />
-  </Tab>
-  <Tab value="slidingWindow">
-    ### SlidingWindowLimiterConfig
-    <AutoTypeTable
-      path="../../packages/local/src/sliding-window.ts"
-      type="SlidingWindowLimiterConfig"
-    />
-  </Tab>
-  <Tab value="tokenBucket">
-    ### TokenBucketLimiterConfig
-    <AutoTypeTable
-      path="../../packages/local/src/token-bucket.ts"
-      type="TokenBucketLimiterConfig"
-    />
-  </Tab>
-  <Tab value="individualFixedWindow">
-    ### IndividualFixedWindowLimiterConfig
-    <AutoTypeTable
-      path="../../packages/local/src/individual-fixed-window.ts"
-      type="IndividualFixedWindowLimiterConfig"
-    />
-  </Tab>
+    <Tab value="fixedWindow">
+        ### FixedWindowLimiterConfig
+        <AutoTypeTable
+            path="../../packages/local/src/fixed-window.ts"
+            type="FixedWindowLimiterConfig"
+        />
+    </Tab>
+    <Tab value="slidingWindow">
+        ### SlidingWindowLimiterConfig
+        <AutoTypeTable
+            path="../../packages/local/src/sliding-window.ts"
+            type="SlidingWindowLimiterConfig"
+        />
+    </Tab>
+    <Tab value="tokenBucket">
+        ### TokenBucketLimiterConfig
+        <AutoTypeTable
+            path="../../packages/local/src/token-bucket.ts"
+            type="TokenBucketLimiterConfig"
+        />
+    </Tab>
+    <Tab value="individualFixedWindow">
+        ### IndividualFixedWindowLimiterConfig
+        <AutoTypeTable
+            path="../../packages/local/src/individual-fixed-window.ts"
+            type="IndividualFixedWindowLimiterConfig"
+        />
+    </Tab>
 </Tabs>
 
 ## When to Use

@@ -24,8 +24,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <html
             lang="en"
             className={`${funnelDisplay.variable} ${funnelSans.variable} ${ubuntuMono.variable}`}
-            suppressHydrationWarning
-        >
+            suppressHydrationWarning>
             <body className="flex min-h-screen flex-col">
                 <Providers>{children}</Providers>
             </body>

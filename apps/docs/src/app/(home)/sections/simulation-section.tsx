@@ -1,11 +1,11 @@
 'use client'
 
-import dynamic from 'next/dynamic'
-import { useEffect, useRef, useState } from 'react'
+import { Skeleton } from '@/components/ui/skeleton'
+import { isSimulationVisibleAtom } from '@/simulation/atoms'
 import { motion } from 'framer-motion'
 import { useSetAtom } from 'jotai'
-import { isSimulationVisibleAtom } from '@/simulation/atoms'
-import { Skeleton } from '@/components/ui/skeleton'
+import dynamic from 'next/dynamic'
+import { useEffect, useRef, useState } from 'react'
 
 function SimulationSkeleton() {
     return (
@@ -23,7 +23,7 @@ function SimulationSkeleton() {
 }
 
 const StrategyTabs = dynamic(
-    () => import('../components/simulation/strategy-tabs').then((m) => m.StrategyTabs),
+    () => import('../components/simulation/strategy-tabs').then(m => m.StrategyTabs),
     {
         ssr: false,
         loading: () => <SimulationSkeleton />,
@@ -56,7 +56,8 @@ export function SimulationSection() {
 
     return (
         <section ref={sectionRef} className="relative bg-muted">
-            <div className="
+            <div
+                className="
               mx-auto max-w-7xl px-6 py-20
               md:py-28
             ">
@@ -68,21 +69,22 @@ export function SimulationSection() {
                     className="
                       mb-12
                       md:mb-16
-                    "
-                >
-                    <h2 className="
+                    ">
+                    <h2
+                        className="
                       font-heading text-3xl font-semibold tracking-tight
                       md:text-4xl
                     ">
                         Try it live
                     </h2>
                     <p className="mt-4 max-w-lg text-muted-foreground">
-                        Interactive rate limiting simulation running entirely in your browser.
-                        Send requests, adjust parameters, and watch the limits in action.
+                        Interactive rate limiting simulation running entirely in your browser. Send
+                        requests, adjust parameters, and watch the limits in action.
                     </p>
                 </motion.div>
 
-                <div className="
+                <div
+                    className="
                   overflow-hidden rounded-2xl border border-border/70 bg-card/95
                   p-6 shadow-sm
                   md:p-8

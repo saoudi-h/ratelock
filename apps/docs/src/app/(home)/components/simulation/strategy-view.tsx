@@ -1,8 +1,5 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { useSetAtom } from 'jotai'
-import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent } from '@/components/ui/card'
 import {
     Dialog,
@@ -11,22 +8,25 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog'
+import { resetSimulationAtom, updateConfigAtom } from '@/simulation/atoms'
+import {
+    type FixedWindowConfig,
+    type IndividualFixedWindowConfig,
+    type SlidingWindowConfig,
+    type StrategyId,
+    type TokenBucketConfig,
+} from '@/simulation/types'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useSetAtom } from 'jotai'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { ConfigPanel } from './controls'
+import { DynamicCodeExplorer } from './dynamic-code-explorer'
 import { FixedWindowTimeline } from './fixed-window-timeline'
+import { IndividualFixedWindowTimeline } from './individual-fixed-window-timeline'
+import { SimulationControls } from './simulation-controls'
 import { SlidingWindowTimeline } from './sliding-window-timeline'
 import { TokenBucketTimeline } from './token-bucket-timeline'
-import { IndividualFixedWindowTimeline } from './individual-fixed-window-timeline'
 import { useSimulation } from './use-simulation'
-import { DynamicCodeExplorer } from './dynamic-code-explorer'
-import { resetSimulationAtom, updateConfigAtom } from '@/simulation/atoms'
-import { SimulationControls } from './simulation-controls'
-import {
-    type StrategyId,
-    type FixedWindowConfig,
-    type SlidingWindowConfig,
-    type TokenBucketConfig,
-    type IndividualFixedWindowConfig,
-} from '@/simulation/types'
 
 interface StrategyViewProps {
     strategyId: StrategyId
@@ -45,7 +45,7 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
     const [projectiles, setProjectiles] = useState<Projectile[]>([])
     const [isCodeOpen, setIsCodeOpen] = useState(false)
     const sendRequestRef = useRef<(() => Promise<any>) | null>(null)
-    
+
     // Refs for precise DOM measurements
     const containerRef = useRef<HTMLDivElement>(null)
     const timelineContainerRef = useRef<HTMLDivElement>(null)
@@ -55,17 +55,18 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
     // Calculate robust start coordinates based on actual DOM elements
     const getStartPos = (type: 'manual' | 'auto') => {
         const containerRect = containerRef.current?.getBoundingClientRect()
-        const sourceRect = type === 'manual' 
-            ? sendButtonRef.current?.getBoundingClientRect()
-            : autoToggleRef.current?.getBoundingClientRect()
-            
+        const sourceRect =
+            type === 'manual'
+                ? sendButtonRef.current?.getBoundingClientRect()
+                : autoToggleRef.current?.getBoundingClientRect()
+
         if (containerRect && sourceRect) {
             return {
                 x: sourceRect.left - containerRect.left + sourceRect.width / 2,
-                y: containerRect.bottom - sourceRect.top // Distance from bottom
+                y: containerRect.bottom - sourceRect.top, // Distance from bottom
             }
         }
-        
+
         // Fallbacks
         return { x: type === 'manual' ? window.innerWidth / 2 : 80, y: 30 }
     }
@@ -73,25 +74,28 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
     const getDestPos = (isToken: boolean) => {
         const containerRect = containerRef.current?.getBoundingClientRect()
         const timelineRect = timelineContainerRef.current?.getBoundingClientRect()
-        
+
         if (containerRect && timelineRect) {
             const baseDestX = timelineRect.left - containerRect.left + timelineRect.width / 2
             const destX = isToken && window.innerWidth >= 1024 ? baseDestX + 67.5 : baseDestX
             const destY = containerRect.bottom - (timelineRect.top + timelineRect.height / 2)
-            
+
             return { destX, destY }
         }
-        
+
         // Fallbacks
-        return { destX: isToken && window.innerWidth >= 1024 ? 'calc(50% + 67.5px)' : '50%', destY: 160 }
+        return {
+            destX: isToken && window.innerWidth >= 1024 ? 'calc(50% + 67.5px)' : '50%',
+            destY: 160,
+        }
     }
 
     const handleAutoTrigger = useCallback(() => {
         const { x, y } = getStartPos('auto')
         const { destX, destY } = getDestPos(strategyId === 'token-bucket')
         const id = `projectile-${Date.now()}-${Math.random()}`
-        setProjectiles((prev) => [...prev, { id, type: 'auto', startX: x, startY: y, destX, destY }])
-        
+        setProjectiles(prev => [...prev, { id, type: 'auto', startX: x, startY: y, destX, destY }])
+
         setTimeout(async () => {
             if (sendRequestRef.current) {
                 await sendRequestRef.current()
@@ -99,7 +103,7 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
         }, 180)
 
         setTimeout(() => {
-            setProjectiles((prev) => prev.filter((p) => p.id !== id))
+            setProjectiles(prev => prev.filter(p => p.id !== id))
         }, 500)
     }, [])
 
@@ -134,7 +138,7 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
         const checkDesktop = () => setIsDesktop(window.innerWidth >= 1024)
         checkDark()
         checkDesktop()
-        
+
         const observer = new MutationObserver(checkDark)
         observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
         window.addEventListener('resize', checkDesktop)
@@ -149,14 +153,17 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
         const { x, y } = getStartPos('manual')
         const { destX, destY } = getDestPos(strategyId === 'token-bucket')
         const id = `projectile-${Date.now()}-${Math.random()}`
-        setProjectiles((prev) => [...prev, { id, type: 'manual', startX: x, startY: y, destX, destY }])
-        
+        setProjectiles(prev => [
+            ...prev,
+            { id, type: 'manual', startX: x, startY: y, destX, destY },
+        ])
+
         setTimeout(async () => {
             await sendRequest()
         }, 180)
 
         setTimeout(() => {
-            setProjectiles((prev) => prev.filter((p) => p.id !== id))
+            setProjectiles(prev => prev.filter(p => p.id !== id))
         }, 500)
     }, [sendRequest])
 
@@ -172,8 +179,7 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
                 className="
                   rounded-3xl border border-border/40 bg-card/70 py-0
                   shadow-sm ring-0 overflow-hidden backdrop-blur-md
-                "
-            >
+                ">
                 <CardContent className="p-6 relative flex flex-col items-stretch gap-6">
                     {/* Compact Parameters Grid in the Bento Box */}
                     <div className="flex flex-col gap-2 pb-2 border-b border-border/20">
@@ -182,7 +188,7 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
                         </span>
                         <ConfigPanel
                             config={config}
-                            onConfigChange={(updates) => updateConfig(strategyId, updates)}
+                            onConfigChange={updates => updateConfig(strategyId, updates)}
                         />
                     </div>
 
@@ -192,7 +198,11 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
                             <FixedWindowTimeline
                                 events={events}
                                 config={config as FixedWindowConfig}
-                                lastResult={lastEvent?.result as { remaining: number; reset: number } | undefined}
+                                lastResult={
+                                    lastEvent?.result as
+                                        | { remaining: number; reset: number }
+                                        | undefined
+                                }
                                 startTime={startTime}
                             />
                         )}
@@ -201,7 +211,15 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
                             <SlidingWindowTimeline
                                 events={events}
                                 config={config as SlidingWindowConfig}
-                                lastResult={lastEvent?.result as { remaining: number; windowStart: number; windowEnd: number } | undefined}
+                                lastResult={
+                                    lastEvent?.result as
+                                        | {
+                                              remaining: number
+                                              windowStart: number
+                                              windowEnd: number
+                                          }
+                                        | undefined
+                                }
                                 startTime={startTime}
                             />
                         )}
@@ -210,7 +228,11 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
                             <TokenBucketTimeline
                                 events={events}
                                 config={config as TokenBucketConfig}
-                                lastResult={lastEvent?.result as { remaining: number; tokens: number; refillTime: number } | undefined}
+                                lastResult={
+                                    lastEvent?.result as
+                                        | { remaining: number; tokens: number; refillTime: number }
+                                        | undefined
+                                }
                                 startTime={startTime}
                             />
                         )}
@@ -219,7 +241,11 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
                             <IndividualFixedWindowTimeline
                                 events={events}
                                 config={config as IndividualFixedWindowConfig}
-                                lastResult={lastEvent?.result as { remaining: number; reset: number } | undefined}
+                                lastResult={
+                                    lastEvent?.result as
+                                        | { remaining: number; reset: number }
+                                        | undefined
+                                }
                                 startTime={startTime}
                             />
                         )}
@@ -227,16 +253,16 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
 
                     {/* Programmatic Projectile Particle Animations using Framer Motion */}
                     <AnimatePresence>
-                        {projectiles.map((p) => {
+                        {projectiles.map(p => {
                             return (
                                 <motion.div
                                     key={p.id}
-                                    initial={{ 
-                                        left: p.startX, 
-                                        bottom: p.startY, 
-                                        scale: 0.4, 
-                                        opacity: 0.1, 
-                                        x: '-50%' 
+                                    initial={{
+                                        left: p.startX,
+                                        bottom: p.startY,
+                                        scale: 0.4,
+                                        opacity: 0.1,
+                                        x: '-50%',
                                     }}
                                     animate={{
                                         left: [p.startX, p.startX, p.destX],
@@ -252,7 +278,7 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
                     </AnimatePresence>
 
                     {/* Extracted Simulation Controls component */}
-                    <SimulationControls 
+                    <SimulationControls
                         autoRequests={autoRequests}
                         setAutoRequests={setAutoRequests}
                         autoInterval={autoInterval}
@@ -270,13 +296,20 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
             <Dialog open={isCodeOpen} onOpenChange={setIsCodeOpen}>
                 <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-hidden flex flex-col gap-4 rounded-3xl">
                     <DialogHeader className="pb-1 border-b border-border/20">
-                        <DialogTitle className="text-base font-bold tracking-tight">API Implementation Example</DialogTitle>
+                        <DialogTitle className="text-base font-bold tracking-tight">
+                            API Implementation Example
+                        </DialogTitle>
                         <DialogDescription className="text-xs">
-                            Below is the accurate initialization and integration snippet for this rate limiting strategy using the @ratelock/local engine.
+                            Below is the accurate initialization and integration snippet for this
+                            rate limiting strategy using the @ratelock/local engine.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="flex-1 overflow-auto rounded-xl">
-                        <DynamicCodeExplorer strategyId={strategyId} config={config} isDark={isDark} />
+                        <DynamicCodeExplorer
+                            strategyId={strategyId}
+                            config={config}
+                            isDark={isDark}
+                        />
                     </div>
                 </DialogContent>
             </Dialog>

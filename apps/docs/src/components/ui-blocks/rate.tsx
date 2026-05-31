@@ -75,27 +75,20 @@ export function Rate({
             onOpenChange={v => {
                 if (!v) setOpinion(null)
             }}
-            className="border-y py-3"
-        >
+            className="border-y py-3">
             <div className="flex flex-row items-center gap-2">
                 <p className="pe-2 text-sm font-medium">How is this guide?</p>
                 <button
                     disabled={previous !== null}
-                    className={cn(
-                        rateButtonVariants({ active: activeOpinion === 'good' })
-                    )}
-                    onClick={() => setOpinion('good')}
-                >
+                    className={cn(rateButtonVariants({ active: activeOpinion === 'good' }))}
+                    onClick={() => setOpinion('good')}>
                     <ThumbsUp />
                     Good
                 </button>
                 <button
                     disabled={previous !== null}
-                    className={cn(
-                        rateButtonVariants({ active: activeOpinion === 'bad' })
-                    )}
-                    onClick={() => setOpinion('bad')}
-                >
+                    className={cn(rateButtonVariants({ active: activeOpinion === 'bad' }))}
+                    onClick={() => setOpinion('bad')}>
                     <ThumbsDown />
                     Bad
                 </button>
@@ -109,8 +102,7 @@ export function Rate({
                                 href={previous.response?.githubUrl}
                                 rel="noreferrer noopener"
                                 target="_blank"
-                                className="inline-flex items-center justify-center rounded-md bg-fd-primary px-3 py-1.5 text-xs font-medium text-fd-primary-foreground shadow transition-colors hover:bg-fd-primary/90"
-                            >
+                                className="inline-flex items-center justify-center rounded-md bg-fd-primary px-3 py-1.5 text-xs font-medium text-fd-primary-foreground shadow transition-colors hover:bg-fd-primary/90">
                                 View on GitHub
                             </a>
                             <button
@@ -118,8 +110,7 @@ export function Rate({
                                 onClick={() => {
                                     setOpinion(previous.opinion)
                                     setPrevious(null)
-                                }}
-                            >
+                                }}>
                                 Submit Again
                             </button>
                         </div>
@@ -140,8 +131,7 @@ export function Rate({
                         <button
                             type="submit"
                             className="inline-flex w-fit items-center justify-center rounded-md border bg-fd-background px-3 py-1.5 text-sm font-medium transition-colors hover:bg-fd-muted disabled:opacity-50"
-                            disabled={isPending}
-                        >
+                            disabled={isPending}>
                             Submit
                         </button>
                     </form>

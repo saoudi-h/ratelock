@@ -183,9 +183,7 @@ function NavigationMenuPositioner({
                       data-starting-style:scale-90 data-starting-style:opacity-0
                       dark:ring-foreground/10
                     ">
-                    <NavigationMenuPrimitive.Viewport
-                        className="relative size-full overflow-hidden"
-                    />
+                    <NavigationMenuPrimitive.Viewport className="relative size-full overflow-hidden" />
                 </NavigationMenuPrimitive.Popup>
             </NavigationMenuPrimitive.Positioner>
         </NavigationMenuPrimitive.Portal>

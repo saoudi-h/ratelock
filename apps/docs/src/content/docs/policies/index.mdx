@@ -120,12 +120,12 @@ import { withCache, withRetry, withCircuitBreaker, withFallback } from '@rateloc
 // or @ratelock/redis, @ratelock/postgres
 ```
 
-| Policy | Purpose |
-|--------|---------|
-| `withCache` | Cache denied results in memory to reduce database load |
-| `withRetry` | Retry transient failures with exponential backoff |
+| Policy               | Purpose                                                               |
+| -------------------- | --------------------------------------------------------------------- |
+| `withCache`          | Cache denied results in memory to reduce database load                |
+| `withRetry`          | Retry transient failures with exponential backoff                     |
 | `withCircuitBreaker` | Stop calling a failing backend temporarily to give it time to recover |
-| `withFallback` | Define behavior (allow, deny, throw) when the limiter fails |
+| `withFallback`       | Define behavior (allow, deny, throw) when the limiter fails           |
 
 ## Composition Order
 
@@ -153,7 +153,7 @@ If you use built-in policy options at creation time, avoid wrapping the same lim
 // ❌ Don't do this - double caching with different configs
 const limiter = await fixedWindow({
     url: 'redis://...',
-    cache: { maxSize: 1000, ttlMs: 30_000 },  // built-in cache
+    cache: { maxSize: 1000, ttlMs: 30_000 }, // built-in cache
 })
 
 const wrapped = withCache(limiter, { maxSize: 500, ttlMs: 10_000 }) // standalone cache on top

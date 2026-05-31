@@ -1,7 +1,7 @@
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
-import { useState, useEffect } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
 import { createHighlighter } from 'shiki'
 
 const codeExamples = [
@@ -99,7 +99,7 @@ export function AnimatedCodePanel() {
         const current = codeExamples[index]
         if (!current) return
 
-        getHighlighter().then((highlighter) => {
+        getHighlighter().then(highlighter => {
             if (cancelled) return
             const result = highlighter.codeToHtml(current.code, {
                 lang: 'typescript',
@@ -115,7 +115,7 @@ export function AnimatedCodePanel() {
 
     useEffect(() => {
         const timer = setInterval(() => {
-            setIndex((prev) => (prev + 1) % codeExamples.length)
+            setIndex(prev => (prev + 1) % codeExamples.length)
         }, 4000)
         return () => clearInterval(timer)
     }, [])
@@ -130,12 +130,29 @@ export function AnimatedCodePanel() {
                     <span className="size-3 rounded-full bg-[#ffbd2e]" />
                     <span className="size-3 rounded-full bg-[#27c93f]" />
                 </div>
-                
+
                 {/* centered file title */}
                 <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 pointer-events-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="size-3.5 text-muted-foreground/75"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="size-3.5 text-muted-foreground/75">
+                        <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+                        <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+                    </svg>
                     <span className="text-xs font-mono font-bold text-muted-foreground">
-                        {codeExamples[index]?.package === '@ratelock/local' ? 'local-setup.ts' : codeExamples[index]?.package === '@ratelock/redis' ? 'redis-setup.ts' : 'postgres-setup.ts'}
+                        {codeExamples[index]?.package === '@ratelock/local'
+                            ? 'local-setup.ts'
+                            : codeExamples[index]?.package === '@ratelock/redis'
+                              ? 'redis-setup.ts'
+                              : 'postgres-setup.ts'}
                     </span>
                 </div>
 

@@ -1,14 +1,10 @@
 'use client'
 
-import { useAtomValue, useSetAtom } from 'jotai'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { StrategyView } from './strategy-view'
 import { activeStrategyAtom } from '@/simulation/atoms'
-import {
-    STRATEGY_LABELS,
-    STRATEGY_DESCRIPTIONS,
-    type StrategyId,
-} from '@/simulation/types'
+import { STRATEGY_DESCRIPTIONS, STRATEGY_LABELS, type StrategyId } from '@/simulation/types'
+import { useAtomValue, useSetAtom } from 'jotai'
+import { StrategyView } from './strategy-view'
 
 const STRATEGIES: StrategyId[] = [
     'fixed-window',
@@ -24,14 +20,17 @@ export function StrategyTabs() {
     return (
         <Tabs
             value={activeStrategy}
-            onValueChange={(value) => setActiveStrategy(value as StrategyId)}
-            className="gap-5"
-        >
-            <TabsList className="
+            onValueChange={value => setActiveStrategy(value as StrategyId)}
+            className="gap-5">
+            <TabsList
+                className="
               h-auto rounded-2xl border border-border/70 bg-muted/55 p-1
             ">
-                {STRATEGIES.map((id) => (
-                    <TabsTrigger key={id} value={id} className="
+                {STRATEGIES.map(id => (
+                    <TabsTrigger
+                        key={id}
+                        value={id}
+                        className="
                       rounded-xl px-4 py-2 text-sm
                     ">
                         {STRATEGY_LABELS[id]}
@@ -39,16 +38,17 @@ export function StrategyTabs() {
                 ))}
             </TabsList>
 
-            {STRATEGIES.map((id) => (
+            {STRATEGIES.map(id => (
                 <TabsContent key={id} value={id} className="space-y-5">
                     <div className="max-w-2xl">
-                        <h3 className="
+                        <h3
+                            className="
                           font-heading text-2xl font-semibold tracking-tight
                         ">
-                          {STRATEGY_LABELS[id]}
+                            {STRATEGY_LABELS[id]}
                         </h3>
                         <p className="mt-2 text-sm/6 text-muted-foreground">
-                          {STRATEGY_DESCRIPTIONS[id]}
+                            {STRATEGY_DESCRIPTIONS[id]}
                         </p>
                     </div>
 

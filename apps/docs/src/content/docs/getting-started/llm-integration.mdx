@@ -7,11 +7,11 @@ RateLock provides dedicated endpoints that expose documentation in plain text an
 
 ## Endpoints
 
-| Endpoint | Format | Description |
-|----------|--------|-------------|
-| `/llms.txt` | Plain text | Index of all documentation pages with titles and descriptions |
-| `/llms-full.txt` | Plain text | Complete content of all documentation pages concatenated |
-| `/llms.mdx/docs/[slug]` | Markdown | Individual page content in processed Markdown format |
+| Endpoint                | Format     | Description                                                   |
+| ----------------------- | ---------- | ------------------------------------------------------------- |
+| `/llms.txt`             | Plain text | Index of all documentation pages with titles and descriptions |
+| `/llms-full.txt`        | Plain text | Complete content of all documentation pages concatenated      |
+| `/llms.mdx/docs/[slug]` | Markdown   | Individual page content in processed Markdown format          |
 
 ## Usage
 
@@ -64,7 +64,10 @@ const docs = await response.text()
 const completion = await openai.chat.completions.create({
     model: 'gpt-4',
     messages: [
-        { role: 'system', content: `You are a RateLock expert. Use this documentation: ${docs.slice(0, 50000)}` },
+        {
+            role: 'system',
+            content: `You are a RateLock expert. Use this documentation: ${docs.slice(0, 50000)}`,
+        },
         { role: 'user', content: 'How do I set up rate limiting with Redis?' },
     ],
 })

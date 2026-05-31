@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
-import { createHighlighter } from 'shiki'
 import type { StrategyId } from '@/simulation/types'
+import { useEffect, useMemo, useState } from 'react'
+import { createHighlighter } from 'shiki'
 
 let highlighterPromise: ReturnType<typeof createHighlighter> | null = null
 
@@ -88,7 +88,7 @@ if (result.allowed) {
 
     useEffect(() => {
         let cancelled = false
-        getHighlighter().then((highlighter) => {
+        getHighlighter().then(highlighter => {
             if (cancelled) return
             const result = highlighter.codeToHtml(code, {
                 lang: 'typescript',
@@ -117,15 +117,28 @@ if (result.allowed) {
                     <span className="size-3 rounded-full bg-[#ffbd2e]" />
                     <span className="size-3 rounded-full bg-[#27c93f]" />
                 </div>
-                
+
                 {/* File title centered perfectly */}
                 <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 pointer-events-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="size-3.5 text-muted-foreground/75"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="size-3.5 text-muted-foreground/75">
+                        <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+                        <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+                    </svg>
                     <span className="text-xs font-mono font-bold text-muted-foreground">
                         api.ts
                     </span>
                 </div>
-                
+
                 {/* Actions */}
                 <div className="flex items-center gap-2.5">
                     <span className="text-[9px] font-bold tracking-[0.08em] uppercase text-muted-foreground/80 bg-background border border-border px-2 py-0.5 rounded-md select-none font-mono">
@@ -136,20 +149,44 @@ if (result.allowed) {
                         variant="ghost"
                         onClick={handleCopy}
                         className="size-6 text-muted-foreground hover:text-foreground rounded-md transition-all duration-150 cursor-pointer"
-                        title="Copy Code"
-                    >
+                        title="Copy Code">
                         {copied ? (
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="size-3.5 text-emerald-500"><polyline points="20 6 9 17 4 12"/></svg>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="14"
+                                height="14"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="size-3.5 text-emerald-500">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
                         ) : (
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="size-3.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="14"
+                                height="14"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="size-3.5">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                            </svg>
                         )}
                     </Button>
                 </div>
             </div>
-            
+
             {/* Code Body */}
             <div className="p-5 text-[13px] overflow-auto bg-background">
-                <div 
+                <div
                     className="
                       font-mono leading-relaxed text-left
                       [&_code]:font-mono! [&_code]:text-[13px]!

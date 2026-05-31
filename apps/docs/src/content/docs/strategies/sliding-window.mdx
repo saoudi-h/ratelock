@@ -21,10 +21,7 @@ Instead of resetting at fixed intervals, the window "slides" with time. Only req
 
 Options for the Sliding Window strategy:
 
-<AutoTypeTable
-  path="../../packages/core/src/types.ts"
-  type="SlidingWindowOptions"
-/>
+<AutoTypeTable path="../../packages/core/src/types.ts" type="SlidingWindowOptions" />
 
 ## Usage
 
@@ -44,19 +41,18 @@ const result = await limiter.check('user:123')
 
 The check result returned by the Sliding Window limiter:
 
-<AutoTypeTable
-  path="../../packages/core/src/types.ts"
-  type="SlidingWindowResult"
-/>
+<AutoTypeTable path="../../packages/core/src/types.ts" type="SlidingWindowResult" />
 
 ## Pros and Cons
 
 **Pros:**
+
 - No boundary burst problem
 - More accurate rate limiting
 - Smooth request distribution
 
 **Cons:**
+
 - Higher memory usage (stores individual timestamps)
 - Slightly slower than Fixed Window
 - Requires cleanup of expired entries

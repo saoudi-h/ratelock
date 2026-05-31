@@ -21,10 +21,7 @@ All identifiers share the same window boundaries. At the start of each window, e
 
 Options for the Fixed Window strategy:
 
-<AutoTypeTable
-  path="../../packages/core/src/types.ts"
-  type="FixedWindowOptions"
-/>
+<AutoTypeTable path="../../packages/core/src/types.ts" type="FixedWindowOptions" />
 
 ## Usage
 
@@ -42,20 +39,22 @@ const result = await limiter.check('user:123')
 
 ## Result Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `allowed` | `boolean` | Whether the request is allowed |
-| `remaining` | `number` | Requests remaining in the current window |
-| `reset` | `number` | Epoch timestamp (ms) when the window resets |
+| Field       | Type      | Description                                 |
+| ----------- | --------- | ------------------------------------------- |
+| `allowed`   | `boolean` | Whether the request is allowed              |
+| `remaining` | `number`  | Requests remaining in the current window    |
+| `reset`     | `number`  | Epoch timestamp (ms) when the window resets |
 
 ## Pros and Cons
 
 **Pros:**
+
 - Lowest memory usage
 - Fastest check operations
 - Simple to understand and debug
 
 **Cons:**
+
 - Boundary burst problem: a user can make 2x requests at window boundaries
 - All keys share the same window boundaries
 

@@ -1,14 +1,21 @@
 import {
     fixedWindow,
+    individualFixedWindow,
     slidingWindow,
     tokenBucket,
-    individualFixedWindow,
-    type Limiter,
     type FixedWindowResult,
+    type Limiter,
     type SlidingWindowResult,
     type TokenBucketResult,
 } from '@ratelock/local'
-import type { StrategyId, StrategySpecificConfig, FixedWindowConfig, SlidingWindowConfig, TokenBucketConfig, IndividualFixedWindowConfig } from './types'
+import type {
+    FixedWindowConfig,
+    IndividualFixedWindowConfig,
+    SlidingWindowConfig,
+    StrategyId,
+    StrategySpecificConfig,
+    TokenBucketConfig,
+} from './types'
 
 type AnyResult = FixedWindowResult | SlidingWindowResult | TokenBucketResult
 type AnyLimiter = Limiter<AnyResult>
@@ -20,7 +27,10 @@ function serializeConfig(config: StrategySpecificConfig) {
     return JSON.stringify(config)
 }
 
-async function createLimiter(strategyId: StrategyId, config: StrategySpecificConfig): Promise<AnyLimiter> {
+async function createLimiter(
+    strategyId: StrategyId,
+    config: StrategySpecificConfig
+): Promise<AnyLimiter> {
     switch (strategyId) {
         case 'fixed-window': {
             const c = config as FixedWindowConfig
@@ -41,7 +51,10 @@ async function createLimiter(strategyId: StrategyId, config: StrategySpecificCon
     }
 }
 
-export async function getLimiter(strategyId: StrategyId, config: StrategySpecificConfig): Promise<AnyLimiter> {
+export async function getLimiter(
+    strategyId: StrategyId,
+    config: StrategySpecificConfig
+): Promise<AnyLimiter> {
     const cached = limiterCache.get(strategyId)
     const nextConfigKey = serializeConfig(config)
     const cachedConfigKey = limiterConfigCache.get(strategyId)
@@ -67,7 +80,7 @@ export async function destroyLimiter(strategyId: StrategyId): Promise<void> {
 }
 
 export async function destroyAllLimiters(): Promise<void> {
-    const promises = Array.from(limiterCache.keys()).map((id) => destroyLimiter(id))
+    const promises = Array.from(limiterCache.keys()).map(id => destroyLimiter(id))
     await Promise.all(promises)
 }
 
