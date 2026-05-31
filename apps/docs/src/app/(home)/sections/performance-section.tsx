@@ -292,7 +292,7 @@ export function PerformanceSection() {
                                 </span>
                             </div>
                             <span className="font-mono text-[10px] text-muted-foreground/60 select-none">
-                                Matrix 4 Baseline Tests • 80 Concurrency
+                                Matrix 4 Baseline • 80 Concurrency • Reference Hardware (Ryzen 9, 32GB RAM)
                             </span>
                         </div>
                     </MotionCardBentoBase>
