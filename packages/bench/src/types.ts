@@ -8,6 +8,13 @@ export type BenchMetrics = {
     latP95: number
     latP99: number
     totalReqs: number
+    runs: number
+    throughputMedian: number
+    throughputMin: number
+    throughputMax: number
+    throughputStdev: number
+    latP99Median: number
+    latP99Max: number
 }
 
 export type Backend = 'local' | 'redis' | 'postgres'

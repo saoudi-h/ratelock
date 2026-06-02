@@ -1,34 +1,36 @@
 import { performance } from 'perf_hooks'
 import type { BenchmarkAdapter } from './adapters/types'
 import { config } from './config'
+import { DiverseKeysScenario } from './scenarios'
 import type { BenchmarkScenario } from './scenarios/types'
 import type { BenchmarkResult, BenchMetrics, ScenarioConfig } from './types'
 
-export async function runHarness(
+type RunSample = {
+    throughput: number
+    successRate: number
+    allowedCount: number
+    latAvg: number
+    latP50: number
+    latP95: number
+    latP99: number
+    totalReqs: number
+}
+
+async function runTimedPhase(
     adapter: BenchmarkAdapter,
-    scenario: BenchmarkScenario
-): Promise<BenchMetrics> {
+    scenario: BenchmarkScenario,
+    durationMs: number,
+    keySuffix: string,
+    shouldApplyLatency: boolean
+): Promise<RunSample> {
     const latencies: number[] = []
     let successes = 0
     let totalReqs = 0
 
     const start = performance.now()
-    const endAt = start + config.benchDuration
+    const endAt = start + durationMs
     const workers: Promise<void>[] = []
     let idCounter = 0
-
-    const keySuffix = adapter.name.replace(/[^a-z0-9]/gi, '-').toLowerCase()
-
-    const isLocal =
-        adapter.name.toLowerCase().includes('local') ||
-        adapter.name.toLowerCase().includes('memory') ||
-        adapter.name.toLowerCase().includes('raw') ||
-        adapter.name.toLowerCase().includes('cache') ||
-        adapter.name.toLowerCase().includes('fallback') ||
-        adapter.name.toLowerCase().includes('retry') ||
-        adapter.name.toLowerCase().includes('circuitbreaker') ||
-        adapter.name.toLowerCase().includes('decorator')
-    const shouldApplyLatency = !isLocal && config.benchLatencyMs > 0
 
     const work = async () => {
         while (performance.now() < endAt) {
@@ -53,7 +55,6 @@ export async function runHarness(
         }
     }
 
-    // Spawn concurrent workers
     for (let w = 0; w < config.benchConcurrency; w++) {
         workers.push(work())
     }
@@ -61,7 +62,6 @@ export async function runHarness(
     await Promise.all(workers)
     const elapsed = performance.now() - start
 
-    // Sort for percentiles
     const sorted = latencies.slice().sort((a, b) => a - b)
     const p = (pct: number) => {
         if (sorted.length === 0) return 0
@@ -74,7 +74,6 @@ export async function runHarness(
     const latAvg = latencies.length ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0
 
     return {
-        name: `${adapter.name} (${scenario.name})`,
         throughput,
         successRate,
         allowedCount: successes,
@@ -83,6 +82,103 @@ export async function runHarness(
         latP95: p(95),
         latP99: p(99),
         totalReqs,
+    }
+}
+
+function median(values: number[]): number {
+    if (values.length === 0) return 0
+    const sorted = values.slice().sort((a, b) => a - b)
+    const mid = Math.floor(sorted.length / 2)
+    return sorted.length % 2 === 0 ? (sorted[mid - 1]! + sorted[mid]!) / 2 : sorted[mid]!
+}
+
+function stdev(values: number[]): number {
+    if (values.length < 2) return 0
+    const mean = values.reduce((a, b) => a + b, 0) / values.length
+    const variance = values.reduce((acc, v) => acc + (v - mean) ** 2, 0) / (values.length - 1)
+    return Math.sqrt(variance)
+}
+
+function maybeGc(): void {
+    if (!config.benchGc) return
+    const g = (global as { gc?: () => void }).gc
+    if (typeof g === 'function') g()
+}
+
+export async function runHarness(
+    adapter: BenchmarkAdapter,
+    scenario: BenchmarkScenario
+): Promise<BenchMetrics> {
+    const keySuffix = adapter.name.replace(/[^a-z0-9]/gi, '-').toLowerCase()
+
+    const isLocal =
+        adapter.name.toLowerCase().includes('local') ||
+        adapter.name.toLowerCase().includes('memory') ||
+        adapter.name.toLowerCase().includes('raw') ||
+        adapter.name.toLowerCase().includes('cache') ||
+        adapter.name.toLowerCase().includes('fallback') ||
+        adapter.name.toLowerCase().includes('retry') ||
+        adapter.name.toLowerCase().includes('circuitbreaker') ||
+        adapter.name.toLowerCase().includes('decorator')
+    const shouldApplyLatency = !isLocal && config.benchLatencyMs > 0
+
+    maybeGc()
+
+    if (config.benchWarmupMs > 0) {
+        const warmupScenario = new DiverseKeysScenario()
+        await runTimedPhase(
+            adapter,
+            warmupScenario,
+            config.benchWarmupMs,
+            `__warmup-${keySuffix}`,
+            shouldApplyLatency
+        )
+        maybeGc()
+    }
+
+    const samples: RunSample[] = []
+    for (let i = 0; i < config.benchRuns; i++) {
+        maybeGc()
+        samples.push(
+            await runTimedPhase(
+                adapter,
+                scenario,
+                config.benchDuration,
+                keySuffix,
+                shouldApplyLatency
+            )
+        )
+    }
+
+    const throughputs = samples.map(s => s.throughput)
+    const p99s = samples.map(s => s.latP99)
+    const p50s = samples.map(s => s.latP50)
+    const p95s = samples.map(s => s.latP95)
+    const latAvgs = samples.map(s => s.latAvg)
+    const successRates = samples.map(s => s.successRate)
+
+    const totalReqs = samples.reduce((a, s) => a + s.totalReqs, 0)
+    const allowedCount = samples.reduce((a, s) => a + s.allowedCount, 0)
+
+    return {
+        name: `${adapter.name} (${scenario.name})`,
+        throughput: Math.round(median(throughputs)),
+        successRate: successRates.length
+            ? successRates.reduce((a, b) => a + b, 0) / successRates.length
+            : 0,
+        allowedCount,
+        latAvg: latAvgs.length ? latAvgs.reduce((a, b) => a + b, 0) / latAvgs.length : 0,
+        latP50: median(p50s),
+        latP95: median(p95s),
+        latP99: median(p99s),
+        totalReqs,
+        runs: samples.length,
+        throughputMedian: Math.round(median(throughputs)),
+        throughputMin: Math.min(...throughputs),
+        throughputMax: Math.max(...throughputs),
+        throughputStdev: Math.round(stdev(throughputs)),
+        latP99Median: median(p99s),
+        latP99Max: Math.max(...p99s),
     }
 }
 

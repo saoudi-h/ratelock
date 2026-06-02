@@ -63,7 +63,7 @@ export async function runMatrix4(
             strategy: 'fixed-window',
             driverType: 'pg',
             unlogged: true,
-            skipMigrations: true,
+            skipMigrations: false,
         })
         const rlfPostgres = new RlfPostgresAdapter()
 

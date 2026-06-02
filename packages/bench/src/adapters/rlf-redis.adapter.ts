@@ -7,13 +7,11 @@ export class RlfRedisAdapter implements BenchmarkAdapter {
     private limiter: any
 
     async initialize(): Promise<void> {
-        const { createClient } = await import('redis')
-        this.client = createClient({
-            url: config.redisUrl,
-            socket: {
-                connectTimeout: 1000,
-                reconnectStrategy: () => false,
-            },
+        const { default: IORedis } = await import('ioredis')
+        this.client = new IORedis(config.redisUrl, {
+            maxRetriesPerRequest: 0,
+            connectTimeout: 1000,
+            lazyConnect: true,
         })
         this.client.on('error', () => {
             // Swallow background connection error events to prevent Node uncaught exceptions
@@ -46,7 +44,7 @@ export class RlfRedisAdapter implements BenchmarkAdapter {
 
     async destroy(): Promise<void> {
         if (this.client) {
-            await this.client.quit()
+            this.client.disconnect()
         }
     }
 }

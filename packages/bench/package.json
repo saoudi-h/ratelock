@@ -5,6 +5,7 @@
     "scripts": {
         "bench:local": "tsx src/index.ts --legacy",
         "bench:full": "docker compose up -d && tsx src/index.ts; status=$?; docker compose down; exit $status",
+        "bench:full:gc": "docker compose up -d && NODE_OPTIONS='--expose-gc' BENCH_GC=true tsx src/index.ts; status=$?; docker compose down; exit $status",
         "bench:fair": "docker compose up -d && taskset -c 0 tsx src/index.ts; status=$?; docker compose down; exit $status",
         "bench": "tsx src/index.ts --legacy",
         "lint": "eslint . --max-warnings 0",

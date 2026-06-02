@@ -64,7 +64,7 @@ export async function runMatrix5(
             strategy: 'fixed-window',
             driverType: 'postgres',
             unlogged: true,
-            skipMigrations: true,
+            skipMigrations: false,
         })
         const pgNodeFixedLogged = new PostgresAdapter({
             name: 'node-postgres - Fixed Window (Logged)',
@@ -85,14 +85,14 @@ export async function runMatrix5(
             strategy: 'token-bucket',
             driverType: 'postgres',
             unlogged: true,
-            skipMigrations: true,
+            skipMigrations: false,
         })
         const pgNodeToken = new PostgresAdapter({
             name: 'node-postgres - Token Bucket',
             strategy: 'token-bucket',
             driverType: 'pg',
             unlogged: true,
-            skipMigrations: true,
+            skipMigrations: false,
         })
 
         // Diverse scenarios
