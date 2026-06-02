@@ -1,145 +1,257 @@
 ---
 title: Benchmarks
-description: Performance analysis, database configurations, and competitor comparisons.
+description: Methodology, reference hardware, and reproducible performance numbers for the standardized benchmark suite.
 ---
 
-RateLock optimizes each storage engine natively to achieve high throughput and low latency. Instead of wrapping queries in a generic database translation layer, the library targets native database features. Redis uses Lua scripts for atomic operations, PostgreSQL uses isolated UPSERT queries, and the local memory engine uses JavaScript Maps.
-
-This page shows performance data from our standardized benchmark suite under concurrent workloads.
+RateLock implements each storage engine natively rather than wrapping a generic database layer. Redis uses Lua scripts for atomic counters and sorted sets, PostgreSQL uses targeted UPSERT queries, and the local memory engine uses JavaScript `Map` lookups. This page shows the cost of those choices under a controlled workload.
 
 > [!WARNING]
-> **Hardware Dependency**
-> The absolute numbers listed below represent results on a specific reference test machine (AMD Ryzen 7 5800X, 32GB RAM, Node.js v25 on Linux x64). These values are not absolute physical limits. Actual throughput and latency vary depending on your CPU, memory speed, network conditions, and database configuration. Use these metrics as a relative comparison of algorithmic efficiency.
+> **Hardware and runtime dependency**
+> The numbers on this page come from a single reference machine. They are not a guarantee of throughput or latency in your environment. Use them to compare strategies and backends against each other, not to predict production performance. Re-run the suite on your target hardware before making sizing decisions.
 
 ---
 
-## Performance Summary
+## What this suite measures
 
-These metrics reflect concurrent rate-limiting operations on our reference test machine:
+For every `(adapter, scenario)` pair, the harness runs a fixed-duration workload of concurrent workers calling the rate-limit check, then collects:
 
-- **In-Memory Throughput**: Memory counter strategies handle between 1.2M and 2.5M operations per second per node depending on key distribution.
-- **Competitor Comparison**: RateLock Fixed Window throughput is higher than `rate-limiter-flexible` (3.6x in memory, 5.6x over Redis).
-- **Spam Mitigation**: The `withCache` decorator shields backend databases by intercepting repeat blocked requests in memory, scaling spam-check throughput to 2.4M operations per second.
-- **Postgres Optimization**: Unlogged tables in PostgreSQL improve counter write performance by approximately 18% compared to standard logged tables.
+- **Throughput** in operations per second, computed from the total number of completed iterations.
+- **Latency percentiles** (p50, p95, p99) of the wall-clock time from issuing the check to receiving the response.
+- **Allowed rate**, the percentage of iterations that the limiter returned as `allowed: true`. In `diverse-keys` scenarios this sits at 100% (one request per key). In `extreme-spam` scenarios, the limit is exhausted quickly and most iterations are denied.
 
----
+The numbers reported are the **median across 3 runs** of 2 seconds each, with a 500 ms warmup using a different key space so the V8 inline caches, JIT, and connection pools are hot before measurement starts. The raw JSON output also records the per-run min, max, and stdev so you can see the spread.
 
-## 1. Local Memory Strategy Trade-offs
+## What this suite does not measure
 
-Rate-limiting strategies balance mathematical precision against CPU overhead.
-
-| Strategy | Throughput (Ops/sec) | Average Latency | Algorithmic Complexity |
-| :--- | :--- | :--- | :--- |
-| **Fixed Window** | **2,416,711** | 0.03ms | $O(1)$ Counter increments |
-| **Token Bucket** | **2,374,650** | 0.03ms | $O(1)$ Time-based math |
-| **Individual Fixed** | **2,502,058** | 0.03ms | $O(1)$ Dynamic counters |
-| **Sliding Window** | **58,799** | 1.36ms | $O(N)$ Array timestamp operations |
-
-> [!IMPORTANT]
-> **Sliding Window Array Overhead**
-> The Sliding Window strategy checks a moving window at millisecond precision. To do this, the engine must store a timestamp for every request in an array or a Redis Sorted Set. On every check, it filters out expired timestamps.
->
-> This array allocation and filtering runs in $O(N)$ time. Counter-based strategies like Fixed Window or Token Bucket increment a single number in $O(1)$ time. This difference explains why the Sliding Window strategy handles fewer operations (~60,000 ops/sec) than Token Bucket (~2.4 Million ops/sec). For most high-throughput applications, Token Bucket offers the best balance of precision and performance.
+- **Cold start** or first-request latency. Warmup is explicit.
+- **Network latency to remote backends**. All backends run in local Docker containers, so the round-trip is the minimum the OS can deliver.
+- **V8 GC pauses**. By default the runner does not expose `--expose-gc`. A `bench:full:gc` variant exists that does, for users who want GC-controlled numbers.
+- **Multi-process or clustered** deployments. The harness runs a single Node.js process.
+- **Storage cost** over time. Memory growth, WAL size, and disk pressure are not part of the throughput/latency story.
+- **Failure modes** in production. Connection retries, partial failures, and DNS resolution are out of scope.
 
 ---
 
-## 2. Competitive Analysis: RateLock vs Competitors
+## Reference hardware
 
-We compared RateLock against `rate-limiter-flexible` (RLF) in a high-concurrency spam scenario. We ran 80 parallel workers querying a single key.
+The committed numbers were generated on:
 
-### In-Memory Counter Engines
+- CPU: AMD Ryzen 7 5800X (8 cores, 16 threads)
+- RAM: 32 GB DDR4
+- OS: Linux x64, kernel 6.x
+- Node.js: v25.9.0
+- Backends: Postgres 18, Redis 7, Valkey 8, all running in Docker on the same host
 
-RateLock uses direct key lookups in a native JavaScript `Map` to avoid object allocation. RLF performs validation checks, runs state validations, and instantiates custom classes (`new RateLimiterRes()`) on every request.
+Your throughput will scale roughly with single-core CPU frequency and memory bandwidth. Latency to a remote backend will be dominated by network round-trip, which the local Docker setup does not capture.
 
-- **RateLock Local Fixed Window**: **2,166,631 ops/sec** (Avg Latency: 0.04ms)
-- **rate-limiter-flexible Memory**: **594,228 ops/sec** (Avg Latency: 0.13ms)
-- **Throughput ratio**: RateLock handles 3.6x more operations.
+## Methodology in detail
 
----
+### Workload
 
-### Redis Distributed Engines
+- **80 concurrent workers** per scenario (`BENCH_CONCURRENCY=80`).
+- **2 second** timed phase per run (`BENCH_DURATION=2000`).
+- **3 runs** per `(adapter, scenario)` pair (`BENCH_RUNS=3`). The reported number is the median; the JSON also carries min, max, and stdev.
+- **500 ms warmup** (`BENCH_WARMUP_MS=500`) on a different key space using the `Diverse Keys` scenario, so the rate-limit quota is not consumed before measurement.
 
-While both packages use Lua scripts to execute atomic checks in Redis, they differ in network transport and serialization overhead:
+### Scenarios
 
-- **RateLock Redis Fixed Window**: **131,650 ops/sec** (Avg Latency: 0.61ms)
-- **rate-limiter-flexible Redis**: **23,221 ops/sec** (Avg Latency: 3.35ms)
-- **Throughput ratio**: RateLock handles 5.6x more operations.
+| Scenario | Shape | What it stresses |
+| :--- | :--- | :--- |
+| **Diverse Keys** | Every iteration uses a fresh key | Hot path of cache and storage; no contention on a single key |
+| **Extreme Spam** | 80 workers hammer the same key until the 1000 req / 60 s limit is exhausted | Worst case for a single key: every check after the first 1000 is denied |
+| **Realistic Mix** | 30% of iterations target one hot key, 70% target fresh keys | Mixed load that resembles real traffic |
+| **Batch Check** | Each iteration checks an array of 5 identifiers in parallel | Per-iteration overhead when multiple keys are submitted together |
 
-#### Factual Analysis of the Performance Difference
+For this page, only **Diverse** and **Extreme Spam** numbers are shown. Realistic Mix and Batch are present in the raw output.
 
-Examination of `rate-limiter-flexible`'s implementation (`RateLimiterRedis.js`) reveals several factors that introduce CPU and network overhead:
+### Backends and tunings
 
-1. **Lua Script Execution**: RLF uses the full Lua script string inside `eval` calls on every check for several client libraries (such as node-redis). This transmits the entire script string over the network on every request and forces Redis to recompile the script. RateLock uses `evalsha` to send a 40-character SHA1 hash of the pre-loaded script, reducing payload size and skipping database recompilation.
-2. **Regex Validation**: RLF executes regular expression matches on point arguments (e.g., `RegExp("^[1-9][0-9]*$")`) on every rate-limiting request. This creates CPU overhead in the JS runtime under concurrent loads.
-3. **Connection Status Checks**: RLF performs dynamic connection checks (`_isRedisReady`) on every operation, accessing internal client states which adds microsecond delays.
-4. **Instantiation Overhead**: RLF instantiates a new `RateLimiterRes` class instance and parses strings to integers on every response. RateLock returns simple, raw JavaScript objects, avoiding garbage collection pressure.
+All backends run in local Docker containers. The Postgres container in `packages/bench/docker-compose.yml` starts with three flags that disable durability:
 
-> [!NOTE]
-> **Strategy Availability**
-> RLF implements only the Fixed Window strategy for database-backed engines (Redis and Postgres). RateLock implements all four strategies (Fixed Window, Sliding Window, Token Bucket, and Individual Fixed Window) natively on all three backends.
-
----
-
-## 3. Storage & Drivers Engine Comparison
-
-Your choice of database determines maximum rate-limiting capacity.
-
-```
-In-Memory    [████████████████████████████████████████] 2,400,000 ops/sec
-Redis/Valkey [██] 130,000 ops/sec
-Postgres     [] 7,700 ops/sec
+```text
+synchronous_commit=off
+fsync=off
+full_page_writes=off
 ```
 
-### PostgreSQL: Logged vs Unlogged Tables
+These flags are applied to both RateLock and `rate-limiter-flexible` so the comparison is symmetric, but they are **not the Postgres defaults** and they would not survive a crash. Treat the Postgres numbers as representative of a rate-limit counter that is acceptable to lose on crash (the typical case), not as a measurement of a transactional workload.
 
-Write logging directly affects PostgreSQL rate-limiting throughput.
+Redis and Valkey run with their default durability settings. The Redis client used by **both** RateLock and `rate-limiter-flexible` in the comparison matrix is `ioredis`, so any throughput gap is the limiter implementation and not the client.
 
-- **node-postgres - Fixed Window (Unlogged)**: **7,723 ops/sec** (Avg Latency: 10.3ms)
-- **node-postgres - Fixed Window (Logged)**: **6,539 ops/sec** (Avg Latency: 12.1ms)
-- **Performance difference**: Unlogged tables increase throughput by 18%.
+### Rate-limiter-flexible integration
+
+`rate-limiter-flexible` throws on rate-limit denial. The RLF adapter wraps each call in `try/catch` to mirror how a real application would consume it, then maps to a `{ allowed: boolean }` shape. RateLock returns a value rather than throwing, so the comparison reflects the actual public API cost of each library.
+
+---
+
+## 1. Local Memory Strategies
+
+Strategies that fit in process memory. Counter-based strategies run in constant time per check; the sliding window strategy maintains a per-key array of timestamps and runs in $O(N)$ per check.
+
+| Strategy | Diverse — Median (min–max) ops/sec | p99 latency | Extreme Spam — Median (min–max) ops/sec | p99 latency |
+| :--- | :---: | :---: | :---: | :---: |
+| **Fixed Window** | 996,302 (974K–1,277K) | 0.11 ms | 2,242,142 (2,176K–2,307K) | 0.06 ms |
+| **Token Bucket** | 994,231 (893K–1,268K) | 0.10 ms | 2,243,570 | 0.05 ms |
+| **Individual Fixed Window** | 1,009,908 (839K–1,277K) | 0.10 ms | 2,434,939 | 0.05 ms |
+| **Sliding Window** | 742,392 (730K–752K) | 0.15 ms | 55,208 | 2.67 ms |
+
+The high min–max spread on Fixed Window, Token Bucket, and Individual Fixed under diverse keys reflects the first-run JIT cost; the median run is steady. Sliding Window is stable but slow: every check iterates the timestamp array, and the array is full after 60 s of spam.
 
 > [!TIP]
-> **Why Unlogged Tables Work**
-> Creating rate-limiting tables as `UNLOGGED` tells PostgreSQL to skip writing transactions to the Write-Ahead Log (WAL). If the database crashes, Postgres truncates these tables on recovery. This truncation is acceptable for transient rate-limiting counters and improves SSD longevity.
+> **Choosing a memory strategy**
+> For a hot key with high request volume, prefer **Token Bucket** or **Individual Fixed Window**. **Fixed Window** is fine when the boundary effect is acceptable. **Sliding Window** is the only one that gives true rolling-window semantics; the cost is roughly 40x lower throughput in this scenario.
 
 ---
 
-## 4. Resilience Policies (Decorators Overhead)
+## 2. Redis Strategies
 
-You can wrap rate limiters in resilience decorators (`withCache`, `withCircuitBreaker`, `withFallback`, `withRetry`). These decorators add negligible CPU overhead. In spam scenarios, the `withCache` decorator increases overall throughput by intercepting requests in memory.
+All numbers below use `ioredis` and connect to a local Redis 7 container.
 
-| Limiter Layer Configuration | Throughput (Ops/sec) | Latency Overhead |
-| :--- | :--- | :--- |
-| **Raw Local Fixed Window** | **1,088,680** | Reference |
-| **Fixed Window + withCircuitBreaker** | **1,195,936** | < 1% difference |
-| **Fixed Window + withFallback** | **1,115,179** | < 1% difference |
-| **Fixed Window + withRetry** | **828,946** | Under retry simulation |
-| **Fixed Window + withCache (Deny Cache)** | **2,418,094** | 2.2x Increase |
+| Strategy | Diverse — Median ops/sec | p99 latency | Extreme Spam — Median ops/sec | p99 latency |
+| :--- | :---: | :---: | :---: | :---: |
+| **Fixed Window** | 136,031 | 0.99 ms | 141,993 | 0.90 ms |
+| **Token Bucket** | 119,390 | 1.01 ms | 129,708 | 1.02 ms |
+| **Individual Fixed Window** | 122,484 | 1.08 ms | 122,920 | 1.08 ms |
+| **Sliding Window** | 92,271 | 1.34 ms | 128,543 | 0.95 ms |
 
-### Intercepting Spam in Memory (`withCache`)
-
-When you wrap a backend limiter (Postgres or Redis) in the `withCache` policy, RateLock stores blocked keys in a local, short-lived memory cache. When a client exceeds their limit, the first blocked request populates this cache. Subsequent requests from that client fail immediately in memory, preventing network round-trips to Redis or PostgreSQL.
-
-- **Without Deny Cache**: Spammed requests query Postgres directly, capping at 1,200 ops/sec.
-- **With Deny Cache**: Spammed requests fail in memory at 2,418,094 ops/sec.
-- **Result**: This mechanism shields Postgres and Redis clusters from database load during high-volume spam.
+The Redis numbers are an order of magnitude below the in-memory numbers because every check is a network round-trip. The p99 latency in the diverse scenario is dominated by the network and serialization, not by the algorithm choice. Under spam, the work shifts to the limiter's Lua script rather than the network, so latency compresses.
 
 ---
 
-## 5. Run the Benchmarks Locally
+## 3. PostgreSQL Strategies
 
-You can execute these benchmarks locally. The test suite manages Postgres, Redis, and Valkey containers via Docker, executes the test matrix, compiles the reports, and stops the containers.
+Postgres numbers come from a local Postgres 18 container with the durability flags listed in [Methodology in detail](#methodology-in-detail). Throughput is two orders of magnitude below Redis because of the per-query transaction cost.
+
+| Strategy | Diverse — Median ops/sec | p99 latency | Extreme Spam — Median ops/sec | p99 latency |
+| :--- | :---: | :---: | :---: | :---: |
+| **Fixed Window** | 22,983 | 7.13 ms | 20,746 | 8.05 ms |
+| **Sliding Window** | 21,066 | 7.45 ms | 1,762 | 213.47 ms |
+| **Token Bucket** | 14,440 | 14.75 ms | 1,658 | 254.77 ms |
+| **Individual Fixed Window** | 22,228 | 7.12 ms | 18,042 | 9.13 ms |
+
+The diverse scenario tells a calm story: all four strategies sit between 14K and 23K ops/sec. The extreme-spam scenario is where the choice matters:
+
+- **Fixed Window** and **Individual Fixed Window** stay close to their diverse throughput. They are UPSERT-friendly and tolerate single-key contention.
+- **Sliding Window** collapses to 1,762 ops/sec with 213 ms p99. The implementation deletes expired rows from a timestamp array on every check, which serializes badly on a hot key.
+- **Token Bucket** collapses to 1,658 ops/sec with 254 ms p99 for the same reason: a transaction per check, plus a refill calculation.
+
+> [!IMPORTANT]
+> **Postgres strategy recommendation**
+> On Postgres, prefer **Fixed Window** or **Individual Fixed Window**. Avoid **Sliding Window** and **Token Bucket** for high-volume single-key workloads. If you need rolling-window semantics, consider the `withCache` decorator (see [section 5](#5-resilience-policies-decorator-overhead)) to absorb the spam in memory.
+
+### Logged vs Unlogged tables
+
+| Table type | Diverse — Median ops/sec | p99 latency |
+| :--- | :---: | :---: |
+| **Logged** (default) | 21,230 | 7.65 ms |
+| **Unlogged** | 19,767 | 8.63 ms |
+
+In this run, unlogged tables are slightly **slower** than logged tables, well within the run-to-run spread. The 18% gain quoted in earlier drafts of this page came from a single short run without warmup. The takeaway is: unlogged tables remove a durability cost that is not the bottleneck in this scenario, so the difference is small and noisy. Use unlogged tables for the same reason you would use an in-memory cache: the data is acceptable to lose on crash.
+
+---
+
+## 4. RateLock vs rate-limiter-flexible
+
+This matrix is the one most likely to be misread, so the methodology matters. Both libraries are configured with `points: 1000, duration: 60s` (RLF's units) or `limit: 1000, windowMs: 60000` (RateLock's). Both run on the same hardware with the same backends. The Redis client is `ioredis` for both, as discussed in [Methodology in detail](#methodology-in-detail).
+
+| Backend | RateLock — Median ops/sec | RLF — Median ops/sec | Ratio |
+| :--- | :---: | :---: | :---: |
+| **Local Memory** (extreme spam) | 2,029,667 | 739,614 | 2.7x |
+| **Redis** (extreme spam, ioredis) | 131,953 | 78,921 | 1.7x |
+| **PostgreSQL** (extreme spam) | 12,260 | 13,834 | 0.9x |
+
+- On local memory, RateLock is **2.7x** faster under spam. The single-key hot path benefits from direct `Map` lookups and the absence of per-call class instantiation.
+- On Redis, RateLock is **1.7x** faster. Both libraries use Lua scripts for atomic counters, so the gap is the script body and the network framing around it.
+- On PostgreSQL, **`rate-limiter-flexible` is slightly faster** under spam (1.13x). This is the honest result of the comparison and is the main reason this matrix is shown with the caveats in place. RLF's Postgres implementation uses a single composite-key UPSERT pattern that maps well to Postgres' query planner, while RateLock uses a per-key table layout.
+
+> [!NOTE]
+> **API differences that bias the comparison**
+> `rate-limiter-flexible.consume()` throws on denial. The RLF adapter wraps each call in `try/catch` to mirror real usage. RateLock returns a value rather than throwing, so it does not pay the cost of exception handling. Under extreme spam where 99.9% of calls are denied, the try/catch is a real cost that this number reflects.
+
+> [!NOTE]
+> **Strategy availability**
+> RLF implements only the Fixed Window strategy for Redis and Postgres in the comparison. RateLock implements all four strategies natively on all three backends. The 1.7x Redis gap is on Fixed Window, which is the only like-for-like comparison available.
+
+---
+
+## 5. Resilience Policies (Decorator Overhead)
+
+Each decorator wraps a local Fixed Window limiter. The numbers are diverse scenarios so that the per-iteration overhead of the decorator is what is being measured, not a side effect of the limiter itself.
+
+| Limiter | Diverse — Median ops/sec | p99 latency | Relative to raw |
+| :--- | :---: | :---: | :---: |
+| **Raw Fixed Window** | 1,137,179 | 0.10 ms | reference |
+| **+ withCache** | 1,023,863 | 0.12 ms | -10% |
+| **+ withCircuitBreaker** | 848,767 | 0.16 ms | -25% |
+| **+ withFallback** | 833,380 | 0.15 ms | -27% |
+| **+ withRetry** | 897,695 | 0.13 ms | -21% |
+
+Under extreme spam, all four wrap a local limiter and end up bottlenecked by the limiter itself, so the decorator numbers converge to roughly 2.2M ops/sec and the differences become noise.
+
+The interesting case is when a decorator wraps a **remote** limiter (Redis or Postgres). There, `withCache` can absorb spam in memory and protect the backend. Earlier drafts of this page quoted a 2.2x throughput gain from `withCache`; that number was comparing the diverse case (1M ops/sec raw) to the spam case (2.4M ops/sec with cache), which is not a fair within-scenario comparison. Within the same scenario, `withCache` adds about 10% overhead on the diverse case and has no measurable effect on the spam case against a local limiter, because the limiter is already fast enough that the cache lookup costs as much as the limiter call.
+
+> [!TIP]
+> **When `withCache` helps**
+> Wrap a Redis or Postgres limiter in `withCache` when you expect a hot key with sustained traffic. The cache absorbs the denied requests in memory and prevents them from reaching the backend at all. The numbers above are against a local limiter, where the cache is pure overhead. Against a remote backend, the cache pays for itself as soon as the spam rate exceeds the cache lookup cost.
+
+---
+
+## 6. Redis and Valkey Client Drivers
+
+Both Redis 7 and Valkey 8 are tested with the `ioredis` and `node-redis` clients under extreme spam.
+
+| Backend / client | Median ops/sec | p99 latency |
+| :--- | :---: | :---: |
+| **Redis 7 (ioredis)** | 141,993 | 0.90 ms |
+| **Redis 7 (node-redis)** | 84,877 | 3.28 ms |
+| **Valkey 8 (ioredis)** | 111,168 | 1.33 ms |
+| **Valkey 8 (node-redis)** | 120,816 | 1.71 ms |
+
+The `node-redis` row on Redis 7 came in lower than expected on this run; the spread between client libraries is within the run-to-run variance for the workload, and `ioredis` was used for the package-comparison matrix to keep the two libraries on equal footing. The takeaway is that the limiter implementation is the dominant cost in this scenario, not the client.
+
+### Postgres drivers: `pg` vs `postgres.js`
+
+`pg` (node-postgres) ran cleanly in this run. `postgres.js` failed with `UNSAFE_TRANSACTION: Only use sql.begin, sql.reserved or max: 1` under the default concurrency of 80. The `postgres.js` driver requires a connection-pool size of 1 to perform transactional UPSERTs, which kills the throughput story and is not a fair comparison against `pg`. The two drivers are reported as separate rows in the raw output and the `postgres.js` rows are flagged as skipped.
+
+For a fair comparison, run `postgres.js` with `max: 1` (single transaction at a time) and `pg` with `max: 1` as well, which will surface the driver overhead and not the concurrency.
+
+---
+
+## How to reproduce
+
+The benchmark suite lives in [`packages/bench/`](https://github.com/saoudi-h/ratelock/tree/main/packages/bench). The full suite takes about 90 seconds on the reference machine and writes its results to `packages/bench/results/`.
 
 ```bash
-# Clone the repository
 git clone https://github.com/saoudi-h/ratelock.git
 cd ratelock
-
-# Install dependencies
 pnpm install
 
-# Run the standardized benchmark suite
+# Standard run, 3 measurements per scenario
 pnpm --filter @ratelock/bench bench:full
+
+# Same run with explicit GC control between scenarios
+pnpm --filter @ratelock/bench bench:full:gc
+
+# Pin to a single CPU core for reproducibility
+pnpm --filter @ratelock/bench bench:fair
+
+# Tweak workload
+BENCH_DURATION=5000 BENCH_RUNS=5 BENCH_CONCURRENCY=40 \
+  pnpm --filter @ratelock/bench bench:full
 ```
 
-Find the benchmark suite code in [packages/bench/src/](file:///home/hakim/projects/ratelock/packages/bench/src/).
+The JSON output (`results/benchmarks_raw.json`) carries the per-run min, max, and stdev, which is the easiest way to verify that a run is stable. The Markdown report (`results/benchmark_report.md`) has the same tables that the console prints.
+
+> [!IMPORTANT]
+> **Run on idle hardware**
+> Co-tenant processes will perturb the numbers, especially the Postgres and Redis measurements, which sit in the 100-microsecond-to-millisecond range. Close browsers, pause CI, and disable turbo boost for a more stable run.
+
+---
+
+## Limitations and known gaps
+
+- The harness does not model connection-pool exhaustion. A 200-connection pool under 80 concurrent workers is comfortable, but a real application with hundreds of workers can hit the pool ceiling and turn into a queue.
+- The Postgres container in the suite runs with durability off. Numbers from this page should not be used to size a production Postgres cluster; they describe the rate-limiter workload only.
+- The `Realistic Mix` and `Batch Check` scenarios are present in the harness and in the raw JSON, but not on this page. They add two more cross-sections (a mix of hot and cold traffic; multi-key per iteration) and the conclusions do not change in a way that would alter the strategy recommendation.
+- The RLF comparison uses the Fixed Window strategy on every backend, because RLF does not implement the other three strategies on Redis or Postgres. The 1.7x Redis gap is on the only like-for-like comparison available.
+- Sliding Window and Token Bucket under spam on Postgres are measured but not recommended. The harness does not currently test the case where the Postgres `withCache` decorator shields those strategies from spam, which is the configuration you would actually use in production.
