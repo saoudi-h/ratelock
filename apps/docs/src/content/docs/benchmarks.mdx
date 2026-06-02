@@ -156,13 +156,13 @@ This matrix is the one most likely to be misread, so the methodology matters. Bo
 
 | Backend | RateLock — Median ops/sec | RLF — Median ops/sec | Ratio |
 | :--- | :---: | :---: | :---: |
-| **Local Memory** (extreme spam) | 2,029,667 | 739,614 | 2.7x |
-| **Redis** (extreme spam, ioredis) | 131,953 | 78,921 | 1.7x |
-| **PostgreSQL** (extreme spam) | 12,260 | 13,834 | 0.9x |
+| **Local Memory** (extreme spam) | 2,052,929 | 714,097 | 2.9x |
+| **Redis** (extreme spam, ioredis) | 138,033 | 79,574 | 1.7x |
+| **PostgreSQL** (extreme spam) | 20,847 | 26,382 | 0.79x |
 
-- On local memory, RateLock is **2.7x** faster under spam. The single-key hot path benefits from direct `Map` lookups and the absence of per-call class instantiation.
+- On local memory, RateLock is **2.9x** faster under spam. The single-key hot path benefits from direct `Map` lookups and the absence of per-call class instantiation.
 - On Redis, RateLock is **1.7x** faster. Both libraries use Lua scripts for atomic counters, so the gap is the script body and the network framing around it.
-- On PostgreSQL, **`rate-limiter-flexible` is slightly faster** under spam (1.13x). This is the honest result of the comparison and is the main reason this matrix is shown with the caveats in place. RLF's Postgres implementation uses a single composite-key UPSERT pattern that maps well to Postgres' query planner, while RateLock uses a per-key table layout.
+- On PostgreSQL, **`rate-limiter-flexible` is faster** under spam (1.27x). Both libraries run a single UPSERT per call against the same hot row; RLF is faster because its internal `_getConnection` + `consume` path is more direct than RateLock's adapter wrapper, and it uses one fewer hop between the JS call and the pool. RateLock's `pgDriver` now uses **named prepared statements** (FNV-1a hash of the SQL text), which closes the plan-cache gap that existed in earlier runs of this matrix. The remaining 27% gap is in JS-side row parsing and adapter overhead, not in the SQL itself.
 
 > [!NOTE]
 > **API differences that bias the comparison**
