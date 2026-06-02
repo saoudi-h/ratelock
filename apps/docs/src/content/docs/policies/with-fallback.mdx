@@ -13,18 +13,26 @@ import { fixedWindow, withFallback } from '@ratelock/redis'
 const limiter = await fixedWindow({ ... })
 
 // Fail-open: allow requests when the backend is unreachable
-const allowPolicy = withFallback(limiter, { fallback: 'allow' })
+const allowPolicy = withFallback(limiter, 'allow')
 
 // Fail-closed: deny requests when the backend is unreachable
-const denyPolicy = withFallback(limiter, { fallback: 'deny' })
+const denyPolicy = withFallback(limiter, 'deny')
 
 // Propagate the error (default behavior without policy wrapper)
-const throwPolicy = withFallback(limiter, { fallback: 'throw' })
+const throwPolicy = withFallback(limiter, 'throw')
+
+// Optionally provide default result fields used when the limiter throws
+const withDefaults = withFallback(limiter, 'allow', { remaining: 0, reset: 0 })
 ```
 
-## Configuration Options
+## Configuration
 
-The fallback configuration takes a policy defining how errors are handled:
+The second argument is the `FallbackPolicy` itself (a string). An optional third argument lets you provide default result fields used when the limiter throws:
+
+```typescript
+withFallback(limiter, 'allow')
+withFallback(limiter, 'allow', { remaining: 0, reset: Date.now() + 60_000 })
+```
 
 <AutoTypeTable path="../../packages/core/src/types.ts" type="FallbackPolicy" />
 

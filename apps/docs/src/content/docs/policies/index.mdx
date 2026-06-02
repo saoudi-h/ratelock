@@ -92,7 +92,7 @@ import { fixedWindow, withFallback } from '@ratelock/redis'
 const limiter = await fixedWindow({ ... })
 
 // In tests: fail-open to simulate Redis being down
-const testLimiter = withFallback(limiter, { fallback: 'allow' })
+const testLimiter = withFallback(limiter, 'allow')
 ```
 
 ### Dynamic Composition Order
@@ -145,7 +145,7 @@ withFallback(             ← catches errors from everything below
 
 **Recommended order:** `withFallback` → `withCircuitBreaker` → `withRetry` → `withCache` → `limiter`
 
-## ⚠️ Don't Stack Built-in and Standalone
+## Don't Stack Built-in and Standalone
 
 If you use built-in policy options at creation time, avoid wrapping the same limiter with a standalone policy of the same type:
 

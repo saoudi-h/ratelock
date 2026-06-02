@@ -88,14 +88,18 @@ const limiter = await fixedWindow({
 
 ## Auto-Migrations
 
-RateLock automatically creates its schema and tables on initialization:
+On initialization, RateLock creates a dedicated `ratelock` schema and one table per strategy:
 
 ```sql
 -- Created automatically:
-CREATE TABLE IF NOT EXISTS ratelock_fixed_window (...);
-CREATE TABLE IF NOT EXISTS ratelock_sliding_window (...);
-CREATE TABLE IF NOT EXISTS ratelock_token_bucket (...);
+CREATE SCHEMA IF NOT EXISTS ratelock;
+CREATE TABLE IF NOT EXISTS ratelock.fixed_window (...);
+CREATE TABLE IF NOT EXISTS ratelock.sliding_window (...);
+CREATE TABLE IF NOT EXISTS ratelock.token_bucket (...);
+CREATE TABLE IF NOT EXISTS ratelock.individual_fixed_window (...);
 ```
+
+Each table also gets an index on `expires_at` to speed up cleanup of expired rows.
 
 Skip auto-migrations if you manage schema yourself:
 
@@ -125,14 +129,23 @@ Unlogged tables are not written to WAL, providing significantly better write thr
 
 ## Auto-Cleanup
 
-The PostgreSQL engine runs periodic cleanup of expired rows every 5 minutes. You can also trigger it manually:
+The PostgreSQL engine runs periodic cleanup of expired rows every 5 minutes. You can also trigger it manually by passing a `PgDriver` instance:
 
 ```typescript
-import { cleanupExpired } from '@ratelock/postgres'
+import { cleanupExpired, pgDriver, postgresDriver } from '@ratelock/postgres'
+import { Pool } from 'pg'
 
-// Triggers manual cleanup
+// From an existing pg Pool
+const driver = pgDriver(new Pool({ connectionString: 'postgres://...' }))
 const deletedCount = await cleanupExpired(driver)
+
+// Or from a porsager/postgres client
+import postgres from 'postgres'
+const sql = postgres('postgres://...')
+const deletedCount2 = await cleanupExpired(postgresDriver(sql))
 ```
+
+Wrap your existing client with `pgDriver(pool)` or `postgresDriver(sql)` to obtain a `PgDriver`. Both are exported from `@ratelock/postgres`.
 
 ## All Exports
 

@@ -3,7 +3,14 @@ title: Redis Engine
 description: Distributed rate limiting powered by Redis and atomic Lua scripts.
 ---
 
-The Redis engine uses Redis sorted sets and Lua scripts for atomic, distributed rate limiting. It supports both `redis` (node-redis) and `ioredis` clients.
+The Redis engine executes atomic Lua scripts for distributed rate limiting. Each strategy picks the Redis data structure that fits its algorithm:
+
+- **Fixed Window** uses `GET`/`SET`/`INCR` counters with millisecond TTLs.
+- **Sliding Window** uses sorted sets (`ZADD`, `ZCARD`, `ZRANGE`) to track per-request timestamps.
+- **Token Bucket** uses hashes (`HMGET`/`HMSET`) to store the token count and last-refill time.
+- **Individual Fixed Window** uses two keys per identifier (start + count) with `GET`/`SET`/`INCR`.
+
+The engine supports both `redis` (node-redis) and `ioredis` clients.
 
 ## Installation
 

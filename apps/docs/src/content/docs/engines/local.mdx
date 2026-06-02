@@ -71,7 +71,7 @@ For advanced use cases, import standalone resilience wrappers directly:
 import { withFallback, withRetry } from '@ratelock/local'
 
 const limiter = await fixedWindow({ limit: 100, windowMs: 60_000 })
-const withResilience = withFallback(withRetry(limiter, { maxAttempts: 3 }), { fallback: 'allow' })
+const withResilience = withFallback(withRetry(limiter, { maxAttempts: 3 }), 'allow')
 ```
 
 See [Resilience Policies](/docs/policies) for full documentation and when to use standalone vs built-in.
