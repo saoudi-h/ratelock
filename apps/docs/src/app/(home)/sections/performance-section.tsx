@@ -4,6 +4,7 @@ import { Icon } from '@iconify/react'
 import { ArrowRightBold } from '@solar-icons/react-perf'
 import { AnimatePresence, motion } from 'framer-motion'
 import Link from 'next/link'
+import type { CSSProperties } from 'react'
 import { useEffect, useState } from 'react'
 import { MotionCardBentoBase } from './CardBentoBase'
 
@@ -15,6 +16,43 @@ interface PerformanceMetric {
     latency: string
     isRateLock: boolean
     color: string
+}
+
+interface DenyCacheParticleProps {
+    color: 'emerald' | 'red'
+    delay: string
+    duration?: string
+    end: string
+    offset?: string
+}
+
+function DenyCacheParticle({
+    color,
+    delay,
+    duration = '1.05s',
+    end,
+    offset = '0px',
+}: DenyCacheParticleProps) {
+    return (
+        <span
+            className={`
+              deny-cache-particle
+              ${
+                  color === 'emerald'
+                      ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]'
+                      : 'bg-red-500 shadow-[0_0_8px_#ef4444]'
+              }
+            `}
+            style={
+                {
+                    '--flow-delay': delay,
+                    '--flow-duration': duration,
+                    '--flow-end': end,
+                    '--flow-x': offset,
+                } as CSSProperties
+            }
+        />
+    )
 }
 
 export function PerformanceSection() {
@@ -292,7 +330,8 @@ export function PerformanceSection() {
                                 </span>
                             </div>
                             <span className="font-mono text-[10px] text-muted-foreground/60 select-none">
-                                Matrix 4 Baseline • 80 Concurrency • Reference Hardware (AMD Ryzen 7 5800X, 32GB RAM)
+                                Matrix 4 Baseline • 80 Concurrency • Reference Hardware (AMD Ryzen 7
+                                5800X, 32GB RAM)
                             </span>
                         </div>
                     </MotionCardBentoBase>
@@ -317,7 +356,9 @@ export function PerformanceSection() {
                                   ${denyCacheFlooded ? 'bg-emerald-500' : 'bg-red-500'}
                                 `}
                                 />
-                                {denyCacheFlooded ? 'Shield Active (Spam Blocked)' : 'Shield Inactive (DB Hit)'}
+                                {denyCacheFlooded
+                                    ? 'Shield Active (Spam Blocked)'
+                                    : 'Shield Inactive (DB Hit)'}
                             </span>
                             <h3 className="mt-3 font-heading text-xl font-bold text-foreground">
                                 Spam Protection with Deny Cache
@@ -358,9 +399,12 @@ export function PerformanceSection() {
                                             : 'text-red-500 filter drop-shadow-[0_0_8px_rgba(239,68,68,0.4)]'
                                     }`}
                                 />
-                                <span className={`text-[8px] font-bold uppercase tracking-widest transition-colors duration-300 ${
-                                    denyCacheFlooded ? 'text-emerald-500' : 'text-red-500 font-extrabold'
-                                }`}>
+                                <span
+                                    className={`text-[8px] font-bold uppercase tracking-widest transition-colors duration-300 ${
+                                        denyCacheFlooded
+                                            ? 'text-emerald-500'
+                                            : 'text-red-500 font-extrabold'
+                                    }`}>
                                     Database Server
                                 </span>
                             </div>
@@ -382,9 +426,7 @@ export function PerformanceSection() {
                                 <Icon
                                     icon="solar:shield-bold-duotone"
                                     className={`size-4 transition-colors duration-300 ${
-                                        denyCacheFlooded
-                                            ? 'text-emerald-500'
-                                            : 'text-zinc-600'
+                                        denyCacheFlooded ? 'text-emerald-500' : 'text-zinc-600'
                                     }`}
                                 />
                                 <span className="text-[9px] font-bold uppercase tracking-wider">
@@ -392,119 +434,43 @@ export function PerformanceSection() {
                                 </span>
                             </div>
 
-                            {/* Moving Particles representing spammed (denied) requests in red, accepted in green */}
-                            <div className="absolute top-[36px] bottom-[36px] left-1/2 -translate-x-1/2 w-1 pointer-events-none">
-                                {denyCacheFlooded ? (
-                                    // Shield Active: Green (allowed) then Red (blocked at shield)
-                                    <div className="absolute inset-0">
-                                        {/* Particle 1 (Allowed): Green, reaches Database */}
-                                        <motion.div
-                                            initial={{ y: 0, opacity: 0 }}
-                                            animate={{ y: 120, opacity: [0, 1, 1, 0] }}
-                                            transition={{
-                                                repeat: Infinity,
-                                                duration: 1.0,
-                                                repeatDelay: 1.2,
-                                                ease: 'linear',
-                                            }}
-                                            className="absolute top-0 left-1/2 -translate-x-1/2 size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"
-                                        />
-                                        {/* Particle 2 (Blocked): Red, stopped at Deny Cache */}
-                                        <motion.div
-                                            initial={{ y: 0, opacity: 0 }}
-                                            animate={{ y: 60, opacity: [0, 1, 1, 0] }}
-                                            transition={{
-                                                repeat: Infinity,
-                                                duration: 0.5,
-                                                repeatDelay: 1.7,
-                                                ease: 'linear',
-                                                delay: 0.6,
-                                            }}
-                                            className="absolute top-0 left-1/2 -translate-x-1/2 size-1.5 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"
-                                        />
-                                        {/* Particle 3 (Blocked): Red, stopped at Deny Cache */}
-                                        <motion.div
-                                            initial={{ y: 0, opacity: 0 }}
-                                            animate={{ y: 60, opacity: [0, 1, 1, 0] }}
-                                            transition={{
-                                                repeat: Infinity,
-                                                duration: 0.5,
-                                                repeatDelay: 1.7,
-                                                ease: 'linear',
-                                                delay: 1.1,
-                                            }}
-                                            className="absolute top-0 left-1/2 -translate-x-1/2 size-1.5 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"
-                                        />
-                                        {/* Particle 4 (Blocked): Red, stopped at Deny Cache */}
-                                        <motion.div
-                                            initial={{ y: 0, opacity: 0 }}
-                                            animate={{ y: 60, opacity: [0, 1, 1, 0] }}
-                                            transition={{
-                                                repeat: Infinity,
-                                                duration: 0.5,
-                                                repeatDelay: 1.7,
-                                                ease: 'linear',
-                                                delay: 1.6,
-                                            }}
-                                            className="absolute top-0 left-1/2 -translate-x-1/2 size-1.5 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"
-                                        />
-                                    </div>
-                                ) : (
-                                    // Shield Inactive: Green (allowed) then Red (hammers Database directly)
-                                    <div className="absolute inset-0">
-                                        {/* Particle 1 (Allowed): Green, reaches Database */}
-                                        <motion.div
-                                            initial={{ y: 0, opacity: 0 }}
-                                            animate={{ y: 120, opacity: [0, 1, 1, 0] }}
-                                            transition={{
-                                                repeat: Infinity,
-                                                duration: 1.0,
-                                                repeatDelay: 1.6,
-                                                ease: 'linear',
-                                            }}
-                                            className="absolute top-0 left-1/2 -translate-x-1/2 size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"
-                                        />
-                                        {/* Particle 2 (Blocked): Red, reaches Database */}
-                                        <motion.div
-                                            initial={{ y: 0, opacity: 0 }}
-                                            animate={{ y: 120, opacity: [0, 1, 1, 0] }}
-                                            transition={{
-                                                repeat: Infinity,
-                                                duration: 1.0,
-                                                repeatDelay: 1.6,
-                                                ease: 'linear',
-                                                delay: 0.6,
-                                            }}
-                                            className="absolute top-0 left-1/2 -translate-x-1/2 size-1.5 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"
-                                        />
-                                        {/* Particle 3 (Blocked): Red, reaches Database */}
-                                        <motion.div
-                                            initial={{ y: 0, opacity: 0 }}
-                                            animate={{ y: 120, opacity: [0, 1, 1, 0] }}
-                                            transition={{
-                                                repeat: Infinity,
-                                                duration: 1.0,
-                                                repeatDelay: 1.6,
-                                                ease: 'linear',
-                                                delay: 1.2,
-                                            }}
-                                            className="absolute top-0 left-1/2 -translate-x-1/2 size-1.5 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"
-                                        />
-                                        {/* Particle 4 (Blocked): Red, reaches Database */}
-                                        <motion.div
-                                            initial={{ y: 0, opacity: 0 }}
-                                            animate={{ y: 120, opacity: [0, 1, 1, 0] }}
-                                            transition={{
-                                                repeat: Infinity,
-                                                duration: 1.0,
-                                                repeatDelay: 1.6,
-                                                ease: 'linear',
-                                                delay: 1.8,
-                                            }}
-                                            className="absolute top-0 left-1/2 -translate-x-1/2 size-1.5 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"
-                                        />
-                                    </div>
-                                )}
+                            {/* Moving particles representing accepted and denied requests */}
+                            <div
+                                className="
+                                  pointer-events-none absolute inset-y-[36px] left-1/2
+                                  w-10 -translate-x-1/2 overflow-hidden
+                                ">
+                                <div
+                                    key={denyCacheFlooded ? 'shielded-flow' : 'direct-flow'}
+                                    className="absolute inset-0">
+                                    <DenyCacheParticle
+                                        color="emerald"
+                                        delay="0s"
+                                        end="100%"
+                                        offset="0px"
+                                    />
+                                    <DenyCacheParticle
+                                        color="red"
+                                        delay="0.45s"
+                                        duration={denyCacheFlooded ? '0.58s' : '1.05s'}
+                                        end={denyCacheFlooded ? '50%' : '100%'}
+                                        offset="-7px"
+                                    />
+                                    <DenyCacheParticle
+                                        color="red"
+                                        delay="0.95s"
+                                        duration={denyCacheFlooded ? '0.58s' : '1.05s'}
+                                        end={denyCacheFlooded ? '50%' : '100%'}
+                                        offset="7px"
+                                    />
+                                    <DenyCacheParticle
+                                        color="red"
+                                        delay="1.45s"
+                                        duration={denyCacheFlooded ? '0.58s' : '1.05s'}
+                                        end={denyCacheFlooded ? '50%' : '100%'}
+                                        offset="0px"
+                                    />
+                                </div>
                             </div>
                         </div>
 
