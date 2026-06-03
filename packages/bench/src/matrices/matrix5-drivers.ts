@@ -58,6 +58,12 @@ export async function runMatrix5(
     }
 
     // 2. pg vs postgres.js
+    // Note: postgres.js uses sql.unsafe() in the RateLock driver, which
+    // requires max: 1 OR being inside a sql.begin() transaction. We pass
+    // poolMax: 1 here to make the bench work. The trade-off: postgres.js
+    // is benchmarked with a single connection (no pool parallelism). A
+    // true apples-to-apples comparison would require a dedicated driver
+    // using tagged templates, which is a separate refactor.
     try {
         const pgjsFixed = new PostgresAdapter({
             name: 'Postgres.js - Fixed Window',
@@ -65,6 +71,7 @@ export async function runMatrix5(
             driverType: 'postgres',
             unlogged: true,
             skipMigrations: false,
+            poolMax: 1,
         })
         const pgNodeFixedLogged = new PostgresAdapter({
             name: 'node-postgres - Fixed Window (Logged)',
@@ -86,6 +93,7 @@ export async function runMatrix5(
             driverType: 'postgres',
             unlogged: true,
             skipMigrations: false,
+            poolMax: 1,
         })
         const pgNodeToken = new PostgresAdapter({
             name: 'node-postgres - Token Bucket',

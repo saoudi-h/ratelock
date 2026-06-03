@@ -15,6 +15,13 @@ export class PostgresAdapter implements BenchmarkAdapter {
     private readonly driverType: PostgresDriverType
     private readonly unlogged: boolean
     private readonly skipMigrations: boolean
+    /**
+     * Override the connection pool size. Defaults to `config.benchConcurrency`.
+     * For postgres.js, the driver uses `sql.unsafe()` which requires either
+     * `max: 1` or being inside a `sql.begin()` transaction. The bench uses
+     * unsafe() at the top level, so postgres.js needs `max: 1` to work.
+     */
+    private readonly poolMax: number
 
     private pgPool: any
     private sqlClient: any
@@ -26,12 +33,14 @@ export class PostgresAdapter implements BenchmarkAdapter {
         driverType?: PostgresDriverType
         unlogged?: boolean
         skipMigrations?: boolean
+        poolMax?: number
     }) {
         this.name = options.name
         this.strategy = options.strategy
         this.driverType = options.driverType ?? 'pg'
         this.unlogged = options.unlogged ?? config.benchUnlogged
         this.skipMigrations = options.skipMigrations ?? false
+        this.poolMax = options.poolMax ?? config.benchConcurrency
     }
 
     async initialize(): Promise<void> {
@@ -57,13 +66,13 @@ export class PostgresAdapter implements BenchmarkAdapter {
             // Create actual pool for benchmarking
             this.pgPool = new pg.Pool({
                 connectionString: config.postgresUrl,
-                max: config.benchConcurrency,
+                max: this.poolMax,
                 connectionTimeoutMillis: 1000,
             })
         } else {
             // postgres.js
             const { default: postgres } = await import('postgres')
-            // Temporarily connect for drop queries
+            // Temporarily connect for drop queries (always max: 1 for setup)
             const sqlForCleanup = postgres(config.postgresUrl, {
                 max: 1,
                 connect_timeout: 1,
@@ -77,9 +86,16 @@ export class PostgresAdapter implements BenchmarkAdapter {
                 await sqlForCleanup.end()
             }
 
-            // Create actual sql client for benchmarking
+            // Create actual sql client for benchmarking.
+            // For postgres.js, the RateLock driver uses sql.unsafe() which
+            // requires max: 1 OR a sql.begin() transaction. Since the rate
+            // limiter doesn't wrap in transactions, we use max: 1 here.
+            // This caps concurrency at 1 connection, which is the trade-off
+            // for using the unified PgDriver interface. For full pool
+            // performance with postgres.js, the rate-limiter would need a
+            // dedicated driver that uses tagged templates instead of unsafe().
             this.sqlClient = postgres(config.postgresUrl, {
-                max: config.benchConcurrency,
+                max: this.poolMax,
                 connect_timeout: 1,
                 onnotice: () => {},
             })
