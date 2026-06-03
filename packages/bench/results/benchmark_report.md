@@ -1,6 +1,6 @@
 # 📊 RateLock v0.2.0 Comprehensive Performance Study
 
-Generated on: `2026-06-02T15:08:04.802Z`  
+Generated on: `2026-06-03T19:15:21.350Z`  
 Environment: Node.js `v25.9.0` | OS `linux` | Arch `x64`  
 Harness Configuration: `80` concurrent worker loops, `2000ms` duration per scenario.
 
@@ -17,76 +17,79 @@ Based on extensive, high-fidelity benchmarks executed on PostgreSQL 18.4, here a
 
 | Implementation Scenario                     | Throughput (Ops/sec) | Allowed Count | Rate Limit % | Avg Latency | p95 Latency | p99 Latency |
 | :------------------------------------------ | :------------------: | :-----------: | :----------: | :---------: | :---------: | :---------: |
-| **Local Fixed Window (Diverse)**            |      1,073,407       |   6,382,862   |   100.000%   |   0.08ms    |   0.09ms    |   0.11ms    |
-| **Local Sliding Window (Diverse)**          |       638,415        |   3,910,673   |   100.000%   |   0.13ms    |   0.15ms    |   0.18ms    |
-| **Local Token Bucket (Diverse)**            |      1,060,817       |   6,746,706   |   100.000%   |   0.07ms    |   0.08ms    |   0.10ms    |
-| **Local Indiv Fixed Window (Diverse)**      |      1,075,909       |   5,630,094   |   100.000%   |   0.09ms    |   0.09ms    |   0.11ms    |
-| **Local Fixed Window (Extreme Spam)**       |      2,220,229       |     2,000     |    0.017%    |   0.04ms    |   0.04ms    |   0.06ms    |
-| **Local Sliding Window (Extreme Spam)**     |        72,768        |     1,000     |    0.228%    |   1.10ms    |   2.11ms    |   2.29ms    |
-| **Local Token Bucket (Extreme Spam)**       |      2,258,396       |     1,139     |    0.009%    |   0.04ms    |   0.04ms    |   0.05ms    |
-| **Local Indiv Fixed Window (Extreme Spam)** |      2,357,416       |     1,000     |    0.007%    |   0.03ms    |   0.04ms    |   0.05ms    |
+| **Local Fixed Window (Diverse)**            |      1,138,611       |   6,875,667   |   100.000%   |   0.07ms    |   0.08ms    |   0.10ms    |
+| **Local Sliding Window (Diverse)**          |       686,988        |   4,181,330   |   100.000%   |   0.12ms    |   0.13ms    |   0.14ms    |
+| **Local Token Bucket (Diverse)**            |      1,141,830       |   7,232,227   |   100.000%   |   0.07ms    |   0.07ms    |   0.08ms    |
+| **Local Indiv Fixed Window (Diverse)**      |      1,155,816       |   7,166,235   |   100.000%   |   0.07ms    |   0.08ms    |   0.09ms    |
+| **Local Fixed Window (Extreme Spam)**       |      2,380,603       |     1,000     |    0.007%    |   0.03ms    |   0.03ms    |   0.04ms    |
+| **Local Sliding Window (Extreme Spam)**     |        74,156        |     1,000     |    0.233%    |   1.09ms    |   1.76ms    |   2.00ms    |
+| **Local Token Bucket (Extreme Spam)**       |      2,342,400       |     1,136     |    0.008%    |   0.03ms    |   0.03ms    |   0.04ms    |
+| **Local Indiv Fixed Window (Extreme Spam)** |      2,525,479       |     1,000     |    0.007%    |   0.03ms    |   0.03ms    |   0.04ms    |
 
 ## 2. Benchmark Matrix: REDIS STRATEGIES
 
 | Implementation Scenario                     | Throughput (Ops/sec) | Allowed Count | Rate Limit % | Avg Latency | p95 Latency | p99 Latency |
 | :------------------------------------------ | :------------------: | :-----------: | :----------: | :---------: | :---------: | :---------: |
-| **Redis Fixed Window (Diverse)**            |       131,118        |    771,253    |   100.000%   |   0.62ms    |   0.87ms    |   1.06ms    |
-| **Redis Sliding Window (Diverse)**          |        89,478        |    535,111    |   100.000%   |   0.90ms    |   1.26ms    |   1.44ms    |
-| **Redis Token Bucket (Diverse)**            |       116,431        |    704,285    |   100.000%   |   0.68ms    |   0.91ms    |   1.11ms    |
-| **Redis Indiv Fixed Window (Diverse)**      |       122,995        |    683,704    |   100.000%   |   0.72ms    |   0.85ms    |   1.29ms    |
-| **Redis Fixed Window (Extreme Spam)**       |       133,760        |     1,000     |    0.125%    |   0.60ms    |   0.87ms    |   1.05ms    |
-| **Redis Sliding Window (Extreme Spam)**     |       122,198        |     1,000     |    0.136%    |   0.66ms    |   0.91ms    |   1.13ms    |
-| **Redis Token Bucket (Extreme Spam)**       |       133,962        |     1,102     |    0.137%    |   0.60ms    |   0.79ms    |   0.99ms    |
-| **Redis Indiv Fixed Window (Extreme Spam)** |       134,474        |     1,000     |    0.124%    |   0.60ms    |   0.76ms    |   0.99ms    |
+| **Redis Fixed Window (Diverse)**            |       141,835        |    830,402    |   100.000%   |   0.58ms    |   0.72ms    |   0.94ms    |
+| **Redis Sliding Window (Diverse)**          |        96,034        |    564,108    |   100.000%   |   0.85ms    |   1.02ms    |   1.19ms    |
+| **Redis Token Bucket (Diverse)**            |       121,822        |    730,399    |   100.000%   |   0.66ms    |   0.78ms    |   0.96ms    |
+| **Redis Indiv Fixed Window (Diverse)**      |       125,785        |    696,053    |   100.000%   |   0.71ms    |   0.88ms    |   1.04ms    |
+| **Redis Fixed Window (Extreme Spam)**       |       143,681        |     2,000     |    0.230%    |   0.55ms    |   0.67ms    |   0.88ms    |
+| **Redis Sliding Window (Extreme Spam)**     |       128,260        |     1,000     |    0.128%    |   0.62ms    |   0.87ms    |   0.96ms    |
+| **Redis Token Bucket (Extreme Spam)**       |       140,467        |     1,103     |    0.129%    |   0.57ms    |   0.80ms    |   0.91ms    |
+| **Redis Indiv Fixed Window (Extreme Spam)** |       139,819        |     1,000     |    0.119%    |   0.57ms    |   0.73ms    |   0.90ms    |
 
 ## 2. Benchmark Matrix: POSTGRES STRATEGIES
 
 | Implementation Scenario                        | Throughput (Ops/sec) | Allowed Count | Rate Limit % | Avg Latency | p95 Latency | p99 Latency |
 | :--------------------------------------------- | :------------------: | :-----------: | :----------: | :---------: | :---------: | :---------: |
-| **Postgres Fixed Window (Diverse)**            |        23,626        |    141,575    |   100.000%   |   3.39ms    |   6.04ms    |   6.64ms    |
-| **Postgres Sliding Window (Diverse)**          |        21,282        |    127,691    |   100.000%   |   3.76ms    |   6.73ms    |   7.26ms    |
-| **Postgres Token Bucket (Diverse)**            |        14,335        |    85,697     |   100.000%   |   5.60ms    |   9.96ms    |   13.84ms   |
-| **Postgres Indiv Fixed Window (Diverse)**      |        22,398        |    135,016    |   100.000%   |   3.56ms    |   6.42ms    |   7.02ms    |
-| **Postgres Fixed Window (Extreme Spam)**       |        20,833        |     1,000     |    0.800%    |   3.82ms    |   6.81ms    |   7.66ms    |
-| **Postgres Sliding Window (Extreme Spam)**     |        2,023         |    12,827     |   100.000%   |   37.97ms   |  122.73ms   |  193.60ms   |
-| **Postgres Token Bucket (Extreme Spam)**       |        1,715         |     1,115     |    9.954%    |   45.39ms   |  140.68ms   |  258.41ms   |
-| **Postgres Indiv Fixed Window (Extreme Spam)** |        16,098        |     1,000     |    1.035%    |   5.19ms    |   9.18ms    |   16.41ms   |
+| **Postgres Fixed Window (Diverse)**            |        30,174        |    182,198    |   100.000%   |   2.63ms    |   3.54ms    |   5.45ms    |
+| **Postgres Sliding Window (Diverse)**          |        27,453        |    165,871    |   100.000%   |   2.89ms    |   4.69ms    |   5.92ms    |
+| **Postgres Token Bucket (Diverse)**            |        23,868        |    140,112    |   100.000%   |   3.43ms    |   5.94ms    |   6.72ms    |
+| **Postgres Indiv Fixed Window (Diverse)**      |        27,278        |    163,508    |   100.000%   |   2.94ms    |   4.00ms    |   5.99ms    |
+| **Postgres Fixed Window (Extreme Spam)**       |        29,504        |     1,000     |    0.565%    |   2.71ms    |   4.67ms    |   5.49ms    |
+| **Postgres Sliding Window (Extreme Spam)**     |        22,324        |    96,509     |   71.756%    |   3.57ms    |   6.51ms    |   7.05ms    |
+| **Postgres Token Bucket (Extreme Spam)**       |        1,755         |     1,106     |   10.027%    |   45.74ms   |  138.44ms   |  211.22ms   |
+| **Postgres Indiv Fixed Window (Extreme Spam)** |        24,550        |     1,000     |    0.676%    |   3.26ms    |   5.86ms    |   6.44ms    |
 
 ## 2. Benchmark Matrix: PACKAGE COMPARISON
 
 | Implementation Scenario                           | Throughput (Ops/sec) | Allowed Count | Rate Limit % | Avg Latency | p95 Latency | p99 Latency |
 | :------------------------------------------------ | :------------------: | :-----------: | :----------: | :---------: | :---------: | :---------: |
-| **RateLock Local Fixed Window (Extreme Spam)**    |      2,052,929       |     1,000     |    0.008%    |   0.04ms    |   0.04ms    |   0.06ms    |
-| **rate-limiter-flexible Memory (Extreme Spam)**   |       714,097        |     1,000     |    0.025%    |   0.11ms    |   0.13ms    |   0.19ms    |
-| **RateLock Redis Fixed Window (Extreme Spam)**    |       138,033        |     1,000     |    0.121%    |   0.58ms    |   0.73ms    |   1.02ms    |
-| **rate-limiter-flexible Redis (Extreme Spam)**    |        79,574        |     1,000     |    0.209%    |   1.02ms    |   1.31ms    |   5.02ms    |
-| **RateLock Postgres Fixed Window (Extreme Spam)** |        20,847        |     1,000     |    0.799%    |   3.84ms    |   6.88ms    |   7.58ms    |
-| **rate-limiter-flexible Postgres (Extreme Spam)** |        26,382        |     1,000     |    0.632%    |   3.01ms    |   3.95ms    |   6.01ms    |
+| **RateLock Local Fixed Window (Extreme Spam)**    |      2,093,806       |     1,000     |    0.008%    |   0.04ms    |   0.04ms    |   0.05ms    |
+| **rate-limiter-flexible Memory (Extreme Spam)**   |       758,839        |     1,000     |    0.022%    |   0.11ms    |   0.11ms    |   0.12ms    |
+| **RateLock Redis Fixed Window (Extreme Spam)**    |       140,955        |     1,000     |    0.118%    |   0.57ms    |   0.72ms    |   1.01ms    |
+| **rate-limiter-flexible Redis (Extreme Spam)**    |        84,596        |     1,000     |    0.210%    |   0.97ms    |   0.99ms    |   4.70ms    |
+| **RateLock Postgres Fixed Window (Extreme Spam)** |        29,030        |     1,000     |    0.581%    |   2.76ms    |   4.54ms    |   5.54ms    |
+| **rate-limiter-flexible Postgres (Extreme Spam)** |        28,414        |     1,000     |    0.684%    |   2.96ms    |   3.80ms    |   5.48ms    |
 
 ## 2. Benchmark Matrix: DRIVER ENGINE-BATTLE
 
 | Implementation Scenario                               | Throughput (Ops/sec) | Allowed Count | Rate Limit % | Avg Latency | p95 Latency | p99 Latency |
 | :---------------------------------------------------- | :------------------: | :-----------: | :----------: | :---------: | :---------: | :---------: |
-| **Redis 8 (node-redis client) (Extreme Spam)**        |       134,301        |     1,000     |    0.124%    |   0.60ms    |   0.69ms    |   0.94ms    |
-| **Redis 8 (ioredis client) (Extreme Spam)**           |       134,416        |     1,000     |    0.124%    |   0.60ms    |   0.85ms    |   1.02ms    |
-| **Valkey 8 (node-redis client) (Extreme Spam)**       |       144,054        |     1,000     |    0.117%    |   0.55ms    |   0.64ms    |   0.77ms    |
-| **Valkey 8 (ioredis client) (Extreme Spam)**          |       132,323        |     1,000     |    0.121%    |   0.60ms    |   0.87ms    |   1.01ms    |
-| **node-postgres - Fixed Window (Logged) (Diverse)**   |        22,296        |    133,929    |   100.000%   |   3.58ms    |   6.46ms    |   7.01ms    |
-| **node-postgres - Fixed Window (Unlogged) (Diverse)** |        22,609        |    135,689    |   100.000%   |   3.54ms    |   6.37ms    |   6.97ms    |
-| **node-postgres - Token Bucket (Diverse)**            |        14,110        |    84,324     |   100.000%   |   5.70ms    |   9.89ms    |   13.42ms   |
-| **node-postgres - Token Bucket (Extreme Spam)**       |        1,657         |     1,108     |   10.112%    |   47.34ms   |  153.80ms   |  256.57ms   |
+| **Redis 8 (node-redis client) (Extreme Spam)**        |       138,484        |     1,000     |    0.122%    |   0.58ms    |   0.65ms    |   1.01ms    |
+| **Redis 8 (ioredis client) (Extreme Spam)**           |       134,508        |     1,000     |    0.124%    |   0.59ms    |   0.87ms    |   1.12ms    |
+| **Valkey 8 (node-redis client) (Extreme Spam)**       |       144,899        |     1,000     |    0.116%    |   0.55ms    |   0.61ms    |   0.85ms    |
+| **Valkey 8 (ioredis client) (Extreme Spam)**          |       132,120        |     1,000     |    0.127%    |   0.60ms    |   0.82ms    |   0.99ms    |
+| **Postgres.js - Fixed Window (Diverse)**              |        20,344        |    120,158    |   100.000%   |   4.00ms    |   5.59ms    |   6.80ms    |
+| **node-postgres - Fixed Window (Logged) (Diverse)**   |        27,423        |    162,347    |   100.000%   |   2.96ms    |   3.95ms    |   6.00ms    |
+| **node-postgres - Fixed Window (Unlogged) (Diverse)** |        27,678        |    167,217    |   100.000%   |   2.87ms    |   3.59ms    |   5.70ms    |
+| **Postgres.js - Token Bucket (Diverse)**              |        11,492        |    69,032     |   100.000%   |   6.96ms    |   9.97ms    |   12.25ms   |
+| **node-postgres - Token Bucket (Diverse)**            |        19,136        |    114,842    |   100.000%   |   4.18ms    |   7.16ms    |   8.56ms    |
+| **Postgres.js - Token Bucket (Extreme Spam)**         |        1,722         |     1,103     |   10.197%    |   46.40ms   |  143.61ms   |  221.70ms   |
+| **node-postgres - Token Bucket (Extreme Spam)**       |        1,644         |     1,111     |   10.521%    |   48.73ms   |  152.89ms   |  249.61ms   |
 
 ## 2. Benchmark Matrix: DECORATOR INFLUENCE
 
 | Implementation Scenario                         | Throughput (Ops/sec) | Allowed Count | Rate Limit % | Avg Latency | p95 Latency | p99 Latency |
 | :---------------------------------------------- | :------------------: | :-----------: | :----------: | :---------: | :---------: | :---------: |
-| **Raw Fixed Window (Diverse)**                  |       495,267        |   3,713,253   |   100.000%   |   0.16ms    |   0.40ms    |   0.43ms    |
-| **Fixed Window + withCache (Diverse)**          |       968,382        |   6,079,470   |   100.000%   |   0.08ms    |   0.08ms    |   0.11ms    |
-| **Fixed Window + withCircuitBreaker (Diverse)** |      1,044,085       |   6,335,761   |   100.000%   |   0.08ms    |   0.09ms    |   0.11ms    |
-| **Fixed Window + withFallback (Diverse)**       |       969,448        |   6,153,652   |   100.000%   |   0.08ms    |   0.08ms    |   0.11ms    |
-| **Fixed Window + withRetry (Diverse)**          |       961,889        |   6,095,531   |   100.000%   |   0.08ms    |   0.08ms    |   0.11ms    |
-| **Raw Fixed Window (Extreme Spam)**             |      2,265,950       |     1,000     |    0.007%    |   0.04ms    |   0.04ms    |   0.06ms    |
-| **Fixed Window + withCache (Extreme Spam)**     |      2,182,458       |     2,000     |    0.020%    |   0.04ms    |   0.04ms    |   0.06ms    |
+| **Raw Fixed Window (Diverse)**                  |       991,328        |   5,326,264   |   100.000%   |   0.10ms    |   0.11ms    |   0.14ms    |
+| **Fixed Window + withCache (Diverse)**          |       851,669        |   4,669,589   |   100.000%   |   0.11ms    |   0.13ms    |   0.17ms    |
+| **Fixed Window + withCircuitBreaker (Diverse)** |      1,076,205       |   6,570,353   |   100.000%   |   0.07ms    |   0.08ms    |   0.10ms    |
+| **Fixed Window + withFallback (Diverse)**       |      1,077,631       |   6,638,272   |   100.000%   |   0.07ms    |   0.08ms    |   0.10ms    |
+| **Fixed Window + withRetry (Diverse)**          |       966,768        |   5,592,362   |   100.000%   |   0.09ms    |   0.11ms    |   0.14ms    |
+| **Raw Fixed Window (Extreme Spam)**             |      2,332,062       |     2,000     |    0.014%    |   0.04ms    |   0.04ms    |   0.06ms    |
+| **Fixed Window + withCache (Extreme Spam)**     |      1,538,381       |     1,000     |    0.009%    |   0.06ms    |   0.06ms    |   0.07ms    |
 
 ## 3. Rate Limit Allowed Rate (Success Rate) vs Blocked Rate Explanation
 

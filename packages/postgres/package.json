@@ -42,7 +42,7 @@
         "test:run": "vitest run --exclude \"**/*.integration.test.ts\"",
         "test:coverage": "vitest run --coverage",
         "test:coverage:dev": "pnpm run docker:up && vitest run --coverage && pnpm run docker:down",
-        "test:integration": "pnpm run docker:up && vitest run && pnpm run docker:down",
+        "test:integration": "pnpm run docker:up && vitest run __integration__/integration.test.ts --config vitest.integration.config.ts; status=$?; pnpm run docker:down; exit $status",
         "typecheck": "tsgo --noEmit",
         "clean": "rimraf dist node_modules .turbo",
         "docker:up": "docker-compose --env-file .env.test -f docker-compose.test.yml up -d --wait",

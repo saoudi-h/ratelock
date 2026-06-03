@@ -9,6 +9,7 @@ export default defineConfig([
             'prettier.config.js',
             'lint-staged.config.mjs',
             'vitest.config.ts',
+            'vitest.integration.config.ts',
             'coverage',
         ],
     },

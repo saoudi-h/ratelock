@@ -17,9 +17,6 @@ export class PostgresAdapter implements BenchmarkAdapter {
     private readonly skipMigrations: boolean
     /**
      * Override the connection pool size. Defaults to `config.benchConcurrency`.
-     * For postgres.js, the driver uses `sql.unsafe()` which requires either
-     * `max: 1` or being inside a `sql.begin()` transaction. The bench uses
-     * unsafe() at the top level, so postgres.js needs `max: 1` to work.
      */
     private readonly poolMax: number
 
@@ -87,13 +84,8 @@ export class PostgresAdapter implements BenchmarkAdapter {
             }
 
             // Create actual sql client for benchmarking.
-            // For postgres.js, the RateLock driver uses sql.unsafe() which
-            // requires max: 1 OR a sql.begin() transaction. Since the rate
-            // limiter doesn't wrap in transactions, we use max: 1 here.
-            // This caps concurrency at 1 connection, which is the trade-off
-            // for using the unified PgDriver interface. For full pool
-            // performance with postgres.js, the rate-limiter would need a
-            // dedicated driver that uses tagged templates instead of unsafe().
+            // The RateLock driver uses sql.reserve() + sql.unsafe() which
+            // allows full pool parallelism.
             this.sqlClient = postgres(config.postgresUrl, {
                 max: this.poolMax,
                 connect_timeout: 1,
