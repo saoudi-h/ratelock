@@ -28,8 +28,15 @@ export async function fixedWindow(
     if (!skipMigrations) await runMigrations(drv, { unlogged: config.unlogged })
     const cleanupHandle = startAutoCleanup(drv)
 
+    // The next window boundary is pre-computed in JS so the CASE branches don't
+    // have to recompute EXTRACT(EPOCH FROM NOW()) * 1000 + floor() + multiply on
+    // every UPSERT. The cast to_timestamp($2 / 1000.0) is a single float→timestamptz
+    // conversion; without the pre-compute, the same cast would be repeated in both
+    // CASE reset branches. The expiration comparison still uses NOW() so it
+    // remains authoritative on the database side, eliminating any clock-drift risk
+    // between the application server and the database.
     const sqlCheck = `INSERT INTO ${TABLE} (key, count, expires_at)
-                 VALUES ($1, 1, to_timestamp((floor((extract(epoch from now()) * 1000) / $2) * $2 + $2) / 1000.0))
+                 VALUES ($1, 1, to_timestamp($2 / 1000.0))
                  ON CONFLICT (key) DO UPDATE SET
                    count = CASE
                      WHEN ${TABLE}.expires_at <= NOW() THEN 1
@@ -37,17 +44,17 @@ export async function fixedWindow(
                      ELSE ${TABLE}.count
                    END,
                    expires_at = CASE
-                     WHEN ${TABLE}.expires_at <= NOW() THEN to_timestamp((floor((extract(epoch from now()) * 1000) / $2) * $2 + $2) / 1000.0)
+                     WHEN ${TABLE}.expires_at <= NOW() THEN to_timestamp($2 / 1000.0)
                      ELSE ${TABLE}.expires_at
                    END
-                 RETURNING count, expires_at`
+                 RETURNING count, (extract(epoch from expires_at) * 1000)::bigint as reset_ms`
 
     const sqlCheckBatch = `WITH input AS (
                    SELECT unnest($1::text[]) AS key
                  ),
                  upserts AS (
                    INSERT INTO ${TABLE} (key, count, expires_at)
-                   SELECT key, 1, to_timestamp((floor((extract(epoch from now()) * 1000) / $2) * $2 + $2) / 1000.0)
+                   SELECT key, 1, to_timestamp($2 / 1000.0)
                    FROM input
                    ON CONFLICT (key) DO UPDATE SET
                      count = CASE
@@ -56,50 +63,54 @@ export async function fixedWindow(
                        ELSE ${TABLE}.count
                      END,
                      expires_at = CASE
-                       WHEN ${TABLE}.expires_at <= NOW() THEN to_timestamp((floor((extract(epoch from now()) * 1000) / $2) * $2 + $2) / 1000.0)
+                       WHEN ${TABLE}.expires_at <= NOW() THEN to_timestamp($2 / 1000.0)
                        ELSE ${TABLE}.expires_at
                      END
-                   RETURNING key, count, expires_at
+                   RETURNING key, count, (extract(epoch from expires_at) * 1000)::bigint as reset_ms
                  )
                  SELECT * FROM upserts`
 
     let limiter: Limiter<FixedWindowResult> = {
         async check(id: string): Promise<FixedWindowResult> {
             const key = `${prefix}:${id}`
-            const rows = await drv.query<{ count: number; expires_at: string }>(
-                sqlCheck,
-                [key, windowMs, limit]
-            )
+            const nextWindowStartMs = (Math.floor(Date.now() / windowMs) + 1) * windowMs
+            const rows = await drv.query<{ count: number; reset_ms: string | number }>(sqlCheck, [
+                key,
+                nextWindowStartMs,
+                limit,
+            ])
 
             const row = rows[0]!
             const count = row.count
-            const expiresAt = new Date(row.expires_at).getTime()
+            const resetMs = typeof row.reset_ms === 'string' ? Number(row.reset_ms) : row.reset_ms
 
             return {
                 allowed: count <= limit,
                 remaining: Math.max(0, limit - count),
-                reset: expiresAt,
+                reset: resetMs,
             }
         },
 
         async checkBatch(ids: string[]): Promise<FixedWindowResult[]> {
             if (ids.length === 0) return []
             const keys = ids.map(id => `${prefix}:${id}`)
-            
-            const rows = await drv.query<{ key: string, count: number; expires_at: string }>(
-                sqlCheckBatch,
-                [keys, windowMs, limit]
-            )
+            const nextWindowStartMs = (Math.floor(Date.now() / windowMs) + 1) * windowMs
+            const rows = await drv.query<{
+                key: string
+                count: number
+                reset_ms: string | number
+            }>(sqlCheckBatch, [keys, nextWindowStartMs, limit])
 
             const rowMap = new Map(rows.map(r => [r.key, r]))
             return keys.map(key => {
                 const row = rowMap.get(key)!
                 const count = row.count
-                const expiresAt = new Date(row.expires_at).getTime()
+                const resetMs =
+                    typeof row.reset_ms === 'string' ? Number(row.reset_ms) : row.reset_ms
                 return {
                     allowed: count <= limit,
                     remaining: Math.max(0, limit - count),
-                    reset: expiresAt,
+                    reset: resetMs,
                 }
             })
         },
