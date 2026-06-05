@@ -6,7 +6,7 @@ Thank you for your interest in contributing! We welcome all kinds of contributio
 
 ### Prerequisites
 
-- **Node.js >= 22**
+- **Node.js >= 22** or **Bun >= 1.1** (CI runs on both; see the [Runtimes page](https://github.com/saoudi-h/ratelock/blob/main/apps/docs/src/content/docs/getting-started/runtimes.mdx))
 - **pnpm >= 10** (this project uses pnpm as its package manager)
 - **Docker** (for running integration tests)
 
@@ -88,6 +88,24 @@ cd packages/postgres
 pnpm test:integration
 ```
 
+### Running Tests on Bun
+
+Mock test suites run on both Node.js and Bun. Integration tests stay on Node.js because the harness uses test containers, and Bun's compatibility layer is not exercised by the package code.
+
+```bash
+# Use the system Bun to run the test command
+bun --version
+
+# Run the full mock suite on Bun
+pnpm test
+
+# Run a single package on Bun
+cd packages/redis
+bun run test
+```
+
+If a test passes on Node and fails on Bun, it is a real bug, not a flake. Open an issue with the failing output and the Bun version.
+
 ## Pull Requests
 
 1. **Fork** the repository and create your branch from `main`.
@@ -130,7 +148,7 @@ Follow the prompts to describe your change. This ensures proper versioning and c
 When filing a bug, please include:
 
 1. Package name and version
-2. Node.js version
+2. Runtime and version (Node.js or Bun)
 3. A minimal reproduction (code snippet or repository)
 4. Expected vs. actual behavior
 

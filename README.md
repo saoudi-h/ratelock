@@ -5,6 +5,7 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/saoudi-h/ratelock/release.yml?branch=main&label=build)](https://github.com/saoudi-h/ratelock/actions)
 [![License](https://img.shields.io/github/license/saoudi-h/ratelock)](https://github.com/saoudi-h/ratelock/blob/main/LICENSE)
 [![npm version](https://img.shields.io/npm/v/@ratelock/local.svg)](https://www.npmjs.com/package/@ratelock/local)
+[![Runtime](https://img.shields.io/badge/runtime-Node.js%20%7C%20Bun-4476A4)](https://github.com/saoudi-h/ratelock)
 
 ## What is RateLock?
 
@@ -12,7 +13,7 @@ RateLock is a modern rate limiting solution built for the real world. Whether yo
 
 ### Why another rate limiter?
 
-Most rate limiting libraries force you into a one-size-fits-all architecture. RateLock takes a different approach: **each storage adapter is a first-class citizen**, designed to leverage the unique strengths of its backend — Redis Lua scripts for atomicity, PostgreSQL UPSERTs for consistency, in-memory Maps for zero-overhead single-process apps.
+Most rate limiting libraries force you into a one-size-fits-all architecture. RateLock takes a different approach: **each storage adapter is a first-class citizen**, designed to leverage the unique strengths of its backend — Redis Lua scripts for atomicity, PostgreSQL UPSERTs for consistency, in-memory Maps for zero-overhead single-process apps. The same source runs on Node.js and Bun, with no shims and no runtime-only fallbacks.
 
 ## Quick Start
 
@@ -41,6 +42,7 @@ if (!result.allowed) {
 
 ## Core Features
 
+- **Cross-runtime**: Same source on Node.js 22+ and Bun 1.1+, tested on every PR
 - **4 rate limiting strategies**: Fixed Window, Sliding Window, Token Bucket, Individual Fixed Window
 - **Built-in resilience**: Retry with backoff, circuit breaker, error policies, deny cache
 - **TypeScript first**: Full type safety, no `any` leaks
