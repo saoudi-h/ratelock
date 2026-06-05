@@ -40,7 +40,7 @@ The committed numbers were generated on:
 - RAM: 32 GB DDR4
 - OS: Linux x64, kernel 6.x
 - Node.js: v25.9.0 (Bun 1.3.14 is also tested; see the [Runtimes page](/docs/getting-started/runtimes) for cross-runtime notes)
-- Backends: Postgres 18, Redis 7, Valkey 8, all running in Docker on the same host
+- Backends: Postgres 18, Redis 7, Valkey 9, all running in Docker on the same host
 
 Your throughput will scale roughly with single-core CPU frequency and memory bandwidth. Latency to a remote backend will be dominated by network round-trip, which the local Docker setup does not capture. The committed numbers on this page are Node.js; Bun numbers are in the same ballpark with a small per-scenario spread documented on the [Runtimes page](/docs/getting-started/runtimes).
 
@@ -90,10 +90,10 @@ Strategies that fit in process memory. Counter-based strategies run in constant 
 
 | Strategy | Diverse — Median (min–max) ops/sec | p99 latency | Extreme Spam — Median (min–max) ops/sec | p99 latency |
 | :--- | :---: | :---: | :---: | :---: |
-| **Fixed Window** | 996,302 (974K–1,277K) | 0.11 ms | 2,242,142 (2,176K–2,307K) | 0.06 ms |
-| **Token Bucket** | 994,231 (893K–1,268K) | 0.10 ms | 2,243,570 | 0.05 ms |
-| **Individual Fixed Window** | 1,009,908 (839K–1,277K) | 0.10 ms | 2,434,939 | 0.05 ms |
-| **Sliding Window** | 742,392 (730K–752K) | 0.15 ms | 55,208 | 2.67 ms |
+| **Fixed Window** | 1,131,651 (1,012K–1,317K) | 0.11 ms | 1,761,438 (1,728K–2,382K) | 0.04 ms |
+| **Token Bucket** | 1,102,354 (956K–1,280K) | 0.09 ms | 2,332,474 (2,316K–2,342K) | 0.04 ms |
+| **Individual Fixed Window** | 875,364 (755K–1,063K) | 0.09 ms | 2,518,363 (2,462K–2,535K) | 0.04 ms |
+| **Sliding Window** | 667,297 (610K–963K) | 0.16 ms | 75,201 (74K–76K) | 1.89 ms |
 
 The high min–max spread on Fixed Window, Token Bucket, and Individual Fixed under diverse keys reflects the first-run JIT cost; the median run is steady. Sliding Window is stable but slow: every check iterates the timestamp array, and the array is full after 60 s of spam.
 
@@ -107,12 +107,12 @@ The high min–max spread on Fixed Window, Token Bucket, and Individual Fixed un
 
 All numbers below use `ioredis` and connect to a local Redis 7 container.
 
-| Strategy | Diverse — Median ops/sec | p99 latency | Extreme Spam — Median ops/sec | p99 latency |
+| Strategy | Diverse — Median (min–max) ops/sec | p99 latency | Extreme Spam — Median (min–max) ops/sec | p99 latency |
 | :--- | :---: | :---: | :---: | :---: |
-| **Fixed Window** | 136,031 | 0.99 ms | 141,993 | 0.90 ms |
-| **Token Bucket** | 119,390 | 1.01 ms | 129,708 | 1.02 ms |
-| **Individual Fixed Window** | 122,484 | 1.08 ms | 122,920 | 1.08 ms |
-| **Sliding Window** | 92,271 | 1.34 ms | 128,543 | 0.95 ms |
+| **Fixed Window** | 141,504 (138K–146K) | 1.00 ms | 147,850 (146K–149K) | 0.87 ms |
+| **Token Bucket** | 119,977 (117K–121K) | 1.04 ms | 143,616 (143K–145K) | 0.88 ms |
+| **Individual Fixed Window** | 130,829 (117K–136K) | 0.99 ms | 143,612 (141K–145K) | 0.90 ms |
+| **Sliding Window** | 97,579 (97K–100K) | 1.24 ms | 131,288 (131K–132K) | 0.95 ms |
 
 The Redis numbers are an order of magnitude below the in-memory numbers because every check is a network round-trip. The p99 latency in the diverse scenario is dominated by the network and serialization, not by the algorithm choice. Under spam, the work shifts to the limiter's Lua script rather than the network, so latency compresses.
 
@@ -122,18 +122,17 @@ The Redis numbers are an order of magnitude below the in-memory numbers because 
 
 Postgres numbers come from a local Postgres 18 container with the durability flags listed in [Methodology in detail](#methodology-in-detail). Throughput is two orders of magnitude below Redis because of the per-query transaction cost.
 
-| Strategy | Diverse — Median ops/sec | p99 latency | Extreme Spam — Median ops/sec | p99 latency |
+| Strategy | Diverse — Median (min–max) ops/sec | p99 latency | Extreme Spam — Median (min–max) ops/sec | p99 latency |
 | :--- | :---: | :---: | :---: | :---: |
-| **Fixed Window** | 22,983 | 7.13 ms | 20,746 | 8.05 ms |
-| **Sliding Window** | 21,066 | 7.45 ms | 1,762 | 213.47 ms |
-| **Token Bucket** | 14,440 | 14.75 ms | 1,658 | 254.77 ms |
-| **Individual Fixed Window** | 22,228 | 7.12 ms | 18,042 | 9.13 ms |
+| **Fixed Window** | 30,498 (30K–31K) | 5.23 ms | 29,318 (29K–29K) | 5.49 ms |
+| **Sliding Window** | 27,352 (27K–28K) | 6.03 ms | 19,247 (19K–19K) | 8.52 ms |
+| **Token Bucket** | 24,450 (23K–25K) | 6.49 ms | 1,730 (1.7K–1.8K) | 232.33 ms |
+| **Individual Fixed Window** | 28,624 (29K–29K) | 5.57 ms | 23,416 (23K–23K) | 6.82 ms |
 
-The diverse scenario tells a calm story: all four strategies sit between 14K and 23K ops/sec. The extreme-spam scenario is where the choice matters:
+The diverse scenario tells a calm story: all four strategies sit between 25K and 31K ops/sec. The extreme-spam scenario is where the choice matters:
 
-- **Fixed Window** and **Individual Fixed Window** stay close to their diverse throughput. They are UPSERT-friendly and tolerate single-key contention.
-- **Sliding Window** collapses to 1,762 ops/sec with 213 ms p99. The implementation deletes expired rows from a timestamp array on every check, which serializes badly on a hot key.
-- **Token Bucket** collapses to 1,658 ops/sec with 254 ms p99 for the same reason: a transaction per check, plus a refill calculation.
+- **Fixed Window**, **Sliding Window**, and **Individual Fixed Window** stay close to their diverse throughput. They are UPSERT-friendly and tolerate single-key contention. Sliding Window is the slowest of the three under spam but it is no longer the cliff it used to be — the named prepared statement optimisation closed the plan-cache gap that used to dominate.
+- **Token Bucket** collapses to ~1,800 ops/sec with 200+ ms p99. A transaction per check, plus a refill calculation, is too much for a hot Postgres row to absorb.
 
 > [!IMPORTANT]
 > **Postgres strategy recommendation**
@@ -143,10 +142,10 @@ The diverse scenario tells a calm story: all four strategies sit between 14K and
 
 | Table type | Diverse — Median ops/sec | p99 latency |
 | :--- | :---: | :---: |
-| **Logged** (default) | 21,230 | 7.65 ms |
-| **Unlogged** | 19,767 | 8.63 ms |
+| **Logged** (default) | 25,072 | 6.39 ms |
+| **Unlogged** | 25,042 | 6.36 ms |
 
-In this run, unlogged tables are slightly **slower** than logged tables, well within the run-to-run spread. The 18% gain quoted in earlier drafts of this page came from a single short run without warmup. The takeaway is: unlogged tables remove a durability cost that is not the bottleneck in this scenario, so the difference is small and noisy. Use unlogged tables for the same reason you would use an in-memory cache: the data is acceptable to lose on crash.
+The two table types are within 1% of each other on this run. The 18% gain quoted in earlier drafts of this page came from a single short run without warmup. The takeaway is: unlogged tables remove a durability cost that is not the bottleneck in this scenario, so the difference is small and noisy. Use unlogged tables for the same reason you would use an in-memory cache: the data is acceptable to lose on crash.
 
 ---
 
@@ -156,13 +155,13 @@ This matrix is the one most likely to be misread, so the methodology matters. Bo
 
 | Backend | RateLock — Median ops/sec | RLF — Median ops/sec | Ratio |
 | :--- | :---: | :---: | :---: |
-| **Local Memory** (extreme spam) | 2,052,929 | 714,097 | 2.9x |
-| **Redis** (extreme spam, ioredis) | 138,033 | 79,574 | 1.7x |
-| **PostgreSQL** (extreme spam) | 20,847 | 26,382 | 0.79x |
+| **Local Memory** (extreme spam) | 2,140,391 | 746,094 | 2.87x |
+| **Redis** (extreme spam, ioredis) | 136,197 | 81,414 | 1.67x |
+| **PostgreSQL** (extreme spam) | 26,888 | 26,886 | 1.00x |
 
 - On local memory, RateLock is **2.9x** faster under spam. The single-key hot path benefits from direct `Map` lookups and the absence of per-call class instantiation.
 - On Redis, RateLock is **1.7x** faster. Both libraries use Lua scripts for atomic counters, so the gap is the script body and the network framing around it.
-- On PostgreSQL, **`rate-limiter-flexible` is faster** under spam (1.27x). Both libraries run a single UPSERT per call against the same hot row; RLF is faster because its internal `_getConnection` + `consume` path is more direct than RateLock's adapter wrapper, and it uses one fewer hop between the JS call and the pool. RateLock's `pgDriver` now uses **named prepared statements** (FNV-1a hash of the SQL text), which closes the plan-cache gap that existed in earlier runs of this matrix. The remaining 27% gap is in JS-side row parsing and adapter overhead, not in the SQL itself.
+- On PostgreSQL, the two libraries are **effectively identical** under spam in this run (1.00x — the medians differ by two requests per second over 3 runs). Both run a single UPSERT per call against the same hot row. RateLock's `pgDriver` uses **named prepared statements** (FNV-1a hash of the SQL text), which closed the plan-cache gap that earlier versions of this matrix showed. The earlier "RLF is 1.27x faster" finding came from a run before that optimisation landed and should be considered superseded; treat any claim about a stable Postgres gap as a measurement, not a guarantee.
 
 > [!NOTE]
 > **API differences that bias the comparison**
@@ -178,17 +177,17 @@ This matrix is the one most likely to be misread, so the methodology matters. Bo
 
 Each decorator wraps a local Fixed Window limiter. The numbers are diverse scenarios so that the per-iteration overhead of the decorator is what is being measured, not a side effect of the limiter itself.
 
-| Limiter | Diverse — Median ops/sec | p99 latency | Relative to raw |
+| Limiter | Diverse — Median (min–max) ops/sec | p99 latency | Relative to raw |
 | :--- | :---: | :---: | :---: |
-| **Raw Fixed Window** | 1,137,179 | 0.10 ms | reference |
-| **+ withCache** | 1,023,863 | 0.12 ms | -10% |
-| **+ withCircuitBreaker** | 848,767 | 0.16 ms | -25% |
-| **+ withFallback** | 833,380 | 0.15 ms | -27% |
-| **+ withRetry** | 897,695 | 0.13 ms | -21% |
+| **Raw Fixed Window** | 1,145,813 (1,028K–1,323K) | 0.09 ms | reference |
+| **+ withCache** | 1,010,973 (821K–1,130K) | 0.10 ms | -12% |
+| **+ withCircuitBreaker** | 1,002,669 (974K–1,192K) | 0.10 ms | -13% |
+| **+ withFallback** | 950,878 (659K–1,156K) | 0.13 ms | -17% |
+| **+ withRetry** | 685,142 (326K–968K) | 0.28 ms | -40% |
 
 Under extreme spam, all four wrap a local limiter and end up bottlenecked by the limiter itself, so the decorator numbers converge to roughly 2.2M ops/sec and the differences become noise.
 
-The interesting case is when a decorator wraps a **remote** limiter (Redis or Postgres). There, `withCache` can absorb spam in memory and protect the backend. Earlier drafts of this page quoted a 2.2x throughput gain from `withCache`; that number was comparing the diverse case (1M ops/sec raw) to the spam case (2.4M ops/sec with cache), which is not a fair within-scenario comparison. Within the same scenario, `withCache` adds about 10% overhead on the diverse case and has no measurable effect on the spam case against a local limiter, because the limiter is already fast enough that the cache lookup costs as much as the limiter call.
+The interesting case is when a decorator wraps a **remote** limiter (Redis or Postgres). There, `withCache` can absorb spam in memory and protect the backend. Earlier drafts of this page quoted a 2.2x throughput gain from `withCache`; that number was comparing the diverse case (1M ops/sec raw) to the spam case (2.4M ops/sec with cache), which is not a fair within-scenario comparison. Within the same scenario, `withCache` adds about 10-15% overhead on the diverse case and has no measurable effect on the spam case against a local limiter, because the limiter is already fast enough that the cache lookup costs as much as the limiter call. `withRetry` is the outlier on this run, costing ~40% and tripling the p99 latency because every call pays for the attempt counter and the backoff bookkeeping even when the first attempt succeeds; treat its overhead as run-to-run noisy.
 
 > [!TIP]
 > **When `withCache` helps**
@@ -198,22 +197,20 @@ The interesting case is when a decorator wraps a **remote** limiter (Redis or Po
 
 ## 6. Redis and Valkey Client Drivers
 
-Both Redis 7 and Valkey 8 are tested with the `ioredis` and `node-redis` clients under extreme spam.
+Both Redis 7 and Valkey are tested with the `ioredis` and `node-redis` clients under extreme spam.
 
 | Backend / client | Median ops/sec | p99 latency |
 | :--- | :---: | :---: |
-| **Redis 7 (ioredis)** | 141,993 | 0.90 ms |
-| **Redis 7 (node-redis)** | 84,877 | 3.28 ms |
-| **Valkey 8 (ioredis)** | 111,168 | 1.33 ms |
-| **Valkey 8 (node-redis)** | 120,816 | 1.71 ms |
+| **Redis 7 (ioredis)** | 137,723 | 1.10 ms |
+| **Redis 7 (node-redis)** | 135,649 | 1.00 ms |
+| **Valkey 9 (ioredis)** | 134,026 | 1.09 ms |
+| **Valkey 9 (node-redis)** | 138,830 | 0.96 ms |
 
-The `node-redis` row on Redis 7 came in lower than expected on this run; the spread between client libraries is within the run-to-run variance for the workload, and `ioredis` was used for the package-comparison matrix to keep the two libraries on equal footing. The takeaway is that the limiter implementation is the dominant cost in this scenario, not the client.
+All four rows sit within a 4% band. `ioredis` was used for the package-comparison matrix to keep the two libraries on equal footing. The takeaway is that the limiter implementation is the dominant cost in this scenario, not the client.
 
 ### Postgres drivers: `pg` vs `postgres.js`
 
-`pg` (node-postgres) ran cleanly in this run. `postgres.js` failed with `UNSAFE_TRANSACTION: Only use sql.begin, sql.reserved or max: 1` under the default concurrency of 80. The `postgres.js` driver requires a connection-pool size of 1 to perform transactional UPSERTs, which kills the throughput story and is not a fair comparison against `pg`. The two drivers are reported as separate rows in the raw output and the `postgres.js` rows are flagged as skipped.
-
-For a fair comparison, run `postgres.js` with `max: 1` (single transaction at a time) and `pg` with `max: 1` as well, which will surface the driver overhead and not the concurrency.
+Both drivers ran cleanly on the diverse scenario, with `postgres.js` slightly ahead on Fixed Window (30,857 vs 25,072 logged / 25,042 unlogged) and on Token Bucket (21,860 vs 17,304). Under extreme Token Bucket spam, the two drivers converge to roughly the same throughput (~1,600 ops/sec, ~230-240 ms p99) — the bottleneck is the single hot row, not the driver. The earlier draft of this page reported that `postgres.js` failed with `UNSAFE_TRANSACTION` under the default concurrency of 80; that was a configuration mismatch (the bench harness was passing a too-high concurrency to a driver that wants `max: 1` for transactional UPSERTs) and has since been fixed.
 
 ---
 
