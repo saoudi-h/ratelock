@@ -17,25 +17,25 @@ export async function runMatrix5(
     // 1. Valkey vs Redis 7
     try {
         const redisNode = new RedisAdapter({
-            name: 'Redis 8 (node-redis client)',
+            name: 'Redis 7 (node-redis client)',
             strategy: 'fixed-window',
             clientType: 'redis',
             url: config.redisUrl,
         })
         const redisIo = new RedisAdapter({
-            name: 'Redis 8 (ioredis client)',
+            name: 'Redis 7 (ioredis client)',
             strategy: 'fixed-window',
             clientType: 'ioredis',
             url: config.redisUrl,
         })
         const valkeyNode = new RedisAdapter({
-            name: 'Valkey 8 (node-redis client)',
+            name: 'Valkey (node-redis client)',
             strategy: 'fixed-window',
             clientType: 'redis',
             url: config.valkeyUrl,
         })
         const valkeyIo = new RedisAdapter({
-            name: 'Valkey 8 (ioredis client)',
+            name: 'Valkey (ioredis client)',
             strategy: 'fixed-window',
             clientType: 'ioredis',
             url: config.valkeyUrl,
