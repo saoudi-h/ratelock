@@ -71,6 +71,8 @@ export type BenchmarkSuite = {
     meta: {
         date: string
         node: string
+        runtime: 'node' | 'bun'
+        runtimeVersion: string
         platform: string
         arch: string
     }

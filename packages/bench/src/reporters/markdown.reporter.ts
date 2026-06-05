@@ -12,9 +12,14 @@ export function saveMarkdownReport(reports: Record<string, BenchMetrics[]>, outD
 }
 
 function generateMarkdownReport(reports: Record<string, BenchMetrics[]>): string {
+    const isBun = typeof (globalThis as { Bun?: unknown }).Bun !== 'undefined'
+    const runtimeLabel = isBun
+        ? `Bun \`${(globalThis as unknown as { Bun: { version: string } }).Bun.version}\``
+        : `Node.js \`${process.version}\``
+
     let md = `# 📊 RateLock v0.2.0 Comprehensive Performance Study\n\n`
     md += `Generated on: \`${new Date().toISOString()}\`  \n`
-    md += `Environment: Node.js \`${process.version}\` | OS \`${process.platform}\` | Arch \`${process.arch}\`  \n`
+    md += `Environment: ${runtimeLabel} | OS \`${process.platform}\` | Arch \`${process.arch}\`  \n`
     md += `Harness Configuration: \`${config.benchConcurrency}\` concurrent worker loops, \`${config.benchDuration}ms\` duration per scenario.\n\n`
 
     md += `## 1. Executive Summary & Design Recommendations\n\n`

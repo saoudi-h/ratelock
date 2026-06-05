@@ -7,6 +7,13 @@ import { printTable, saveMarkdownReport, saveRawJson } from './reporters'
 import { runHarness } from './runner'
 import type { BenchMetrics } from './types'
 
+const isBun = typeof (globalThis as { Bun?: unknown }).Bun !== 'undefined'
+const runtimeName: 'node' | 'bun' = isBun ? 'bun' : 'node'
+const runtimeVersion = isBun
+    ? (globalThis as unknown as { Bun: { version: string } }).Bun.version
+    : process.version
+const runtimeLabel = isBun ? `Bun ${runtimeVersion}` : `Node.js ${runtimeVersion}`
+
 // For legacy runner backward-compatibility
 import { reportConsole, reportJson } from './reporters'
 import { Runner } from './runner'
@@ -49,6 +56,8 @@ async function runLegacy() {
         meta: {
             date: new Date().toISOString(),
             node: process.version,
+            runtime: runtimeName,
+            runtimeVersion,
             platform: process.platform,
             arch: process.arch,
         },
@@ -130,7 +139,7 @@ async function runFullSuite() {
     console.log(
         `  Latency Sim: ${config.benchLatencyMs > 0 ? config.benchLatencyMs + 'ms simulated delay' : 'disabled'}`
     )
-    console.log(`  Environment: Node.js ${process.version} on ${process.platform}/${process.arch}`)
+    console.log(`  Environment: ${runtimeLabel} on ${process.platform}/${process.arch}`)
     console.log(`  ==============================================================\n`)
 
     const reports: Record<string, BenchMetrics[]> = {}
