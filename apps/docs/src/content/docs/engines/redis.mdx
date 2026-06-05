@@ -10,7 +10,7 @@ The Redis engine executes atomic Lua scripts for distributed rate limiting. Each
 - **Token Bucket** uses hashes (`HMGET`/`HMSET`) to store the token count and last-refill time.
 - **Individual Fixed Window** uses two keys per identifier (start + count) with `GET`/`SET`/`INCR`.
 
-The engine supports both `redis` (node-redis) and `ioredis` clients.
+The engine supports both `redis` (node-redis) and `ioredis` clients, and runs on every [supported runtime](/docs/getting-started/runtimes).
 
 ## Installation
 
