@@ -61,21 +61,23 @@
     "type": "git",
     "url": "https://github.com/saoudi-h/ratelock.git"
   },
-  "keywords": [
-    "rate-limiting",
-    "rate-locking",
-    "rate-lock",
-    "ratelimit",
-    "redis",
-    "nextjs",
-    "express",
-    "fastify",
-    "rate-limiter",
-    "nestjs",
-    "middleware",
-    "security",
-    "typescript"
-  ],
+    "keywords": [
+        "rate-limiting",
+        "rate-locking",
+        "rate-lock",
+        "ratelimit",
+        "redis",
+        "nextjs",
+        "express",
+        "fastify",
+        "rate-limiter",
+        "nestjs",
+        "middleware",
+        "security",
+        "typescript",
+        "bun",
+        "cross-runtime"
+    ],
   "author": {
     "name": "Saoudi Hakim",
     "url": "https://hakimsaoudi.dev",

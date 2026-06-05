@@ -82,7 +82,8 @@
         "vitest": "^4.1.6"
     },
     "engines": {
-        "node": ">=22"
+        "node": ">=22",
+        "bun": ">=1.1"
     },
     "author": {
         "name": "Saoudi Hakim",
@@ -96,7 +97,9 @@
         "postgresql",
         "sliding-window",
         "fixed-window",
-        "token-bucket"
+        "token-bucket",
+        "bun",
+        "cross-runtime"
     ],
     "module": "./dist/index.mjs"
 }
