@@ -13,8 +13,63 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  ci:
-    name: Lint, Typecheck & Test
+  unit:
+    name: Unit tests (${{ matrix.runtime }})
+    strategy:
+      fail-fast: false
+      matrix:
+        runtime: [node, bun]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies (Node + pnpm)
+        uses: ./.github/actions/install
+
+      - name: Build
+        run: |
+          if [ "${{ matrix.runtime }}" = "bun" ]; then
+            bun run build
+          else
+            pnpm build
+          fi
+
+      - name: Test
+        env:
+          CI: true
+        run: |
+          if [ "${{ matrix.runtime }}" = "bun" ]; then
+            bun run test
+          else
+            pnpm test
+          fi
+
+  integration:
+    name: Integration tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        uses: ./.github/actions/install
+
+      - name: Build
+        run: pnpm build
+
+      - name: Redis integration
+        run: pnpm --filter @ratelock/redis test:integration
+
+      - name: Postgres integration
+        run: pnpm --filter @ratelock/postgres test:integration
+
+  lint:
+    name: Lint, Typecheck & Publint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -33,9 +88,6 @@ jobs:
 
       - name: Typecheck
         run: pnpm typecheck
-
-      - name: Test
-        run: pnpm test
 
       - name: Publint
         run: |
