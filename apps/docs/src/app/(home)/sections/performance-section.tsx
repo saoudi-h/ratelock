@@ -79,18 +79,18 @@ export function PerformanceSection() {
         memory: {
             title: 'In-Memory Counter Throughput',
             description: 'In-memory JS Maps with zero network round-trips.',
-            multiplier: '2.77x higher',
+            multiplier: '2.81x higher',
             metrics: [
                 {
                     name: 'RateLock Local Fixed Window',
-                    throughput: 2104195,
+                    throughput: 2088809,
                     latency: '0.04ms',
                     isRateLock: true,
                     color: 'from-emerald-500 to-teal-500',
                 },
                 {
                     name: 'rate-limiter-flexible Memory',
-                    throughput: 759173,
+                    throughput: 744508,
                     latency: '0.11ms',
                     isRateLock: false,
                     color: 'from-muted-foreground/30 to-muted-foreground/40',
@@ -100,19 +100,19 @@ export function PerformanceSection() {
         redis: {
             title: 'Distributed Redis Throughput',
             description: 'Atomic Lua scripts executed directly on the Redis thread.',
-            multiplier: '1.53x higher',
+            multiplier: '1.71x higher',
             metrics: [
                 {
                     name: 'RateLock Redis Fixed Window',
-                    throughput: 133310,
-                    latency: '0.60ms',
+                    throughput: 142637,
+                    latency: '0.56ms',
                     isRateLock: true,
                     color: 'from-red-500 to-orange-500',
                 },
                 {
                     name: 'rate-limiter-flexible Redis',
-                    throughput: 87194,
-                    latency: '0.92ms',
+                    throughput: 83403,
+                    latency: '0.96ms',
                     isRateLock: false,
                     color: 'from-muted-foreground/30 to-muted-foreground/40',
                 },
@@ -120,20 +120,21 @@ export function PerformanceSection() {
         },
         postgres: {
             title: 'PostgreSQL Throughput',
-            description: 'Targeted UPSERT queries with named prepared statements.',
-            multiplier: '1.05x higher',
+            description:
+                'Targeted UPSERT queries with named prepared statements. Production-default durability.',
+            multiplier: '1.04x higher',
             metrics: [
                 {
                     name: 'RateLock Postgres Fixed Window',
-                    throughput: 26122,
-                    latency: '3.06ms',
+                    throughput: 29330,
+                    latency: '2.80ms',
                     isRateLock: true,
                     color: 'from-sky-500 to-indigo-500',
                 },
                 {
                     name: 'rate-limiter-flexible Postgres',
-                    throughput: 24820,
-                    latency: '3.22ms',
+                    throughput: 28171,
+                    latency: '2.88ms',
                     isRateLock: false,
                     color: 'from-muted-foreground/30 to-muted-foreground/40',
                 },

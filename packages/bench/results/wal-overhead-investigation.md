@@ -77,14 +77,14 @@ ones quoted in the docs.
 1. **Keep the `unlogged: true` option.** It's a real ~7-15% win in production
    configurations, free to opt in to, and the user knows the trade-off (no crash
    recovery for those tables).
-2. **Update the docs** to show the production-default numbers (PG18 14.6%,
-   PG15 7.4%, PG14 10.9%) instead of the all-durability-off numbers, and add
-   a short note explaining that the bench config disables durability to
-   eliminate I/O jitter as a confound for the driver comparison.
-3. **Keep the current bench config as-is** for driver-comparison matrices: we
-   want to isolate driver/protocol differences, not durability. But for the
-   "Logged vs Unlogged" table, run that matrix on a separate harness with
-   default durability so the numbers are honest.
-4. **Archive `HANDOVER.md`** (or fold it into `docs/benchmarks.mdx`) — the
+2. **Switch the bench to production defaults.** The main benchmark suite
+   (`packages/bench/docker-compose.yml`) now runs Postgres with
+   `synchronous_commit=on`, `fsync=on`, and `full_page_writes=on` (only
+   sizing flags are applied). The "Logged vs Unlogged" row in the main
+   bench now shows the honest 20% gap on PG 18 with full durability. The
+   focused harness in this file remains the reference for the deeper
+   investigation across PG 14, 15, and 18, and for the all-durability-off
+   baseline.
+3. **Archive `HANDOVER.md`** (or fold it into `docs/benchmarks.mdx`) — the
    UNSAFE_TRANSACTION / `sql.reserve()` issue it described is now fully
    resolved by the per-driver strategy split.

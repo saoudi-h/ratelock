@@ -2,7 +2,11 @@ services:
     postgres-bench:
         image: postgres:18-alpine
         container_name: ratelock-postgres-bench
-        command: postgres -c synchronous_commit=off -c fsync=off -c full_page_writes=off -c max_connections=200 -c shared_buffers=512MB
+        # Production-default durability (synchronous_commit=on, fsync=on,
+        # full_page_writes=on). Tuning is sizing only:
+        # - max_connections=200 to absorb 80-worker benchmark load
+        # - shared_buffers=512MB to keep the working set in memory
+        command: postgres -c max_connections=200 -c shared_buffers=512MB
         environment:
             POSTGRES_DB: ratelock_bench
             POSTGRES_USER: ratelock
