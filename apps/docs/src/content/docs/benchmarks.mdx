@@ -140,12 +140,26 @@ The diverse scenario tells a calm story: all four strategies sit between 25K and
 
 ### Logged vs Unlogged tables
 
-| Table type | Diverse — Median ops/sec | p99 latency |
-| :--- | :---: | :---: |
-| **Logged** (default) | 23,569 | 6.79 ms |
-| **Unlogged** | 24,092 | 6.61 ms |
+> [!NOTE]
+> **A note on the bench config**
+> The Postgres container in this suite runs with `synchronous_commit=off`, `fsync=off`, and `full_page_writes=off` (see [Methodology in detail](#methodology-in-detail)). These flags disable every durability barrier that makes WAL expensive, so the numbers in the bench matrix describe the **driver and protocol** cost of a write, not the full **WAL** cost. They are the right numbers to compare the limiter implementation against `rate-limiter-flexible` on equal footing, but they understate the gap between logged and unlogged tables that a production-default Postgres would show. A focused investigation on that gap is summarised at the end of this section.
 
-The two table types are within 3% of each other on this run. The 18% gain quoted in earlier drafts of this page came from a single short run without warmup. The takeaway is: unlogged tables remove a durability cost that is not the bottleneck in this scenario, so the difference is small and noisy. Use unlogged tables for the same reason you would use an in-memory cache: the data is acceptable to lose on crash.
+**Within this bench config** (durability off), the two table types are within 3-4% of each other across 5 runs. The 18% gain quoted in earlier drafts of this page came from a single short run without warmup; the median run is essentially a tie.
+
+**On production-default Postgres** (durability on, `synchronous_commit=on`), the gap is real. A focused harness (`packages/bench/src/scripts/investigate-unlogged.ts`, see [`results/wal-overhead-investigation.md`](https://github.com/saoudi-h/ratelock/blob/main/packages/bench/results/wal-overhead-investigation.md)) compared Logged vs Unlogged Fixed Window across PG 14, 15, and 18 with all durability on, and across PG 14 and 18 with `synchronous_commit=off` only:
+
+| Postgres version | Durability config | Logged (ops/s) | Unlogged (ops/s) | Ratio | WAL overhead |
+| :--- | :--- | ---: | ---: | ---: | ---: |
+| **18.4** | all off (this bench) | 29,244 | 30,303 | 1.04x | -4% (noise) |
+| **18.4** | `sync_commit=off` only | 29,517 | 30,392 | 1.03x | -3% (noise) |
+| **18.4** | **all on (production)** | 25,127 | 28,795 | 1.15x | **-15%** |
+| **15.18** | **all on (production)** | 25,152 | 27,008 | 1.07x | **-7%** |
+| **14.23** | `sync_commit=off` only | 25,609 | 26,613 | 1.04x | -4% |
+| **14.23** | **all on (production)** | 26,676 | 29,591 | 1.11x | **-11%** |
+
+> [!TIP]
+> **How to use the `unlogged: true` option**
+> With production durability on, unlogged tables give **7-15%** higher throughput depending on the Postgres version. With `synchronous_commit=off` (a common "I don't need crash recovery" tuning), the gain shrinks to 3-4%. Use unlogged tables for the same reason you would use an in-memory cache: the data is acceptable to lose on crash. If you are sizing a cluster that must survive crashes with no data loss, stay on logged tables.
 
 ---
 
