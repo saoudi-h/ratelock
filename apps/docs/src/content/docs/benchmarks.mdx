@@ -142,10 +142,10 @@ The diverse scenario tells a calm story: all four strategies sit between 25K and
 
 | Table type | Diverse — Median ops/sec | p99 latency |
 | :--- | :---: | :---: |
-| **Logged** (default) | 25,072 | 6.39 ms |
-| **Unlogged** | 25,042 | 6.36 ms |
+| **Logged** (default) | 23,569 | 6.79 ms |
+| **Unlogged** | 24,092 | 6.61 ms |
 
-The two table types are within 1% of each other on this run. The 18% gain quoted in earlier drafts of this page came from a single short run without warmup. The takeaway is: unlogged tables remove a durability cost that is not the bottleneck in this scenario, so the difference is small and noisy. Use unlogged tables for the same reason you would use an in-memory cache: the data is acceptable to lose on crash.
+The two table types are within 3% of each other on this run. The 18% gain quoted in earlier drafts of this page came from a single short run without warmup. The takeaway is: unlogged tables remove a durability cost that is not the bottleneck in this scenario, so the difference is small and noisy. Use unlogged tables for the same reason you would use an in-memory cache: the data is acceptable to lose on crash.
 
 ---
 
@@ -155,13 +155,13 @@ This matrix is the one most likely to be misread, so the methodology matters. Bo
 
 | Backend | RateLock — Median ops/sec | RLF — Median ops/sec | Ratio |
 | :--- | :---: | :---: | :---: |
-| **Local Memory** (extreme spam) | 2,140,391 | 746,094 | 2.87x |
-| **Redis** (extreme spam, ioredis) | 136,197 | 81,414 | 1.67x |
-| **PostgreSQL** (extreme spam) | 26,888 | 26,886 | 1.00x |
+| **Local Memory** (extreme spam) | 2,104,195 | 759,173 | 2.77x |
+| **Redis** (extreme spam, ioredis) | 133,310 | 87,194 | 1.53x |
+| **PostgreSQL** (extreme spam) | 26,122 | 24,820 | 1.05x |
 
-- On local memory, RateLock is **2.9x** faster under spam. The single-key hot path benefits from direct `Map` lookups and the absence of per-call class instantiation.
-- On Redis, RateLock is **1.7x** faster. Both libraries use Lua scripts for atomic counters, so the gap is the script body and the network framing around it.
-- On PostgreSQL, the two libraries are **effectively identical** under spam in this run (1.00x — the medians differ by two requests per second over 3 runs). Both run a single UPSERT per call against the same hot row. RateLock's `pgDriver` uses **named prepared statements** (FNV-1a hash of the SQL text), which closed the plan-cache gap that earlier versions of this matrix showed. The earlier "RLF is 1.27x faster" finding came from a run before that optimisation landed and should be considered superseded; treat any claim about a stable Postgres gap as a measurement, not a guarantee.
+- On local memory, RateLock is **2.8x** faster under spam. The single-key hot path benefits from direct `Map` lookups and the absence of per-call class instantiation.
+- On Redis, RateLock is **1.5x** faster. Both libraries use Lua scripts for atomic counters, so the gap is the script body and the network framing around it.
+- On PostgreSQL, the two libraries are **near-identical** under spam in this run (1.05x). Both run a single UPSERT per call against the same hot row. RateLock's `pgDriver` uses **named prepared statements** (FNV-1a hash of the SQL text), which closed the plan-cache gap that earlier versions of this matrix showed. Treat any claim about a stable Postgres gap as a measurement, not a guarantee — the numbers move with the bench environment.
 
 > [!NOTE]
 > **API differences that bias the comparison**
@@ -210,7 +210,7 @@ All four rows sit within a 4% band. `ioredis` was used for the package-compariso
 
 ### Postgres drivers: `pg` vs `postgres.js`
 
-Both drivers ran cleanly on the diverse scenario, with `postgres.js` slightly ahead on Fixed Window (30,857 vs 25,072 logged / 25,042 unlogged) and on Token Bucket (21,860 vs 17,304). Under extreme Token Bucket spam, the two drivers converge to roughly the same throughput (~1,600 ops/sec, ~230-240 ms p99) — the bottleneck is the single hot row, not the driver. The earlier draft of this page reported that `postgres.js` failed with `UNSAFE_TRANSACTION` under the default concurrency of 80; that was a configuration mismatch (the bench harness was passing a too-high concurrency to a driver that wants `max: 1` for transactional UPSERTs) and has since been fixed.
+Both drivers ran cleanly on the diverse scenario, with `postgres.js` ahead on Fixed Window (28,645 vs 23,569 logged / 24,092 unlogged) and on Token Bucket (21,516 vs 16,802). Under extreme Token Bucket spam, the two drivers converge to roughly the same throughput (~1,750 ops/sec, ~213-233 ms p99) — the bottleneck is the single hot row, not the driver. The earlier draft of this page reported that `postgres.js` failed with `UNSAFE_TRANSACTION` under the default concurrency of 80; the root cause was `sql.unsafe()` at the top level on a pool with `max > 1`, which postgres.js v3 disallows. The fix was to use `sql.reserve()` inside the driver to checkout a dedicated connection per query, allowing the pool to run at full concurrency. As of v0.2, each strategy in `@ratelock/postgres` now ships with two implementations — one using pg's native `(sql, params)` API with named prepared statements, and one using postgres.js's native tagged templates — so each driver runs on its own optimal path.
 
 ---
 

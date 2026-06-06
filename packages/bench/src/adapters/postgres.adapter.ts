@@ -84,8 +84,8 @@ export class PostgresAdapter implements BenchmarkAdapter {
             }
 
             // Create actual sql client for benchmarking.
-            // The RateLock driver uses sql.reserve() + sql.unsafe() which
-            // allows full pool parallelism.
+            // The RateLock postgres.js strategy uses native tagged templates
+            // (no sql.unsafe()), so the pool can run at full concurrency.
             this.sqlClient = postgres(config.postgresUrl, {
                 max: this.poolMax,
                 connect_timeout: 1,
