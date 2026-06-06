@@ -218,7 +218,7 @@ This is the matrix the local-overhead reference is hiding. Under extreme spam on
 
 The headline is `withCache`: **2.25M ops/sec vs 142K** — a 15.9x throughput gain and a 23x latency drop (0.94 ms → 0.04 ms). The cache does this by remembering the last "denied" result for each key for 100 ms; under extreme spam on a single key, every call after the first 1000 is served from memory instead of going through Redis.
 
-`withCircuitBreaker` and `withRetry` show no benefit on this matrix because Redis is healthy. Their value lives in the failure case, which is not part of the standard bench. See the [Limitations and known gaps](#limitations-and-known-gaps) section for a follow-up plan to inject Redis failures and measure the circuit-breaker payoff.
+`withCircuitBreaker` and `withRetry` show no benefit on this matrix because Redis is healthy. Their value lives in the failure case, which is not part of the standard bench. Section 5.3 below injects Redis failures and measures the circuit-breaker / retry / fallback payoff.
 
 > [!TIP]
 > **Practical recommendation**
@@ -227,6 +227,66 @@ The headline is `withCache`: **2.25M ops/sec vs 142K** — a 15.9x throughput ga
 > - **Wrap in `withFallback`** if you have a secondary limiter (typically local) and availability matters more than global consistency. The fallback activates only when the primary fails, so the cost on the happy path is just the activation check (~7%).
 > - **Wrap in `withRetry`** only if you are seeing transient errors on the limiter call. The cost is ~4% on the happy path; on a healthy backend, retries add nothing and only delay failure propagation.
 > - **Skip all decorators on a local limiter.** The local limiter is already as fast as the cache, so the decorator is pure overhead.
+> - **On a remote limiter, `withFallback` is the decorator that survives a hard outage.** See 5.3 for the numbers — when Redis is hard-down, `withFallback` is the only decorator that keeps the service accepting traffic at 100% allowed rate.
+
+### 5.3 Value under failure (decorator on Redis with fault injection)
+
+The 5.2 matrix is necessary but not sufficient: it shows what happens on a healthy backend, but production deployments are not healthy. To measure the value of the failure-recovery decorators in realistic conditions, this matrix wraps a real Redis client in a `Proxy` that injects three kinds of failures before delegating to the real client. The errors are indistinguishable from real Redis failures (same error type, same latency profile), so the limiter and decorators react the same way they would in production.
+
+Three failure profiles, run against the same extreme-spam workload as 5.2.
+
+#### 5.3.1 — Transient errors (10% of calls throw)
+
+Each call has a 10% chance of throwing a transient error at the Redis client level, before the limiter logic sees it.
+
+| Limiter | Throughput (ops/sec) | Allowed count | Allowed % | vs raw |
+| :--- | :---: | :---: | :---: | :---: |
+| **Raw Redis** | 127,719 | 1,000 | 0.16% | reference |
+| **+ withRetry** | 112,688 | 1,000 | 0.16% | -12% (slower, same result) |
+| **+ withCircuitBreaker** | 85,630 | 143 | 0.03% | -33% (trips after 3 errors) |
+| **+ withFallback** | 134,482 | 80,896 | 10.13% | **+5% throughput, errors hidden** |
+
+Two non-obvious results here:
+
+- `withRetry` is **slower** than raw, not faster. The reason: under extreme spam the limiter denies 99.9% of calls within the first few milliseconds. Re-running a denied call does not change the answer — it just adds latency. Retry only helps when the answer would have been different, and a "denied" decision from the rate limiter is final.
+- `withCircuitBreaker` is the **worst** outcome: 143 allowed (vs 1,000 for raw). The breaker opens after 3 errors and starts fast-failing, which means even requests that the limiter would have allowed are now blocked. The breaker is designed to protect the *backend*, not the *user* — and 10% transient errors is exactly the regime where it is too aggressive for a limiter that already denies most traffic.
+
+`withFallback` is the only decorator that hides the errors. It catches the 10% of calls that would have thrown and returns the configured fallback (allowed, with a synthetic remaining/reset). The user sees 10.13% allowed because the fallback bypasses the rate-limit ceiling for failed calls only.
+
+#### 5.3.2 — Slow Redis (50 ms per call)
+
+All calls succeed but take 50 ms. This is the latency-spike scenario: a slow backend, not a failing one.
+
+| Limiter | Throughput (ops/sec) | p99 latency | vs raw |
+| :--- | :---: | :---: | :---: |
+| **Raw Redis** | 1,570 | 50.91 ms | reference |
+| **+ withRetry** | 1,572 | 50.92 ms | flat |
+| **+ withCircuitBreaker** | 1,572 | 50.92 ms | flat |
+
+Every decorator converges to the same number: ~1,570 ops/sec, 50.92 ms p99. The throughput is bound by the 50 ms latency per call, and none of the three decorators helps because they are all triggered by **errors**, not by **latency**. Retry only re-runs on errors; circuit-breaker only opens on errors; fallback only activates on errors. A slow-but-successful backend looks identical to a healthy one to all three.
+
+This is a known gap. A future addition — `withTimeout(p, { budgetMs: 10 })` — would let a decorator abort a slow call and treat it as a failure, at which point the existing retry / circuit-breaker / fallback stack would react correctly. The current benchmarks do not include this decorator.
+
+#### 5.3.3 — Hard down (100% of calls fail)
+
+Every call throws. This is the worst-case scenario: total Redis outage.
+
+| Limiter | Throughput (ops/sec) | Allowed count | Allowed % | vs raw |
+| :--- | :---: | :---: | :---: | :---: |
+| **Raw Redis** | 128,882 | 0 | 0.00% | reference |
+| **+ withRetry** | 17,545 | 0 | 0.00% | -86% (retries 3x, still fails) |
+| **+ withCircuitBreaker** | 80,550 | 0 | 0.00% | -37% (trips fast, no recovery) |
+| **+ withFallback** | **120,876** | **719,904** | **100.00%** | **flat, errors hidden** |
+
+The headline. When Redis is hard-down, raw, withRetry, and withCircuitBreaker all serve **0** requests. `withFallback` serves **719,904** of them at near-baseline throughput (120,876 ops/sec vs 136,337 for raw-on-healthy, a 11% gap that is the cost of the `try`/`catch` wrapping). The fallback policy is "allow" with a local synthetic result, so the service keeps accepting traffic and the user-facing system stays up.
+
+The Retry decorator is the worst choice in this scenario: 86% slower than raw, because it tries the failing call 3 times in series (`baseDelayMs: 2, maxDelayMs: 10`) before giving up. The CircuitBreaker is faster than retry but still serves nothing, because opening the circuit means every subsequent call returns the configured "deny" without consulting the backend — there is no fallback configured for the breaker.
+
+#### 5.3.4 — Verdict
+
+The 5.3 matrix inverts the conclusion of 5.2. On a healthy backend, `withCache` is the only decorator that earns its keep. On a degraded backend, `withFallback` is the only decorator that earns its keep. The two decorators are complementary: `withCache` is for the hot-key flood, `withFallback` is for the backend outage. A production-grade remote limiter should ship with both.
+
+`withCircuitBreaker` and `withRetry` are not useless — they shine in scenarios the current bench does not model (circuit-breaker protects the backend from a tight retry loop; retry smooths out one-off blips on a primary before the fallback activates). But on their own, with a single-tier Redis backend, they cost more than they save. The right place for them is in front of the primary when the primary feeds a `withFallback`.
 
 ---
 
@@ -287,4 +347,4 @@ The JSON output (`results/benchmarks_raw.json`) carries the per-run min, max, an
 - The `Realistic Mix` and `Batch Check` scenarios are present in the harness and in the raw JSON, but not on this page. They add two more cross-sections (a mix of hot and cold traffic; multi-key per iteration) and the conclusions do not change in a way that would alter the strategy recommendation.
 - The RLF comparison uses the Fixed Window strategy on every backend, because RLF does not implement the other three strategies on Redis or Postgres. The 1.7x Redis gap is on the only like-for-like comparison available.
 - Sliding Window and Token Bucket under spam on Postgres are measured but not recommended. The harness does not currently test the case where the Postgres `withCache` decorator shields those strategies from spam, which is the configuration you would actually use in production.
-- The decorator matrix in section 5.2 tests the **happy path** only. `withCircuitBreaker` and `withRetry` only show their value when the backend is failing or returning transient errors, which is not part of the standard bench. A follow-up matrix that injects Redis failures (network blips, latency spikes, server restart) and measures the circuit-breaker / retry payoff is a planned addition; the current numbers are not a verdict on those two decorators.
+- The decorator matrix in section 5.2 tests the **happy path** only. `withCircuitBreaker` and `withRetry` only show their value when the backend is failing or returning transient errors. Section 5.3 covers the failure case: it wraps the real Redis client in a fault-injecting proxy and measures the decorator payoff under three realistic failure profiles (10% transient errors, 50 ms latency, 100% hard down). The headliners from that matrix: `withFallback` is the only decorator that survives a hard outage; `withCache` and `withFallback` are the two decorators that should always wrap a remote limiter.

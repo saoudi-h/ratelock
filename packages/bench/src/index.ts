@@ -2,7 +2,15 @@
 import { existsSync, mkdirSync } from 'fs'
 import { join } from 'path'
 import { config } from './config'
-import { runMatrix1, runMatrix2, runMatrix3, runMatrix4, runMatrix5, runMatrix6 } from './matrices'
+import {
+    runMatrix1,
+    runMatrix2,
+    runMatrix3,
+    runMatrix4,
+    runMatrix5,
+    runMatrix6,
+    runMatrix7,
+} from './matrices'
 import { printTable, saveMarkdownReport, saveRawJson } from './reporters'
 import { runHarness } from './runner'
 import type { BenchMetrics } from './types'
@@ -181,6 +189,11 @@ async function runFullSuite() {
     const m6 = await runMatrix6(runHarness)
     printTable('Decorator Performance & Resilience Influence', m6)
     reports['decorator-influence'] = m6
+
+    // Run Matrix 7
+    const m7 = await runMatrix7(runHarness)
+    printTable('Decorator Resilience under Fault Injection', m7)
+    reports['decorator-fault-injection'] = m7
 
     // Write reports
     saveRawJson(reports, OUT_DIR)

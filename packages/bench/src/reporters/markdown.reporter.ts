@@ -30,6 +30,7 @@ function generateMarkdownReport(reports: Record<string, BenchMetrics[]>): string
     const cmp = reports['package-comparison'] ?? []
     const drv = reports['driver-engine-battle'] ?? []
     const dec = reports['decorator-influence'] ?? []
+    const flt = reports['decorator-fault-injection'] ?? []
 
     const rlLocalSpam = findMetric(cmp, 'RateLock Local Fixed Window (Extreme Spam)')
     const rlfLocalSpam = findMetric(cmp, 'rate-limiter-flexible Memory (Extreme Spam)')
@@ -49,6 +50,12 @@ function generateMarkdownReport(reports: Record<string, BenchMetrics[]>): string
     const redisCb = findMetric(dec, 'Redis + withCircuitBreaker')
     const redisRetry = findMetric(dec, 'Redis + withRetry')
 
+    const rawHardDown = findMetric(flt, 'Raw Redis (hard down)')
+    const retryHardDown = findMetric(flt, 'Redis + withRetry (hard down)')
+    const cbHardDown = findMetric(flt, 'Redis + withCircuitBreaker (hard down)')
+    const fbHardDown = findMetric(flt, 'Redis + withFallback (hard down)')
+    const fbTransient = findMetric(flt, 'Redis + withFallback (10% transient errors)')
+
     let md = `# 📊 RateLock v0.2.0 Comprehensive Performance Study\n\n`
     md += `Generated on: \`${new Date().toISOString()}\`  \n`
     md += `Environment: ${runtimeLabel} | OS \`${process.platform}\` | Arch \`${process.platform === 'linux' ? 'x64' : process.arch}\`  \n`
@@ -61,7 +68,9 @@ function generateMarkdownReport(reports: Record<string, BenchMetrics[]>): string
     md += `2. **Redis vs Valkey**: Both backends perform exceptionally well and sit within a 4% band of each other under extreme spam. \`ioredis\` and \`node-redis\` also sit within a few percent on either backend; the limiter implementation is the dominant cost in this scenario, not the client or the server.\n`
     md += `3. **Postgres Driver Selection (\`postgres.js\` vs \`pg\`/\`node-postgres\`)**: On the diverse scenario, \`postgres.js\` is the faster of the two (Fixed Window: ${pjsFw?.throughput.toLocaleString() ?? '?'} vs ${pgLoggedFw?.throughput.toLocaleString() ?? '?'} logged / ${pgUnloggedFw?.throughput.toLocaleString() ?? '?'} unlogged; Token Bucket: ${pjsTb?.throughput.toLocaleString() ?? '?'} vs ${pgTb?.throughput.toLocaleString() ?? '?'}). The \`unlogged\` option is **${pgLoggedFw && pgUnloggedFw ? ratioOrZero(pgUnloggedFw.throughput, pgLoggedFw.throughput) : '?'}** faster than logged tables on production-default durability. Under extreme Token Bucket spam on a single hot key, both drivers converge to roughly the same throughput (~1,700 ops/sec, ~234-248 ms p99) because the bottleneck is the database transaction lock, not the driver.\n`
     md += `4. **RateLock vs Alternatives (\`rate-limiter-flexible\`)**: RateLock is **${rlLocalSpam && rlfLocalSpam ? ratioOrZero(rlLocalSpam.throughput, rlfLocalSpam.throughput) : '?'}** faster on local memory and **${rlRedisSpam && rlfRedisSpam ? ratioOrZero(rlRedisSpam.throughput, rlfRedisSpam.throughput) : '?'}** faster on Redis under extreme spam. On Postgres, the two libraries are **${rlPgSpam && rlfPgSpam ? ratioOrZero(rlPgSpam.throughput, rlfPgSpam.throughput) : '?'}** (${rlPgSpam?.throughput.toLocaleString() ?? '?'} vs ${rlfPgSpam?.throughput.toLocaleString() ?? '?'}) — the gap narrows because the per-row transaction cost dominates. RateLock also offers a significantly cleaner, more modular developer experience and implements all four strategies natively on all three backends.\n`
-    md += `5. **Decorator value on remote backends**: Wrapping a remote limiter in \`withCache\` turns a Redis-bound denial path into a local-memory one under extreme spam: **${rawRedis?.throughput.toLocaleString() ?? '?'} → ${redisCache?.throughput.toLocaleString() ?? '?'} ops/sec** (${rawRedis && redisCache ? ratioOrZero(redisCache.throughput, rawRedis.throughput) : '?'} faster, p99 ${rawRedis?.latP99.toFixed(2) ?? '?'}ms → ${redisCache?.latP99.toFixed(2) ?? '?'}ms). \`withCircuitBreaker\` (${redisCb?.throughput.toLocaleString() ?? '?'}) and \`withRetry\` (${redisRetry?.throughput.toLocaleString() ?? '?'}) show no benefit on the happy path; their value lives in the failure case, which is not part of this matrix.\n\n`
+    md += `5. **Decorator value on remote backends**: Wrapping a remote limiter in \`withCache\` turns a Redis-bound denial path into a local-memory one under extreme spam: **${rawRedis?.throughput.toLocaleString() ?? '?'} → ${redisCache?.throughput.toLocaleString() ?? '?'} ops/sec** (${rawRedis && redisCache ? ratioOrZero(redisCache.throughput, rawRedis.throughput) : '?'} faster, p99 ${rawRedis?.latP99.toFixed(2) ?? '?'}ms → ${redisCache?.latP99.toFixed(2) ?? '?'}ms). \`withCircuitBreaker\` (${redisCb?.throughput.toLocaleString() ?? '?'}) and \`withRetry\` (${redisRetry?.throughput.toLocaleString() ?? '?'}) show no benefit on the happy path; their value lives in the failure case (see #6).\n`
+
+    md += `6. **Decorator value under fault injection**: When the backend is healthy the failure-recovery decorators look like dead weight; when the backend is degraded they are the only thing standing between your service and a complete outage. With Redis hard-down, \`withFallback\` keeps the service at **${fbHardDown?.throughput.toLocaleString() ?? '?'} ops/sec** (100% allowed) while raw Redis, \`withRetry\` and \`withCircuitBreaker\` collapse to ${rawHardDown?.throughput.toLocaleString() ?? '?'} / ${retryHardDown?.throughput.toLocaleString() ?? '?'} / ${cbHardDown?.throughput.toLocaleString() ?? '?'} ops/sec. With 10% transient errors, \`withFallback\` (${fbTransient?.throughput.toLocaleString() ?? '?'}) hides the blips entirely. The takeaway: a remote limiter is not production-ready without \`withFallback\`.\n\n`
 
     for (const [section, metrics] of Object.entries(reports)) {
         md += `## 2. Benchmark Matrix: ${section.replace('-', ' ').toUpperCase()}\n\n`

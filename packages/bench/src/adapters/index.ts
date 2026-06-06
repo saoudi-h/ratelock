@@ -1,4 +1,5 @@
 export * from './decorator.adapter'
+export * from './fault-injector'
 export * from './local-fixed.adapter'
 export * from './local-individual.adapter'
 export * from './local-sliding.adapter'
