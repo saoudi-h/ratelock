@@ -14,28 +14,28 @@ export async function runMatrix5(
     const spamScenario = new ExtremeSpamScenario()
     const metrics: BenchMetrics[] = []
 
-    // 1. Valkey vs Redis 7
+    // 1. Valkey 8 vs Redis 8
     try {
         const redisNode = new RedisAdapter({
-            name: 'Redis 7 (node-redis client)',
+            name: 'Redis 8 (node-redis client)',
             strategy: 'fixed-window',
             clientType: 'redis',
             url: config.redisUrl,
         })
         const redisIo = new RedisAdapter({
-            name: 'Redis 7 (ioredis client)',
+            name: 'Redis 8 (ioredis client)',
             strategy: 'fixed-window',
             clientType: 'ioredis',
             url: config.redisUrl,
         })
         const valkeyNode = new RedisAdapter({
-            name: 'Valkey (node-redis client)',
+            name: 'Valkey 8 (node-redis client)',
             strategy: 'fixed-window',
             clientType: 'redis',
             url: config.valkeyUrl,
         })
         const valkeyIo = new RedisAdapter({
-            name: 'Valkey (ioredis client)',
+            name: 'Valkey 8 (ioredis client)',
             strategy: 'fixed-window',
             clientType: 'ioredis',
             url: config.valkeyUrl,

@@ -20,7 +20,7 @@ services:
             retries: 15
 
     redis-bench:
-        image: redis:7-alpine
+        image: redis:8-alpine
         container_name: ratelock-redis-bench
         command: redis-server --requirepass testpassword
         ports:
@@ -32,7 +32,7 @@ services:
             retries: 15
 
     valkey-bench:
-        image: valkey/valkey:alpine
+        image: valkey/valkey:8-alpine
         container_name: ratelock-valkey-bench
         command: valkey-server --requirepass testpassword
         ports:

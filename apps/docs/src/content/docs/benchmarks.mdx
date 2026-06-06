@@ -40,7 +40,7 @@ The committed numbers were generated on:
 - RAM: 32 GB DDR4
 - OS: Linux x64, kernel 6.x
 - Node.js: v25.9.0 (Bun 1.3.14 is also tested; see the [Runtimes page](/docs/getting-started/runtimes) for cross-runtime notes)
-- Backends: Postgres 18, Redis 7, Valkey 9, all running in Docker on the same host
+- Backends: Postgres 18, Redis 8, Valkey 8, all running in Docker on the same host
 
 Your throughput will scale roughly with single-core CPU frequency and memory bandwidth. Latency to a remote backend will be dominated by network round-trip, which the local Docker setup does not capture. The committed numbers on this page are Node.js; Bun numbers are in the same ballpark with a small per-scenario spread documented on the [Runtimes page](/docs/getting-started/runtimes).
 
@@ -84,7 +84,7 @@ Redis and Valkey run with their default durability settings. The Redis client us
 
 Strategies that fit in process memory. Counter-based strategies run in constant time per check; the sliding window strategy maintains a per-key array of timestamps and runs in $O(N)$ per check.
 
-| Strategy | Diverse — Median ops/sec | p99 latency | Extreme Spam — Median ops/sec | p99 latency |
+| Strategy | Diverse (median ops/sec) | p99 latency | Extreme Spam (median ops/sec) | p99 latency |
 | :--- | :---: | :---: | :---: | :---: |
 | **Fixed Window** | 786,410 | 0.29 ms | 2,349,639 | 0.04 ms |
 | **Token Bucket** | 1,159,155 | 0.08 ms | 2,249,806 | 0.04 ms |
@@ -101,9 +101,9 @@ Local memory is unaffected by the Postgres durability switch. Token Bucket and I
 
 ## 2. Redis Strategies
 
-All numbers below use `ioredis` and connect to a local Redis 7 container.
+All numbers below use `ioredis` and connect to a local Redis 8 container.
 
-| Strategy | Diverse — Median ops/sec | p99 latency | Extreme Spam — Median ops/sec | p99 latency |
+| Strategy | Diverse (median ops/sec) | p99 latency | Extreme Spam (median ops/sec) | p99 latency |
 | :--- | :---: | :---: | :---: | :---: |
 | **Fixed Window** | 139,791 | 0.97 ms | 141,720 | 0.99 ms |
 | **Token Bucket** | 120,255 | 0.94 ms | 139,932 | 0.98 ms |
@@ -118,16 +118,16 @@ The Redis numbers are an order of magnitude below the in-memory numbers because 
 
 Postgres numbers come from a local Postgres 18 container with **production-default durability** (see [Methodology in detail](#methodology-in-detail)). Throughput is two orders of magnitude below Redis because of the per-query transaction cost.
 
-| Strategy | Diverse — Median ops/sec | p99 latency | Extreme Spam — Median ops/sec | p99 latency |
+| Strategy | Diverse (median ops/sec) | p99 latency | Extreme Spam (median ops/sec) | p99 latency |
 | :--- | :---: | :---: | :---: | :---: |
 | **Fixed Window** | 32,013 | 5.00 ms | 30,858 | 5.18 ms |
 | **Sliding Window** | 27,430 | 6.20 ms | 19,340 | 8.76 ms |
 | **Token Bucket** | 23,879 | 6.79 ms | 1,795 | 229.95 ms |
 | **Individual Fixed Window** | 29,312 | 5.75 ms | 24,924 | 6.33 ms |
 
-The diverse scenario tells a calm story: all four strategies sit between 24K and 32K ops/sec. The extreme-spam scenario is where the choice matters:
+The diverse scenario is calm: all four strategies sit between 24K and 32K ops/sec. The extreme-spam scenario is where the choice matters:
 
-- **Fixed Window**, **Sliding Window**, and **Individual Fixed Window** stay close to their diverse throughput. They are UPSERT-friendly and tolerate single-key contention. Sliding Window is the slowest of the three under spam but it is no longer the cliff it used to be — the named prepared statement optimisation closed the plan-cache gap that used to dominate.
+- **Fixed Window**, **Sliding Window**, and **Individual Fixed Window** stay close to their diverse throughput. They are UPSERT-friendly and tolerate single-key contention. Sliding Window is the slowest of the three under spam but it is no longer the cliff it used to be. The named prepared statement optimisation closed the plan-cache gap that used to dominate.
 - **Token Bucket** collapses to ~1,800 ops/sec with 200+ ms p99. A transaction per check, plus a refill calculation, is too much for a hot Postgres row to absorb.
 
 > [!IMPORTANT]
@@ -136,7 +136,7 @@ The diverse scenario tells a calm story: all four strategies sit between 24K and
 
 ### Logged vs Unlogged tables
 
-| Table type | Diverse — Median ops/sec | p99 latency |
+| Table type | Diverse (median ops/sec) | p99 latency |
 | :--- | :---: | :---: |
 | **Logged** (default) | 22,379 | 6.01 ms |
 | **Unlogged** | 26,837 | 5.89 ms |
@@ -154,15 +154,15 @@ A focused investigation across PostgreSQL versions and durability configs is pre
 | **14.23** | `sync_commit=off` only | 25,609 | 26,613 | 1.04x | -4% |
 | **14.23** | **all on (production)** | 26,676 | 29,591 | 1.11x | **-11%** |
 
-The takeaway: on production-default Postgres, unlogged gives **7-20%** higher throughput depending on version. On a tuned `synchronous_commit=off` deployment, the gain shrinks to 3-4%. Use unlogged for the same reason you would use an in-memory cache: the data is acceptable to lose on crash. If your cluster must survive crashes with no data loss, stay on logged tables.
+On production-default Postgres, unlogged gives **7-20%** higher throughput depending on version. On a tuned `synchronous_commit=off` deployment, the gain shrinks to 3-4%. Use unlogged for the same reason you would use an in-memory cache: the data is acceptable to lose on crash. If your cluster must survive crashes with no data loss, stay on logged tables.
 
 ---
 
 ## 4. RateLock vs rate-limiter-flexible
 
-This matrix is the one most likely to be misread, so the methodology matters. Both libraries are configured with `points: 1000, duration: 60s` (RLF's units) or `limit: 1000, windowMs: 60000` (RateLock's). Both run on the same hardware with the same backends. The Redis client is `ioredis` for both, as discussed in [Methodology in detail](#methodology-in-detail). The Postgres container uses **production-default durability** in this matrix — see the note at the top of section 3.
+This matrix is the one most likely to be misread, so the methodology matters. Both libraries are configured with `points: 1000, duration: 60s` (RLF's units) or `limit: 1000, windowMs: 60000` (RateLock's). Both run on the same hardware with the same backends. The Redis client is `ioredis` for both, as discussed in [Methodology in detail](#methodology-in-detail). The Postgres container uses **production-default durability** in this matrix. See the note at the top of section 3.
 
-| Backend | RateLock — Median ops/sec | RLF — Median ops/sec | Ratio |
+| Backend | RateLock (median ops/sec) | RLF (median ops/sec) | Ratio |
 | :--- | :---: | :---: | :---: |
 | **Local Memory** (extreme spam) | 2,088,809 | 744,508 | 2.81x |
 | **Redis** (extreme spam, ioredis) | 142,637 | 83,403 | 1.71x |
@@ -170,7 +170,7 @@ This matrix is the one most likely to be misread, so the methodology matters. Bo
 
 - On local memory, RateLock is **2.8x** faster under spam. The single-key hot path benefits from direct `Map` lookups and the absence of per-call class instantiation.
 - On Redis, RateLock is **1.7x** faster. Both libraries use Lua scripts for atomic counters, so the gap is the script body and the network framing around it.
-- On PostgreSQL, the two libraries are **near-identical** under spam in this run (1.04x). Both run a single UPSERT per call against the same hot row. RateLock's `pgDriver` uses **named prepared statements** (FNV-1a hash of the SQL text), which closed the plan-cache gap that earlier versions of this matrix showed. Treat any claim about a stable Postgres gap as a measurement, not a guarantee — the numbers move with the bench environment.
+- On PostgreSQL, the two libraries are **near-identical** under spam in this run (1.04x). Both run a single UPSERT per call against the same hot row. RateLock's `pgDriver` uses **named prepared statements** (FNV-1a hash of the SQL text), which closed the plan-cache gap that earlier versions of this matrix showed. Treat any claim about a stable Postgres gap as a measurement, not a guarantee. The numbers move with the bench environment.
 
 > [!NOTE]
 > **API differences that bias the comparison**
@@ -184,39 +184,39 @@ This matrix is the one most likely to be misread, so the methodology matters. Bo
 
 ## 5. Resilience Policies (Decorator Overhead)
 
-The decorators (`withCache`, `withCircuitBreaker`, `withFallback`, `withRetry`) are designed to add value on top of **remote** backends: `withCache` absorbs hot-key spam in memory, `withCircuitBreaker` stops hammering a failing backend, `withFallback` swaps to a secondary when the primary is down, `withRetry` masks transient errors. Wrapping a **local** limiter is structurally pure overhead — there is no network round-trip to absorb, no failure to circuit-break, nothing to retry.
+The decorators (`withCache`, `withCircuitBreaker`, `withFallback`, `withRetry`) are designed to add value on top of **remote** backends: `withCache` absorbs hot-key spam in memory, `withCircuitBreaker` stops hammering a failing backend, `withFallback` swaps to a secondary when the primary is down, `withRetry` masks transient errors. Wrapping a **local** limiter is structurally pure overhead: there is no network round-trip to absorb, no failure to circuit-break, nothing to retry.
 
 This section is therefore split in two with very different intents:
 
-- **5.1** — Decorator on a **local** Fixed Window (raw overhead reference): how much each decorator costs per call when the underlying limiter is already local. This is a reference for the per-call cost of the decorator machinery, not a recommendation of whether to use it.
-- **5.2** — Decorator on **Redis** under extreme spam (the value matrix): the production-realistic case where the decorators earn their keep. This is where the headline number lives.
+- **5.1** Decorator on a **local** Fixed Window (raw overhead reference): how much each decorator costs per call when the underlying limiter is already local. This is a reference for the per-call cost of the decorator machinery, not a recommendation of whether to use it.
+- **5.2** Decorator on **Redis** under extreme spam (the value matrix): the production-realistic case where the decorators earn their keep.
 
 ### 5.1 Raw overhead reference (decorator on local)
 
-| Limiter | Diverse — Median ops/sec | p99 latency | Relative to raw |
+| Limiter | Diverse (median ops/sec) | p99 latency | Relative to raw |
 | :--- | :---: | :---: | :---: |
-| **Raw Fixed Window** | 1,148,222 | 0.09 ms | reference |
-| **+ withCache** | 1,025,081 | 0.10 ms | -11% |
-| **+ withCircuitBreaker** | 1,030,510 | 0.09 ms | -10% |
-| **+ withFallback** | 986,972 | 0.10 ms | -14% |
-| **+ withRetry** | 486,653 | 0.29 ms | -58% |
+| **Raw Fixed Window** | 1,137,689 | 0.09 ms | reference |
+| **+ withCache** | 1,036,213 | 0.10 ms | -9% |
+| **+ withCircuitBreaker** | 1,077,556 | 0.09 ms | -5% |
+| **+ withFallback** | 1,027,640 | 0.10 ms | -10% |
+| **+ withRetry** | 1,027,654 | 0.09 ms | -10% |
 
-All four decorators add overhead on a local limiter; the run-to-run spread is large (between 10% and 60%) because the local limiter is fast enough that small differences in JIT optimisation flip the ordering. Read this as the per-call cost of the decorator machinery, not a verdict on whether to use it. The point of this section is not the precise percentage — it is that **on a local limiter, every decorator is pure overhead** because there is no remote backend to protect.
+All four decorators add overhead on a local limiter; the run-to-run spread is large because the local limiter is fast enough that small differences in JIT optimisation flip the ordering. Read this as the per-call cost of the decorator machinery. **On a local limiter, every decorator is pure overhead** because there is no remote backend to protect.
 
-The interesting matrix is the next one.
+Section 5.2 below is the one that actually matters.
 
 ### 5.2 Value under extreme spam (decorator on Redis)
 
-This is the matrix the local-overhead reference is hiding. Under extreme spam on a single key, the 1000 req/60s limit is exhausted within the first few milliseconds of the run. After that, every call hits Redis just to learn "denied", and Redis becomes the bottleneck at ~140K ops/sec. The `withCache` decorator absorbs those denied responses in memory and turns the limiter into a local-memory operation for the rest of the run.
+Under extreme spam on a single key, the 1000 req/60s limit is exhausted within the first few milliseconds of the run. After that, every call hits Redis just to learn "denied", and Redis becomes the bottleneck at ~140K ops/sec. The `withCache` decorator absorbs those denied responses in memory and turns the limiter into a local-memory operation for the rest of the run.
 
-| Limiter | Extreme Spam — Median ops/sec | p99 latency | vs raw |
+| Limiter | Extreme Spam (median ops/sec) | p99 latency | vs raw |
 | :--- | :---: | :---: | :---: |
-| **Raw Redis Fixed Window** | 141,696 | 0.94 ms | reference |
-| **Redis + withCache** | **2,253,879** | **0.04 ms** | **15.9x faster** |
-| **Redis + withCircuitBreaker** | 138,297 | 1.09 ms | -2% (no failures to break) |
-| **Redis + withRetry** | 141,148 | 0.94 ms | flat (no transient errors to retry) |
+| **Raw Redis Fixed Window** | 143,059 | 1.11 ms | reference |
+| **Redis + withCache** | **2,320,245** | **0.04 ms** | **16.2x faster** |
+| **Redis + withCircuitBreaker** | 139,674 | 0.97 ms | -2% (no failures to break) |
+| **Redis + withRetry** | 139,763 | 1.00 ms | flat (no transient errors to retry) |
 
-The headline is `withCache`: **2.25M ops/sec vs 142K** — a 15.9x throughput gain and a 23x latency drop (0.94 ms → 0.04 ms). The cache does this by remembering the last "denied" result for each key for 100 ms; under extreme spam on a single key, every call after the first 1000 is served from memory instead of going through Redis.
+`withCache` delivers **2.32M ops/sec vs 143K**: a 16.2x throughput gain and a 28x latency drop (1.11 ms → 0.04 ms). The cache does this by remembering the last "denied" result for each key for 100 ms; under extreme spam on a single key, every call after the first 1000 is served from memory instead of going through Redis.
 
 `withCircuitBreaker` and `withRetry` show no benefit on this matrix because Redis is healthy. Their value lives in the failure case, which is not part of the standard bench. Section 5.3 below injects Redis failures and measures the circuit-breaker / retry / fallback payoff.
 
@@ -227,33 +227,33 @@ The headline is `withCache`: **2.25M ops/sec vs 142K** — a 15.9x throughput ga
 > - **Wrap in `withFallback`** if you have a secondary limiter (typically local) and availability matters more than global consistency. The fallback activates only when the primary fails, so the cost on the happy path is just the activation check (~7%).
 > - **Wrap in `withRetry`** only if you are seeing transient errors on the limiter call. The cost is ~4% on the happy path; on a healthy backend, retries add nothing and only delay failure propagation.
 > - **Skip all decorators on a local limiter.** The local limiter is already as fast as the cache, so the decorator is pure overhead.
-> - **On a remote limiter, `withFallback` is the decorator that survives a hard outage.** See 5.3 for the numbers — when Redis is hard-down, `withFallback` is the only decorator that keeps the service accepting traffic at 100% allowed rate.
+> - **On a remote limiter, `withFallback` is the decorator that survives a hard outage.** See 5.3 for the numbers: when Redis is hard-down, `withFallback` is the only decorator that keeps the service accepting traffic at 100% allowed rate.
 
 ### 5.3 Value under failure (decorator on Redis with fault injection)
 
-The 5.2 matrix is necessary but not sufficient: it shows what happens on a healthy backend, but production deployments are not healthy. To measure the value of the failure-recovery decorators in realistic conditions, this matrix wraps a real Redis client in a `Proxy` that injects three kinds of failures before delegating to the real client. The errors are indistinguishable from real Redis failures (same error type, same latency profile), so the limiter and decorators react the same way they would in production.
+Section 5.2 shows what happens on a healthy backend. Production deployments are not healthy. To measure the value of the failure-recovery decorators in realistic conditions, this matrix wraps a real Redis client in a `Proxy` that injects three kinds of failures before delegating to the real client. The errors are indistinguishable from real Redis failures (same error type, same latency profile), so the limiter and decorators react the same way they would in production.
 
 Three failure profiles, run against the same extreme-spam workload as 5.2.
 
-#### 5.3.1 — Transient errors (10% of calls throw)
+#### 5.3.1 Transient errors (10% of calls throw)
 
 Each call has a 10% chance of throwing a transient error at the Redis client level, before the limiter logic sees it.
 
 | Limiter | Throughput (ops/sec) | Allowed count | Allowed % | vs raw |
 | :--- | :---: | :---: | :---: | :---: |
-| **Raw Redis** | 127,719 | 1,000 | 0.16% | reference |
-| **+ withRetry** | 112,688 | 1,000 | 0.16% | -12% (slower, same result) |
-| **+ withCircuitBreaker** | 85,630 | 143 | 0.03% | -33% (trips after 3 errors) |
-| **+ withFallback** | 134,482 | 80,896 | 10.13% | **+5% throughput, errors hidden** |
+| **Raw Redis** | 137,539 | 1,000 | 0.12% | reference |
+| **+ withRetry** | 117,343 | 1,000 | 0.14% | -15% (slower, same result) |
+| **+ withCircuitBreaker** | 86,669 | 146 | 0.03% | -37% (trips after 3 errors) |
+| **+ withFallback** | 133,743 | 81,732 | 10.18% | **-3% throughput, errors hidden** |
 
-Two non-obvious results here:
+Two results worth flagging:
 
-- `withRetry` is **slower** than raw, not faster. The reason: under extreme spam the limiter denies 99.9% of calls within the first few milliseconds. Re-running a denied call does not change the answer — it just adds latency. Retry only helps when the answer would have been different, and a "denied" decision from the rate limiter is final.
-- `withCircuitBreaker` is the **worst** outcome: 143 allowed (vs 1,000 for raw). The breaker opens after 3 errors and starts fast-failing, which means even requests that the limiter would have allowed are now blocked. The breaker is designed to protect the *backend*, not the *user* — and 10% transient errors is exactly the regime where it is too aggressive for a limiter that already denies most traffic.
+- `withRetry` is **slower** than raw, not faster. Under extreme spam the limiter denies 99.9% of calls within the first few milliseconds. Re-running a denied call does not change the answer; it just adds latency. Retry only helps when the answer would have been different, and a "denied" decision from the rate limiter is final.
+- `withCircuitBreaker` is the **worst** outcome: 146 allowed (vs 1,000 for raw). The breaker opens after 3 errors and starts fast-failing, which means even requests that the limiter would have allowed are now blocked. The breaker protects the *backend*, not the *user*, and 10% transient errors is exactly the regime where it is too aggressive for a limiter that already denies most traffic.
 
 `withFallback` is the only decorator that hides the errors. It catches the 10% of calls that would have thrown and returns the configured fallback (allowed, with a synthetic remaining/reset). The user sees 10.13% allowed because the fallback bypasses the rate-limit ceiling for failed calls only.
 
-#### 5.3.2 — Slow Redis (50 ms per call)
+#### 5.3.2 Slow Redis (50 ms per call)
 
 All calls succeed but take 50 ms. This is the latency-spike scenario: a slow backend, not a failing one.
 
@@ -265,47 +265,47 @@ All calls succeed but take 50 ms. This is the latency-spike scenario: a slow bac
 
 Every decorator converges to the same number: ~1,570 ops/sec, 50.92 ms p99. The throughput is bound by the 50 ms latency per call, and none of the three decorators helps because they are all triggered by **errors**, not by **latency**. Retry only re-runs on errors; circuit-breaker only opens on errors; fallback only activates on errors. A slow-but-successful backend looks identical to a healthy one to all three.
 
-This is a known gap. A future addition — `withTimeout(p, { budgetMs: 10 })` — would let a decorator abort a slow call and treat it as a failure, at which point the existing retry / circuit-breaker / fallback stack would react correctly. The current benchmarks do not include this decorator.
+Known gap: a future `withTimeout(p, { budgetMs: 10 })` decorator would let a caller abort a slow call and treat it as a failure, at which point the existing retry / circuit-breaker / fallback stack would react correctly. The current benchmarks do not include this decorator.
 
-#### 5.3.3 — Hard down (100% of calls fail)
+#### 5.3.3 Hard down (100% of calls fail)
 
 Every call throws. This is the worst-case scenario: total Redis outage.
 
 | Limiter | Throughput (ops/sec) | Allowed count | Allowed % | vs raw |
 | :--- | :---: | :---: | :---: | :---: |
-| **Raw Redis** | 128,882 | 0 | 0.00% | reference |
-| **+ withRetry** | 17,545 | 0 | 0.00% | -86% (retries 3x, still fails) |
-| **+ withCircuitBreaker** | 80,550 | 0 | 0.00% | -37% (trips fast, no recovery) |
-| **+ withFallback** | **120,876** | **719,904** | **100.00%** | **flat, errors hidden** |
+| **Raw Redis** | 131,050 | 0 | 0.00% | reference |
+| **+ withRetry** | 18,043 | 0 | 0.00% | -86% (retries 3x, still fails) |
+| **+ withCircuitBreaker** | 84,658 | 0 | 0.00% | -35% (trips fast, no recovery) |
+| **+ withFallback** | **121,419** | **727,023** | **100.00%** | **flat, errors hidden** |
 
-The headline. When Redis is hard-down, raw, withRetry, and withCircuitBreaker all serve **0** requests. `withFallback` serves **719,904** of them at near-baseline throughput (120,876 ops/sec vs 136,337 for raw-on-healthy, a 11% gap that is the cost of the `try`/`catch` wrapping). The fallback policy is "allow" with a local synthetic result, so the service keeps accepting traffic and the user-facing system stays up.
+When Redis is hard-down, raw, withRetry, and withCircuitBreaker all serve **0** requests. `withFallback` serves **727,023** of them at near-baseline throughput (121,419 ops/sec vs 143,059 for raw-on-healthy, a 15% gap that is the cost of the `try`/`catch` wrapping). The fallback policy is "allow" with a local synthetic result, so the service keeps accepting traffic and the user-facing system stays up.
 
-The Retry decorator is the worst choice in this scenario: 86% slower than raw, because it tries the failing call 3 times in series (`baseDelayMs: 2, maxDelayMs: 10`) before giving up. The CircuitBreaker is faster than retry but still serves nothing, because opening the circuit means every subsequent call returns the configured "deny" without consulting the backend — there is no fallback configured for the breaker.
+`withRetry` is the worst choice in this scenario: 86% slower than raw, because it tries the failing call 3 times in series (`baseDelayMs: 2, maxDelayMs: 10`) before giving up. `withCircuitBreaker` is faster than retry but still serves nothing, because opening the circuit means every subsequent call returns the configured "deny" without consulting the backend. There is no fallback configured for the breaker.
 
-#### 5.3.4 — Verdict
+#### 5.3.4 Verdict
 
 The 5.3 matrix inverts the conclusion of 5.2. On a healthy backend, `withCache` is the only decorator that earns its keep. On a degraded backend, `withFallback` is the only decorator that earns its keep. The two decorators are complementary: `withCache` is for the hot-key flood, `withFallback` is for the backend outage. A production-grade remote limiter should ship with both.
 
-`withCircuitBreaker` and `withRetry` are not useless — they shine in scenarios the current bench does not model (circuit-breaker protects the backend from a tight retry loop; retry smooths out one-off blips on a primary before the fallback activates). But on their own, with a single-tier Redis backend, they cost more than they save. The right place for them is in front of the primary when the primary feeds a `withFallback`.
+`withCircuitBreaker` and `withRetry` still have a place, just not the one this matrix exercises. The circuit-breaker protects a backend from a tight retry loop; retry smooths out one-off blips on a primary before the fallback activates. Both belong in front of the primary when the primary feeds a `withFallback`. On their own, with a single-tier Redis backend, they cost more than they save.
 
 ---
 
 ## 6. Redis and Valkey Client Drivers
 
-Both Redis 7 and Valkey are tested with the `ioredis` and `node-redis` clients under extreme spam.
+Both Redis and Valkey are tested with the `ioredis` and `node-redis` clients under extreme spam. The numbers in this section come from a freshly-pulled Redis 8.8.0 and Valkey 8.1.8 container, so the comparison is across same-major server versions on both engines.
 
 | Backend / client | Median ops/sec | p99 latency |
 | :--- | :---: | :---: |
-| **Redis 7 (ioredis)** | 141,807 | 1.03 ms |
-| **Redis 7 (node-redis)** | 139,026 | 0.99 ms |
-| **Valkey 9 (ioredis)** | 140,052 | 0.98 ms |
-| **Valkey 9 (node-redis)** | 135,468 | 0.85 ms |
+| **Redis 8 (ioredis)** | 144,140 | 0.93 ms |
+| **Redis 8 (node-redis)** | 141,776 | 0.95 ms |
+| **Valkey 8 (ioredis)** | 137,709 | 0.96 ms |
+| **Valkey 8 (node-redis)** | 143,296 | 0.83 ms |
 
-All four rows sit within a 4% band. `ioredis` was used for the package-comparison matrix to keep the two libraries on equal footing. The takeaway is that the limiter implementation is the dominant cost in this scenario, not the client.
+All four rows sit within a 5% band. `ioredis` was used for the package-comparison matrix to keep the two libraries on equal footing. The limiter implementation is the dominant cost in this scenario, not the client.
 
 ### Postgres drivers: `pg` vs `postgres.js`
 
-Both drivers ran cleanly on the diverse scenario under production-default durability, with `postgres.js` ahead on Fixed Window (33,025 vs 22,872 logged / 28,183 unlogged) and on Token Bucket (23,853 vs 19,135). Under extreme Token Bucket spam, the two drivers converge to roughly the same throughput (~1,700 ops/sec, ~213-223 ms p99) — the bottleneck is the single hot row, not the driver. The earlier draft of this page reported that `postgres.js` failed with `UNSAFE_TRANSACTION` under the default concurrency of 80; the root cause was `sql.unsafe()` at the top level on a pool with `max > 1`, which postgres.js v3 disallows. The fix was to use `sql.reserve()` inside the driver to checkout a dedicated connection per query, allowing the pool to run at full concurrency. As of v0.2, each strategy in `@ratelock/postgres` now ships with two implementations — one using pg's native `(sql, params)` API with named prepared statements, and one using postgres.js's native tagged templates — so each driver runs on its own optimal path.
+Both drivers ran cleanly on the diverse scenario under production-default durability, with `postgres.js` ahead on Fixed Window (33,025 vs 22,872 logged / 28,183 unlogged) and on Token Bucket (23,853 vs 19,135). Under extreme Token Bucket spam, the two drivers converge to roughly the same throughput (~1,700 ops/sec, ~213-223 ms p99). The bottleneck is the single hot row, not the driver. The earlier draft of this page reported that `postgres.js` failed with `UNSAFE_TRANSACTION` under the default concurrency of 80; the root cause was `sql.unsafe()` at the top level on a pool with `max > 1`, which postgres.js v3 disallows. The fix was to use `sql.reserve()` inside the driver to checkout a dedicated connection per query, allowing the pool to run at full concurrency. As of v0.2, each strategy in `@ratelock/postgres` ships with two implementations: one using pg's native `(sql, params)` API with named prepared statements, and one using postgres.js's native tagged templates. Each driver runs on its own optimal path.
 
 ---
 
