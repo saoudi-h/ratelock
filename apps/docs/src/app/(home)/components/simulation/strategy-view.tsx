@@ -16,13 +16,13 @@ import {
     type StrategyId,
     type TokenBucketConfig,
 } from '@/simulation/types'
-import { AnimatePresence, motion } from 'framer-motion'
 import { useSetAtom } from 'jotai'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ConfigPanel } from './controls'
 import { DynamicCodeExplorer } from './dynamic-code-explorer'
 import { FixedWindowTimeline } from './fixed-window-timeline'
 import { IndividualFixedWindowTimeline } from './individual-fixed-window-timeline'
+import { Projectile } from './projectile'
 import { SimulationControls } from './simulation-controls'
 import { SlidingWindowTimeline } from './sliding-window-timeline'
 import { TokenBucketTimeline } from './token-bucket-timeline'
@@ -251,31 +251,17 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
                         )}
                     </div>
 
-                    {/* Programmatic Projectile Particle Animations using Framer Motion */}
-                    <AnimatePresence>
-                        {projectiles.map(p => {
-                            return (
-                                <motion.div
-                                    key={p.id}
-                                    initial={{
-                                        left: p.startX,
-                                        bottom: p.startY,
-                                        scale: 0.4,
-                                        opacity: 0.1,
-                                        x: '-50%',
-                                    }}
-                                    animate={{
-                                        left: [p.startX, p.startX, p.destX],
-                                        bottom: [p.startY, p.startY + 20, p.destY],
-                                        scale: [0.4, 1.3, 0.3],
-                                        opacity: [0.1, 1, 0],
-                                    }}
-                                    transition={{ duration: 0.38, ease: 'easeOut' }}
-                                    className="absolute w-2.5 h-2.5 bg-primary rounded-full shadow-[0_0_12px_rgba(59,130,246,0.85)] pointer-events-none z-40"
-                                />
-                            )
-                        })}
-                    </AnimatePresence>
+                    {/* Programmatic Projectile Particle Animations (CSS keyframes) */}
+                    {projectiles.map(p => (
+                        <Projectile
+                            key={p.id}
+                            id={p.id}
+                            startX={p.startX}
+                            startY={p.startY}
+                            destX={p.destX}
+                            destY={p.destY}
+                        />
+                    ))}
 
                     {/* Extracted Simulation Controls component */}
                     <SimulationControls

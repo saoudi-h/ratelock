@@ -1,13 +1,14 @@
 'use client'
 
-import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useGSAP } from '@gsap/react'
+import { useEffect, useRef, useState } from 'react'
 import { createHighlighter } from 'shiki'
+import { gsap, registerGsap } from '../_lib/gsap'
 
 const codeExamples = [
     {
         package: '@ratelock/local',
-        strategy: 'fixedWindow',
+        file: 'local-setup.ts',
         code: `import { fixedWindow } from '@ratelock/local'
 
 const limiter = await fixedWindow({
@@ -15,55 +16,36 @@ const limiter = await fixedWindow({
   windowMs: 60_000,
 })
 
-const result = await limiter.check('user:123')
-
-if (result.allowed) {
-  // Request allowed
-  console.log(result.remaining) // 99
-}`,
+const { allowed, remaining } = await limiter.check('user:123')`,
     },
     {
         package: '@ratelock/redis',
-        strategy: 'slidingWindow',
+        file: 'redis-setup.ts',
         code: `import { slidingWindow } from '@ratelock/redis'
 import { createClient } from 'redis'
 
-// Reuse your existing client instance
-const redisClient = createClient({ url: 'redis://...' })
-await redisClient.connect()
+const redis = createClient({ url: 'redis://...' })
+await redis.connect()
 
 const limiter = await slidingWindow({
-  client: redisClient,
+  client: redis,
   limit: 50,
   windowMs: 30_000,
-})
-
-const result = await limiter.check('api:endpoint')
-
-if (result.allowed) {
-  console.log(result.remaining) // 49
-}`,
+})`,
     },
     {
         package: '@ratelock/postgres',
-        strategy: 'tokenBucket',
+        file: 'postgres-setup.ts',
         code: `import { tokenBucket } from '@ratelock/postgres'
 import postgres from 'postgres'
 
-// Reuse your existing database connection
 const sql = postgres('postgres://...')
 
 const limiter = await tokenBucket({
   sql,
   capacity: 200,
   refillRate: 10,
-})
-
-const result = await limiter.check('service:auth')
-
-if (result.allowed) {
-  console.log(result.remaining) // 199
-}`,
+})`,
     },
 ]
 
@@ -79,18 +61,27 @@ function getHighlighter() {
     return highlighterPromise
 }
 
-export function AnimatedCodePanel() {
+interface AnimatedCodePanelProps {
+    /** Auto-cycle the snippets — disable on tabs/menus when not in view */
+    autoplay?: boolean
+}
+
+export function AnimatedCodePanel({ autoplay = true }: AnimatedCodePanelProps) {
+    registerGsap()
     const [index, setIndex] = useState(0)
     const [html, setHtml] = useState('')
     const [isDark, setIsDark] = useState(false)
+    const codeRef = useRef<HTMLDivElement>(null)
+    const dotsRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        const checkDark = () => {
-            setIsDark(document.documentElement.classList.contains('dark'))
-        }
+        const checkDark = () => setIsDark(document.documentElement.classList.contains('dark'))
         checkDark()
         const observer = new MutationObserver(checkDark)
-        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class'],
+        })
         return () => observer.disconnect()
     }, [])
 
@@ -101,11 +92,12 @@ export function AnimatedCodePanel() {
 
         getHighlighter().then(highlighter => {
             if (cancelled) return
-            const result = highlighter.codeToHtml(current.code, {
-                lang: 'typescript',
-                theme: isDark ? 'github-dark' : 'github-light',
-            })
-            setHtml(result)
+            setHtml(
+                highlighter.codeToHtml(current.code, {
+                    lang: 'typescript',
+                    theme: isDark ? 'github-dark' : 'github-light',
+                })
+            )
         })
 
         return () => {
@@ -114,29 +106,76 @@ export function AnimatedCodePanel() {
     }, [index, isDark])
 
     useEffect(() => {
+        if (!autoplay) return
         const timer = setInterval(() => {
             setIndex(prev => (prev + 1) % codeExamples.length)
         }, 4000)
         return () => clearInterval(timer)
-    }, [])
+    }, [autoplay])
+
+    // Animate snippet on every index / theme change. Shiki wraps
+    // each line in <span class="line">; we stagger those for a
+    // "code being typed" feel. Fall back to a simple crossfade
+    // when the spans aren't present.
+    useGSAP(
+        () => {
+            if (!codeRef.current) return
+            const lines = codeRef.current.querySelectorAll<HTMLElement>('span.line')
+            if (lines.length > 0) {
+                gsap.fromTo(
+                    lines,
+                    { opacity: 0, y: 4, filter: 'blur(1.5px)' },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        filter: 'blur(0px)',
+                        duration: 0.45,
+                        ease: 'power2.out',
+                        stagger: 0.035,
+                    }
+                )
+            } else {
+                gsap.fromTo(
+                    codeRef.current,
+                    { opacity: 0, y: 6, filter: 'blur(2px)' },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        filter: 'blur(0px)',
+                        duration: 0.45,
+                        ease: 'power2.out',
+                    }
+                )
+            }
+        },
+        { dependencies: [html] }
+    )
 
     return (
-        <div className="w-full overflow-hidden rounded-xl border border-border bg-background shadow-xs select-text">
+        <div
+            className="
+              w-full overflow-hidden rounded-xl border border-border bg-background
+              shadow-xs select-text
+            ">
             {/* macOS window title bar */}
-            <div className="flex items-center justify-between border-b border-border bg-muted/80 px-4 py-3 relative select-none">
-                {/* traffic lights */}
-                <div className="flex gap-1.5 items-center">
+            <div
+                className="
+                  relative flex items-center justify-between border-b border-border
+                  bg-muted/80 px-4 py-3 select-none
+                ">
+                <div className="flex items-center gap-1.5">
                     <span className="size-3 rounded-full bg-[#ff5f56]" />
                     <span className="size-3 rounded-full bg-[#ffbd2e]" />
                     <span className="size-3 rounded-full bg-[#27c93f]" />
                 </div>
 
-                {/* centered file title */}
-                <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 pointer-events-none">
+                <div
+                    className="
+                      pointer-events-none absolute left-1/2 flex -translate-x-1/2
+                      items-center gap-1.5
+                    ">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        width="12"
-                        height="12"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -147,49 +186,48 @@ export function AnimatedCodePanel() {
                         <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
                         <path d="M14 2v4a2 2 0 0 0 2 2h4" />
                     </svg>
-                    <span className="text-xs font-mono font-bold text-muted-foreground">
-                        {codeExamples[index]?.package === '@ratelock/local'
-                            ? 'local-setup.ts'
-                            : codeExamples[index]?.package === '@ratelock/redis'
-                              ? 'redis-setup.ts'
-                              : 'postgres-setup.ts'}
+                    <span className="font-mono text-xs font-bold text-muted-foreground">
+                        {codeExamples[index]?.file}
                     </span>
                 </div>
 
-                {/* format badge */}
-                <span className="text-[9px] font-bold tracking-[0.08em] uppercase text-muted-foreground/80 bg-background border border-border px-2 py-0.5 rounded-md select-none font-mono">
+                <span
+                    className="
+                      rounded-md border border-border bg-background px-2 py-0.5
+                      font-mono text-[9px] font-bold tracking-[0.08em]
+                      text-muted-foreground/80 uppercase select-none
+                    ">
                     TypeScript
                 </span>
             </div>
 
-            {/* code body */}
-            <div className="bg-background p-5 text-[13px] overflow-auto h-[240px] flex flex-col justify-start">
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -8 }}
-                        transition={{ duration: 0.25, ease: 'easeOut' }}
-                        className="
-                          text-left
-                          [&_code]:font-mono! [&_code]:text-[13px]!
-                          [&_code]:leading-relaxed!
-                          [&>pre]:m-0! [&>pre]:bg-transparent! [&>pre]:p-0!
-                        "
-                        dangerouslySetInnerHTML={{ __html: html }}
-                    />
-                </AnimatePresence>
+            <div
+                className="
+                  flex h-[180px] flex-col justify-start overflow-hidden bg-background
+                  p-5 text-[13px]
+                ">
+                <div
+                    ref={codeRef}
+                    className="
+                      text-left
+                      [&_code]:font-mono! [&_code]:text-[13px]!
+                      [&_code]:leading-relaxed!
+                      [&>pre]:m-0! [&>pre]:bg-transparent! [&>pre]:p-0!
+                    "
+                    dangerouslySetInnerHTML={{ __html: html }}
+                />
             </div>
 
-            {/* code slide indicators */}
-            <div className="flex items-center gap-1.5 border-t border-border bg-muted px-4 py-2.5">
+            <div
+                ref={dotsRef}
+                className="flex items-center gap-1.5 border-t border-border bg-muted px-4 py-2.5">
                 {codeExamples.map((_, i) => (
                     <button
                         key={i}
                         onClick={() => setIndex(i)}
+                        aria-label={`Show snippet ${i + 1}`}
                         className={`
-                          h-1.5 rounded-full transition-all duration-300 cursor-pointer
+                          h-1.5 cursor-pointer rounded-full transition-all duration-300
                           ${
                               i === index
                                   ? 'w-6 bg-primary'

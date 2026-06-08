@@ -1,8 +1,9 @@
 'use client'
 
+import { cn } from '@/lib/utils'
 import { Icon } from '@iconify/react'
 import type { ReactNode } from 'react'
-import { MotionCardBentoBase } from '../sections/CardBentoBase'
+import { BentoBase } from './bento-base'
 
 interface FeatureBentoCardProps {
     title: string
@@ -10,24 +11,18 @@ interface FeatureBentoCardProps {
     icon: string
     iconColor: string
     iconBgColor: string
+    /** 1-col or 2-col wide on the md grid */
     colSpan?: '1' | '2'
     children?: ReactNode
     footerTags?: string[]
+    /** Tag the root for animation targeting */
+    'data-feature'?: string
 }
 
-const itemVariants = {
-    hidden: { opacity: 0, y: 16 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            type: 'spring' as const,
-            stiffness: 110,
-            damping: 14,
-        },
-    },
-}
-
+/**
+ * Structural skeleton for any feature card in the Features section.
+ * Layout only — entrance animation is owned by the parent / wrapper.
+ */
 export function FeatureBentoCard({
     title,
     description,
@@ -37,68 +32,66 @@ export function FeatureBentoCard({
     colSpan = '1',
     children,
     footerTags,
+    ...rest
 }: FeatureBentoCardProps) {
     return (
-        <MotionCardBentoBase
-            variants={itemVariants}
-            wrapperClassName={`
-              group relative flex flex-col justify-between
-              ${colSpan === '2' ? 'md:col-span-2' : ''}
-            `}>
+        <BentoBase
+            wrapperClassName={cn(
+                'group relative flex flex-col justify-between',
+                colSpan === '2' && 'md:col-span-2'
+            )}
+            {...rest}>
             <div
-                className={`
-              grid gap-8
-              ${
-                  colSpan === '2'
-                      ? `
-                items-start
-                md:grid-cols-2
-              `
-                      : ''
-              }
-            `}>
+                className={cn(
+                    'grid gap-8',
+                    colSpan === '2' && 'items-start md:grid-cols-2'
+                )}>
                 <div>
                     <div
-                        className={`
-                      flex size-12 items-center justify-center rounded-2xl
-                      ${iconBgColor}
-                      ${iconColor}
-                    `}>
+                        data-feature-icon
+                        className={cn(
+                            'flex size-12 items-center justify-center rounded-2xl',
+                            iconBgColor,
+                            iconColor
+                        )}>
                         <Icon icon={icon} className="size-6" />
                     </div>
                     <h3
+                        data-feature-title
                         className="
-                      mt-8 font-heading text-xl font-bold tracking-tight
-                      text-foreground
-                    ">
+                          mt-8 font-heading text-xl font-bold tracking-tight
+                          text-foreground
+                        ">
                         {title}
                     </h3>
-                    <p className="mt-3 text-sm/relaxed text-muted-foreground">{description}</p>
+                    <p
+                        data-feature-desc
+                        className="mt-3 text-sm/relaxed text-muted-foreground">
+                        {description}
+                    </p>
                 </div>
 
-                {children && <div className="w-full">{children}</div>}
+                {children ? <div className="w-full">{children}</div> : null}
             </div>
 
-            {footerTags && footerTags.length > 0 && (
+            {footerTags && footerTags.length > 0 ? (
                 <div
+                    data-feature-footer
                     className="
-                  mt-8 flex flex-wrap items-center gap-4 border-t
-                  border-border/20 pt-5 text-xs font-semibold
-                  text-muted-foreground
-                ">
-                    {footerTags.map((tag, i) => (
-                        <span key={i} className="flex items-center gap-1.5">
+                      mt-8 flex flex-wrap items-center gap-4 border-t
+                      border-border/20 pt-5 text-xs font-semibold text-muted-foreground
+                    ">
+                    {footerTags.map(tag => (
+                        <span key={tag} className="flex items-center gap-1.5">
                             <Icon
                                 icon="lucide:check"
-                                className="
-                              size-3.5 text-emerald-500
-                            "
+                                className="size-3.5 text-emerald-500"
                             />
                             {tag}
                         </span>
                     ))}
                 </div>
-            )}
-        </MotionCardBentoBase>
+            ) : null}
+        </BentoBase>
     )
 }

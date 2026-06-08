@@ -1,8 +1,8 @@
-import { EnginesSection } from './sections/engines-section'
-import { FeaturesSection } from './sections/features-section'
+import { EnginesSection } from './sections/engines'
+import { FeaturesSection } from './sections/features'
+import { PerformanceSection } from './sections/performance'
 import { FooterSection } from './sections/footer-section'
-import { HeroSection } from './sections/hero-section'
-import { PerformanceSection } from './sections/performance-section'
+import { HeroSection } from './sections/hero'
 import { SimulationSection } from './sections/simulation-section'
 
 export default function HomePage() {

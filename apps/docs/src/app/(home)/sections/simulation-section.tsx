@@ -2,10 +2,11 @@
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { isSimulationVisibleAtom } from '@/simulation/atoms'
-import { motion } from 'framer-motion'
+import { useGSAP } from '@gsap/react'
 import { useSetAtom } from 'jotai'
 import dynamic from 'next/dynamic'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
+import { gsap, registerGsap, ScrollTrigger } from '../_lib/gsap'
 
 function SimulationSkeleton() {
     return (
@@ -30,46 +31,60 @@ const StrategyTabs = dynamic(
     }
 )
 
+/**
+ * Wraps the live, in-browser rate-limiting simulation. Replaces
+ * `IntersectionObserver` with a GSAP `ScrollTrigger` (one source of
+ * truth for scroll across the app) and uses a single fade-up
+ * timeline for the header card.
+ */
 export function SimulationSection() {
+    registerGsap()
     const [isVisible, setIsVisible] = useState(false)
-    const sectionRef = useRef<HTMLDivElement>(null)
+    const ref = useRef<HTMLElement>(null)
+    const headerRef = useRef<HTMLDivElement>(null)
     const setIsSimulationVisible = useSetAtom(isSimulationVisibleAtom)
 
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry?.isIntersecting) {
+    useGSAP(
+        () => {
+            if (!ref.current) return
+            const root = ref.current
+
+            ScrollTrigger.create({
+                trigger: root,
+                start: 'top 95%',
+                once: true,
+                onEnter: () => {
                     setIsVisible(true)
                     setIsSimulationVisible(true)
-                    observer.disconnect()
-                }
-            },
-            { threshold: 0.1, rootMargin: '200px' }
-        )
+                },
+            })
 
-        if (sectionRef.current) {
-            observer.observe(sectionRef.current)
-        }
-
-        return () => observer.disconnect()
-    }, [setIsSimulationVisible])
+            if (headerRef.current) {
+                gsap.from(headerRef.current, {
+                    y: 30,
+                    opacity: 0,
+                    filter: 'blur(8px)',
+                    duration: 0.9,
+                    ease: 'expo.out',
+                    scrollTrigger: {
+                        trigger: root,
+                        start: 'top 85%',
+                        once: true,
+                    },
+                })
+            }
+        },
+        { scope: ref }
+    )
 
     return (
-        <section ref={sectionRef} className="relative bg-muted">
+        <section ref={ref} className="relative bg-muted">
             <div
                 className="
               mx-auto max-w-7xl px-6 py-20
               md:py-28
             ">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isVisible ? { opacity: 1, y: 0 } : {}}
-                    viewport={{ once: true, margin: '-80px' }}
-                    transition={{ duration: 0.5 }}
-                    className="
-                      mb-12
-                      md:mb-16
-                    ">
+                <div ref={headerRef} className="mb-12 md:mb-16">
                     <h2
                         className="
                       font-heading text-3xl font-semibold tracking-tight
@@ -81,7 +96,7 @@ export function SimulationSection() {
                         Interactive rate limiting simulation running entirely in your browser. Send
                         requests, adjust parameters, and watch the limits in action.
                     </p>
-                </motion.div>
+                </div>
 
                 <div
                     className="

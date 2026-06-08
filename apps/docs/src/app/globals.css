@@ -226,6 +226,28 @@
         transform: translate(calc(-50% + var(--flow-x)), -50%) scale(0.75);
         will-change: top, opacity, transform;
     }
+
+    .projectile {
+        animation: projectile-fly 0.38s ease-out forwards;
+        will-change: left, bottom, transform, opacity;
+    }
+
+    /* ============================================
+       GSAP PREPARATION CLASS
+       Hides elements in SSR HTML so they don't flash
+       visible before GSAP hydrates. The matching
+       useGSAP callback removes the class via `onStart`
+       and forces a natural state via `onInterrupt` in
+       case the tween is killed (React 19 Strict Mode
+       double-mount, fast unmount, etc.).
+       Disabled for prefers-reduced-motion users so the
+       page is usable without JS animation.
+       ============================================ */
+    @media (prefers-reduced-motion: no-preference) {
+        .gsap-prep {
+            opacity: 0;
+        }
+    }
 }
 
 @keyframes simulation-drift {
@@ -234,6 +256,30 @@
     }
     to {
         transform: translateX(-72px);
+    }
+}
+
+@keyframes projectile-fly {
+    0% {
+        left: var(--projectile-start-x);
+        bottom: calc(var(--projectile-start-y) + 0px);
+        transform: translate(-50%, -50%) scale(0.4);
+        opacity: 0.1;
+    }
+    10% {
+        bottom: calc(var(--projectile-start-y) + 20px);
+        transform: translate(-50%, -50%) scale(0.9);
+        opacity: 0.7;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.3);
+        opacity: 1;
+    }
+    100% {
+        left: var(--projectile-dest-x);
+        bottom: var(--projectile-dest-y);
+        transform: translate(-50%, -50%) scale(0.3);
+        opacity: 0;
     }
 }
 
