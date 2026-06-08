@@ -102,10 +102,10 @@ export function ThroughputComparison() {
         <div
             ref={ref}
             className="
-              flex flex-col justify-between
+              flex flex-col justify-between h-full
               lg:col-span-7
             ">
-            <BentoBase className="gap-8">
+            <BentoBase className="gap-8 h-full">
                 <div
                     className="
                       flex flex-col gap-4

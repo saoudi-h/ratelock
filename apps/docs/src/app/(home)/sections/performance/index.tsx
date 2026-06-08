@@ -17,7 +17,7 @@ export function PerformanceSection() {
             <div
                 className="
                   mt-12 grid grid-cols-1 gap-6
-                  lg:grid-cols-12
+                  lg:grid-cols-12 lg:items-stretch
                 ">
                 <ThroughputComparison />
                 <DenyCacheVisualization />

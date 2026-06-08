@@ -42,6 +42,7 @@ export function SimulationSection() {
     const [isVisible, setIsVisible] = useState(false)
     const ref = useRef<HTMLElement>(null)
     const headerRef = useRef<HTMLDivElement>(null)
+    const simRef = useRef<HTMLDivElement>(null)
     const setIsSimulationVisible = useSetAtom(isSimulationVisibleAtom)
 
     useGSAP(
@@ -73,6 +74,22 @@ export function SimulationSection() {
                     },
                 })
             }
+
+            if (simRef.current) {
+                gsap.from(simRef.current, {
+                    y: 40,
+                    opacity: 0,
+                    filter: 'blur(10px)',
+                    duration: 1,
+                    ease: 'expo.out',
+                    delay: 0.2,
+                    scrollTrigger: {
+                        trigger: root,
+                        start: 'top 80%',
+                        once: true,
+                    },
+                })
+            }
         },
         { scope: ref }
     )
@@ -99,6 +116,7 @@ export function SimulationSection() {
                 </div>
 
                 <div
+                    ref={simRef}
                     className="
                   overflow-hidden rounded-2xl border border-border/70 bg-card/95
                   p-6 shadow-sm

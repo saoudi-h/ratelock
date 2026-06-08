@@ -129,10 +129,10 @@ export function DenyCacheVisualization() {
         <div
             ref={ref}
             className="
-              flex flex-col justify-between
+              flex flex-col justify-between h-full
               lg:col-span-5
             ">
-            <BentoBase className="gap-8">
+            <BentoBase className="gap-8 h-full">
                 <div>
                     <span
                         data-deny-eyebrow

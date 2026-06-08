@@ -75,8 +75,8 @@ export function SectionHeader({
                 ref={titleRef}
                 className={cn(
                     `
-                      mt-4 font-heading text-4xl/tight font-semibold tracking-tight
-                      md:text-5xl
+                      mt-4 font-heading text-4xl/snug font-semibold tracking-tight
+                      md:text-5xl/snug
                     `,
                     titleClassName
                 )}>

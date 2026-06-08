@@ -103,7 +103,6 @@ export function DenyCacheShieldCard() {
                 icon="solar:shield-bold-duotone"
                 iconColor="text-emerald-500"
                 iconBgColor="bg-emerald-500/10"
-                colSpan="2"
                 footerTags={['Bypasses database queries', 'Configurable TTL limits']}>
                 <div
                     className="

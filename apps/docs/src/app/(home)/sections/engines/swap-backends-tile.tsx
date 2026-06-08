@@ -161,7 +161,7 @@ export function SwapBackendsTile() {
             ref={ref}
             className="
               flex-1
-              md:col-span-3
+              md:col-span-2
             ">
             <BentoBase className="grid items-center gap-10 md:grid-cols-2">
                 <div>
