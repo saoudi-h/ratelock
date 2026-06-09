@@ -81,11 +81,12 @@ export function DenyCacheVisualization() {
                     { y: 12, opacity: 0, duration: 0.4, ease: 'expo.out' },
                     '<'
                 )
-                .from(
+                .fromTo(
                     root.querySelector('[data-deny-shield]'),
+                    { scale: 0.4, opacity: 0 },
                     {
-                        scale: 0.4,
-                        opacity: 0,
+                        scale: 1,
+                        opacity: 1,
                         duration: 0.55,
                         ease: 'back.out(2)',
                     },
@@ -210,7 +211,7 @@ export function DenyCacheVisualization() {
                         className={`
                           absolute top-1/2 z-10 flex -translate-y-1/2 items-center gap-2
                           rounded-2xl border bg-background/90 px-4 py-2 shadow-sm
-                          transition-all duration-300
+                          transition-colors duration-300 opacity-100
                           ${
                               denyCacheFlooded
                                   ? 'border-emerald-500/30 bg-emerald-950/10 text-emerald-400'

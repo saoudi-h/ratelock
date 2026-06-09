@@ -66,8 +66,9 @@ export function HeroCtas({
         <div
             ref={ref}
             className="
-              gsap-prep mt-8 space-y-4
-              sm:flex sm:flex-wrap sm:items-center sm:gap-4 sm:space-y-0
+              gsap-prep mt-8
+              flex flex-col items-start gap-3
+              sm:flex-row sm:flex-wrap sm:items-center sm:gap-4
             ">
             <Link
                 href="/docs"

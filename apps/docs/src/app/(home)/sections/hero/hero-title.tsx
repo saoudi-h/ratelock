@@ -84,7 +84,7 @@ export function HeroTitle() {
         <h1
             ref={ref}
             className="
-              gsap-prep font-heading text-5xl leading-[1.1] font-black tracking-tight
+              gsap-prep font-heading text-5xl leading-[1.15] font-black tracking-tight
               [perspective:800px]
               sm:text-6xl
               lg:text-7xl
