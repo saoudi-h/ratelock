@@ -46,4 +46,5 @@ packages/bench/results/*.json
 
 # Temporary Session Files
 conclusions.md
-tmp/.playwright-mcp/
+tmp/
+.playwright-mcp/

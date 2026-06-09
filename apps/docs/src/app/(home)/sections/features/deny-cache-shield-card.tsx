@@ -96,7 +96,7 @@ export function DenyCacheShieldCard() {
     )
 
     return (
-        <div ref={ref}>
+        <div ref={ref} className="h-full">
             <FeatureBentoCard
                 title="Deny-Only Cache Shield"
                 description="Why saturate your databases checking blacklisted IPs? RateLock caches repeatedly blocked requests in local memory, instantly rejecting malicious spikes in `0.02ms` without making a single network call."

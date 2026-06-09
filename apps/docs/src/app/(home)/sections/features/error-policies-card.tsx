@@ -77,7 +77,7 @@ export function ErrorPoliciesCard() {
     )
 
     return (
-        <div ref={ref} className="[perspective:900px]">
+        <div ref={ref} className="h-full [perspective:900px]">
             <FeatureBentoCard
                 title="Adaptive Error Policies"
                 description="Choose how to handle rate limiting exceptions during extreme database congestion or downtime. Swap behaviors dynamically without rewriting controller logics."

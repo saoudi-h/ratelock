@@ -86,7 +86,7 @@ export function CircuitBreakerCard() {
     )
 
     return (
-        <div ref={ref} className="[perspective:900px]">
+        <div ref={ref} className="h-full [perspective:900px]">
             <FeatureBentoCard
                 title="Resilient Circuit Breaker"
                 description="Avoid thread pool saturation when your databases fail. RateLock automatically halts queries, redirects calls to fail-safes, and probes recovery periodically."

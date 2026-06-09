@@ -106,25 +106,15 @@ export function ExploreCta() {
                   group/link inline-flex items-center gap-2 rounded-2xl
                   border border-border/40 bg-background px-5 py-2.5 text-sm
                   font-semibold text-foreground shadow-xs
-                  transition-all duration-300
-                  hover:-translate-y-0.5 hover:border-foreground/30
-                  hover:shadow-md active:scale-[0.98]
+                  transition-all duration-200
+                  hover:bg-muted/50 active:scale-[0.97]
                 ">
-                <span className="relative">
-                    Open benchmarks
-                    <span
-                        className="
-                          absolute right-0 -bottom-0.5 left-0 h-px origin-left scale-x-0
-                          bg-foreground/60 transition-transform duration-300
-                          group-hover/link:scale-x-100
-                        "
-                    />
-                </span>
+                <span>Open benchmarks</span>
                 <svg
                     viewBox="0 0 16 16"
                     className="
-                      size-4 -translate-x-1 transition-transform duration-300
-                      group-hover/link:translate-x-0
+                      size-4 transition-transform duration-200
+                      group-hover/link:translate-x-0.5
                     "
                     aria-hidden>
                     <path

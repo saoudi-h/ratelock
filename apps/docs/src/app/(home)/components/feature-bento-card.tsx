@@ -11,8 +11,8 @@ interface FeatureBentoCardProps {
     icon: string
     iconColor: string
     iconBgColor: string
-    /** 1-col or 2-col wide on the md grid */
-    colSpan?: '1' | '2'
+    /** 1-col, 2-col, or 3-col wide on the md grid */
+    colSpan?: '1' | '2' | '3'
     children?: ReactNode
     footerTags?: string[]
     /** Tag the root for animation targeting */
@@ -38,7 +38,8 @@ export function FeatureBentoCard({
         <BentoBase
             wrapperClassName={cn(
                 'group relative flex flex-col justify-between',
-                colSpan === '2' && 'md:col-span-2'
+                colSpan === '2' && 'md:col-span-2',
+                colSpan === '3' && 'md:col-span-3'
             )}
             {...rest}>
             <div

@@ -67,12 +67,14 @@ export function EnginesSection() {
                 <div
                     className="
                       grid grid-cols-1 gap-6
-                      md:grid-cols-2 md:auto-rows-fr
+                      md:grid-cols-3 md:auto-rows-fr
                     ">
                     {ENGINES.map((engine, i) => (
                         <EngineBentoCard key={engine.name} index={i} {...engine} />
                     ))}
-                    <SwapBackendsTile />
+                    <div className="md:col-span-3">
+                        <SwapBackendsTile />
+                    </div>
                 </div>
             </div>
         </section>

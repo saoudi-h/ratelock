@@ -34,8 +34,8 @@ export function BentoBase({
             data-bento
             className={cn(
                 `
-                  group relative rounded-4xl bg-card/60 p-1 shadow-xs
-                  transition-colors duration-200 select-none
+                  group relative size-full rounded-4xl bg-card/60 p-1
+                  shadow-xs transition-colors duration-200 select-none
                   hover:bg-card/60
                 `,
                 wrapperClassName

@@ -72,7 +72,7 @@ export function FallbackPoliciesCard() {
     )
 
     return (
-        <div ref={ref}>
+        <div ref={ref} className="h-full">
             <FeatureBentoCard
                 title="Fallback Policies"
                 description="Configure your limiters with custom fallback policies to guarantee that rate limit operations never throw runtime exceptions to clients during database hiccups."

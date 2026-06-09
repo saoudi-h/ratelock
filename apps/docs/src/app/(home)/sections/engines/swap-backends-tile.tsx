@@ -93,7 +93,6 @@ export function SwapBackendsTile() {
                 .from(
                     root.querySelector('[data-swap-codepanel]'),
                     {
-                        xPercent: 6,
                         opacity: 0,
                         filter: 'blur(8px)',
                         duration: 0.95,
@@ -161,7 +160,7 @@ export function SwapBackendsTile() {
             ref={ref}
             className="
               flex-1
-              md:col-span-2
+              md:col-span-3
             ">
             <BentoBase className="grid items-center gap-10 md:grid-cols-2">
                 <div>
