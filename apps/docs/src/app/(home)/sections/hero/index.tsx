@@ -4,7 +4,7 @@ import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import { gsap, registerGsap } from "../../_lib/gsap";
 import { HeroBadge } from "./hero-badge";
-import { HeroCodePanel } from "./hero-code-panel";
+import { HeroIllustration } from "@/components/ui/hero-illustration";
 import { HeroCtas } from "./hero-ctas";
 import { HeroScrollCue } from "./hero-scroll-cue";
 import { HeroStats } from "./hero-stats";
@@ -126,7 +126,7 @@ export function HeroSection() {
               </div>
 
               <div className="lg:col-span-5">
-                <HeroCodePanel />
+                <HeroIllustration className="w-full max-w-lg lg:max-w-none mx-auto h-auto" />
               </div>
             </div>
           </div>

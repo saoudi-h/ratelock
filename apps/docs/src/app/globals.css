@@ -62,6 +62,9 @@
    LIGHT MODE (default)
    ============================================ */
 :root {
+    --hero-shadow: -25px 35px 55px oklch(0.18 0 0 / 0.12);
+    --hero-shadow-color: oklch(0.18 0 0 / 0.08);
+    --card-shadow: 0 4px 12px oklch(0.18 0 0 / 0.05);
     --background: oklch(0.97 0 0);
     --foreground: oklch(0.18 0 0);
     --surface: oklch(0.96 0 0);
@@ -102,6 +105,9 @@
    DARK MODE (next-themes)
    ============================================ */
 .dark {
+    --hero-shadow: -25px 35px 55px rgba(0, 0, 0, 0.7);
+    --hero-shadow-color: rgba(0, 0, 0, 0.6);
+    --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
     --background: #090909;
     --foreground: oklch(0.96 0 0);
     --surface: oklch(0.185 0 0);

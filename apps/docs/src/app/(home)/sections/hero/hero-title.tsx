@@ -96,7 +96,7 @@ export function HeroTitle() {
       </span>
       <span
         data-hero-line
-        className="block bg-linear-to-r from-foreground/70 to-primary
+        className="inline-block bg-linear-to-r from-foreground/70 to-primary
       bg-clip-text text-transparent"
       >
         Done right.
