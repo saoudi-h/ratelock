@@ -13,13 +13,14 @@ export function BasePlate() {
       {Array.from({ length: 12 }, (_, i) => (
         <div
           key={`depth-${i}`}
+          data-animate="base-plate-depth"
           style={{
             position: "absolute",
             width: 440,
             height: 360,
             borderRadius: 28,
             background: "oklch(from var(--card) calc(l - 0.08) c h)",
-            border: "1px solid oklch(from var(--border) l c h / 0.12)",
+            border: "1px solid oklch(from var(--hero-border) l c h / 0.15)",
             transform: `translate(-50%, -50%) translateZ(${-(i + 1) * 1.5}px)`,
           }}
         />
@@ -27,13 +28,14 @@ export function BasePlate() {
 
       {/* ── Top face ── */}
       <div
+        data-animate="base-plate-top"
         style={{
           position: "absolute",
           width: 440,
           height: 360,
           borderRadius: 28,
           background: "linear-gradient(135deg, var(--card), var(--background))",
-          border: "1px solid oklch(from var(--border) l c h / 0.5)",
+          border: "1px solid var(--hero-border)",
           transform: "translate(-50%, -50%) translateZ(0px)",
           boxShadow: "var(--hero-shadow)",
           transformStyle: "preserve-3d",

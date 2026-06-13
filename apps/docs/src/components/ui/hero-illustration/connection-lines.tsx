@@ -3,50 +3,45 @@ import { LAYOUT } from "./layout-config";
 
 /**
  * 3D Connection Lines fanning out in mid-air.
- * Positioned dynamically using coordinates from LAYOUT.
+ * Lines attach at the left edge of each rate card (vertically centered),
+ * not at the checkmark position.
  * Rotated using `rotateZ(90deg) rotateX(90deg)` to align local SVG (x, y) coordinates
  * directly to global (Y, Z) axes in 3D.
  */
 export function ConnectionLines() {
   const { glassPane, rateCards } = LAYOUT;
 
-  // 1. Calculate GlassPane connection point (start point at the end of the chart)
+  // 1. GlassPane connection point (start point at the total requests badge)
   const yStart = glassPane.top + glassPane.height; // 220
-  const zStart = Math.round(
-    glassPane.elevation +
-      (glassPane.chartHeight * (140 - glassPane.chartEnd.y)) / 140
-  ); // ~108
+  const zStart = 215; // Z height of the total badge at the top right of the pane
 
-  // 2. Calculate RateCards Y-coordinate and container height
-  const containerHeight =
-    4 * rateCards.cardHeight + 3 * rateCards.gap; // 204
+  // 2. RateCards container height and attachment Y
+  const containerHeight = 4 * rateCards.cardHeight + 3 * rateCards.gap; // 204
   const yEnd = rateCards.top + containerHeight; // 104
 
-  // Generate paths dynamically for the 4 cards
+  // Generate paths dynamically for the 4 cards (attaching at card left edge, vertically centered)
   const paths = Array.from({ length: 4 }, (_, i) => {
-    // Calculate vertical Z center for the checkmark on card i (0: Login, 3: Upload)
     const zEnd =
       rateCards.elevation +
       containerHeight -
       (i * (rateCards.cardHeight + rateCards.gap) + rateCards.cardHeight / 2);
 
-    // Dynamic S-curve (cubic Bezier) spanning from yStart to yEnd
     const controlY1 = yStart - 30;
-    const controlY2 = yEnd + 30;
+    const controlY2 = (yEnd - 24) + 30;
 
-    const d = `M ${yStart} ${zStart} C ${controlY1} ${zStart}, ${controlY2} ${zEnd}, ${yEnd} ${zEnd}`;
+    const d = `M ${yStart} ${zStart} C ${controlY1} ${zStart}, ${controlY2} ${zEnd}, ${yEnd - 24} ${zEnd}`;
 
     return { d };
   });
 
-  // Checkmark X position: rateCards.left + padding_left + checkmark_radius = 180 + 14 + 10 = 204
-  const checkmarkX = rateCards.left + 24;
+  // Attach at the card left edge (not at the checkmark)
+  const cardEdgeX = rateCards.left;
 
   return (
     <div
       style={{
         position: "absolute",
-        left: checkmarkX,
+        left: cardEdgeX,
         top: 0,
         width: 320,
         height: 320,
@@ -84,6 +79,7 @@ export function ConnectionLines() {
               strokeWidth="3.5"
               strokeOpacity="0.15"
               filter="url(#lineGlow)"
+              data-animate="connection-line"
             />
 
             {/* Sharp Core Layer (Thin, Bright, Dotted) */}
@@ -94,6 +90,7 @@ export function ConnectionLines() {
               strokeWidth="1.2"
               strokeOpacity="0.8"
               strokeDasharray="4, 5"
+              data-animate="connection-line-core"
             />
           </React.Fragment>
         ))}
