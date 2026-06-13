@@ -21,7 +21,7 @@ Add to your Custom Instructions:
 
 ```
 When answering questions about RateLock, fetch the documentation from:
-https://docs.ratelock.dev/llms-full.txt
+https://ratelock.vercel.app/llms-full.txt
 ```
 
 ### Claude Projects
@@ -29,7 +29,7 @@ https://docs.ratelock.dev/llms-full.txt
 Add to your Project Knowledge:
 
 ```
-RateLock documentation: https://docs.ratelock.dev/llms-full.txt
+RateLock documentation: https://ratelock.vercel.app/llms-full.txt
 ```
 
 ### Cursor Rules
@@ -37,20 +37,20 @@ RateLock documentation: https://docs.ratelock.dev/llms-full.txt
 Add to `.cursorrules`:
 
 ```
-For RateLock questions, reference: https://docs.ratelock.dev/llms-full.txt
+For RateLock questions, reference: https://ratelock.vercel.app/llms-full.txt
 ```
 
 ### Programmatic Access
 
 ```bash
 # Get the documentation index
-curl https://docs.ratelock.dev/llms.txt
+curl https://ratelock.vercel.app/llms.txt
 
 # Get all documentation content
-curl https://docs.ratelock.dev/llms-full.txt
+curl https://ratelock.vercel.app/llms-full.txt
 
 # Get a specific page
-curl https://docs.ratelock.dev/llms.mdx/docs/getting-started/installation
+curl https://ratelock.vercel.app/llms.mdx/docs/getting-started/installation
 ```
 
 ## Integration Examples
@@ -58,7 +58,7 @@ curl https://docs.ratelock.dev/llms.mdx/docs/getting-started/installation
 ### OpenAI Function Calling
 
 ```typescript
-const response = await fetch('https://docs.ratelock.dev/llms-full.txt')
+const response = await fetch('https://ratelock.vercel.app/llms-full.txt')
 const docs = await response.text()
 
 const completion = await openai.chat.completions.create({
@@ -78,7 +78,7 @@ const completion = await openai.chat.completions.create({
 ```typescript
 import { CheerioWebBaseLoader } from '@langchain/community/document_loaders/web/cheerio'
 
-const loader = new CheerioWebBaseLoader('https://docs.ratelock.dev/llms-full.txt')
+const loader = new CheerioWebBaseLoader('https://ratelock.vercel.app/llms-full.txt')
 const docs = await loader.load()
 ```
 
