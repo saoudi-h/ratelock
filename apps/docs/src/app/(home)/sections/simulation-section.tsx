@@ -3,6 +3,7 @@
 import { Skeleton } from '@/components/ui/skeleton'
 import { isSimulationVisibleAtom } from '@/simulation/atoms'
 import { useGSAP } from '@gsap/react'
+import { registerReplay } from '../_lib/replay-registry'
 import { useSetAtom } from 'jotai'
 import dynamic from 'next/dynamic'
 import { useRef, useState } from 'react'
@@ -60,8 +61,10 @@ export function SimulationSection() {
                 },
             })
 
+            const tl = gsap.timeline()
+
             if (headerRef.current) {
-                gsap.from(headerRef.current, {
+                tl.from(headerRef.current, {
                     y: 30,
                     opacity: 0,
                     filter: 'blur(8px)',
@@ -76,7 +79,7 @@ export function SimulationSection() {
             }
 
             if (simRef.current) {
-                gsap.from(simRef.current, {
+                tl.from(simRef.current, {
                     y: 40,
                     opacity: 0,
                     filter: 'blur(10px)',
@@ -90,6 +93,8 @@ export function SimulationSection() {
                     },
                 })
             }
+
+            return registerReplay(() => tl.restart(true, false))
         },
         { scope: ref }
     )

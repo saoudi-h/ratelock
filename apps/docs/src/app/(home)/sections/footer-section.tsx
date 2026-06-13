@@ -2,6 +2,7 @@
 
 import { LogoLink } from '@/components/ui-blocks/logo'
 import { useGSAP } from '@gsap/react'
+import { registerReplay } from '../_lib/replay-registry'
 import { Icon } from '@iconify/react'
 import Link from 'next/link'
 import { useRef } from 'react'
@@ -22,7 +23,9 @@ export function FooterSection() {
             if (!ref.current) return
             const root = ref.current
 
-            gsap.from(root, {
+            const tl = gsap.timeline()
+
+            tl.from(root, {
                 y: 30,
                 opacity: 0,
                 filter: 'blur(6px)',
@@ -31,7 +34,7 @@ export function FooterSection() {
                 scrollTrigger: { trigger: root, start: 'top 95%', once: true },
             })
 
-            gsap.from(root.querySelectorAll('[data-footer-col]'), {
+            tl.from(root.querySelectorAll('[data-footer-col]'), {
                 y: 18,
                 opacity: 0,
                 duration: 0.6,
@@ -40,6 +43,8 @@ export function FooterSection() {
                 scrollTrigger: { trigger: root, start: 'top 95%', once: true },
                 delay: 0.1,
             })
+
+            return registerReplay(() => tl.restart(true, false))
         },
         { scope: ref }
     )

@@ -4,6 +4,7 @@ import { useGSAP } from '@gsap/react'
 import { useRef } from 'react'
 import { AnimatedCodePanel } from '../../components/animated-code-panel'
 import { gsap, registerGsap } from '../../_lib/gsap'
+import { registerReplay } from '../../_lib/replay-registry'
 
 /**
  * Wraps the rotating code window with its own entrance: slides in from
@@ -24,7 +25,7 @@ export function HeroCodePanel() {
             const panel = ref.current
 
             // Entrance
-            gsap.fromTo(
+            const entrance = gsap.fromTo(
                 panel,
                 {
                     xPercent: 6,
@@ -72,6 +73,8 @@ export function HeroCodePanel() {
                     scrub: 0.5,
                 },
             })
+
+            return registerReplay(() => entrance.restart(true, false))
         },
         { scope: ref }
     )

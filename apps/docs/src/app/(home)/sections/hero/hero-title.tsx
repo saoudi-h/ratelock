@@ -2,13 +2,13 @@
 
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
-import { gsap, registerGsap, SplitText } from "../../_lib/gsap";
+import { gsap, registerGsap, ScrollTrigger, SplitText } from "../../_lib/gsap";
+import { registerReplay } from "../../_lib/replay-registry";
 
 /**
- * The headline of the page. Each word is split via SplitText and
+ * The headline of the page. The first line is split via SplitText and
  * cascaded in from below with a slight blur + mask. The second line
- * (muted) starts further along the timeline to feel like an echo of
- * the first.
+ * (gradient text) fades in as a whole unit to preserve background-clip.
  *
  * On scroll, the whole title gently drifts upward (parallax) so the
  * hero feels deep even before the user knows to look for it.
@@ -22,26 +22,65 @@ export function HeroTitle() {
       if (!ref.current) return;
 
       const heading = ref.current;
-      const lines = heading.querySelectorAll<HTMLElement>("[data-hero-line]");
-      const splits = Array.from(lines).map((line) =>
-        SplitText.create(line, { type: "words", mask: "words" }),
-      );
-      const allWords = splits.flatMap((s) => s.words);
+      const firstLine = heading.querySelector<HTMLElement>("[data-hero-line]");
+      const gradientLine = heading.querySelector<HTMLElement>("[data-gradient-line]");
+
+      // Hide via GSAP instead of CSS class — avoids ScrollTrigger
+      // capturing the wrong "from" opacity value.
+      gsap.set(heading, { opacity: 0 });
+
+      // Split only the first line into words
+      const split = firstLine
+        ? SplitText.create(firstLine, { type: "words", mask: "words" })
+        : null;
+
+      if (split) {
+        // Prevent lowercase letters with descenders (like 'g') from being cropped
+        // by the overflow-hidden mask wrappers created by SplitText
+        gsap.set(split.words, { paddingBottom: "5px", marginBottom: "-5px" });
+      }
+
+      let parallaxST: ScrollTrigger | null = null;
 
       const tl = gsap.timeline({
         delay: 0.15,
-        onStart: () => heading.classList.remove("gsap-prep"),
         onInterrupt: () => {
-          gsap.set(allWords, {
-            yPercent: 0,
-            rotateX: 0,
-            opacity: 1,
-            clearProps: "transform",
-          });
-          heading.classList.remove("gsap-prep");
+          if (split) {
+            gsap.set(split.words, {
+              yPercent: 0,
+              rotateX: 0,
+              opacity: 1,
+              clearProps: "transform",
+            });
+          }
+          if (gradientLine) {
+            gsap.set(gradientLine, {
+              y: 0,
+              opacity: 1,
+              clearProps: "filter",
+            });
+          }
+          gsap.set(heading, { opacity: 1, clearProps: "transform" });
+          if (parallaxST) {
+            parallaxST.kill();
+            parallaxST = null;
+          }
         },
       });
-      splits.forEach((split, i) => {
+
+      // Heading fade-in (controls parent opacity, replaces gsap-prep)
+      tl.to(
+        heading,
+        {
+          opacity: 1,
+          duration: 0.8,
+          ease: "expo.out",
+        },
+        0,
+      );
+
+      // First line: word cascade
+      if (split) {
         tl.fromTo(
           split.words,
           {
@@ -58,24 +97,56 @@ export function HeroTitle() {
             ease: "expo.out",
             stagger: 0.06,
           },
-          i === 0 ? 0 : "-=0.65",
+          0,
         );
-      });
+      }
 
-      // Subtle parallax on scroll out
-      gsap.to(heading, {
-        yPercent: -25,
-        opacity: 0.4,
-        ease: "none",
-        scrollTrigger: {
+      // Second line (gradient): fade in as whole unit to preserve background-clip
+      if (gradientLine) {
+        tl.fromTo(
+          gradientLine,
+          {
+            y: 20,
+            opacity: 0,
+            filter: "blur(4px)",
+          },
+          {
+            y: 0,
+            opacity: 1,
+            filter: "blur(0px)",
+            duration: 0.9,
+            ease: "expo.out",
+          },
+          "-=0.65",
+        );
+      }
+
+      // Create parallax AFTER heading reaches opacity: 1 so ScrollTrigger
+      // captures the correct "from" value instead of the hidden state.
+      tl.call(() => {
+        if (parallaxST) parallaxST.kill();
+        parallaxST = ScrollTrigger.create({
           trigger: heading,
           start: "top top+=80",
           end: "bottom top",
           scrub: 0.4,
-        },
-      });
+          animation: gsap.to(heading, {
+            yPercent: -25,
+            opacity: 0.4,
+            ease: "none",
+          }),
+        });
+      }, undefined, 0.8);
 
-      return () => splits.forEach((s) => s.revert());
+      // Register for bfcache replay (restart timeline, don't re-split)
+      return registerReplay(() => {
+        if (parallaxST) {
+          parallaxST.kill();
+          parallaxST = null;
+        }
+        tl.restart(true, false);
+      });
+      // SplitText revert happens on actual unmount via useGSAP cleanup
     },
     { scope: ref },
   );
@@ -83,8 +154,9 @@ export function HeroTitle() {
   return (
     <h1
       ref={ref}
+      style={{ opacity: 0 }}
       className="
-              gsap-prep font-heading text-5xl leading-[1.15] font-black tracking-tight
+              font-heading text-5xl leading-[1.15] font-black tracking-tight
               [perspective:800px]
               sm:text-6xl
               lg:text-7xl
@@ -95,9 +167,8 @@ export function HeroTitle() {
         Rate limiting.
       </span>
       <span
-        data-hero-line
-        className="inline-block bg-linear-to-r from-foreground/70 to-primary
-      bg-clip-text text-transparent"
+        data-gradient-line
+        className="inline-block text-gradient pb-1.5"
       >
         Done right.
       </span>

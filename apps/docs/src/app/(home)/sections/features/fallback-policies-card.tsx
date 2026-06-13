@@ -1,6 +1,7 @@
 'use client'
 
 import { useGSAP } from '@gsap/react'
+import { registerReplay } from '../../_lib/replay-registry'
 import { useRef } from 'react'
 import { FeatureBentoCard } from '../../components/feature-bento-card'
 import { gsap, registerGsap } from '../../_lib/gsap'
@@ -67,6 +68,8 @@ export function FallbackPoliciesCard() {
                     },
                     '<+=0.05'
                 )
+
+            return registerReplay(() => tl.restart(true, false))
         },
         { scope: ref }
     )

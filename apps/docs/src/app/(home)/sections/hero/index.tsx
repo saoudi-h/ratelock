@@ -3,6 +3,7 @@
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import { gsap, registerGsap } from "../../_lib/gsap";
+import { registerReplay } from "../../_lib/replay-registry";
 import { HeroBadge } from "./hero-badge";
 import { HeroIllustration } from "@/components/ui/hero-illustration";
 import { HeroCtas } from "./hero-ctas";
@@ -33,7 +34,7 @@ export function HeroSection() {
   useGSAP(() => {
     if (descRef.current) {
       const desc = descRef.current;
-      gsap.fromTo(
+      const descTl = gsap.fromTo(
         desc,
         { y: 16, opacity: 0, filter: "blur(6px)" },
         {
@@ -50,6 +51,7 @@ export function HeroSection() {
           },
         },
       );
+      return registerReplay(() => descTl.restart(true, false));
     }
 
     if (ambientRef.current) {
@@ -64,7 +66,7 @@ export function HeroSection() {
         },
       });
     }
-  }, {});
+  });
 
   return (
     <section
@@ -90,18 +92,18 @@ export function HeroSection() {
                 absolute) so it doesn't overlap with the stats row
                 below. */}
       <div className="flex flex-1 flex-col">
-        <div className="flex flex-1 items-center">
-          <div className="relative mx-auto w-full max-w-7xl px-6 py-4">
+        <div className="flex flex-1 items-start xl:items-center">
+          <div className="relative mx-auto w-full max-w-7xl px-6 pt-8 pb-4 xl:py-4">
             <div
               className="
-                              grid grid-cols-1 items-center gap-8
-                              lg:grid-cols-12 lg:gap-6
+                              grid grid-cols-1 items-center gap-10
+                              xl:grid-cols-12 xl:gap-6
                             "
             >
               <div
                 className="
                                   relative flex flex-col justify-center
-                                  lg:col-span-7 lg:pr-8
+                                  xl:col-span-5 xl:pr-8
                                 "
               >
                 <div className="mb-4">
@@ -125,8 +127,8 @@ export function HeroSection() {
                 <HeroCtas />
               </div>
 
-              <div className="lg:col-span-5">
-                <HeroIllustration className="w-full max-w-lg lg:max-w-none mx-auto h-auto" />
+              <div className="xl:col-span-7 flex justify-center w-full">
+                <HeroIllustration className="w-full mx-auto" />
               </div>
             </div>
           </div>

@@ -3,6 +3,7 @@
 import { useGSAP } from '@gsap/react'
 import { useRef } from 'react'
 import { gsap, registerGsap } from '../../_lib/gsap'
+import { registerReplay } from '../../_lib/replay-registry'
 
 /**
  * The little "v0.2 · Open Source" pill at the top of the hero.
@@ -16,7 +17,7 @@ export function HeroBadge() {
         () => {
             if (!ref.current) return
             const el = ref.current
-            gsap.fromTo(
+            const tl = gsap.fromTo(
                 el,
                 { y: -8, opacity: 0, filter: 'blur(4px)' },
                 {
@@ -30,6 +31,7 @@ export function HeroBadge() {
                         gsap.set(el, { y: 0, opacity: 1, clearProps: 'filter' }),
                 }
             )
+            return registerReplay(() => tl.restart(true, false))
         },
         { scope: ref }
     )

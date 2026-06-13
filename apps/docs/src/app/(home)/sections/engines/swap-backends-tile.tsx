@@ -1,6 +1,7 @@
 'use client'
 
 import { useGSAP } from '@gsap/react'
+import { registerReplay } from '../../_lib/replay-registry'
 import { Icon } from '@iconify/react'
 import { useRef } from 'react'
 import { BentoBase } from '../../components/bento-base'
@@ -151,6 +152,8 @@ export function SwapBackendsTile() {
                     }
                 )
             }
+
+            return registerReplay(() => tl.restart(true, false))
         },
         { scope: ref }
     )

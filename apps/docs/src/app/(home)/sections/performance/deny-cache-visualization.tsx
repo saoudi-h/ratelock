@@ -1,6 +1,7 @@
 'use client'
 
 import { useGSAP } from '@gsap/react'
+import { registerReplay } from '../../_lib/replay-registry'
 import { Icon } from '@iconify/react'
 import { useEffect, useRef, useState } from 'react'
 import { BentoBase } from '../../components/bento-base'
@@ -105,10 +106,11 @@ export function DenyCacheVisualization() {
                 )
 
             // Headline ops/s number counts up
+            let counterTween: gsap.core.Tween | undefined
             if (opsRef.current) {
                 const target = 2418094
                 const counter = { val: 0 }
-                gsap.to(counter, {
+                counterTween = gsap.to(counter, {
                     val: target,
                     duration: 1.6,
                     ease: 'expo.out',
@@ -122,6 +124,11 @@ export function DenyCacheVisualization() {
                     },
                 })
             }
+
+            return registerReplay(() => {
+                tl.restart(true, false)
+                counterTween?.restart(true, false)
+            })
         },
         { scope: ref }
     )

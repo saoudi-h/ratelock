@@ -3,6 +3,7 @@
 import { useGSAP } from '@gsap/react'
 import { useRef } from 'react'
 import { gsap, registerGsap } from '../../_lib/gsap'
+import { registerReplay } from '../../_lib/replay-registry'
 
 /**
  * Bottom-of-hero scroll cue. Pulses in once, then bobs gently to draw
@@ -60,6 +61,8 @@ export function HeroScrollCue() {
                     scrub: true,
                 },
             })
+
+            return registerReplay(() => tl.restart(true, false))
         },
         { scope: ref }
     )

@@ -4,6 +4,7 @@ import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import { BentoBase } from "../../components/bento-base";
 import { gsap, registerGsap, SplitText } from "../../_lib/gsap";
+import { registerReplay } from "../../_lib/replay-registry";
 
 interface Stat {
   value: string;
@@ -153,7 +154,10 @@ export function HeroStats() {
         }
       });
 
-      return () => splits.forEach(({ split }) => split.revert());
+      // Register for bfcache replay (restart timeline, don't re-split)
+      registerReplay(() => tl.restart(true, false));
+
+      return () => { splits.forEach(({ split }) => split.revert()); };
     },
     { scope: ref },
   );

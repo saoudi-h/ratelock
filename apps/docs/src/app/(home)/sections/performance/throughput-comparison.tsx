@@ -1,6 +1,7 @@
 'use client'
 
 import { useGSAP } from '@gsap/react'
+import { registerReplay } from '../../_lib/replay-registry'
 import { Icon } from '@iconify/react'
 import { useRef, useState } from 'react'
 import { BentoBase } from '../../components/bento-base'
@@ -64,6 +65,8 @@ export function ThroughputComparison() {
                     { y: 14, opacity: 0, duration: 0.55, ease: 'expo.out' },
                     '-=0.2'
                 )
+
+            return registerReplay(() => tl.restart(true, false))
         },
         { scope: ref }
     )
