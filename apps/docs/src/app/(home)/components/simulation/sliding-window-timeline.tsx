@@ -16,6 +16,7 @@ interface SlidingWindowTimelineProps {
     config: SlidingWindowConfig
     lastResult?: { remaining: number; windowStart: number; windowEnd: number }
     startTime: number
+    isPlaying: boolean
 }
 
 export function SlidingWindowTimeline({
@@ -23,8 +24,9 @@ export function SlidingWindowTimeline({
     config,
     lastResult,
     startTime,
+    isPlaying,
 }: SlidingWindowTimelineProps) {
-    const now = useNow(100)
+    const now = useNow(100, isPlaying)
     const { windowMs, limit } = config
     const timelineSpan = windowMs * 2
 
@@ -59,7 +61,8 @@ export function SlidingWindowTimeline({
             events={events}
             timelineSpan={timelineSpan}
             windows={windows}
-            startTime={startTime}>
+            startTime={startTime}
+            isPlaying={isPlaying}>
             {/* Floating HUD Left */}
             <div className="absolute top-3 left-3 flex flex-wrap items-center gap-1.5 pointer-events-none z-30 select-none">
                 <span

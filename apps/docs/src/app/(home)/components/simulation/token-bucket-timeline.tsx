@@ -10,6 +10,7 @@ interface TokenBucketTimelineProps {
     config: TokenBucketConfig
     lastResult?: { remaining: number; tokens: number; refillTime: number }
     startTime: number
+    isPlaying: boolean
 }
 
 function formatMs(ms: number): string {
@@ -23,8 +24,9 @@ export function TokenBucketTimeline({
     config,
     lastResult,
     startTime,
+    isPlaying,
 }: TokenBucketTimelineProps) {
-    const now = useNow(100)
+    const now = useNow(100, isPlaying)
     const { capacity, refillRate } = config
     const timelineSpan = Math.max(2500, capacity * 900)
 
@@ -198,7 +200,8 @@ export function TokenBucketTimeline({
                 <UnifiedTimelineBase
                     events={events}
                     timelineSpan={timelineSpan}
-                    startTime={startTime}>
+                    startTime={startTime}
+                    isPlaying={isPlaying}>
                     {/* Floating HUD Left */}
                     <div className="absolute top-3 left-3 flex flex-wrap items-center gap-1.5 pointer-events-none z-30 select-none">
                         <span

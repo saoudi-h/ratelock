@@ -14,6 +14,8 @@ export const eventsAtomFamily = atomFamily((_strategyId: StrategyId) => atom<Req
 
 export const isRunningAtomFamily = atomFamily((_strategyId: StrategyId) => atom(false))
 
+export const isPlayingAtomFamily = atomFamily((_strategyId: StrategyId) => atom(false))
+
 export const autoRequestsAtomFamily = atomFamily((_strategyId: StrategyId) => atom(true))
 
 export const autoIntervalAtomFamily = atomFamily((strategyId: StrategyId) =>
@@ -28,6 +30,16 @@ export const startSimulationAtom = atom(null, (get, set, _strategyId: StrategyId
 
 export const stopSimulationAtom = atom(null, (get, set, _strategyId: StrategyId) => {
     set(isRunningAtomFamily(_strategyId), false)
+})
+
+export const startPlayingAtom = atom(null, (get, set, strategyId: StrategyId) => {
+    set(isPlayingAtomFamily(strategyId), true)
+    set(autoRequestsAtomFamily(strategyId), true)
+})
+
+export const stopPlayingAtom = atom(null, (get, set, strategyId: StrategyId) => {
+    set(isPlayingAtomFamily(strategyId), false)
+    set(autoRequestsAtomFamily(strategyId), false)
 })
 
 export const addEventAtom = atom(null, (get, set, event: RequestEvent) => {

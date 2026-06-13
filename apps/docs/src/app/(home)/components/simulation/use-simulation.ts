@@ -12,10 +12,12 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 let eventIdCounter = 0
 
-export function useNow(throttleMs = 16) {
+export function useNow(throttleMs = 16, isPlaying = true) {
     const [now, setNow] = useState(() => Date.now())
 
     useEffect(() => {
+        if (!isPlaying) return
+
         let frameId = 0
         let lastUpdate = 0
 
@@ -29,12 +31,12 @@ export function useNow(throttleMs = 16) {
 
         frameId = window.requestAnimationFrame(tick)
         return () => window.cancelAnimationFrame(frameId)
-    }, [throttleMs])
+    }, [throttleMs, isPlaying])
 
     return now
 }
 
-export function useSimulation(strategyId: StrategyId, onAutoRequestTriggered?: () => void) {
+export function useSimulation(strategyId: StrategyId, onAutoRequestTriggered?: () => void, isPlaying = true) {
     const events = useAtomValue(eventsAtomFamily(strategyId))
     const autoRequests = useAtomValue(autoRequestsAtomFamily(strategyId))
     const setAutoRequests = useSetAtom(autoRequestsAtomFamily(strategyId))
@@ -46,14 +48,18 @@ export function useSimulation(strategyId: StrategyId, onAutoRequestTriggered?: (
     const autoRequestsRef = useRef(autoRequests)
     const configRef = useRef(config)
     const onAutoRequestTriggeredRef = useRef(onAutoRequestTriggered)
+    const isPlayingRef = useRef(isPlaying)
 
     useEffect(() => {
         autoRequestsRef.current = autoRequests
         configRef.current = config
         onAutoRequestTriggeredRef.current = onAutoRequestTriggered
-    }, [autoRequests, config, onAutoRequestTriggered])
+        isPlayingRef.current = isPlaying
+    }, [autoRequests, config, onAutoRequestTriggered, isPlaying])
 
     const sendRequest = useCallback(async () => {
+        if (!isPlayingRef.current) return null
+
         const currentConfig = configRef.current[strategyId]
         const userId = 'demo-user'
         const result = await checkRateLimit(strategyId, currentConfig, userId)
@@ -73,10 +79,10 @@ export function useSimulation(strategyId: StrategyId, onAutoRequestTriggered?: (
     }, [strategyId, addEvent])
 
     useEffect(() => {
-        if (!autoRequests) return
+        if (!autoRequests || !isPlaying) return
 
         const requestInterval = setInterval(() => {
-            if (autoRequestsRef.current) {
+            if (autoRequestsRef.current && isPlayingRef.current) {
                 if (onAutoRequestTriggeredRef.current) {
                     onAutoRequestTriggeredRef.current()
                 } else {
@@ -86,7 +92,7 @@ export function useSimulation(strategyId: StrategyId, onAutoRequestTriggered?: (
         }, autoInterval)
 
         return () => clearInterval(requestInterval)
-    }, [autoInterval, autoRequests, sendRequest])
+    }, [autoInterval, autoRequests, isPlaying, sendRequest])
 
     const strategyConfig = config[strategyId] as StrategySpecificConfig
 

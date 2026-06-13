@@ -13,6 +13,7 @@ interface SimulationControlsProps {
     onSendRequest: () => void
     onViewCode: () => void
     onReset: () => void
+    isPlaying: boolean
     controlsRef?: React.RefObject<HTMLDivElement>
     autoToggleRef?: React.RefObject<HTMLDivElement | null>
     sendButtonRef?: React.RefObject<HTMLButtonElement | null>
@@ -26,6 +27,7 @@ export function SimulationControls({
     onSendRequest,
     onViewCode,
     onReset,
+    isPlaying,
     controlsRef,
     autoToggleRef,
     sendButtonRef,
@@ -38,10 +40,12 @@ export function SimulationControls({
             <div className="flex justify-start w-full md:w-auto">
                 <div
                     ref={autoToggleRef}
-                    className="
+                    className={`
                     flex items-center gap-4 px-4 py-2 rounded-2xl border border-border/70 
                     bg-card/85 shadow-sm backdrop-blur-sm select-none w-full md:w-auto min-w-[280px]
-                ">
+                    transition-opacity duration-200
+                    ${!isPlaying ? 'opacity-50 pointer-events-none' : ''}
+                `}>
                     <div className="flex items-center gap-2.5">
                         <Zap
                             className={`size-3.5 transition-colors duration-300 ${autoRequests ? 'text-amber-500 fill-amber-500 animate-pulse' : 'text-muted-foreground'}`}
@@ -52,6 +56,7 @@ export function SimulationControls({
                         <Switch
                             checked={autoRequests}
                             onCheckedChange={() => setAutoRequests(!autoRequests)}
+                            disabled={!isPlaying}
                         />
                     </div>
                     <div className="h-4 w-px bg-border/70" />
@@ -71,6 +76,7 @@ export function SimulationControls({
                             max={3000}
                             step={100}
                             className="w-24 py-1"
+                            disabled={!isPlaying}
                         />
                     </div>
                 </div>
@@ -83,6 +89,7 @@ export function SimulationControls({
                     variant="solid"
                     size="xl"
                     onClick={onSendRequest}
+                    disabled={!isPlaying}
                     className="font-bold tracking-wide uppercase shadow-sm hover:shadow-md cursor-pointer select-none"
                 >
                     <Send className="size-4" />

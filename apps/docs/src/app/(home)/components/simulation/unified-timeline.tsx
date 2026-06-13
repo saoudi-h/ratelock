@@ -24,6 +24,7 @@ interface UnifiedTimelineBaseProps {
     className?: string
     accentByEvent?: (event: RequestEvent) => string
     startTime?: number
+    isPlaying?: boolean
     children?: ReactNode
 }
 
@@ -38,6 +39,7 @@ export function UnifiedTimelineBase({
     className,
     accentByEvent,
     startTime,
+    isPlaying = true,
     children,
 }: UnifiedTimelineBaseProps) {
     const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -85,6 +87,8 @@ export function UnifiedTimelineBase({
 
     // Boucle d'animation GPU découplée de React
     useEffect(() => {
+        if (!isPlaying) return
+
         let frameId: number
 
         const tick = () => {
@@ -104,7 +108,7 @@ export function UnifiedTimelineBase({
 
         frameId = requestAnimationFrame(tick)
         return () => cancelAnimationFrame(frameId)
-    }, [timelineSpan, simulationStartTime])
+    }, [timelineSpan, simulationStartTime, isPlaying])
 
     return (
         <div
@@ -132,7 +136,7 @@ export function UnifiedTimelineBase({
                 className="
               pointer-events-none absolute top-2.5 left-1/2 -translate-x-1/2
               rounded-full border border-primary/20 bg-background/90 px-2 py-0.5 font-mono text-[9px]
-              font-semibold tracking-[0.16em] text-primary uppercase shadow-sm z-10
+              font-semibold tracking-[0.16em] text-primary uppercase shadow-sm z-20
             ">
                 now
             </div>

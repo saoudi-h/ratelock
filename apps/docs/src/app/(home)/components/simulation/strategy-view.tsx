@@ -8,7 +8,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog'
-import { resetSimulationAtom, updateConfigAtom } from '@/simulation/atoms'
+import { isPlayingAtomFamily, resetSimulationAtom, startPlayingAtom, updateConfigAtom } from '@/simulation/atoms'
 import {
     type FixedWindowConfig,
     type IndividualFixedWindowConfig,
@@ -16,13 +16,14 @@ import {
     type StrategyId,
     type TokenBucketConfig,
 } from '@/simulation/types'
-import { useSetAtom } from 'jotai'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ConfigPanel } from './controls'
 import { DynamicCodeExplorer } from './dynamic-code-explorer'
 import { FixedWindowTimeline } from './fixed-window-timeline'
 import { IndividualFixedWindowTimeline } from './individual-fixed-window-timeline'
 import { Projectile } from './projectile'
+import { PlayOverlay } from './play-overlay'
 import { SimulationControls } from './simulation-controls'
 import { SlidingWindowTimeline } from './sliding-window-timeline'
 import { TokenBucketTimeline } from './token-bucket-timeline'
@@ -45,6 +46,9 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
     const [projectiles, setProjectiles] = useState<Projectile[]>([])
     const [isCodeOpen, setIsCodeOpen] = useState(false)
     const sendRequestRef = useRef<(() => Promise<any>) | null>(null)
+
+    const isPlaying = useAtomValue(isPlayingAtomFamily(strategyId))
+    const startPlaying = useSetAtom(startPlayingAtom)
 
     // Refs for precise DOM measurements
     const containerRef = useRef<HTMLDivElement>(null)
@@ -115,7 +119,7 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
         setAutoInterval,
         sendRequest,
         config,
-    } = useSimulation(strategyId, handleAutoTrigger)
+    } = useSimulation(strategyId, handleAutoTrigger, isPlaying)
 
     useEffect(() => {
         sendRequestRef.current = sendRequest
@@ -150,6 +154,8 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
     }, [])
 
     const handleSendRequest = useCallback(async () => {
+        if (!isPlaying) return
+
         const { x, y } = getStartPos('manual')
         const { destX, destY } = getDestPos(strategyId === 'token-bucket')
         const id = `projectile-${Date.now()}-${Math.random()}`
@@ -165,7 +171,7 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
         setTimeout(() => {
             setProjectiles(prev => prev.filter(p => p.id !== id))
         }, 500)
-    }, [sendRequest])
+    }, [sendRequest, isPlaying])
 
     const handleReset = async () => {
         await resetSimulation(strategyId)
@@ -181,6 +187,9 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
                   shadow-sm ring-0 overflow-hidden backdrop-blur-md
                 ">
                 <CardContent className="p-6 relative flex flex-col items-stretch gap-6">
+                    {/* Play overlay covering entire card when paused */}
+                    {!isPlaying && <PlayOverlay onPlay={() => startPlaying(strategyId)} />}
+
                     {/* Compact Parameters Grid in the Bento Box */}
                     <div className="flex flex-col gap-2 pb-2 border-b border-border/20">
                         <span className="text-[10px] font-bold tracking-[0.16em] text-muted-foreground/80 uppercase">
@@ -194,6 +203,7 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
 
                     {/* Timeline render area */}
                     <div className="w-full relative" ref={timelineContainerRef}>
+
                         {strategyId === 'fixed-window' && (
                             <FixedWindowTimeline
                                 events={events}
@@ -204,6 +214,7 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
                                         | undefined
                                 }
                                 startTime={startTime}
+                                isPlaying={isPlaying}
                             />
                         )}
 
@@ -221,6 +232,7 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
                                         | undefined
                                 }
                                 startTime={startTime}
+                                isPlaying={isPlaying}
                             />
                         )}
 
@@ -234,6 +246,7 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
                                         | undefined
                                 }
                                 startTime={startTime}
+                                isPlaying={isPlaying}
                             />
                         )}
 
@@ -247,6 +260,7 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
                                         | undefined
                                 }
                                 startTime={startTime}
+                                isPlaying={isPlaying}
                             />
                         )}
                     </div>
@@ -272,6 +286,7 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
                         onSendRequest={handleSendRequest}
                         onViewCode={() => setIsCodeOpen(true)}
                         onReset={handleReset}
+                        isPlaying={isPlaying}
                         autoToggleRef={autoToggleRef}
                         sendButtonRef={sendButtonRef}
                     />

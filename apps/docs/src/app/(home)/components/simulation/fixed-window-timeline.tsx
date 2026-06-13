@@ -16,6 +16,7 @@ interface FixedWindowTimelineProps {
     config: FixedWindowConfig
     lastResult?: { remaining: number; reset: number }
     startTime: number
+    isPlaying: boolean
 }
 
 export function FixedWindowTimeline({
@@ -23,8 +24,9 @@ export function FixedWindowTimeline({
     config,
     lastResult,
     startTime,
+    isPlaying,
 }: FixedWindowTimelineProps) {
-    const now = useNow(100)
+    const now = useNow(100, isPlaying)
     const { windowMs, limit } = config
     const timelineSpan = windowMs * 3
 
@@ -67,7 +69,8 @@ export function FixedWindowTimeline({
             events={events}
             timelineSpan={timelineSpan}
             windows={windows}
-            startTime={startTime}>
+            startTime={startTime}
+            isPlaying={isPlaying}>
             {/* Floating HUD Left */}
             <div className="absolute top-3 left-3 flex flex-wrap items-center gap-1.5 pointer-events-none z-30 select-none">
                 <span
