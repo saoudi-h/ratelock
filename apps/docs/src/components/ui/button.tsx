@@ -25,6 +25,10 @@ const buttonVariants = cva(
                   bg-primary text-primary-foreground
                   hover:bg-primary/80
                 `,
+                solid: `
+                  bg-foreground text-background
+                  hover:bg-foreground/90
+                `,
                 outline: `
                   border-border bg-background
                   hover:bg-muted hover:text-foreground
@@ -78,6 +82,9 @@ const buttonVariants = cva(
                   h-10 gap-1.5 px-4
                   has-data-[icon=inline-end]:pr-3
                   has-data-[icon=inline-start]:pl-3
+                `,
+                xl: `
+                  h-12 gap-2 px-6 rounded-2xl text-sm font-semibold
                 `,
                 icon: 'size-9',
                 'icon-xs': `

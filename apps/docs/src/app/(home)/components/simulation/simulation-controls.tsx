@@ -80,14 +80,11 @@ export function SimulationControls({
             <div className="flex justify-center md:absolute md:left-1/2 md:-translate-x-1/2">
                 <Button
                     ref={sendButtonRef}
-                    size="lg"
+                    variant="solid"
+                    size="xl"
                     onClick={onSendRequest}
-                    className="
-                      relative overflow-hidden font-bold tracking-wide uppercase px-8 py-5 rounded-2xl
-                      bg-zinc-900 border border-zinc-700/50 hover:bg-zinc-800 text-zinc-100 
-                      dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 dark:border-none
-                      shadow-sm hover:shadow-md active:scale-95 transition-all duration-200 gap-2 flex items-center cursor-pointer select-none
-                    ">
+                    className="font-bold tracking-wide uppercase shadow-sm hover:shadow-md cursor-pointer select-none"
+                >
                     <Send className="size-4" />
                     <span>Send request</span>
                 </Button>
@@ -99,10 +96,8 @@ export function SimulationControls({
                     size="sm"
                     variant="outline"
                     onClick={onViewCode}
-                    className="
-                      rounded-xl border border-border/70 bg-card/85 px-4 py-2 text-xs font-semibold text-muted-foreground
-                      hover:bg-accent hover:text-foreground active:scale-95 transition-all duration-150 cursor-pointer shadow-sm gap-1.5 flex items-center
-                    ">
+                    className="rounded-xl text-muted-foreground hover:text-foreground shadow-sm"
+                >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="14"
@@ -121,13 +116,12 @@ export function SimulationControls({
                 </Button>
 
                 <Button
-                    size="icon"
+                    size="icon-sm"
+                    variant="outline"
                     onClick={onReset}
-                    className="
-                      rounded-xl border border-border/70 bg-card/85 p-2.5 text-muted-foreground
-                      hover:bg-accent hover:text-foreground active:scale-95 transition-all duration-150 cursor-pointer shadow-sm
-                    "
-                    title="Reset Simulation">
+                    className="rounded-xl text-muted-foreground hover:text-foreground shadow-sm"
+                    title="Reset Simulation"
+                >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"

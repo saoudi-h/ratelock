@@ -5,7 +5,9 @@ import { Icon } from "@iconify/react";
 import { ArrowRightBold } from "@solar-icons/react-perf";
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { gsap, registerGsap } from "../../_lib/gsap";
+import { registerReplay } from "../../_lib/replay-registry";
 
 interface HeroCtasProps {
   /** Command to copy from the inline npm tile */
@@ -34,7 +36,7 @@ export function HeroCtas({ command = "npm install @ratelock/local" }: HeroCtasPr
       if (!ref.current) return;
       const wrap = ref.current;
       const items = wrap.children;
-      gsap.fromTo(
+      const tl = gsap.fromTo(
         items,
         { y: 24, opacity: 0, filter: "blur(6px)" },
         {
@@ -56,6 +58,7 @@ export function HeroCtas({ command = "npm install @ratelock/local" }: HeroCtasPr
           },
         },
       );
+      return registerReplay(() => tl.restart(true, false));
     },
     { scope: ref },
   );
@@ -69,43 +72,39 @@ export function HeroCtas({ command = "npm install @ratelock/local" }: HeroCtasPr
               sm:flex-row sm:flex-wrap sm:items-center sm:gap-4
             "
     >
-      <Link
-        href="/docs"
-        className="
-                  group relative inline-flex h-12 items-center justify-center
-                  gap-2 rounded-2xl bg-foreground px-6 text-sm font-semibold
-                  text-background shadow-sm transition-all duration-200
-                  select-none
-                  hover:bg-foreground/90
-                  active:scale-[0.97]
-                "
-      >
-        <span>Get Started</span>
-        <ArrowRightBold
-          className="
-                      size-4 transition-transform duration-200
-                      group-hover:translate-x-0.5
-                    "
-        />
-      </Link>
+      <div className="flex gap-4 items-center">
 
-      <a
-        href="https://github.com/saoudi-h/ratelock"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="
-                  group relative inline-flex h-12 items-center justify-center
-                  gap-2 rounded-2xl border border-border bg-background px-6
-                  text-sm font-semibold text-foreground shadow-sm
-                  transition-all duration-200 select-none
-                  hover:bg-muted
-                  active:scale-[0.97]
-                "
-      >
-        <Icon icon="mdi:github" className="size-4" />
-        <span>GitHub</span>
-      </a>
+        <Button
+          render={<Link href="/docs" />}
+          variant="solid"
+          size="xl"
+          className="shadow-sm"
+        >
+          <span>Get Started</span>
+          <ArrowRightBold
+            className="
+            size-4 transition-transform duration-200
+            group-hover/button:translate-x-0.5
+            "
+          />
+        </Button>
 
+        <Button
+          render={
+            <a
+              href="https://github.com/saoudi-h/ratelock"
+              target="_blank"
+              rel="noopener noreferrer"
+            />
+          }
+          variant="outline"
+          size="xl"
+          className="shadow-sm"
+        >
+          <Icon icon="mdi:github" className="size-4" />
+          <span>GitHub</span>
+        </Button>
+      </div>
       <button
         onClick={handleCopy}
         title="Copy install command"

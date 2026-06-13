@@ -1,8 +1,10 @@
 "use client";
 
 import { useGSAP } from "@gsap/react";
+import { registerReplay } from "../../_lib/replay-registry";
 import Link from "next/link";
 import { useRef } from "react";
+import { Button } from "@/components/ui/button";
 import { gsap, registerGsap, SplitText } from "../../_lib/gsap";
 import styles from "./explore-cta.module.css";
 import { cn } from "@/lib/utils";
@@ -29,7 +31,9 @@ export function ExploreCta() {
       if (!ref.current) return;
       const root = ref.current;
 
-      gsap.from(root, {
+      const tl = gsap.timeline();
+
+      tl.from(root, {
         y: 60,
         opacity: 0,
         filter: "blur(8px)",
@@ -43,7 +47,7 @@ export function ExploreCta() {
           type: "chars",
           autoSplit: true,
           onSplit: (self) => {
-            gsap.from(self.chars, {
+            tl.from(self.chars, {
               yPercent: 110,
               opacity: 0,
               rotation: 6,
@@ -61,8 +65,11 @@ export function ExploreCta() {
 
         return () => {
           split.revert();
+          registerReplay(() => tl.restart(true, false))();
         };
       }
+
+      return registerReplay(() => tl.restart(true, false));
     },
     { scope: ref },
   );
@@ -108,15 +115,11 @@ export function ExploreCta() {
         </p>
       </div>
 
-      <Link
-        href="/docs/benchmarks"
-        className="
-                  group/link inline-flex items-center gap-2 rounded-2xl
-                  border border-border/40 bg-background px-5 py-2.5 text-sm
-                  font-semibold text-foreground shadow-xs
-                  transition-all duration-200
-                  hover:bg-muted/50 active:scale-[0.97]
-                "
+      <Button
+        render={<Link href="/docs/benchmarks" />}
+        variant="outline"
+        size="lg"
+        className="rounded-2xl shadow-xs group/link"
       >
         <span>Open benchmarks</span>
         <svg
@@ -136,7 +139,7 @@ export function ExploreCta() {
             strokeLinejoin="round"
           />
         </svg>
-      </Link>
+      </Button>
     </div>
   );
 }

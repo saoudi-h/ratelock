@@ -145,10 +145,10 @@ if (result.allowed) {
                         TypeScript
                     </span>
                     <Button
-                        size="icon-sm"
+                        size="icon-xs"
                         variant="ghost"
                         onClick={handleCopy}
-                        className="size-6 text-muted-foreground hover:text-foreground rounded-md transition-all duration-150 cursor-pointer"
+                        className="text-muted-foreground hover:text-foreground rounded-md"
                         title="Copy Code">
                         {copied ? (
                             <svg
