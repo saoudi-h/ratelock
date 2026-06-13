@@ -5,9 +5,9 @@ description: Methodology, reference hardware, and reproducible performance numbe
 
 RateLock implements each storage engine natively rather than wrapping a generic database layer. Redis uses Lua scripts for atomic counters and sorted sets, PostgreSQL uses targeted UPSERT queries, and the local memory engine uses JavaScript `Map` lookups. This page shows the cost of those choices under a controlled workload.
 
-> [!WARNING]
-> **Hardware and runtime dependency**
-> The numbers on this page come from a single reference machine. They are not a guarantee of throughput or latency in your environment. Use them to compare strategies and backends against each other, not to predict production performance. Re-run the suite on your target hardware before making sizing decisions.
+<Callout title="Hardware and runtime dependency" type="warn">
+  The numbers on this page come from a single reference machine. They are not a guarantee of throughput or latency in your environment. Use them to compare strategies and backends against each other, not to predict production performance. Re-run the suite on your target hardware before making sizing decisions.
+</Callout>
 
 ---
 
@@ -68,9 +68,9 @@ For this page, only **Diverse** and **Extreme Spam** numbers are shown. Realisti
 
 All backends run in local Docker containers. The Postgres container in `packages/bench/docker-compose.yml` runs with **production-default durability** (`synchronous_commit=on`, `fsync=on`, `full_page_writes=on`); only sizing tunings are applied (`max_connections=200`, `shared_buffers=512MB`). The numbers on this page are therefore what you would see on a real Postgres deployment, not on a synthetic best-case config. The trade-off is a higher run-to-run σ on Postgres than on Redis or local memory, because the WAL is now part of the per-check cost.
 
-> [!TIP]
-> **Reproducing older numbers (best-case config)**
-> Earlier drafts of this page used a synthetic Postgres config with `synchronous_commit=off`, `fsync=off`, and `full_page_writes=off` to isolate the driver/protocol cost. That config is preserved in the focused investigation script at `packages/bench/src/scripts/investigate-unlogged.ts`, which can target any Postgres container via the `POSTGRES_URL` env var. The bench itself, however, runs on production defaults.
+<Callout title="Reproducing older numbers (best-case config)" type="info">
+  Earlier drafts of this page used a synthetic Postgres config with `synchronous_commit=off`, `fsync=off`, and `full_page_writes=off` to isolate the driver/protocol cost. That config is preserved in the focused investigation script at `packages/bench/src/scripts/investigate-unlogged.ts`, which can target any Postgres container via the `POSTGRES_URL` env var. The bench itself, however, runs on production defaults.
+</Callout>
 
 Redis and Valkey run with their default durability settings. The Redis client used by **both** RateLock and `rate-limiter-flexible` in the comparison matrix is `ioredis`, so any throughput gap is the limiter implementation and not the client.
 
@@ -93,9 +93,9 @@ Strategies that fit in process memory. Counter-based strategies run in constant 
 
 Local memory is unaffected by the Postgres durability switch. Token Bucket and Individual Fixed Window lead on diverse keys; under extreme spam, every counter-based strategy saturates around 2.3-2.5M ops/sec because the only work is a `Map.get` and an integer increment. Sliding Window is stable but slow: every check iterates the per-key timestamp array, which is full after 60 s of spam.
 
-> [!TIP]
-> **Choosing a memory strategy**
-> For a hot key with high request volume, prefer **Token Bucket** or **Individual Fixed Window**. **Fixed Window** is fine when the boundary effect is acceptable. **Sliding Window** is the only one that gives true rolling-window semantics; the cost is roughly 30x lower throughput in this scenario.
+<Callout title="Choosing a memory strategy" type="info">
+  For a hot key with high request volume, prefer **Token Bucket** or **Individual Fixed Window**. **Fixed Window** is fine when the boundary effect is acceptable. **Sliding Window** is the only one that gives true rolling-window semantics; the cost is roughly 30x lower throughput in this scenario.
+</Callout>
 
 ---
 
@@ -130,9 +130,9 @@ The diverse scenario is calm: all four strategies sit between 24K and 32K ops/se
 - **Fixed Window**, **Sliding Window**, and **Individual Fixed Window** stay close to their diverse throughput. They are UPSERT-friendly and tolerate single-key contention. Sliding Window is the slowest of the three under spam but it is no longer the cliff it used to be. The named prepared statement optimisation closed the plan-cache gap that used to dominate.
 - **Token Bucket** collapses to ~1,800 ops/sec with 200+ ms p99. A transaction per check, plus a refill calculation, is too much for a hot Postgres row to absorb.
 
-> [!IMPORTANT]
-> **Postgres strategy recommendation**
-> On Postgres, prefer **Fixed Window** or **Individual Fixed Window**. Avoid **Sliding Window** and **Token Bucket** for high-volume single-key workloads. If you need rolling-window semantics, consider the `withCache` decorator (see [section 5](#5-resilience-policies-decorator-overhead)) to absorb the spam in memory.
+<Callout title="Postgres strategy recommendation" type="warn">
+  On Postgres, prefer **Fixed Window** or **Individual Fixed Window**. Avoid **Sliding Window** and **Token Bucket** for high-volume single-key workloads. If you need rolling-window semantics, consider the `withCache` decorator (see [section 5](#5-resilience-policies-decorator-overhead)) to absorb the spam in memory.
+</Callout>
 
 ### Logged vs Unlogged tables
 
@@ -172,13 +172,13 @@ This matrix is the one most likely to be misread, so the methodology matters. Bo
 - On Redis, RateLock is **1.7x** faster. Both libraries use Lua scripts for atomic counters, so the gap is the script body and the network framing around it.
 - On PostgreSQL, the two libraries are **near-identical** under spam in this run (1.04x). Both run a single UPSERT per call against the same hot row. RateLock's `pgDriver` uses **named prepared statements** (FNV-1a hash of the SQL text), which closed the plan-cache gap that earlier versions of this matrix showed. Treat any claim about a stable Postgres gap as a measurement, not a guarantee. The numbers move with the bench environment.
 
-> [!NOTE]
-> **API differences that bias the comparison**
-> `rate-limiter-flexible.consume()` throws on denial. The RLF adapter wraps each call in `try/catch` to mirror real usage. RateLock returns a value rather than throwing, so it does not pay the cost of exception handling. Under extreme spam where 99.9% of calls are denied, the try/catch is a real cost that this number reflects.
+<Callout title="API differences that bias the comparison" type="info">
+  `rate-limiter-flexible.consume()` throws on denial. The RLF adapter wraps each call in `try/catch` to mirror real usage. RateLock returns a value rather than throwing, so it does not pay the cost of exception handling. Under extreme spam where 99.9% of calls are denied, the try/catch is a real cost that this number reflects.
+</Callout>
 
-> [!NOTE]
-> **Strategy availability**
-> RLF implements only the Fixed Window strategy for Redis and Postgres in the comparison. RateLock implements all four strategies natively on all three backends. The 1.7x Redis gap is on Fixed Window, which is the only like-for-like comparison available.
+<Callout title="Strategy availability" type="info">
+  RLF implements only the Fixed Window strategy for Redis and Postgres in the comparison. RateLock implements all four strategies natively on all three backends. The 1.7x Redis gap is on Fixed Window, which is the only like-for-like comparison available.
+</Callout>
 
 ---
 
@@ -220,14 +220,14 @@ Under extreme spam on a single key, the 1000 req/60s limit is exhausted within t
 
 `withCircuitBreaker` and `withRetry` show no benefit on this matrix because Redis is healthy. Their value lives in the failure case, which is not part of the standard bench. Section 5.3 below injects Redis failures and measures the circuit-breaker / retry / fallback payoff.
 
-> [!TIP]
-> **Practical recommendation**
-> - **Always wrap a remote limiter in `withCache`** if the limiter can face a hot-key flood. The cache pays for itself in the first millisecond of any sustained spam and turns a Redis-bound denial path into a local-memory one.
-> - **Wrap in `withCircuitBreaker`** if Redis can fail (network blip, server restart, cluster failover). The cost is ~2% on a healthy backend; the benefit is the backend being able to recover instead of being hammered.
-> - **Wrap in `withFallback`** if you have a secondary limiter (typically local) and availability matters more than global consistency. The fallback activates only when the primary fails, so the cost on the happy path is just the activation check (~7%).
-> - **Wrap in `withRetry`** only if you are seeing transient errors on the limiter call. The cost is ~4% on the happy path; on a healthy backend, retries add nothing and only delay failure propagation.
-> - **Skip all decorators on a local limiter.** The local limiter is already as fast as the cache, so the decorator is pure overhead.
-> - **On a remote limiter, `withFallback` is the decorator that survives a hard outage.** See 5.3 for the numbers: when Redis is hard-down, `withFallback` is the only decorator that keeps the service accepting traffic at 100% allowed rate.
+<Callout title="Practical recommendation" type="info">
+- **Always wrap a remote limiter in `withCache`** if the limiter can face a hot-key flood. The cache pays for itself in the first millisecond of any sustained spam and turns a Redis-bound denial path into a local-memory one.
+- **Wrap in `withCircuitBreaker`** if Redis can fail (network blip, server restart, cluster failover). The cost is ~2% on a healthy backend; the benefit is the backend being able to recover instead of being hammered.
+- **Wrap in `withFallback`** if you have a secondary limiter (typically local) and availability matters more than global consistency. The fallback activates only when the primary fails, so the cost on the happy path is just the activation check (~7%).
+- **Wrap in `withRetry`** only if you are seeing transient errors on the limiter call. The cost is ~4% on the happy path; on a healthy backend, retries add nothing and only delay failure propagation.
+- **Skip all decorators on a local limiter.** The local limiter is already as fast as the cache, so the decorator is pure overhead.
+- **On a remote limiter, `withFallback` is the decorator that survives a hard outage.** See 5.3 for the numbers: when Redis is hard-down, `withFallback` is the only decorator that keeps the service accepting traffic at 100% allowed rate.
+</Callout>
 
 ### 5.3 Value under failure (decorator on Redis with fault injection)
 
@@ -334,9 +334,9 @@ BENCH_DURATION=5000 BENCH_RUNS=5 BENCH_CONCURRENCY=40 \
 
 The JSON output (`results/benchmarks_raw.json`) carries the per-run min, max, and stdev, which is the easiest way to verify that a run is stable. The Markdown report (`results/benchmark_report.md`) has the same tables that the console prints.
 
-> [!IMPORTANT]
-> **Run on idle hardware**
-> Co-tenant processes will perturb the numbers, especially the Postgres and Redis measurements, which sit in the 100-microsecond-to-millisecond range. Close browsers, pause CI, and disable turbo boost for a more stable run.
+<Callout title="Run on idle hardware" type="warn">
+  Co-tenant processes will perturb the numbers, especially the Postgres and Redis measurements, which sit in the 100-microsecond-to-millisecond range. Close browsers, pause CI, and disable turbo boost for a more stable run.
+</Callout>
 
 ---
 
