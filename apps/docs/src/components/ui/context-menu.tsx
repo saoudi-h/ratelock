@@ -4,7 +4,7 @@ import { ContextMenu as ContextMenuPrimitive } from '@base-ui/react/context-menu
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
-import { CheckIcon, ChevronRightIcon } from 'lucide-react'
+import { AltArrowRight, CheckCircle } from '@solar-icons/react-perf/BoldDuotone'
 
 function ContextMenu({ ...props }: ContextMenuPrimitive.Root.Props) {
     return <ContextMenuPrimitive.Root data-slot="context-menu" {...props} />
@@ -177,7 +177,7 @@ function ContextMenuSubTrigger({
             )}
             {...props}>
             {children}
-            <ChevronRightIcon className="ml-auto" />
+            <AltArrowRight className="ml-auto" />
         </ContextMenuPrimitive.SubmenuTrigger>
     )
 }
@@ -235,7 +235,7 @@ function ContextMenuCheckboxItem({
             {...props}>
             <span className="pointer-events-none absolute right-2">
                 <ContextMenuPrimitive.CheckboxItemIndicator>
-                    <CheckIcon />
+                    <CheckCircle />
                 </ContextMenuPrimitive.CheckboxItemIndicator>
             </span>
             {children}
@@ -274,7 +274,7 @@ function ContextMenuRadioItem({
             {...props}>
             <span className="pointer-events-none absolute right-2">
                 <ContextMenuPrimitive.RadioItemIndicator>
-                    <CheckIcon />
+                    <CheckCircle />
                 </ContextMenuPrimitive.RadioItemIndicator>
             </span>
             {children}

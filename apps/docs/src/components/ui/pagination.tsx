@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon } from 'lucide-react'
+import { AltArrowLeft, AltArrowRight, MenuDots } from '@solar-icons/react-perf/BoldDuotone'
 
 function Pagination({ className, ...props }: React.ComponentProps<'nav'>) {
     return (
@@ -65,7 +65,7 @@ function PaginationPrevious({
             size="default"
             className={cn('pl-2!', className)}
             {...props}>
-            <ChevronLeftIcon data-icon="inline-start" />
+            <AltArrowLeft data-icon="inline-start" />
             <span
                 className="
                   hidden
@@ -95,7 +95,7 @@ function PaginationNext({
                 ">
                 {text}
             </span>
-            <ChevronRightIcon data-icon="inline-end" />
+            <AltArrowRight data-icon="inline-end" />
         </PaginationLink>
     )
 }
@@ -113,7 +113,7 @@ function PaginationEllipsis({ className, ...props }: React.ComponentProps<'span'
                 className
             )}
             {...props}>
-            <MoreHorizontalIcon />
+            <MenuDots />
             <span className="sr-only">More pages</span>
         </span>
     )

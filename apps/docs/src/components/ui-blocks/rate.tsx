@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils'
 import { cva } from 'class-variance-authority'
 import { Collapsible, CollapsibleContent } from 'fumadocs-ui/components/ui/collapsible'
-import { ThumbsDown, ThumbsUp } from 'lucide-react'
+import { Dislike, Like } from '@solar-icons/react-perf/BoldDuotone'
 import { usePathname } from 'next/navigation'
 import { type SyntheticEvent, useEffect, useState, useTransition } from 'react'
 
@@ -82,14 +82,14 @@ export function Rate({
                     disabled={previous !== null}
                     className={cn(rateButtonVariants({ active: activeOpinion === 'good' }))}
                     onClick={() => setOpinion('good')}>
-                    <ThumbsUp />
+                    <Like />
                     Good
                 </button>
                 <button
                     disabled={previous !== null}
                     className={cn(rateButtonVariants({ active: activeOpinion === 'bad' }))}
                     onClick={() => setOpinion('bad')}>
-                    <ThumbsDown />
+                    <Dislike />
                     Bad
                 </button>
             </div>

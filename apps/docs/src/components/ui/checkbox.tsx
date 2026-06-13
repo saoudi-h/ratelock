@@ -3,7 +3,7 @@
 import { Checkbox as CheckboxPrimitive } from '@base-ui/react/checkbox'
 
 import { cn } from '@/lib/utils'
-import { CheckIcon } from 'lucide-react'
+import { CheckCircle } from '@solar-icons/react-perf/BoldDuotone'
 
 function Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) {
     return (
@@ -37,7 +37,7 @@ function Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) {
                   grid place-content-center text-current transition-none
                   [&>svg]:size-3.5
                 ">
-                <CheckIcon />
+                <CheckCircle />
             </CheckboxPrimitive.Indicator>
         </CheckboxPrimitive.Root>
     )

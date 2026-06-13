@@ -19,7 +19,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
-import { PanelLeftIcon } from 'lucide-react'
+import { Sidebar } from '@solar-icons/react-perf/BoldDuotone'
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state'
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -293,7 +293,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
                 toggleSidebar()
             }}
             {...props}>
-            <PanelLeftIcon />
+            <Sidebar />
             <span className="sr-only">Toggle Sidebar</span>
         </Button>
     )

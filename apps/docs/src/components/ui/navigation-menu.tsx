@@ -2,7 +2,7 @@ import { NavigationMenu as NavigationMenuPrimitive } from '@base-ui/react/naviga
 import { cva } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
-import { ChevronDownIcon } from 'lucide-react'
+import { AltArrowDown } from '@solar-icons/react-perf/BoldDuotone'
 
 function NavigationMenu({
     align = 'start',
@@ -84,7 +84,7 @@ function NavigationMenuTrigger({
             className={cn(navigationMenuTriggerStyle(), 'group', className)}
             {...props}>
             {children}{' '}
-            <ChevronDownIcon
+            <AltArrowDown
                 className="
                   relative top-px ml-1 size-3 transition duration-300
                   group-data-open/navigation-menu-trigger:rotate-180

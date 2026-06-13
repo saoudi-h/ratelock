@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
-import { ChevronDownIcon } from 'lucide-react'
+import { AltArrowDown } from '@solar-icons/react-perf/BoldDuotone'
 
 type NativeSelectProps = Omit<React.ComponentProps<'select'>, 'size'> & {
     size?: 'sm' | 'default'
@@ -40,7 +40,7 @@ function NativeSelect({ className, size = 'default', ...props }: NativeSelectPro
                 "
                 {...props}
             />
-            <ChevronDownIcon
+            <AltArrowDown
                 className="
                   pointer-events-none absolute top-1/2 right-2.5 size-4
                   -translate-y-1/2 text-muted-foreground select-none

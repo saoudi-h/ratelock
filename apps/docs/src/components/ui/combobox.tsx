@@ -11,7 +11,7 @@ import {
     InputGroupInput,
 } from '@/components/ui/input-group'
 import { cn } from '@/lib/utils'
-import { CheckIcon, ChevronDownIcon, XIcon } from 'lucide-react'
+import { AltArrowDown, CheckCircle, CloseCircle } from '@solar-icons/react-perf/BoldDuotone'
 
 const Combobox = ComboboxPrimitive.Root
 
@@ -26,7 +26,7 @@ function ComboboxTrigger({ className, children, ...props }: ComboboxPrimitive.Tr
             className={cn("[&_svg:not([class*='size-'])]:size-4", className)}
             {...props}>
             {children}
-            <ChevronDownIcon className="pointer-events-none size-4 text-muted-foreground" />
+            <AltArrowDown className="pointer-events-none size-4 text-muted-foreground" />
         </ComboboxPrimitive.Trigger>
     )
 }
@@ -38,7 +38,7 @@ function ComboboxClear({ className, ...props }: ComboboxPrimitive.Clear.Props) {
             render={<InputGroupButton variant="ghost" size="icon-xs" />}
             className={cn(className)}
             {...props}>
-            <XIcon className="pointer-events-none" />
+            <CloseCircle className="pointer-events-none" />
         </ComboboxPrimitive.Clear>
     )
 }
@@ -199,7 +199,7 @@ function ComboboxItem({ className, children, ...props }: ComboboxPrimitive.Item.
                         "
                     />
                 }>
-                <CheckIcon className="pointer-events-none" />
+                <CheckCircle className="pointer-events-none" />
             </ComboboxPrimitive.ItemIndicator>
         </ComboboxPrimitive.Item>
     )
@@ -312,7 +312,7 @@ function ComboboxChip({
                       hover:opacity-100
                     "
                     data-slot="combobox-chip-remove">
-                    <XIcon className="pointer-events-none" />
+                    <CloseCircle className="pointer-events-none" />
                 </ComboboxPrimitive.ChipRemove>
             )}
         </ComboboxPrimitive.Chip>

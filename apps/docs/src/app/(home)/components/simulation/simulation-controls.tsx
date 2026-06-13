@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
-import { Send, Zap } from 'lucide-react'
+import { Bolt, Plain2 } from '@solar-icons/react-perf/BoldDuotone'
 
 interface SimulationControlsProps {
     autoRequests: boolean
@@ -47,7 +47,7 @@ export function SimulationControls({
                     ${!isPlaying ? 'opacity-50 pointer-events-none' : ''}
                 `}>
                     <div className="flex items-center gap-2.5">
-                        <Zap
+                        <Bolt
                             className={`size-3.5 transition-colors duration-300 ${autoRequests ? 'text-amber-500 fill-amber-500 animate-pulse' : 'text-muted-foreground'}`}
                         />
                         <span className="text-[10px] font-bold text-muted-foreground tracking-wide uppercase whitespace-nowrap">
@@ -92,7 +92,7 @@ export function SimulationControls({
                     disabled={!isPlaying}
                     className="font-bold tracking-wide uppercase shadow-sm hover:shadow-md cursor-pointer select-none"
                 >
-                    <Send className="size-4" />
+                    <Plain2 className="size-4" />
                     <span>Send request</span>
                 </Button>
             </div>

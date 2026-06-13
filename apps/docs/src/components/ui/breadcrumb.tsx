@@ -3,7 +3,7 @@ import { useRender } from '@base-ui/react/use-render'
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
-import { ChevronRightIcon, MoreHorizontalIcon } from 'lucide-react'
+import { AltArrowRight, MenuDots } from '@solar-icons/react-perf/BoldDuotone'
 
 function Breadcrumb({ className, ...props }: React.ComponentProps<'nav'>) {
     return (
@@ -81,7 +81,7 @@ function BreadcrumbSeparator({ children, className, ...props }: React.ComponentP
             aria-hidden="true"
             className={cn('[&>svg]:size-3.5', className)}
             {...props}>
-            {children ?? <ChevronRightIcon />}
+            {children ?? <AltArrowRight />}
         </li>
     )
 }
@@ -100,7 +100,7 @@ function BreadcrumbEllipsis({ className, ...props }: React.ComponentProps<'span'
                 className
             )}
             {...props}>
-            <MoreHorizontalIcon />
+            <MenuDots />
             <span className="sr-only">More</span>
         </span>
     )

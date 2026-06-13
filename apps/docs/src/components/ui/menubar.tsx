@@ -20,7 +20,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
-import { CheckIcon } from 'lucide-react'
+import { CheckCircle } from '@solar-icons/react-perf/BoldDuotone'
 
 function Menubar({ className, ...props }: MenubarPrimitive.Props) {
     return (
@@ -175,7 +175,7 @@ function MenubarCheckboxItem({
                   [&_svg:not([class*='size-'])]:size-4
                 ">
                 <MenuPrimitive.CheckboxItemIndicator>
-                    <CheckIcon />
+                    <CheckCircle />
                 </MenuPrimitive.CheckboxItemIndicator>
             </span>
             {children}
@@ -221,7 +221,7 @@ function MenubarRadioItem({
                   [&_svg:not([class*='size-'])]:size-4
                 ">
                 <MenuPrimitive.RadioItemIndicator>
-                    <CheckIcon />
+                    <CheckCircle />
                 </MenuPrimitive.RadioItemIndicator>
             </span>
             {children}
