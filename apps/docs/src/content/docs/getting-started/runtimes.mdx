@@ -40,7 +40,7 @@ Bun's native clients (`Bun.redis`, `Bun.sql`) are not supported. `@ratelock/redi
 
 ## Implementation notes
 
-The source does not import any Node.js built-in (`fs`, `path`, `crypto`, `worker_threads`, and so on). Bun's Node compatibility layer is not exercised at all. The runtime APIs the source uses are `setTimeout`, `Map`, `WeakMap`, `Promise`, dynamic `import()`, and the usual globals.
+The source does not import any Node.js built-in (`fs`, `path`, `crypto`, `worker_threads`). Bun's Node compatibility layer is not exercised at all. The runtime APIs the source uses are `setTimeout`, `Map`, `WeakMap`, `Promise`, dynamic `import()`, and the usual globals.
 
 `setTimeout(...).unref()` powers the PostgreSQL auto-cleanup timer. It is supported on both runtimes, so the timer does not keep the process alive on shutdown.
 

@@ -34,7 +34,7 @@ withFallback(limiter, 'allow')
 withFallback(limiter, 'allow', { remaining: 0, reset: Date.now() + 60_000 })
 ```
 
-<AutoTypeTable path="../../packages/core/src/types.ts" type="FallbackPolicy" />
+`FallbackPolicy`: `'throw' | 'allow' | 'deny'`
 
 | Policy    | Behavior                              | Use Case                                        |
 | --------- | ------------------------------------- | ----------------------------------------------- |

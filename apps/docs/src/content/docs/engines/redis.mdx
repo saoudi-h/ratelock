@@ -114,7 +114,7 @@ See [Resilience Policies](/docs/policies) for full documentation and when to use
 
 ## API Reference
 
-The factory functions in `@ratelock/redis` expect configuration objects matching these strict TypeScript shapes:
+The factory functions accept these configuration types:
 
 <Tabs items={['fixedWindow', 'slidingWindow', 'tokenBucket', 'individualFixedWindow']}>
     <Tab value="fixedWindow">
@@ -149,9 +149,11 @@ The factory functions in `@ratelock/redis` expect configuration objects matching
 
 ## Valkey Compatibility
 
-RateLock is fully compatible with **Valkey** (the high-performance open-source fork of Redis). Since Valkey maintains protocol and API compatibility with Redis, you can use `@ratelock/redis` to rate limit against a Valkey instance using either standard `ioredis` or `node-redis` clients.
+RateLock works with **Valkey** (the Redis-compatible fork). Use `@ratelock/redis` with standard `ioredis` or `node-redis` clients.
 
-> **Note:** We do not support or test specialized Valkey-specific clients directly. Using standard Redis clients is fully tested, approved, and recommended.
+<Callout title="Note" type="info">
+  Use standard `ioredis` or `node-redis` clients. Valkey-specific clients are not tested.
+</Callout>
 
 ## When to Use
 

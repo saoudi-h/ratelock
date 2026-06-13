@@ -49,7 +49,7 @@ All limiters accept optional resilience configurations at creation time:
 const limiter = await fixedWindow({
     limit: 100,
     windowMs: 60_000,
-    // Automatically applies resilience wrappers in-house
+    // Built-in resilience policies (configured at creation time)
     retry: { maxAttempts: 3 },
     fallback: 'allow', // fallback to allow if the limiter errors
 })
@@ -61,7 +61,9 @@ const limiter = await fixedWindow({
 | `circuitBreaker` | `CircuitBreakerConfig`         | Stop calling after consecutive failures           |
 | `fallback`       | `'throw' \| 'allow' \| 'deny'` | Behavior when the limiter throws                  |
 
-> **Note:** The Local engine runs entirely in memory and cannot fail due to network drops, so built-in `cache` is not supported (the engine itself has no network latency to cache).
+<Callout title="Note" type="info">
+  `cache` is not supported on the Local engine. There is no network latency to cache.
+</Callout>
 
 ## Standalone Policies (Advanced)
 
@@ -78,7 +80,7 @@ See [Resilience Policies](/docs/policies) for full documentation and when to use
 
 ## API Reference
 
-The factory functions in `@ratelock/local` expect configuration objects matching these strict TypeScript shapes:
+The factory functions accept these configuration types:
 
 <Tabs items={['fixedWindow', 'slidingWindow', 'tokenBucket', 'individualFixedWindow']}>
     <Tab value="fixedWindow">
