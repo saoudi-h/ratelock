@@ -2,9 +2,13 @@ import type { Metadata } from 'next/types'
 
 export const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000')
 
-export const baseUrl = !process.env.VERCEL_URL
-    ? siteUrl
-    : new URL(`https://${process.env.VERCEL_URL}`)
+export const baseUrl =
+    process.env.VERCEL_ENV === 'production' ||
+    process.env.NEXT_PUBLIC_VERCEL_ENV === 'production' ||
+    !process.env.VERCEL_URL
+        ? siteUrl
+        : new URL(`https://${process.env.VERCEL_URL}`)
+
 
 export function createMetadata(override: Metadata): Metadata {
     return {

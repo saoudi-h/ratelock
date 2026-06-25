@@ -11,7 +11,7 @@ import { gsap, registerGsap } from '../_lib/gsap'
 /**
  * Site-wide footer. Motion is intentionally restrained — a footer
  * shouldn't compete with the content above it. The whole block
- * fades and lifts in once, the four columns stagger a few px into
+ * fades and lifts in once, the columns stagger a few px into
  * place, and the underline on each link draws on hover (CSS only).
  */
 export function FooterSection() {
@@ -58,7 +58,7 @@ export function FooterSection() {
                   pb-12
                   md:grid-cols-4
                 ">
-                    <div data-footer-col className="space-y-4 md:col-span-2">
+                    <div data-footer-col className="space-y-4">
                         <div className="flex items-center gap-2.5 select-none">
                             <LogoLink />
                         </div>
@@ -135,6 +135,41 @@ export function FooterSection() {
                                             />
                                         </span>
                                     </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    <div data-footer-col className="space-y-4">
+                        <div className="text-[10px] font-bold tracking-widest text-muted-foreground/60 uppercase select-none">
+                            Resources
+                        </div>
+                        <ul className="flex flex-col gap-3 text-xs">
+                            {[
+                                { href: '/docs/community/license', label: 'License' },
+                                { href: '/docs/community/changelog', label: 'Changelog' },
+                            ].map(link => (
+                                <li key={link.href}>
+                                    <Link
+                                        href={link.href}
+                                        className="
+                                          group/link inline-flex
+                                          text-muted-foreground transition-colors
+                                          duration-200 hover:text-foreground
+                                        ">
+                                        <span className="relative">
+                                            {link.label}
+                                            <span
+                                                className="
+                                                  absolute right-0 -bottom-0.5 left-0
+                                                  h-px origin-left scale-x-0
+                                                  bg-foreground/40 transition-transform
+                                                  duration-300
+                                                  group-hover/link:scale-x-100
+                                                "
+                                            />
+                                        </span>
+                                    </Link>
                                 </li>
                             ))}
                         </ul>
