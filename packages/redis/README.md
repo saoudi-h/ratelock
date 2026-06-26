@@ -25,9 +25,9 @@ npm install @ratelock/redis ioredis
 ### With a Connection URL
 
 ```typescript
-import { createFixedWindowLimiter } from '@ratelock/redis'
+import { fixedWindow } from '@ratelock/redis'
 
-const limiter = await createFixedWindowLimiter({
+const limiter = await fixedWindow({
     url: 'redis://localhost:6379',
     limit: 100,
     windowMs: 60_000,
@@ -38,12 +38,12 @@ const limiter = await createFixedWindowLimiter({
 
 ```typescript
 import { createClient } from 'redis'
-import { createFixedWindowLimiter } from '@ratelock/redis'
+import { fixedWindow } from '@ratelock/redis'
 
 const redisClient = createClient({ url: 'redis://localhost:6379' })
 await redisClient.connect()
 
-const limiter = await createFixedWindowLimiter({
+const limiter = await fixedWindow({
     client: redisClient,
     limit: 100,
     windowMs: 60_000,
@@ -55,9 +55,9 @@ const limiter = await createFixedWindowLimiter({
 
 ```typescript
 import IORedis from 'ioredis'
-import { createFixedWindowLimiter } from '@ratelock/redis'
+import { fixedWindow } from '@ratelock/redis'
 
-const limiter = await createFixedWindowLimiter({
+const limiter = await fixedWindow({
     client: new IORedis('redis://localhost:6379'),
     limit: 100,
     windowMs: 60_000,
@@ -69,26 +69,21 @@ const limiter = await createFixedWindowLimiter({
 All Redis limiters support optional resilience layers:
 
 ```typescript
-const limiter = await createFixedWindowLimiter({
+const limiter = await fixedWindow({
     url: 'redis://localhost:6379',
     limit: 100,
     windowMs: 60_000,
     cache: { maxSize: 1000, ttlMs: 30_000 }, // Cache denied requests
     retry: { maxAttempts: 3 }, // Retry on transient errors
     circuitBreaker: { failureThreshold: 5 }, // Open circuit after failures
-    errorPolicy: 'allow', // Fail-open policy
+    fallback: 'allow', // Fail-open policy
 })
 ```
 
 ## All Strategies
 
 ```typescript
-import {
-    createFixedWindowLimiter,
-    createSlidingWindowLimiter,
-    createTokenBucketLimiter,
-    createIndividualFixedWindowLimiter,
-} from '@ratelock/redis'
+import { fixedWindow, slidingWindow, tokenBucket, individualFixedWindow } from '@ratelock/redis'
 ```
 
 ## Cleanup

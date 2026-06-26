@@ -23,9 +23,9 @@ npm install @ratelock/local
 ### Fixed Window
 
 ```typescript
-import { createFixedWindowLimiter } from '@ratelock/local'
+import { fixedWindow } from '@ratelock/local'
 
-const limiter = await createFixedWindowLimiter({
+const limiter = await fixedWindow({
     limit: 100,
     windowMs: 60_000, // 1 minute
 })
@@ -37,9 +37,9 @@ const result = await limiter.check('user:123')
 ### Sliding Window
 
 ```typescript
-import { createSlidingWindowLimiter } from '@ratelock/local'
+import { slidingWindow } from '@ratelock/local'
 
-const limiter = await createSlidingWindowLimiter({
+const limiter = await slidingWindow({
     limit: 100,
     windowMs: 60_000,
 })
@@ -48,9 +48,9 @@ const limiter = await createSlidingWindowLimiter({
 ### Token Bucket
 
 ```typescript
-import { createTokenBucketLimiter } from '@ratelock/local'
+import { tokenBucket } from '@ratelock/local'
 
-const limiter = await createTokenBucketLimiter({
+const limiter = await tokenBucket({
     capacity: 10, // Max burst size
     refillRate: 1, // Tokens per second
 })
@@ -59,9 +59,9 @@ const limiter = await createTokenBucketLimiter({
 ### Individual Fixed Window
 
 ```typescript
-import { createIndividualFixedWindowLimiter } from '@ratelock/local'
+import { individualFixedWindow } from '@ratelock/local'
 
-const limiter = await createIndividualFixedWindowLimiter({
+const limiter = await individualFixedWindow({
     limit: 10,
     windowMs: 60_000,
 })

@@ -25,10 +25,10 @@ npm install @ratelock/postgres pg
 ### With a Connection String
 
 ```typescript
-import { createFixedWindowLimiter } from '@ratelock/postgres'
+import { fixedWindow } from '@ratelock/postgres'
 
-const limiter = await createFixedWindowLimiter({
-    connectionString: 'postgres://user:pass@localhost:5432/mydb',
+const limiter = await fixedWindow({
+    url: 'postgres://user:pass@localhost:5432/mydb',
     limit: 100,
     windowMs: 60_000,
 })
@@ -38,11 +38,11 @@ const limiter = await createFixedWindowLimiter({
 
 ```typescript
 import postgres from 'postgres'
-import { createFixedWindowLimiter } from '@ratelock/postgres'
+import { fixedWindow } from '@ratelock/postgres'
 
 const sql = postgres('postgres://user:pass@localhost:5432/mydb')
 
-const limiter = await createFixedWindowLimiter({
+const limiter = await fixedWindow({
     sql,
     limit: 100,
     windowMs: 60_000,
@@ -53,11 +53,11 @@ const limiter = await createFixedWindowLimiter({
 
 ```typescript
 import { Pool } from 'pg'
-import { createFixedWindowLimiter } from '@ratelock/postgres'
+import { fixedWindow } from '@ratelock/postgres'
 
 const pool = new Pool({ connectionString: 'postgres://user:pass@localhost:5432/mydb' })
 
-const limiter = await createFixedWindowLimiter({
+const limiter = await fixedWindow({
     pool,
     limit: 100,
     windowMs: 60_000,
@@ -69,8 +69,8 @@ const limiter = await createFixedWindowLimiter({
 RateLock automatically creates its schema and tables on initialization. Skip this if you manage migrations yourself:
 
 ```typescript
-const limiter = await createFixedWindowLimiter({
-    connectionString: 'postgres://...',
+const limiter = await fixedWindow({
+    url: 'postgres://...',
     limit: 100,
     windowMs: 60_000,
     skipMigrations: true,
@@ -82,8 +82,8 @@ const limiter = await createFixedWindowLimiter({
 For better write performance (at the cost of crash safety), use unlogged tables:
 
 ```typescript
-const limiter = await createFixedWindowLimiter({
-    connectionString: 'postgres://...',
+const limiter = await fixedWindow({
+    url: 'postgres://...',
     limit: 100,
     windowMs: 60_000,
     unlogged: true,
@@ -93,14 +93,14 @@ const limiter = await createFixedWindowLimiter({
 ## Built-in Resilience
 
 ```typescript
-const limiter = await createFixedWindowLimiter({
-    connectionString: 'postgres://...',
+const limiter = await fixedWindow({
+    url: 'postgres://...',
     limit: 100,
     windowMs: 60_000,
     cache: { maxSize: 1000, ttlMs: 30_000 },
     retry: { maxAttempts: 3 },
     circuitBreaker: { failureThreshold: 5 },
-    errorPolicy: 'allow',
+    fallback: 'allow',
 })
 ```
 
@@ -108,10 +108,10 @@ const limiter = await createFixedWindowLimiter({
 
 ```typescript
 import {
-    createFixedWindowLimiter,
-    createSlidingWindowLimiter,
-    createTokenBucketLimiter,
-    createIndividualFixedWindowLimiter,
+    fixedWindow,
+    slidingWindow,
+    tokenBucket,
+    individualFixedWindow,
     createConnection,
     pgDriver,
     postgresDriver,

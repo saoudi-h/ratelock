@@ -18,9 +18,9 @@ Most rate limiting libraries force you into a one-size-fits-all architecture. Ra
 ## Quick Start
 
 ```typescript
-import { createFixedWindowLimiter } from '@ratelock/local'
+import { fixedWindow } from '@ratelock/local'
 
-const limiter = await createFixedWindowLimiter({
+const limiter = await fixedWindow({
   limit: 100,
   windowMs: 60_000, // 1 minute
 })

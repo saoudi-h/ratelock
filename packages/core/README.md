@@ -24,9 +24,9 @@ This package provides the shared types, validation utilities, and composable dec
 Wrap any limiter with additional behavior:
 
 ```typescript
-import { withCache, withRetry, withCircuitBreaker, withErrorPolicy } from '@ratelock/core'
+import { withCache, withRetry, withCircuitBreaker, withFallback } from '@ratelock/core'
 
-let limiter = await createFixedWindowLimiter({ limit: 100, windowMs: 60_000 })
+let limiter = await fixedWindow({ limit: 100, windowMs: 60_000 })
 
 // Cache denied requests to reduce backend load
 limiter = withCache(limiter, { maxSize: 1000, ttlMs: 30_000 })
@@ -38,7 +38,7 @@ limiter = withRetry(limiter, { maxAttempts: 3, baseDelayMs: 100 })
 limiter = withCircuitBreaker(limiter, { failureThreshold: 5, recoveryTimeoutMs: 30_000 })
 
 // Fail-open: allow requests when the backend is unreachable
-limiter = withErrorPolicy(limiter, 'allow')
+limiter = withFallback(limiter, 'allow')
 ```
 
 ### Validation
