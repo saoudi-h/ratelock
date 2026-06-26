@@ -97,8 +97,8 @@ export type RetryConfig = {
 export type CircuitBreakerConfig = {
     /** Number of consecutive failures before opening the circuit. */
     failureThreshold: number
-    /** Milliseconds to wait before attempting recovery (half-open state). */
-    recoveryTimeoutMs: number
+    /** Milliseconds to wait before attempting recovery (half-open state). @default 30_000 */
+    recoveryTimeoutMs?: number
 }
 
 /**

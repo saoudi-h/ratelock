@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { withCircuitBreaker } from '../src/circuit-breaker'
 import { CircuitBreakerOpenError } from '../src/errors'
 import type { Limiter } from '../src/types'
@@ -23,7 +23,7 @@ describe('withCircuitBreaker', () => {
         await expect(cb.check('1')).rejects.toThrow('simulated failure')
         // 2nd failure triggers OPEN
         await expect(cb.check('1')).rejects.toThrow('simulated failure')
-        
+
         // 3rd attempt is immediately rejected without calling mockLimiter
         await expect(cb.check('1')).rejects.toThrow(CircuitBreakerOpenError)
 
@@ -88,11 +88,48 @@ describe('withCircuitBreaker', () => {
         await expect(cb.check('1')).rejects.toThrow('fail') // 1 failure
         fails = false
         await cb.check('1') // success, failureCount should be 0
-        
+
         fails = true
         await expect(cb.check('1')).rejects.toThrow('fail') // 1 failure again
         await expect(cb.check('1')).rejects.toThrow('fail') // 2 failures -> OPEN
 
+        await expect(cb.check('1')).rejects.toThrow(CircuitBreakerOpenError)
+    })
+
+    it('preserves original error as cause when circuit is open', async () => {
+        const original = new Error('connection refused')
+        const mockLimiter: Limiter<any> = {
+            check: async () => {
+                throw original
+            },
+            checkBatch: async () => [],
+        }
+        const cb = withCircuitBreaker(mockLimiter, {
+            failureThreshold: 1,
+            recoveryTimeoutMs: 60_000,
+        })
+
+        await expect(cb.check('1')).rejects.toThrow('connection refused')
+
+        try {
+            await cb.check('1')
+            expect.fail('should have thrown')
+        } catch (err) {
+            expect(err).toBeInstanceOf(CircuitBreakerOpenError)
+            expect((err as Error & { cause: unknown }).cause).toBe(original)
+        }
+    })
+
+    it('uses default recoveryTimeoutMs when not provided', async () => {
+        const mockLimiter: Limiter<any> = {
+            check: async () => {
+                throw new Error('fail')
+            },
+            checkBatch: async () => [],
+        }
+        const cb = withCircuitBreaker(mockLimiter, { failureThreshold: 1 })
+
+        await expect(cb.check('1')).rejects.toThrow('fail')
         await expect(cb.check('1')).rejects.toThrow(CircuitBreakerOpenError)
     })
 })

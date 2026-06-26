@@ -22,6 +22,12 @@
             "@tests/*": ["./tests/*"]
         }
     },
-    "include": ["./src/**/*", "./src/**/*.json", "tsdown.config.ts", "lint-staged.config.mjs"],
+    "include": [
+        "./src/**/*",
+        "./src/**/*.json",
+        "./tests/**/*",
+        "tsdown.config.ts",
+        "lint-staged.config.mjs"
+    ],
     "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo", "coverage"]
 }

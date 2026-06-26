@@ -13,7 +13,9 @@
         "./__tests__/**/*",
         "./__integration__/**/*",
         "tsdown.config.ts",
-        "lint-staged.config.mjs"
+        "lint-staged.config.mjs",
+        "vitest.config.ts",
+        "vitest.integration.config.ts"
     ],
     "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
 }

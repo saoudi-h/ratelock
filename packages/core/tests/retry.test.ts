@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { withRetry } from '../src/retry'
 import type { Limiter } from '../src/types'
 
@@ -16,7 +16,7 @@ describe('withRetry', () => {
 
         const retryLimiter = withRetry(mockLimiter, { maxAttempts: 4, baseDelayMs: 10 })
         const res = await retryLimiter.check('1')
-        
+
         expect(res).toEqual({ allowed: true })
         expect(attempts).toBe(3)
     })
