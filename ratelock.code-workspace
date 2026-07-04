@@ -9,10 +9,6 @@
       "path": "apps/docs"
     },
     {
-      "name": "playground",
-      "path": "apps/playground",
-    },
-    {
       "name": "core",
       "path": "packages/core",
     },

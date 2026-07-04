@@ -123,7 +123,7 @@
 ### Docs Design (Future Session)
 
 - [ ] **Custom home page** — Hero section, feature cards, interactive demo, footer (Fumadocs HomeLayout replacement)
-- [ ] **Interactive strategy simulation** — Extract from playground, embed in docs as MDX component
+- [ ] **Interactive strategy simulation** — Embed in docs as MDX component
 - [ ] **OG image generation** — Dynamic page preview images via `next/og` or Takumi
 
 ### Dashboard / Admin UI (Long Term)

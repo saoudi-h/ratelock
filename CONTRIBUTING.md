@@ -40,8 +40,7 @@ ratelock/
 │   ├── test-utils/    # Shared test contracts (internal)
 │   └── vitest/        # Vitest project config (internal)
 ├── apps/
-│   ├── docs/          # Documentation site (Next.js + Fumadocs)
-│   └── playground/    # Interactive demo app (Next.js)
+│   └── docs/          # Documentation site (Next.js + Fumadocs)
 ```
 
 ## Development Workflow
