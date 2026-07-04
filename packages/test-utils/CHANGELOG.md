@@ -1,5 +1,12 @@
 # @ratelock/test-utils
 
+## 0.0.1
+
+### Patch Changes
+
+- Updated dependencies [[`60660bc`](https://github.com/saoudi-h/ratelock/commit/60660bc750809a534a4c7a8105fbb3be060c5ce4)]:
+    - @ratelock/core@0.2.0
+
 ## 0.1.2
 
 ### Patch Changes
