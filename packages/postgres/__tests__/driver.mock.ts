@@ -17,11 +17,34 @@ export class MockPgDriver implements PgDriver {
         if (normalized.includes('CREATE SCHEMA')) return [] as T[]
         if (normalized.includes('CREATE TABLE')) return [] as T[]
         if (normalized.includes('CREATE INDEX')) return [] as T[]
+        if (normalized.includes('DROP TABLE')) return [] as T[]
+        if (normalized.includes('DROP INDEX')) return [] as T[]
 
+        // Async prune (cleanup.ts): DELETE FROM ratelock.sliding_window WHERE ts < cutoff
+        if (normalized.startsWith('DELETE FROM') && !normalized.includes('WITH')) {
+            return this.handlePrune(normalized, params ?? []) as T[]
+        }
+
+        // Log-based sliding window: single-key check (CTE with remain + oldest + ins).
+        if (
+            normalized.includes('WITH remain AS') &&
+            normalized.includes('sliding_window') &&
+            !normalized.includes('WITH input AS')
+        ) {
+            return this.handleSlidingLogCheck(normalized, params ?? []) as T[]
+        }
+
+        // Log-based sliding window: batch check via unnest WITH ORDINALITY.
+        if (normalized.includes('WITH input AS') && normalized.includes('sliding_window')) {
+            return this.handleSlidingLogBatch(normalized, params ?? []) as T[]
+        }
+
+        // Counter-based batch upserts (fixed_window, individual_fixed_window, token_bucket).
         if (normalized.includes('WITH input AS')) {
             return this.handleBatchUpsert(normalized, params ?? []) as T[]
         }
 
+        // Counter-based single upserts.
         if (normalized.includes('INSERT INTO') && normalized.includes('ON CONFLICT')) {
             return this.handleUpsert(normalized, params ?? []) as T[]
         }
@@ -31,6 +54,84 @@ export class MockPgDriver implements PgDriver {
         }
 
         return [] as T[]
+    }
+
+    private handlePrune(sql: string, params: unknown[]): Row[] {
+        if (sql.includes('sliding_window')) {
+            const cutoffMs = typeof params[0] === 'number' ? (params[0] as number) : Date.now()
+            const table = this.getTable('sliding_window_log')
+            for (const [k, row] of table) {
+                if ((row.ts as number) < cutoffMs) table.delete(k)
+            }
+        }
+        return []
+    }
+
+    /** Log-based check: params = [key, cutoffMs, nowMs, expiresAtMs, limit] */
+    private handleSlidingLogCheck(_sql: string, params: unknown[]): Row[] {
+        const key = params[0] as string
+        const cutoffMs = params[1] as number
+        const nowMs = params[2] as number
+        const expiresAtMs = params[3] as number
+        const limit = params[4] as number
+
+        const table = this.getTable('sliding_window_log')
+        const entries: Row[] = []
+        for (const row of table.values()) {
+            if ((row.key as string) === key && (row.ts as number) >= cutoffMs) {
+                entries.push(row)
+            }
+        }
+        const count = entries.length
+        const oldestTs =
+            entries.length > 0 ? Math.min(...entries.map(r => r.ts as number)) : cutoffMs
+        const allowed = count < limit
+        if (allowed) {
+            const newId = this.nextId++
+            table.set(`${key}:${newId}`, { key, ts: nowMs, expires_at: expiresAtMs })
+        }
+        return [
+            {
+                allowed,
+                remaining: Math.max(0, limit - count - (allowed ? 1 : 0)),
+                oldest_ts_ms: oldestTs,
+                now_ms: nowMs,
+            },
+        ]
+    }
+
+    /** Log-based batch: params = [keys[], cutoffMs, nowMs, expiresAtMs, limit] */
+    private handleSlidingLogBatch(_sql: string, params: unknown[]): Row[] {
+        const keys = params[0] as string[]
+        const cutoffMs = params[1] as number
+        const nowMs = params[2] as number
+        const expiresAtMs = params[3] as number
+        const limit = params[4] as number
+
+        const table = this.getTable('sliding_window_log')
+        return keys.map((key, ord) => {
+            const entries: Row[] = []
+            for (const row of table.values()) {
+                if ((row.key as string) === key && (row.ts as number) >= cutoffMs) {
+                    entries.push(row)
+                }
+            }
+            const count = entries.length
+            const oldestTs =
+                entries.length > 0 ? Math.min(...entries.map(r => r.ts as number)) : cutoffMs
+            const allowed = count < limit
+            if (allowed) {
+                const newId = this.nextId++
+                table.set(`${key}:${newId}`, { key, ts: nowMs, expires_at: expiresAtMs })
+            }
+            return {
+                ord: ord + 1,
+                allowed,
+                remaining: Math.max(0, limit - count - (allowed ? 1 : 0)),
+                oldest_ts_ms: oldestTs,
+                now_ms: nowMs,
+            }
+        })
     }
 
     private handleUpdate(sql: string, params: unknown[]): Row[] {
@@ -80,29 +181,9 @@ export class MockPgDriver implements PgDriver {
             })
         }
         if (sql.includes('fixed_window')) {
-            // v3: params = [keys, nextWindowStartMs, limit]
-            // We can't infer windowMs from nextWindowStartMs alone in the mock.
-            // We rely on the caller passing the right windowMs via the SQL test setup.
-            // But to keep the test contract intact, we read windowMs from the SQL.
-            // For simplicity we use 60000 default and rely on test isolation.
-            const intervalVal = params[1]
-            const windowMs =
-                typeof intervalVal === 'number'
-                    ? intervalVal
-                    : typeof intervalVal === 'string'
-                      ? parseInt(intervalVal.split(' ')[0]!, 10)
-                      : 60000
+            const windowMs = 500
             return keys.flatMap(key => {
                 const res = this.fixedWindowUpsert(key, windowMs)
-                return res.map(r => ({ ...r, key }))
-            })
-        }
-        if (sql.includes('sliding_window')) {
-            const intervalStr = params[1] as string
-            const windowMs =
-                typeof intervalStr === 'string' ? parseInt(intervalStr.split(' ')[0]!, 10) : 60000
-            return keys.flatMap(key => {
-                const res = this.slidingWindowUpsert(key, windowMs)
                 return res.map(r => ({ ...r, key }))
             })
         }
@@ -128,26 +209,8 @@ export class MockPgDriver implements PgDriver {
             return this.individualFixedWindowUpsert(key, windowMs)
         }
         if (sql.includes('fixed_window')) {
-            // v3: params = [key, nextWindowStartMs, limit]
-            // The mock uses the nextWindowStartMs (param[1]) as the basis, but
-            // we need the actual windowMs. We use a heuristic: windowMs is
-            // typically much smaller than nextWindowStartMs in the test (windowMs=500).
-            // The mock uses 60000 default which doesn't match windowMs=500.
-            // So we need to read it from a class field, but the mock is fresh
-            // per test. The simplest: the test contract uses windowMs in the opts,
-            // and the mock needs that info.
-            //
-            // Since the v3 code passes nextWindowStartMs (not windowMs), the mock
-            // can't recover windowMs from the params. We default to 500 which matches
-            // the test contract default.
             const windowMs = 500
             return this.fixedWindowUpsert(key, windowMs)
-        }
-        if (sql.includes('sliding_window')) {
-            const intervalStr = params[1] as string
-            const windowMs =
-                typeof intervalStr === 'string' ? parseInt(intervalStr.split(' ')[0]!, 10) : 60000
-            return this.slidingWindowUpsert(key, windowMs)
         }
         if (sql.includes('token_bucket')) {
             const capacity = params[2] as number
@@ -173,45 +236,6 @@ export class MockPgDriver implements PgDriver {
         const count = (existing.count as number) + 1
         table.set(key, { ...existing, count })
         return [{ count, reset_ms: existing.expires_at as number }]
-    }
-
-    private slidingWindowUpsert(key: string, windowMs: number): Row[] {
-        const table = this.getTable('sliding_window')
-        const now = Date.now()
-        const existing = table.get(key)
-
-        if (!existing || (existing.expires_at as number) <= now) {
-            table.set(key, {
-                current_count: 1,
-                previous_count: 0,
-                window_start: now,
-                expires_at: now + windowMs,
-            })
-            return [{ current_count: 1, previous_count: 0, window_start_ms: now }]
-        }
-
-        const windowStart = existing.window_start as number
-        const expired = now >= windowStart + windowMs
-        const newWindowStart = expired ? now : windowStart
-        const currentCount = expired ? 1 : (existing.current_count as number) + 1
-        const previousCount = expired
-            ? (existing.current_count as number)
-            : (existing.previous_count as number)
-
-        table.set(key, {
-            current_count: currentCount,
-            previous_count: previousCount,
-            window_start: newWindowStart,
-            expires_at: now + windowMs,
-        })
-
-        return [
-            {
-                current_count: currentCount,
-                previous_count: previousCount,
-                window_start_ms: newWindowStart,
-            },
-        ]
     }
 
     private tokenBucketUpsert(key: string, capacity: number, refillRate: number): Row[] {

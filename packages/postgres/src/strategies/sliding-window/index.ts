@@ -27,7 +27,7 @@ export async function slidingWindow(
     if (!skipMigrations && conn.driver) {
         await runMigrations(conn.driver, { unlogged: config.unlogged })
     }
-    const cleanupHandle = conn.driver ? startAutoCleanup(conn.driver) : null
+    const cleanupHandle = conn.driver ? startAutoCleanup(conn.driver, windowMs) : null
 
     let limiter: Limiter<SlidingWindowResult>
 

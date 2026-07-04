@@ -12,38 +12,39 @@ export type SlidingWindowCheckResult = {
     windowEnd: number
 }
 
-export function parseSlidingRow(row: {
-    current_count: number
-    previous_count: number
-    window_start_ms: string | number
-}): { currentCount: number; previousCount: number; windowStart: number } {
-    return {
-        currentCount: row.current_count,
-        previousCount: row.previous_count,
-        windowStart:
-            typeof row.window_start_ms === 'string'
-                ? Number(row.window_start_ms)
-                : row.window_start_ms,
-    }
-}
-
+/**
+ * Build the result from log-based primitives.
+ *
+ * - `count`: number of entries currently in the sliding window for this key.
+ * - `oldestTsMs`: epoch ms of the oldest entry still within the window.
+ *   Mirrors what Redis returns via ZRANGE 0 0 WITHSCORES and local via
+ *   `timestamps[0]`.
+ * - `nowMs`: current epoch ms at check time.
+ * - `windowMs`, `limit`, `allowed`: straight pass-through.
+ *
+ * Result semantics (matches @ratelock/redis ZSET and @ratelock/local Map):
+ * - `windowStart`: oldest request timestamp still in window (or `cutoff` if
+ *   the set is empty, like Redis does with `now - windowMs`).
+ * - `windowEnd` / `reset`: `oldestTs + windowMs` — the moment the oldest
+ *   entry exits the window, freeing a slot.
+ * - `remaining`: `limit - count`, clamped at 0.
+ */
 export function buildResult(
-    currentCount: number,
-    previousCount: number,
-    windowStart: number,
+    count: number,
+    oldestTsMs: number,
+    nowMs: number,
     windowMs: number,
     limit: number,
-    nowMs: number
+    allowed: boolean
 ): SlidingWindowCheckResult {
-    const elapsed = (nowMs - windowStart) / windowMs
-    const estimated = previousCount * (1 - elapsed) + currentCount
-    const count = Math.ceil(estimated)
-    const allowed = count <= limit
+    const remaining = Math.max(0, limit - count - (allowed ? 1 : 0))
+    const windowStart = oldestTsMs > 0 ? oldestTsMs : nowMs - windowMs
+    const windowEnd = windowStart + windowMs
     return {
         allowed,
-        remaining: Math.max(0, limit - count),
-        reset: windowStart + windowMs * 2,
+        remaining,
+        reset: windowEnd,
         windowStart,
-        windowEnd: windowStart + windowMs,
+        windowEnd,
     }
 }

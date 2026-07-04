@@ -19,14 +19,39 @@ export async function runMigrations(
         )
       `)
 
+        // v0.2: sliding-window is now log-based (one row per request timestamp),
+        // matching @ratelock/redis ZSET and @ratelock/local Map semantics.
+        // Migrate from the legacy counter-based schema if it exists.
+        try {
+            const cols = await driver.query<{ column_name: string }>(
+                `SELECT column_name FROM information_schema.columns
+           WHERE table_schema = '${SCHEMA}' AND table_name = 'sliding_window'`
+            )
+            if (cols.length > 0 && !cols.some(c => c.column_name === 'ts')) {
+                // Legacy counter-based table (had current_count/previous_count/window_start)
+                await driver.query(`DROP TABLE IF EXISTS ${SCHEMA}.sliding_window CASCADE`)
+            }
+        } catch {
+            // ignore — table doesn't exist yet
+        }
+
+        // Drop the old expires_at index from the counter-based schema; the
+        // new index is (key, ts). SAFE because of IF EXISTS — no-op on fresh
+        // installs, and the table was just dropped in the legacy branch.
+        await driver.query(`DROP INDEX IF EXISTS ${SCHEMA}.idx_sliding_window_expires_at`)
+
         await driver.query(`
         CREATE ${tablePrefix} IF NOT EXISTS ${SCHEMA}.sliding_window (
-          key TEXT PRIMARY KEY,
-          current_count INTEGER NOT NULL DEFAULT 0,
-          previous_count INTEGER NOT NULL DEFAULT 0,
-          window_start TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+          key TEXT NOT NULL,
+          ts TIMESTAMPTZ NOT NULL,
           expires_at TIMESTAMPTZ NOT NULL
         )
+      `)
+
+        await driver.query(`
+        CREATE INDEX IF NOT EXISTS idx_sliding_window_key_ts
+        ON ${SCHEMA}.sliding_window (key, ts)
       `)
 
         // Migrate last_refill from TIMESTAMPTZ to DOUBLE PRECISION (v0.1 → v0.2)
