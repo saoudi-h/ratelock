@@ -16,6 +16,10 @@ function isDeniedResult(value: unknown): value is BaseResult & { allowed: false 
  * - Instantaneously intercepts subsequent spam/DDoS requests in-memory without hitting downstream databases.
  * - Does NOT cache allowed results (`allowed: true`) to ensure rate counts increment accurately.
  * 
+ * The returned limiter exposes an `invalidate(id)` method — call it to evict a
+ * cached "denied" decision early (e.g. after admin action), forcing the next
+ * `check(id)` to hit the underlying limiter rather than waiting for `ttlMs`.
+ * 
  * @param limiter The downstream RateLimiter engine to decorate.
  * @param config Optional cache settings specifying `ttlMs` and `maxSize`.
  * @returns An decorated RateLimiter engine with memory caching.
@@ -83,6 +87,9 @@ export function withCache<T>(limiter: Limiter<T>, config?: CacheConfig): Limiter
             }
 
             return results
+        },
+        invalidate(id: string): void {
+            cache.delete(id)
         },
         async destroy() {
             cache.clear()

@@ -93,13 +93,45 @@ On initialization, RateLock creates a dedicated `ratelock` schema and one table 
 ```sql
 -- Created automatically:
 CREATE SCHEMA IF NOT EXISTS ratelock;
-CREATE TABLE IF NOT EXISTS ratelock.fixed_window (...);
-CREATE TABLE IF NOT EXISTS ratelock.sliding_window (...);
-CREATE TABLE IF NOT EXISTS ratelock.token_bucket (...);
-CREATE TABLE IF NOT EXISTS ratelock.individual_fixed_window (...);
+
+CREATE TABLE IF NOT EXISTS ratelock.fixed_window (
+    key TEXT PRIMARY KEY,
+    count INTEGER NOT NULL DEFAULT 0,
+    expires_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ratelock.sliding_window (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    key TEXT NOT NULL,
+    ts TIMESTAMPTZ NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ratelock.token_bucket (
+    key TEXT PRIMARY KEY,
+    tokens DOUBLE PRECISION NOT NULL,
+    last_refill DOUBLE PRECISION NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+    capacity INTEGER NOT NULL,
+    refill_rate DOUBLE PRECISION NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ratelock.individual_fixed_window (
+    key TEXT PRIMARY KEY,
+    count INTEGER NOT NULL DEFAULT 0,
+    window_start TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    expires_at TIMESTAMPTZ NOT NULL
+);
 ```
 
-Each table also gets an index on `expires_at` to speed up cleanup of expired rows.
+<Callout title="Sliding Window is log-based" type="info">
+The PostgreSQL Sliding Window strategy uses the same algorithm as `@ratelock/redis` and `@ratelock/local`: it stores one row per request and counts entries within a rolling `[now − windowMs, now]` window. This keeps semantics identical across storage engines. Tables created by RateLock v0.1 used a counter-based approximation; the new `window_start < to_timestamp(...)` CTE migrations replace that schema automatically on the first boot.
+</Callout>
+
+Each table is indexed for the hot path:
+
+- `sliding_window` has a `(key, ts)` BTree index used by the count-and-insert CTE.
+- The three counter tables (`fixed_window`, `token_bucket`, `individual_fixed_window`) each have an index on `expires_at` to speed up cleanup of expired rows.
 
 Skip auto-migrations if you manage schema yourself:
 
@@ -129,23 +161,29 @@ Unlogged tables are not written to WAL, providing significantly better write thr
 
 ## Auto-Cleanup
 
-The PostgreSQL engine runs periodic cleanup of expired rows every 5 minutes. You can also trigger it manually by passing a `PgDriver` instance:
+The PostgreSQL engine runs periodic cleanup of expired rows in the background:
+
+- **Counter tables** (`fixed_window`, `token_bucket`, `individual_fixed_window`) are swept every 5 minutes — rows with `expires_at < NOW() − INTERVAL '1 hour'` are deleted.
+- **Log table** (`sliding_window`) is swept every 30 seconds — rows with `ts < now − windowMs` are deleted. The shorter cadence reflects that this table grows one row per request and the window itself bounds retention.
+
+Both timers use `setTimeout(...).unref()` so they never keep the process alive. You can also trigger a cleanup manually by passing a `PgDriver` instance and the configured `windowMs`:
 
 ```typescript
 import { cleanupExpired, pgDriver, postgresDriver } from '@ratelock/postgres'
 import { Pool } from 'pg'
 
-// From an existing pg Pool
+// From an existing pg Pool. Provide the windowMs so the sliding-window
+// log table is pruned in this manual call too.
 const driver = pgDriver(new Pool({ connectionString: 'postgres://...' }))
-const deletedCount = await cleanupExpired(driver)
+const deletedCount = await cleanupExpired(driver, 60_000)
 
 // Or from a porsager/postgres client
 import postgres from 'postgres'
 const sql = postgres('postgres://...')
-const deletedCount2 = await cleanupExpired(postgresDriver(sql))
+const deletedCount2 = await cleanupExpired(postgresDriver(sql), 60_000)
 ```
 
-Wrap your existing client with `pgDriver(pool)` or `postgresDriver(sql)` to obtain a `PgDriver`. Both are exported from `@ratelock/postgres`.
+Wrap your existing client with `pgDriver(pool)` or `postgresDriver(sql)` to obtain a `PgDriver`. Both are exported from `@ratelock/postgres`. If you omit `windowMs`, only the counter tables are pruned.
 
 ## All Exports
 

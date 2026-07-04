@@ -6,6 +6,12 @@ export interface Limiter<T> {
     checkBatch(ids: string[]): Promise<T[]>
     /** Release resources held by this limiter (connections, timers, etc.). */
     destroy?(): Promise<void>
+    /**
+     * Manually evict a cached decision for the given identifier, forcing the
+     * next `check()` to hit the underlying limiter. Only present when the
+     * limiter is wrapped with `withCache`; a no-op otherwise.
+     */
+    invalidate?(id: string): void
 }
 
 /** Base result returned by all rate limiter strategies. */
@@ -79,7 +85,18 @@ export type IndividualFixedWindowOptions = {
 export type CacheConfig = {
     /** Maximum number of entries in the cache. */
     maxSize: number
-    /** Time-to-live for cached entries in milliseconds. */
+    /**
+     * Time-to-live for cached entries in milliseconds.
+     *
+     * Keep this **<= the smallest window duration in use**. A cached "denied"
+     * decision stays valid until it expires — if `ttlMs` outlives the rate
+     * limit window, a user whose window has reset will still be denied until
+     * the cache entry expires, leading to over-throttling.
+     *
+     * If you can't guarantee that bound at runtime, prefer a small value
+     * (e.g. 100ms) and use `limiter.invalidate(id)` to bust a stale entry
+     * explicitly (e.g. when an admin lifts a ban).
+     */
     ttlMs: number
 }
 

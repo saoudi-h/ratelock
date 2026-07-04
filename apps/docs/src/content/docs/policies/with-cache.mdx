@@ -31,6 +31,27 @@ check('user:123') → cache expired → check backend again
 
 Only denied results are cached. Allowed requests always go through to the backend to ensure precision.
 
+## Manual Invalidation
+
+The wrapped limiter exposes an `invalidate(id)` method. Call it when the underlying rate-limit state changes out-of-band (for example, after an admin lifts a ban) and you want the next `check(id)` to hit the backend rather than return a stale "denied" entry:
+
+```typescript
+const cached = withCache(limiter, { maxSize: 1000, ttlMs: 30_000 })
+
+await cached.check('user:123')        // denied — cached
+// … admin lifts the block via your custom back-office …
+cached.invalidate('user:123')          // evict the stale "denied" entry
+await cached.check('user:123')         // back to the backend
+```
+
+`invalidate(id)` only evicts the entry from the in-memory cache — it does not modify the downstream limiter's state. Calling it on an unknown id is a no-op.
+
+If you used the built-in `cache` option at limiter creation time (`fixedWindow({ ...opts, cache: { ... } })`), the returned limiter also exposes `invalidate`.
+
+## Choosing a TTL
+
+Keep `ttlMs` smaller than the shortest window duration in use. A cached "denied" decision is valid for `ttlMs`; if it outlives the rate-limit window, a user whose window has reset will still be denied until the entry expires. When in doubt, default to a small value (e.g. 100ms) — the cache exists to absorb flood traffic, not to enforce long blockades.
+
 ## Built-in Alternative
 
 For most cases, use the built-in `cache` option at creation time instead:

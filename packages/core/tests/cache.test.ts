@@ -45,4 +45,42 @@ describe('withCache', () => {
         expect(res4).toEqual({ allowed: false, count: 4 })
         expect(calls).toBe(4)
     })
+
+    it('invalidate() evicts a cached entry forcing the next check to hit the limiter', async () => {
+        let calls = 0
+        const mockLimiter: Limiter<any> = {
+            check: async () => {
+                calls++
+                return { allowed: false, count: calls }
+            },
+            checkBatch: async () => [],
+        }
+
+        const cachedLimiter = withCache(mockLimiter, { maxSize: 10, ttlMs: 60_000 })
+
+        // Populate the cache
+        await cachedLimiter.check('user:1')
+        expect(calls).toBe(1)
+
+        // Cached — no call
+        await cachedLimiter.check('user:1')
+        expect(calls).toBe(1)
+
+        // Bust the entry
+        cachedLimiter.invalidate?.('user:1')
+
+        // Next call hits the limiter again
+        const res = await cachedLimiter.check('user:1')
+        expect(res).toEqual({ allowed: false, count: 2 })
+        expect(calls).toBe(2)
+    })
+
+    it('invalidate() is a no-op for unknown ids', async () => {
+        const mockLimiter: Limiter<any> = {
+            check: async () => ({ allowed: true }),
+            checkBatch: async () => [],
+        }
+        const cachedLimiter = withCache(mockLimiter, { maxSize: 2, ttlMs: 1000 })
+        expect(() => cachedLimiter.invalidate?.('never-cached')).not.toThrow()
+    })
 })
