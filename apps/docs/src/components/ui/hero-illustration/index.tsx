@@ -22,9 +22,9 @@ const getBezierPath = (points: number[]) => {
   const xCoords = [0, 64, 128, 192, 256, 320, 384];
   let d = `M 0 ${points[0]}`;
   for (let i = 0; i < points.length - 1; i++) {
-    const cp1x = xCoords[i] + 32;
+    const cp1x = xCoords[i]! + 32;
     const cp1y = points[i];
-    const cp2x = xCoords[i + 1] - 32;
+    const cp2x = xCoords[i + 1]! - 32;
     const cp2y = points[i + 1];
     const targetX = xCoords[i + 1];
     const targetY = points[i + 1];

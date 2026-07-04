@@ -120,6 +120,7 @@ export function RateCards({ valueRefs }: RateCardsProps) {
               {/* Right: rate value */}
               <span
                 ref={(el) => {
+                  if (!valueRefs) return;
                   valueRefs.current[idx] = el;
                 }}
                 style={{
