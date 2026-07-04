@@ -1,76 +1,62 @@
 # RateLock
 
-<p align="center">
-  <strong>A high-performance, extensible, and resilient rate limiting library for Node.js.</strong>
-</p>
+> A high-performance, extensible, and resilient rate limiting library for Node.js, Bun, and beyond.
 
-<p align="center">
-    <a href="#"><img src="https://img.shields.io/github/actions/workflow/status/saoudi-h/ratelock/release.yml?branch=main&label=build" alt="Build Status"></a>
-    <a href="https://github.com/saoudi-h/ratelock/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/@ratelock/core.svg" alt="License"></a>
-</p>
+[![Build Status](https://img.shields.io/github/actions/workflow/status/saoudi-h/ratelock/release.yml?branch=main&label=build)](https://github.com/saoudi-h/ratelock/actions)
+[![License](https://img.shields.io/github/license/saoudi-h/ratelock)](https://github.com/saoudi-h/ratelock/blob/main/LICENSE)
+[![npm version](https://img.shields.io/npm/v/@ratelock/local.svg)](https://www.npmjs.com/package/@ratelock/local)
+[![Runtime](https://img.shields.io/badge/runtime-Node.js%20%7C%20Bun-4476A4)](https://github.com/saoudi-h/ratelock)
 
----
+## What is RateLock?
 
-RateLock is a powerful and developer-friendly rate limiting solution for Node.js applications. It's designed to be fast, flexible, and easy to integrate into any project, from small services to large-scale distributed systems.
+RateLock is a modern rate limiting solution built for the real world. Whether you're running a single server or a distributed fleet, RateLock provides the tools to protect your APIs from abuse while keeping your code clean and maintainable.
 
-## ✨ Core Philosophy
+### Why another rate limiter?
 
-- **Extensibility:** RateLock is built around a core engine and modular storage adapters. This allows you to choose the right backend for your needs or even build your own.
-- **Performance:** By leveraging atomic operations (like Redis Lua scripts) in its adapters, RateLock ensures that rate limiting checks are fast and free of race conditions.
-- **Developer Experience:** With a clean, modern API and strong TypeScript support, RateLock is designed to be intuitive and easy to work with.
+Most rate limiting libraries force you into a one-size-fits-all architecture. RateLock takes a different approach: **each storage adapter is a first-class citizen**, designed to leverage the unique strengths of its backend — Redis Lua scripts for atomicity, PostgreSQL UPSERTs for consistency, in-memory Maps for zero-overhead single-process apps. The same source runs on Node.js and Bun, with no shims and no runtime-only fallbacks.
 
-## 📦 Packages
+## Quick Start
 
-This monorepo contains the entire RateLock ecosystem. The primary user-facing packages are:
+```typescript
+import { fixedWindow } from '@ratelock/local'
 
-| Package               | Version                                                                                                           | Description                                                                                    |
-| :-------------------- | :---------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------- |
-| **`@ratelock/local`** | [![NPM Version](https://img.shields.io/npm/v/@ratelock/local.svg)](https://www.npmjs.com/package/@ratelock/local) | A zero-dependency, in-memory adapter. Perfect for single-process applications and development. |
-| **`@ratelock/redis`** | [![NPM Version](https://img.shields.io/npm/v/@ratelock/redis.svg)](https://www.npmjs.com/package/@ratelock/redis) | A high-performance adapter using Redis for distributed rate limiting across multiple servers.  |
+const limiter = await fixedWindow({
+  limit: 100,
+  windowMs: 60_000, // 1 minute
+})
 
-For detailed usage and installation instructions, please see the `README.md` file within each package's directory.
+const result = await limiter.check('user:123')
 
-## 🚀 Playground
-
-This repository includes a playground application in the `apps/playground` directory. It's a Next.js application designed to demonstrate and test the various rate limiting strategies in a visual way.
-
-To run the playground:
-
-```bash
-pnpm dev
+if (!result.allowed) {
+  return new Response('Too Many Requests', { status: 429 })
+}
 ```
 
-## 🛠️ Contributing & Development
+## Packages
 
-We welcome contributions! To get started with development, follow these steps:
+| Package | Description | Best For |
+|---------|-------------|----------|
+| [`@ratelock/local`](packages/local/) | Zero-dependency in-memory adapter | Single-process apps, development |
+| [`@ratelock/redis`](packages/redis/) | Redis adapter with Lua scripts | Distributed systems, high traffic |
+| [`@ratelock/postgres`](packages/postgres/) | PostgreSQL adapter with UPSERTs | Apps already using Postgres |
 
-1.  **Clone the repository:**
+## Core Features
 
-    ```bash
-    git clone https://github.com/saoudi-h/ratelock.git
-    cd ratelock
-    ```
+- **Cross-runtime**: Same source on Node.js 22+ and Bun 1.1+, tested on every PR
+- **4 rate limiting strategies**: Fixed Window, Sliding Window, Token Bucket, Individual Fixed Window
+- **Built-in resilience**: Retry with backoff, circuit breaker, error policies, deny cache
+- **TypeScript first**: Full type safety, no `any` leaks
+- **Dual driver support**: Redis (node-redis or ioredis), PostgreSQL (pg or porsager/postgres)
+- **Batch operations**: Check multiple identifiers in a single call
 
-2.  **Install dependencies:**
-    This project uses `pnpm` as its package manager.
+## Documentation
 
-    ```bash
-    pnpm install
-    ```
+For full documentation, guides, and API reference, visit **[ratelock.vercel.app](https://ratelock.vercel.app)**.
 
-3.  **Build all packages:**
-    This monorepo is managed by Turborepo. To build all packages and applications:
+## Contributing
 
-    ```bash
-    pnpm build
-    ```
+Contributions are welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
-4.  **Run tests:**
-    To run the test suite for the entire project:
-    ```bash
-    pnpm test
-    ```
+## License
 
-## 📜 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+[MIT](./LICENSE) — Hakim Saoudi

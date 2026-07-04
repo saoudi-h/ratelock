@@ -38,5 +38,13 @@ yarn-error.log*
 *.pem
 packages/react-example
 
+# Benchmark results
+packages/bench/results/*.json
+
 # Husky
 .husky
+
+# Temporary Session Files
+conclusions.md
+tmp/
+.playwright-mcp/

@@ -1,0 +1,54 @@
+---
+title: Runtimes
+description: Compatibility matrix for the JavaScript runtimes RateLock supports.
+---
+
+RateLock targets JavaScript runtimes, not a single host. The same source runs on every supported runtime without changes.
+
+## Supported
+
+| Runtime |  Versions  | Status                                                                                                                          |
+| :------ | :--------: | :------------------------------------------------------------------------------------------------------------------------------ |
+| Node.js | 20, 22, 24 | Primary. Mock tests and integration tests run on every PR.                                                                      |
+| Bun     |    1.1+    | Tested. Mock tests run on every PR. The [benchmarks page](/docs/benchmarks) includes Node vs Bun numbers from the same harness. |
+
+Deno and edge runtimes (Cloudflare Workers, Vercel Edge, Deno Deploy) are not supported.
+
+## Per-package status
+
+All three packages work on both runtimes. No engine is Bun-only or Node-only.
+
+| Package              | Node.js | Bun |
+| :------------------- | :-----: | :-: |
+| `@ratelock/core`     |   yes   | yes |
+| `@ratelock/local`    |   yes   | yes |
+| `@ratelock/redis`    |   yes   | yes |
+| `@ratelock/postgres` |   yes   | yes |
+
+## Client libraries
+
+`@ratelock/redis` and `@ratelock/postgres` declare their drivers as peer dependencies. The drivers themselves run on the supported runtimes:
+
+| Client                         | Versions | Runtime support |
+| :----------------------------- | :------: | :-------------- |
+| `ioredis`                      |   5.x    | Node.js, Bun    |
+| `redis` (node-redis)           | 4.x, 5.x | Node.js, Bun    |
+| `pg` (node-postgres)           |   8.x    | Node.js, Bun    |
+| `postgres` (porsager/postgres) |   3.x    | Node.js, Bun    |
+
+Bun's native clients (`Bun.redis`, `Bun.sql`) are not supported. `@ratelock/redis` needs Lua scripts, and `Bun.redis` does not run them yet.
+
+## Implementation notes
+
+The source does not import any Node.js built-in (`fs`, `path`, `crypto`, `worker_threads`). Bun's Node compatibility layer is not exercised at all. The runtime APIs the source uses are `setTimeout`, `Map`, `WeakMap`, `Promise`, dynamic `import()`, and the usual globals.
+
+`setTimeout(...).unref()` powers the PostgreSQL auto-cleanup timer. It is supported on both runtimes, so the timer does not keep the process alive on shutdown.
+
+## When to pick a runtime
+
+Both runtimes ship the same API surface to RateLock. The differences are operational, not functional:
+
+- **Node.js** is the reference. Use it if you have an existing deployment, an LTS constraint, or a corporate mandate.
+- **Bun** has a faster startup and a tighter memory footprint in our [benchmarks](/docs/benchmarks). Useful for serverless, edge-ish deployments, and local development.
+
+If you target both, the same code and the same test suite cover both. CI runs the mock tests under Node and Bun on every PR.

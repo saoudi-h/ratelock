@@ -1,23 +1,21 @@
 {
-    "extends": "@ratelock/tsconfig/base.json",
+    "extends": "@tala-tools/tsconfig/base.json",
     "compilerOptions": {
         "module": "ESNext",
         "moduleResolution": "Bundler",
-        "baseUrl": "src",
-        "rootDir": ".",
         "paths": {
-            "@/*": ["src/*"]
+            "@/*": ["./src/*"]
         },
         "types": ["vitest", "node"]
     },
     "include": [
         "./src/**/*",
+        "./__tests__/**/*",
+        "./__integration__/**/*",
         "tsdown.config.ts",
+        "lint-staged.config.mjs",
         "vitest.config.ts",
-        "./examples/**/*",
-        "./types",
-        "./scripts",
-        "lint-staged.config.mjs"
+        "vitest.integration.config.ts"
     ],
     "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
 }

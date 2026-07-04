@@ -1,0 +1,19 @@
+{
+    "extends": "@tala-tools/tsconfig/base.json",
+    "compilerOptions": {
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "skipLibCheck": true,
+        "types": ["vitest", "node"]
+    },
+    "include": [
+        "./src/**/*",
+        "./__tests__/**/*",
+        "./__integration__/**/*",
+        "tsdown.config.ts",
+        "lint-staged.config.mjs",
+        "vitest.config.ts",
+        "vitest.integration.config.ts"
+    ],
+    "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
+}

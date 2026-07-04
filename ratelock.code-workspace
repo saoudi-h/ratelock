@@ -5,8 +5,8 @@
       "path": ".",
     },
     {
-      "name": "playground",
-      "path": "apps/playground",
+      "name": "docs",
+      "path": "apps/docs"
     },
     {
       "name": "core",
@@ -21,20 +21,8 @@
       "path": "packages/redis",
     },
     {
-      "name": "eslint",
-      "path": "packages/eslint",
-    },
-    {
-      "name": "tsconfig",
-      "path": "packages/tsconfig",
-    },
-    {
-      "name": "prettier",
-      "path": "packages/prettier",
-    },
-    {
-      "name": "tsdown",
-      "path": "packages/tsdown",
+      "name": "postgres",
+      "path": "packages/postgres",
     },
     {
       "name": "test-utils",
@@ -44,8 +32,13 @@
       "name": "vitest",
       "path": "packages/vitest",
     },
+    {
+      "name": "bench",
+      "path": "packages/bench",
+    },
   ],
   "settings": {
     "cSpell.words": [],
+    "typescript.native-preview.tsdk": "/home/hakim/projects/ratelock/node_modules/@typescript/native-preview",
   },
 }

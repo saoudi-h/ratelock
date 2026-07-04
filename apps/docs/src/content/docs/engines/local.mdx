@@ -1,0 +1,133 @@
+---
+title: Local Engine
+description: Zero-dependency, in-memory rate limiting for single-process apps.
+---
+
+The Local engine stores rate limit state in memory using JavaScript `Map` objects. It has zero external dependencies and provides sub-millisecond latency.
+
+## Installation
+
+```bash
+npm install @ratelock/local
+```
+
+## Quick Start
+
+```typescript
+import { fixedWindow, slidingWindow, tokenBucket, individualFixedWindow } from '@ratelock/local'
+
+const limiter = await fixedWindow({
+    limit: 100,
+    windowMs: 60_000,
+})
+
+const result = await limiter.check('user:123')
+```
+
+## All Strategies
+
+| Function                | Strategy                |
+| ----------------------- | ----------------------- |
+| `fixedWindow`           | Fixed Window            |
+| `slidingWindow`         | Sliding Window          |
+| `tokenBucket`           | Token Bucket            |
+| `individualFixedWindow` | Individual Fixed Window |
+
+## Configuration Options
+
+All limiters in the Local engine accept these shared base options:
+
+<AutoTypeTable path="../../packages/local/src/types.ts" type="LocalLimiterBaseConfig" />
+
+Strategy-specific options are documented in the [Strategies](/docs/strategies) section.
+
+## Built-in Resilience Policies
+
+All limiters accept optional resilience configurations at creation time:
+
+```typescript
+const limiter = await fixedWindow({
+    limit: 100,
+    windowMs: 60_000,
+    // Built-in resilience policies (configured at creation time)
+    retry: { maxAttempts: 3 },
+    fallback: 'allow', // fallback to allow if the limiter errors
+})
+```
+
+| Option           | Type                           | Description                                       |
+| ---------------- | ------------------------------ | ------------------------------------------------- |
+| `retry`          | `RetryConfig`                  | Retry transient failures with exponential backoff |
+| `circuitBreaker` | `CircuitBreakerConfig`         | Stop calling after consecutive failures           |
+| `fallback`       | `'throw' \| 'allow' \| 'deny'` | Behavior when the limiter throws                  |
+
+<Callout title="Note" type="info">
+  `cache` is not supported on the Local engine. There is no network latency to cache.
+</Callout>
+
+## Standalone Policies (Advanced)
+
+For advanced use cases, import standalone resilience wrappers directly:
+
+```typescript
+import { withFallback, withRetry } from '@ratelock/local'
+
+const limiter = await fixedWindow({ limit: 100, windowMs: 60_000 })
+const withResilience = withFallback(withRetry(limiter, { maxAttempts: 3 }), 'allow')
+```
+
+See [Resilience Policies](/docs/policies) for full documentation and when to use standalone vs built-in.
+
+## API Reference
+
+The factory functions accept these configuration types:
+
+<Tabs items={['fixedWindow', 'slidingWindow', 'tokenBucket', 'individualFixedWindow']}>
+    <Tab value="fixedWindow">
+        ### FixedWindowLimiterConfig
+        <AutoTypeTable
+            path="../../packages/local/src/fixed-window.ts"
+            type="FixedWindowLimiterConfig"
+        />
+    </Tab>
+    <Tab value="slidingWindow">
+        ### SlidingWindowLimiterConfig
+        <AutoTypeTable
+            path="../../packages/local/src/sliding-window.ts"
+            type="SlidingWindowLimiterConfig"
+        />
+    </Tab>
+    <Tab value="tokenBucket">
+        ### TokenBucketLimiterConfig
+        <AutoTypeTable
+            path="../../packages/local/src/token-bucket.ts"
+            type="TokenBucketLimiterConfig"
+        />
+    </Tab>
+    <Tab value="individualFixedWindow">
+        ### IndividualFixedWindowLimiterConfig
+        <AutoTypeTable
+            path="../../packages/local/src/individual-fixed-window.ts"
+            type="IndividualFixedWindowLimiterConfig"
+        />
+    </Tab>
+</Tabs>
+
+## When to Use
+
+- Single-server or single-process deployments
+- Development and testing environments
+- When you want zero external dependencies
+- When sub-millisecond latency matters
+
+## Limitations
+
+- **Not distributed**: State is not shared across processes or servers
+- **Volatile**: Rate limit state is lost on process restart
+- **Memory-bound**: Large numbers of unique identifiers consume memory
+
+## Cleanup
+
+```typescript
+await limiter.destroy() // Clears internal state
+```

@@ -1,0 +1,48 @@
+---
+title: Introduction
+description: Welcome to RateLock - a high-performance rate limiting suite for TypeScript.
+---
+
+RateLock is a rate limiting library for Node.js and Bun with per-engine implementations.
+
+## Why RateLock?
+
+Most rate limiting libraries use a single backend abstraction. RateLock implements each engine natively:
+
+- **Redis** uses Lua scripts for atomicity
+- **PostgreSQL** uses UPSERTs for consistency
+- **In-Memory** uses Maps for zero-overhead single-process apps
+
+## Features
+
+- **4 rate limiting strategies**: Fixed Window, Sliding Window, Token Bucket, Individual Fixed Window
+- **3 storage engines**: In-Memory, Redis, PostgreSQL
+- **Built-in resilience**: Retry with backoff, circuit breaker, fallback policies, deny cache
+- **TypeScript first**: No `any` leaks, strict config types
+- **Dual driver support**: Redis (node-redis or ioredis), PostgreSQL (pg or porsager/postgres)
+- **Batch operations**: Check multiple identifiers in a single call
+
+## Quick Example
+
+```typescript
+import { fixedWindow } from '@ratelock/local'
+
+const limiter = await fixedWindow({
+    limit: 100,
+    windowMs: 60_000, // 100 requests per minute
+})
+
+const result = await limiter.check('user:123')
+
+if (!result.allowed) {
+    return new Response('Too Many Requests', { status: 429 })
+}
+```
+
+## Next Steps
+
+- [Install RateLock](/docs/getting-started/installation)
+- [Quick Start guide](/docs/getting-started/quick-start)
+- Explore [rate limiting strategies](/docs/strategies)
+- Choose a [storage engine](/docs/engines)
+- Read about [resilience policies](/docs/policies)

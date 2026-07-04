@@ -2,6 +2,15 @@
     "name": "@ratelock/local",
     "description": "In-memory storage backend for RateLock rate limiting system",
     "version": "0.1.1",
+    "homepage": "https://github.com/saoudi-h/ratelock",
+    "bugs": {
+        "url": "https://github.com/saoudi-h/ratelock/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/saoudi-h/ratelock.git",
+        "directory": "packages/local"
+    },
     "publishConfig": {
         "access": "public"
     },
@@ -13,22 +22,6 @@
             "import": "./dist/index.mjs",
             "require": "./dist/index.cjs"
         },
-        "./factory": {
-            "import": "./dist/factory/index.mjs",
-            "require": "./dist/factory/index.cjs"
-        },
-        "./limiter": {
-            "import": "./dist/limiter/index.mjs",
-            "require": "./dist/limiter/index.cjs"
-        },
-        "./storage": {
-            "import": "./dist/storage/index.mjs",
-            "require": "./dist/storage/index.cjs"
-        },
-        "./strategy": {
-            "import": "./dist/strategy/index.mjs",
-            "require": "./dist/strategy/index.cjs"
-        },
         "./package.json": "./package.json"
     },
     "sideEffects": false,
@@ -39,25 +32,29 @@
     ],
     "scripts": {
         "build": "tsdown",
+        "dev": "tsdown --watch",
         "lint": "eslint . --max-warnings 0",
         "lint:fix": "eslint . --max-warnings 0 --fix",
-        "format:check": "prettier \"**/*\" --ignore-unknown --list-different",
+        "format": "prettier \"**/*\" --ignore-unknown --list-different",
         "format:fix": "prettier \"**/*\" --ignore-unknown --write",
         "test": "vitest",
         "test:ui": "vitest --ui",
         "test:run": "vitest run",
         "test:coverage": "vitest run --coverage",
-        "clean": "rimraf node_modules dist",
-        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "clean": "rimraf dist .turbo node_modules",
+        "typecheck": "tsgo --noEmit",
+        "prepack": "tsdown",
         "pre-commit": "lint-staged"
     },
     "devDependencies": {
-        "@ratelock/eslint": "workspace:*",
-        "@ratelock/prettier": "workspace:*",
-        "@ratelock/tsconfig": "workspace:*",
-        "@ratelock/tsdown": "workspace:*",
+        "@eslint/js": "^10.0.1",
+        "@ratelock/test-utils": "workspace:*",
         "@ratelock/vitest": "workspace:*",
-        "@types/node": "^24.3.0"
+        "@tala-tools/eslint": "0.1.2",
+        "@tala-tools/prettier": "0.0.3",
+        "@tala-tools/tsconfig": "0.0.1",
+        "@types/node": "^25.9.0",
+        "vitest": "^4.1.6"
     },
     "dependencies": {
         "@ratelock/core": "workspace:*"
@@ -69,7 +66,9 @@
         "rate-locking",
         "rate-lock",
         "ratelimit",
-        "typescript"
+        "typescript",
+        "bun",
+        "cross-runtime"
     ],
     "author": {
         "name": "Saoudi Hakim",
@@ -78,7 +77,8 @@
     },
     "license": "MIT",
     "engines": {
-        "node": ">=16"
+        "node": ">=20",
+        "bun": ">=1.1"
     },
     "module": "./dist/index.mjs"
 }

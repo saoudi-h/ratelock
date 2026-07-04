@@ -1,0 +1,40 @@
+.bgExplore {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(
+      ellipse 80% 70% at 20% 10%,
+      var(--glow-primary) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 70% 60% at 85% 90%,
+      var(--glow-secondary) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      var(--glow-core) 0%,
+      transparent 70%
+    ),
+    linear-gradient(
+      165deg,
+      var(--bg) 0%,
+      var(--bg-deep) 100%
+    );
+}
+
+:global(.light) .bgExplore {
+  --bg: #faf7f2;
+  --bg-deep: #f0ebe3;
+  --glow-primary: rgba(217, 119, 6, 0.18);
+  --glow-secondary: rgba(99, 102, 241, 0.08);
+  --glow-core: rgba(255, 237, 213, 0.4);
+}
+
+:global(.dark) .bgExplore {
+  --bg: #0f0d0a;
+  --bg-deep: #1a1712;
+  --glow-primary: rgba(180, 83, 9, 0.25);
+  --glow-secondary: rgba(67, 56, 202, 0.12);
+  --glow-core: rgba(120, 53, 15, 0.08);
+}

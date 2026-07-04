@@ -1,5 +1,5 @@
 {
-    "extends": "@ratelock/tsconfig/base.json",
+    "extends": "@tala-tools/tsconfig/base.json",
     "compilerOptions": {
         "target": "esnext",
         "lib": ["es2022"],
@@ -15,20 +15,18 @@
         "isolatedModules": true,
         "verbatimModuleSyntax": true,
         "skipLibCheck": true,
-        "baseUrl": ".",
         "outDir": "./dist",
         "rootDir": ".",
         "paths": {
-            "@/*": ["src/*"],
-            "@tests/*": ["tests/*"]
+            "@/*": ["./src/*"],
+            "@tests/*": ["./tests/*"]
         }
     },
     "include": [
         "./src/**/*",
         "./src/**/*.json",
+        "./tests/**/*",
         "tsdown.config.ts",
-        "vitest.config.ts",
-        "tests/**/*",
         "lint-staged.config.mjs"
     ],
     "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo", "coverage"]

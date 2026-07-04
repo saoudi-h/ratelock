@@ -10,7 +10,9 @@
         "api-rate-limit",
         "sliding-window",
         "fixed-window",
-        "token-bucket"
+        "token-bucket",
+        "bun",
+        "cross-runtime"
     ],
     "homepage": "https://github.com/saoudi-h/ratelock",
     "bugs": {
@@ -18,7 +20,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/saoudi-h/ratelock.git",
+        "url": "git+https://github.com/saoudi-h/ratelock.git",
         "directory": "packages/redis"
     },
     "license": "MIT",
@@ -35,18 +37,6 @@
             "import": "./dist/index.mjs",
             "require": "./dist/index.cjs"
         },
-        "./factory": {
-            "import": "./dist/factory/index.mjs",
-            "require": "./dist/factory/index.cjs"
-        },
-        "./storage": {
-            "import": "./dist/storage/index.mjs",
-            "require": "./dist/storage/index.cjs"
-        },
-        "./strategy": {
-            "import": "./dist/strategy/index.mjs",
-            "require": "./dist/strategy/index.cjs"
-        },
         "./package.json": "./package.json"
     },
     "sideEffects": false,
@@ -56,8 +46,7 @@
         "LICENSE"
     ],
     "scripts": {
-        "build:lua": "tsx scripts/lua-minifier.ts",
-        "build": "pnpm build:lua && pnpm tsdown",
+        "build": "tsdown",
         "dev": "tsdown --watch",
         "test": "vitest --exclude \"**/*.integration.test.ts\"",
         "test:ui": "vitest --exclude \"**/*.integration.test.ts\" --ui",
@@ -66,37 +55,49 @@
         "test:coverage:dev": "pnpm run docker:up && vitest run --coverage && pnpm run docker:down",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
-        "format": "prettier --write .",
-        "format:check": "prettier --check .",
-        "typecheck": "tsc --noEmit",
-        "clean": "rm -rf dist .turbo node_modules",
+        "format": "prettier --check .",
+        "typecheck": "tsgo --noEmit",
+        "clean": "rimraf dist .turbo node_modules",
         "prepack": "tsdown",
         "docker:up": "docker-compose --env-file .env.test -f docker-compose.test.yml up -d --wait",
         "docker:down": "docker-compose --env-file .env.test -f docker-compose.test.yml down",
-        "test:integration": "pnpm run docker:up && vitest run && pnpm run docker:down",
+        "test:integration": "pnpm run docker:up && vitest run --config vitest.integration.config.ts; status=$?; pnpm run docker:down; exit $status",
         "pre-commit": "lint-staged"
     },
     "peerDependencies": {
+        "ioredis": "^5.0.0",
         "redis": "^4.0.0 || ^5.0.0"
+    },
+    "peerDependenciesMeta": {
+        "redis": {
+            "optional": true
+        },
+        "ioredis": {
+            "optional": true
+        }
     },
     "dependencies": {
         "@ratelock/core": "workspace:*"
     },
     "devDependencies": {
-        "@ratelock/core": "workspace:*",
-        "@ratelock/eslint": "workspace:*",
-        "@ratelock/prettier": "workspace:*",
+        "@eslint/js": "^10.0.1",
         "@ratelock/test-utils": "workspace:*",
-        "@ratelock/tsconfig": "workspace:*",
-        "@ratelock/tsdown": "workspace:*",
         "@ratelock/vitest": "workspace:*",
-        "@types/node": "^24.3.0",
-        "dotenv": "^17.2.1",
+        "@tala-tools/eslint": "0.1.2",
+        "@tala-tools/prettier": "0.0.3",
+        "@tala-tools/tsconfig": "0.0.1",
+        "@types/node": "^25.9.0",
+        "@vitest/coverage-v8": "^4.1.6",
+        "dotenv": "^17.4.2",
+        "ioredis": "^5.10.1",
         "luamin": "^1.0.4",
-        "typescript": "^5.5.4"
+        "redis": "^5.12.1",
+        "typescript": "^6.0.3",
+        "vitest": "^4.1.6"
     },
     "engines": {
-        "node": ">=18"
+        "node": ">=20",
+        "bun": ">=1.1"
     },
     "publishConfig": {
         "access": "public"
