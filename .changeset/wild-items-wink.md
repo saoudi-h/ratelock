@@ -1,17 +1,17 @@
 ---
-"@ratelock/core": minor
+"@ratelock/postgres": minor
 "@ratelock/local": minor
 "@ratelock/redis": minor
-"@ratelock/postgres": minor
+"@ratelock/core": minor
 ---
 
-# RateLock v0.2 — A complete rewrite
+# RateLock v0.2, A complete rewrite
 
 v0.2 is a clean-room rewrite of the entire library. The v0.1 layered
 architecture (`Storage` interface + `Strategy` + `BaseLimiterFactory` +
 `RateLimiter` class with configurable middlewares) is gone. In its place:
 a single `Limiter<T>` interface and a set of composable decorator
-functions. Published packages move from 0.1.x to 0.2.0 — the v0.2
+functions. Every published package jumps from 0.1.x to 1.0.0 — the v0.2
 rewrite is the real public release.
 
 ## Breaking changes (migration required from v0.1)
