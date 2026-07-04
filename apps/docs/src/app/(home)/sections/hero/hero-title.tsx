@@ -156,19 +156,19 @@ export function HeroTitle() {
       ref={ref}
       style={{ opacity: 0 }}
       className="
-              font-heading text-5xl leading-[1.15] font-black tracking-tight
-              [perspective:800px]
-              sm:text-6xl
-              lg:text-7xl
-              xl:text-7xl
-            "
+        font-heading text-5xl leading-[1.15] font-black tracking-tight
+        perspective-midrange
+        sm:text-6xl
+        lg:text-7xl
+        xl:text-7xl
+      "
     >
       <span data-hero-line className="block text-foreground">
         Rate limiting.
       </span>
       <span
         data-gradient-line
-        className="inline-block text-gradient pb-1.5"
+        className="text-gradient inline-block pb-1.5"
       >
         Done right.
       </span>

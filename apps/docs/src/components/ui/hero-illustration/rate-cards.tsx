@@ -120,9 +120,7 @@ export function RateCards({ valueRefs }: RateCardsProps) {
               {/* Right: rate value */}
               <span
                 ref={(el) => {
-                  if (valueRefs && valueRefs.current) {
-                    valueRefs.current[idx] = el;
-                  }
+                  valueRefs.current[idx] = el;
                 }}
                 style={{
                   color: "oklch(from var(--foreground) l c h / 0.4)",

@@ -18,7 +18,7 @@ export default defineConfig([
             'better-tailwindcss': {
                 entryPoint: './src/app/globals.css',
                 detectComponentClasses: true,
-                ignore: ['toaster', 'data-*', 'cn-*', 'no-scrollbar'],
+                ignore: ['toaster', 'data-*', 'cn-*', 'no-scrollbar', 'animate-event-pop', 'animate-token-enter', 'animate-token-exit'],
             },
         },
     },

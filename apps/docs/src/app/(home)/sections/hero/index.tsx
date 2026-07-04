@@ -51,7 +51,9 @@ export function HeroSection() {
           },
         },
       );
-      return registerReplay(() => descTl.restart(true, false));
+      return registerReplay(() => {
+                descTl.restart(true, false)
+            });
     }
 
     if (ambientRef.current) {
@@ -71,20 +73,19 @@ export function HeroSection() {
   return (
     <section
       className="
-              relative isolate flex min-h-[calc(100svh-3.5rem)] flex-col
-              overflow-hidden bg-background
-            "
+        relative isolate flex min-h-[calc(100svh-3.5rem)] flex-col
+        overflow-hidden bg-background
+      "
     >
       {/* Ambient gradient halo */}
       <div
         ref={ambientRef}
         aria-hidden
         className="
-                  pointer-events-none absolute -top-1/3 left-1/2 -z-10
-                  h-[120%] w-[120%] -translate-x-1/2 opacity-50
-                  [background:radial-gradient(circle_at_30%_20%,var(--color-primary)/0.18,transparent_45%),radial-gradient(circle_at_75%_60%,var(--color-secondary)/0.10,transparent_50%)]
-                  blur-3xl
-                "
+          pointer-events-none absolute -top-1/3 left-1/2 -z-10 size-[120%]
+          -translate-x-1/2 opacity-50 blur-3xl
+          [background:radial-gradient(circle_at_30%_20%,var(--color-primary)/0.18,transparent_45%),radial-gradient(circle_at_75%_60%,var(--color-secondary)/0.10,transparent_50%)]
+        "
       />
 
       {/* Top content area: badge + title + desc + CTAs + code panel
@@ -92,19 +93,25 @@ export function HeroSection() {
                 absolute) so it doesn't overlap with the stats row
                 below. */}
       <div className="flex flex-1 flex-col">
-        <div className="flex flex-1 items-start xl:items-center">
-          <div className="relative mx-auto w-full max-w-7xl px-6 pt-8 pb-4 xl:py-4">
+        <div className="
+          flex flex-1 items-start
+          xl:items-center
+        ">
+          <div className="
+            relative mx-auto w-full max-w-7xl px-6 pt-8 pb-4
+            xl:py-4
+          ">
             <div
               className="
-                              grid grid-cols-1 items-center gap-10
-                              xl:grid-cols-12 xl:gap-6
-                            "
+                grid grid-cols-1 items-center gap-10
+                xl:grid-cols-12 xl:gap-6
+              "
             >
               <div
                 className="
-                                  relative flex flex-col justify-center
-                                  xl:col-span-5 xl:pr-8
-                                "
+                  relative flex flex-col justify-center
+                  xl:col-span-5 xl:pr-8
+                "
               >
                 <div className="mb-4">
                   <HeroBadge />
@@ -115,9 +122,10 @@ export function HeroSection() {
                 <p
                   ref={descRef}
                   className="
-                                      gsap-prep mt-3 max-w-xl text-base/relaxed text-muted-foreground
-                                      md:text-lg
-                                    "
+                    gsap-prep mt-3 max-w-xl text-base/relaxed
+                    text-muted-foreground
+                    md:text-lg
+                  "
                 >
                   TypeScript rate limiting with multiple strategies,
                   <br />
@@ -127,8 +135,11 @@ export function HeroSection() {
                 <HeroCtas />
               </div>
 
-              <div className="xl:col-span-7 flex justify-center w-full">
-                <HeroIllustration className="w-full mx-auto" />
+              <div className="
+                flex w-full justify-center
+                xl:col-span-7
+              ">
+                <HeroIllustration className="mx-auto w-full" />
               </div>
             </div>
           </div>

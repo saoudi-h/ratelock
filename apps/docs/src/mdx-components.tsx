@@ -19,6 +19,7 @@ const generator = createGenerator({
 
 function CodeBlockTabs(props: ComponentProps<typeof FumadocsCodeBlockTabs>) {
     return (
+        // eslint-disable-next-line better-tailwindcss/no-unknown-classes
         <div className="not-prose">
             <FumadocsCodeBlockTabs {...props} />
         </div>

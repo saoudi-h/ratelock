@@ -9,7 +9,7 @@ interface OGImageProps {
     badge?: string
 }
 
-export function generateOGImage({ title, description, badge }: OGImageProps) {
+export function generateOGImage({ title, description, badge: _badge }: OGImageProps) {
     return new ImageResponse(
         <div
             style={{

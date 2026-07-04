@@ -7,7 +7,10 @@ export function PerformanceSection() {
     return (
         <section
             id="performance"
-            className="container mx-auto max-w-7xl px-6 py-20 lg:py-32">
+            className="
+              container mx-auto max-w-7xl px-6 py-20
+              lg:py-32
+            ">
             <SectionHeader
                 eyebrow="Performance"
                 title="Numbers, not promises"

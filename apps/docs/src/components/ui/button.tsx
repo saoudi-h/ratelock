@@ -83,9 +83,7 @@ const buttonVariants = cva(
                   has-data-[icon=inline-end]:pr-3
                   has-data-[icon=inline-start]:pl-3
                 `,
-                xl: `
-                  h-12 gap-2 px-6 rounded-2xl text-sm font-semibold
-                `,
+                xl: `h-12 gap-2 rounded-2xl px-6 text-sm font-semibold`,
                 icon: 'size-9',
                 'icon-xs': `
                   size-6

@@ -62,7 +62,9 @@ export function HeroScrollCue() {
                 },
             })
 
-            return registerReplay(() => tl.restart(true, false))
+            return registerReplay(() => {
+                tl.restart(true, false)
+            })
         },
         { scope: ref }
     )
@@ -72,9 +74,8 @@ export function HeroScrollCue() {
             ref={ref}
             aria-hidden
             className="
-              gsap-prep pointer-events-none flex
-              flex-col items-center gap-2 text-muted-foreground/70
-              select-none
+              gsap-prep pointer-events-none flex flex-col items-center gap-2
+              text-muted-foreground/70 select-none
             ">
             <span className="font-mono text-[10px] tracking-[0.3em] uppercase">
                 Scroll

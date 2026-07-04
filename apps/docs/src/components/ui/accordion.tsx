@@ -8,9 +8,7 @@ function Accordion({ className, ...props }: AccordionPrimitive.Root.Props) {
         <AccordionPrimitive.Root
             data-slot="accordion"
             className={cn(
-                `
-              flex w-full flex-col overflow-hidden rounded-2xl border
-            `,
+                `flex w-full flex-col overflow-hidden rounded-2xl border`,
                 className
             )}
             {...props}
@@ -79,8 +77,8 @@ function AccordionContent({ className, children, ...props }: AccordionPrimitive.
             data-slot="accordion-content"
             className="
               overflow-hidden px-4 text-sm
-              data-closed:animate-accordion-up
               data-open:animate-accordion-down
+              data-closed:animate-accordion-up
             "
             {...props}>
             <div

@@ -153,7 +153,9 @@ export function SwapBackendsTile() {
                 )
             }
 
-            return registerReplay(() => tl.restart(true, false))
+            return registerReplay(() => {
+                tl.restart(true, false)
+            })
         },
         { scope: ref }
     )
@@ -165,7 +167,10 @@ export function SwapBackendsTile() {
               flex-1
               md:col-span-3
             ">
-            <BentoBase className="grid items-center gap-10 md:grid-cols-2">
+            <BentoBase className="
+              grid items-center gap-10
+              md:grid-cols-2
+            ">
                 <div>
                     <span
                         data-swap-badge
@@ -175,13 +180,15 @@ export function SwapBackendsTile() {
                           text-[10px] font-bold tracking-wider
                           text-muted-foreground uppercase shadow-xs select-none
                         ">
-                        <span className="size-1.5 animate-pulse rounded-full bg-emerald-500" />
+                        <span className="
+                          size-1.5 animate-pulse rounded-full bg-emerald-500
+                        " />
                         Unified Interface
                     </span>
                     <h3
                         className="
-                          mt-6 font-heading text-2xl/tight font-bold tracking-tight
-                          text-foreground
+                          mt-6 font-heading text-2xl/tight font-bold
+                          tracking-tight text-foreground
                           sm:text-3xl
                         ">
                         <span data-swap-headline-line className="block">
@@ -193,7 +200,9 @@ export function SwapBackendsTile() {
                     </h3>
                     <p
                         data-swap-desc
-                        className="mt-4 max-w-md text-sm/relaxed text-muted-foreground">
+                        className="
+                          mt-4 max-w-md text-sm/relaxed text-muted-foreground
+                        ">
                         RateLock encapsulates the host-specific database driver logic inside
                         the engine packages. Your core limiters, validation hooks, API
                         configurations, and resilience policies remain{' '}
@@ -208,7 +217,9 @@ export function SwapBackendsTile() {
                             <div
                                 key={label}
                                 data-swap-check
-                                className="flex items-center gap-1.5 select-none">
+                                className="
+                                  flex items-center gap-1.5 select-none
+                                ">
                                 <Icon
                                     icon="lucide:check-circle-2"
                                     className="size-4 text-emerald-500"
@@ -223,23 +234,24 @@ export function SwapBackendsTile() {
                     data-swap-codepanel
                     className="
                       relative flex w-full flex-col gap-5 overflow-hidden
-                      rounded-[1.5rem] border border-border/40 bg-background
-                      p-6 font-mono text-[11px] leading-relaxed shadow-sm
+                      rounded-[1.5rem] border border-border/40 bg-background p-6
+                      font-mono text-[11px] leading-relaxed shadow-sm
                       select-none
                     ">
                     <div
                         data-swap-header
                         className="
-                          flex items-center justify-between border-b border-border/20
-                          pb-2 text-[10px] font-bold tracking-wider
-                          text-muted-foreground/80 uppercase select-none
+                          flex items-center justify-between border-b
+                          border-border/20 pb-2 text-[10px] font-bold
+                          tracking-wider text-muted-foreground/80 uppercase
+                          select-none
                         ">
                         <span>Zero-config Migration</span>
                         <span
                             className="
-                              rounded-lg border border-emerald-500/30 bg-emerald-500/10
-                              px-2 py-0.5 font-mono text-[8px] font-bold text-emerald-500
-                              shadow-xs select-none
+                              rounded-lg border border-emerald-500/30
+                              bg-emerald-500/10 px-2 py-0.5 font-mono text-[8px]
+                              font-bold text-emerald-500 shadow-xs select-none
                             ">
                             No Code Changes
                         </span>
@@ -247,13 +259,16 @@ export function SwapBackendsTile() {
 
                     <div className="space-y-5">
                         <div data-swap-step className="space-y-2">
-                            <div className="text-[10px] font-bold text-muted-foreground">
+                            <div className="
+                              text-[10px] font-bold text-muted-foreground
+                            ">
                                 1. Development (Local Memory)
                             </div>
                             <div
                                 className="
-                                  overflow-auto rounded-2xl border border-border/40
-                                  bg-muted/40 p-3.5 text-left shadow-xs
+                                  overflow-auto rounded-2xl border
+                                  border-border/40 bg-muted/40 p-3.5 text-left
+                                  shadow-xs
                                 ">
                                 <span className="text-red-400">import</span> &#123;
                                 fixedWindow &#125;{' '}
@@ -271,22 +286,30 @@ export function SwapBackendsTile() {
                         <div className="flex justify-center select-none">
                             <div
                                 data-swap-arrow
-                                className="rounded-full border border-border/40 bg-muted/40 p-2">
+                                className="
+                                  rounded-full border border-border/40
+                                  bg-muted/40 p-2
+                                ">
                                 <Icon
                                     icon="solar:alt-arrow-down-bold-duotone"
-                                    className="size-5 animate-bounce text-primary"
+                                    className="
+                                      size-5 animate-bounce text-primary
+                                    "
                                 />
                             </div>
                         </div>
 
                         <div data-swap-step className="space-y-2">
-                            <div className="text-[10px] font-bold text-muted-foreground">
+                            <div className="
+                              text-[10px] font-bold text-muted-foreground
+                            ">
                                 2. Production (Distributed Redis)
                             </div>
                             <div
                                 className="
-                                  overflow-auto rounded-2xl border border-border/40
-                                  bg-muted/40 p-3.5 text-left shadow-xs
+                                  overflow-auto rounded-2xl border
+                                  border-border/40 bg-muted/40 p-3.5 text-left
+                                  shadow-xs
                                 ">
                                 <span className="text-red-400">import</span> &#123;
                                 fixedWindow &#125;{' '}

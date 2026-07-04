@@ -24,15 +24,13 @@ export function StrategyTabs() {
             className="gap-5">
             <TabsList
                 className="
-              h-auto rounded-2xl border border-border/70 bg-muted/55 p-1
-            ">
+                  h-auto rounded-2xl border border-border/70 bg-muted/55 p-1
+                ">
                 {STRATEGIES.map(id => (
                     <TabsTrigger
                         key={id}
                         value={id}
-                        className="
-                      rounded-xl px-4 py-2 text-sm
-                    ">
+                        className="rounded-xl px-4 py-2 text-sm">
                         {STRATEGY_LABELS[id]}
                     </TabsTrigger>
                 ))}
@@ -43,8 +41,8 @@ export function StrategyTabs() {
                     <div className="max-w-2xl">
                         <h3
                             className="
-                          font-heading text-2xl font-semibold tracking-tight
-                        ">
+                              font-heading text-2xl font-semibold tracking-tight
+                            ">
                             {STRATEGY_LABELS[id]}
                         </h3>
                         <p className="mt-2 text-sm/6 text-muted-foreground">

@@ -45,13 +45,19 @@ export function FeatureBentoCard({
             <div
                 className={cn(
                     'grid gap-8',
-                    colSpan === '2' && 'items-start md:grid-cols-2'
+                    colSpan === '2' && `
+                      items-start
+                      md:grid-cols-2
+                    `
                 )}>
                 <div>
                     <div
                         data-feature-icon
                         className={cn(
-                            'flex size-12 items-center justify-center rounded-2xl',
+                            `
+                              flex size-12 items-center justify-center
+                              rounded-2xl
+                            `,
                             iconBgColor,
                             iconColor
                         )}>
@@ -80,7 +86,8 @@ export function FeatureBentoCard({
                     data-feature-footer
                     className="
                       mt-8 flex flex-wrap items-center gap-4 border-t
-                      border-border/20 pt-5 text-xs font-semibold text-muted-foreground
+                      border-border/20 pt-5 text-xs font-semibold
+                      text-muted-foreground
                     ">
                     {footerTags.map(tag => (
                         <span key={tag} className="flex items-center gap-1.5">

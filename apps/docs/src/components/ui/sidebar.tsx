@@ -550,10 +550,10 @@ const sidebarMenuButtonVariants = cva(
       active:bg-sidebar-accent active:text-sidebar-accent-foreground
       disabled:pointer-events-none disabled:opacity-50
       aria-disabled:pointer-events-none aria-disabled:opacity-50
-      data-active:bg-sidebar-accent data-active:font-medium
-      data-active:text-sidebar-accent-foreground
       data-open:hover:bg-sidebar-accent
       data-open:hover:text-sidebar-accent-foreground
+      data-active:bg-sidebar-accent data-active:font-medium
+      data-active:text-sidebar-accent-foreground
       [&_svg]:size-4 [&_svg]:shrink-0
       [&>span:last-child]:truncate
     `,
@@ -703,10 +703,10 @@ function SidebarMenuBadge({ className, ...props }: React.ComponentProps<'div'>) 
                   font-medium text-sidebar-foreground tabular-nums select-none
                   group-data-[collapsible=icon]:hidden
                   peer-hover/menu-button:text-sidebar-accent-foreground
-                  peer-data-active/menu-button:text-sidebar-accent-foreground
                   peer-data-[size=default]/menu-button:top-1.5
                   peer-data-[size=lg]/menu-button:top-2.5
                   peer-data-[size=sm]/menu-button:top-1
+                  peer-data-active/menu-button:text-sidebar-accent-foreground
                 `,
                 className
             )}
@@ -806,10 +806,10 @@ function SidebarMenuSubButton({
                       active:text-sidebar-accent-foreground
                       disabled:pointer-events-none disabled:opacity-50
                       aria-disabled:pointer-events-none aria-disabled:opacity-50
-                      data-active:bg-sidebar-accent
-                      data-active:text-sidebar-accent-foreground
                       data-[size=md]:text-sm
                       data-[size=sm]:text-xs
+                      data-active:bg-sidebar-accent
+                      data-active:text-sidebar-accent-foreground
                       [&>span:last-child]:truncate
                       [&>svg]:size-4 [&>svg]:shrink-0
                       [&>svg]:text-sidebar-accent-foreground

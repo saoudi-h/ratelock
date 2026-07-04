@@ -43,10 +43,6 @@ function TooltipContent({
                           rounded-xl bg-foreground px-3 py-1.5 text-xs
                           text-background
                           has-data-[slot=kbd]:pr-1.5
-                          data-closed:animate-out data-closed:fade-out-0
-                          data-closed:zoom-out-95
-                          data-open:animate-in data-open:fade-in-0
-                          data-open:zoom-in-95
                           data-[side=bottom]:slide-in-from-top-2
                           data-[side=inline-end]:slide-in-from-left-2
                           data-[side=inline-start]:slide-in-from-right-2
@@ -58,6 +54,10 @@ function TooltipContent({
                           data-[state=delayed-open]:animate-in
                           data-[state=delayed-open]:fade-in-0
                           data-[state=delayed-open]:zoom-in-95
+                          data-open:animate-in data-open:fade-in-0
+                          data-open:zoom-in-95
+                          data-closed:animate-out data-closed:fade-out-0
+                          data-closed:zoom-out-95
                         `,
                         className
                     )}

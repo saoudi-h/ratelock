@@ -292,7 +292,10 @@ export function HeroIllustration({ className }: HeroIllustrationProps) {
   return (
     <div
       ref={containerRef}
-      className={`${styles.illustration} ${className ?? ""}`}
+      className={`
+        ${styles.illustration}
+        ${className ?? ""}
+      `}
       style={{
         position: "relative",
         perspective: 2000,

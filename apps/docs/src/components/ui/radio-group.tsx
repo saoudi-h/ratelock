@@ -30,9 +30,9 @@ function RadioGroupItem({ className, ...props }: RadioPrimitive.Root.Props) {
                   disabled:cursor-not-allowed disabled:opacity-50
                   aria-invalid:border-destructive aria-invalid:ring-3
                   aria-invalid:ring-destructive/20
-                  data-checked:bg-primary data-checked:text-primary-foreground
                   dark:aria-invalid:border-destructive/50
                   dark:aria-invalid:ring-destructive/40
+                  data-checked:bg-primary data-checked:text-primary-foreground
                   dark:data-checked:bg-primary
                 `,
                 className

@@ -65,11 +65,11 @@ const navigationMenuTriggerStyle = cva(
       focus:bg-muted
       focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-1
       disabled:pointer-events-none disabled:opacity-50
+      data-popup-open:bg-muted/50
+      data-popup-open:hover:bg-muted
       data-open:bg-muted/50
       data-open:hover:bg-muted
       data-open:focus:bg-muted
-      data-popup-open:bg-muted/50
-      data-popup-open:hover:bg-muted
     `
 )
 
@@ -87,8 +87,8 @@ function NavigationMenuTrigger({
             <AltArrowDown
                 className="
                   relative top-px ml-1 size-3 transition duration-300
-                  group-data-open/navigation-menu-trigger:rotate-180
                   group-data-popup-open/navigation-menu-trigger:rotate-180
+                  group-data-open/navigation-menu-trigger:rotate-180
                 "
                 aria-hidden="true"
             />
@@ -116,13 +116,7 @@ function NavigationMenuContent({ className, ...props }: NavigationMenuPrimitive.
                   group-data-[viewport=false]/navigation-menu:ring-1
                   group-data-[viewport=false]/navigation-menu:ring-foreground/5
                   group-data-[viewport=false]/navigation-menu:duration-300
-                  group-data-[viewport=false]/navigation-menu:data-closed:animate-out
-                  group-data-[viewport=false]/navigation-menu:data-closed:fade-out-0
-                  group-data-[viewport=false]/navigation-menu:data-closed:zoom-out-95
                   data-ending-style:opacity-0
-                  group-data-[viewport=false]/navigation-menu:data-open:animate-in
-                  group-data-[viewport=false]/navigation-menu:data-open:fade-in-0
-                  group-data-[viewport=false]/navigation-menu:data-open:zoom-in-95
                   data-starting-style:opacity-0
                   data-[motion=from-end]:slide-in-from-right-52
                   data-[motion=from-start]:slide-in-from-left-52
@@ -133,6 +127,12 @@ function NavigationMenuContent({ className, ...props }: NavigationMenuPrimitive.
                   **:data-[slot=navigation-menu-link]:focus:ring-0
                   **:data-[slot=navigation-menu-link]:focus:outline-none
                   group-data-[viewport=false]/navigation-menu:dark:ring-foreground/10
+                  group-data-[viewport=false]/navigation-menu:data-open:animate-in
+                  group-data-[viewport=false]/navigation-menu:data-open:fade-in-0
+                  group-data-[viewport=false]/navigation-menu:data-open:zoom-in-95
+                  group-data-[viewport=false]/navigation-menu:data-closed:animate-out
+                  group-data-[viewport=false]/navigation-menu:data-closed:fade-out-0
+                  group-data-[viewport=false]/navigation-menu:data-closed:zoom-out-95
                 `,
                 className
             )}
@@ -183,7 +183,9 @@ function NavigationMenuPositioner({
                       data-starting-style:scale-90 data-starting-style:opacity-0
                       dark:ring-foreground/10
                     ">
-                    <NavigationMenuPrimitive.Viewport className="relative size-full overflow-hidden" />
+                    <NavigationMenuPrimitive.Viewport className="
+                      relative size-full overflow-hidden
+                    " />
                 </NavigationMenuPrimitive.Popup>
             </NavigationMenuPrimitive.Positioner>
         </NavigationMenuPrimitive.Portal>

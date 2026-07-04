@@ -44,32 +44,41 @@ export function FooterSection() {
                 delay: 0.1,
             })
 
-            return registerReplay(() => tl.restart(true, false))
+            return registerReplay(() => {
+                tl.restart(true, false)
+            })
         },
         { scope: ref }
     )
 
     return (
-        <footer ref={ref} className="relative border-t border-border/40 bg-muted/20">
+        <footer ref={ref} className="
+          relative border-t border-border/40 bg-muted/20
+        ">
             <div className="mx-auto max-w-7xl px-6 py-16">
                 <div
                     className="
-                  grid grid-cols-1 items-start gap-10 border-b border-border/20
-                  pb-12
-                  md:grid-cols-4
-                ">
+                      grid grid-cols-1 items-start gap-10 border-b
+                      border-border/20 pb-12
+                      md:grid-cols-4
+                    ">
                     <div data-footer-col className="space-y-4">
                         <div className="flex items-center gap-2.5 select-none">
                             <LogoLink />
                         </div>
-                        <p className="max-w-sm text-xs/relaxed text-muted-foreground">
+                        <p className="
+                          max-w-sm text-xs/relaxed text-muted-foreground
+                        ">
                             A highly precise, resilient rate limiting suite for TypeScript. Built to
                             scale gracefully with your local storage, Redis, or PostgreSQL backends.
                         </p>
                     </div>
 
                     <div data-footer-col className="space-y-4">
-                        <div className="text-[10px] font-bold tracking-widest text-muted-foreground/60 uppercase select-none">
+                        <div className="
+                          text-[10px] font-bold tracking-widest
+                          text-muted-foreground/60 uppercase select-none
+                        ">
                             Documentation
                         </div>
                         <ul className="flex flex-col gap-3 text-xs">
@@ -84,16 +93,18 @@ export function FooterSection() {
                                         href={link.href}
                                         className="
                                           group/link inline-flex
-                                          text-muted-foreground transition-colors
-                                          duration-200 hover:text-foreground
+                                          text-muted-foreground
+                                          transition-colors duration-200
+                                          hover:text-foreground
                                         ">
                                         <span className="relative">
                                             {link.label}
                                             <span
                                                 className="
-                                                  absolute right-0 -bottom-0.5 left-0
+                                                  absolute inset-x-0 -bottom-0.5
                                                   h-px origin-left scale-x-0
-                                                  bg-foreground/40 transition-transform
+                                                  bg-foreground/40
+                                                  transition-transform
                                                   duration-300
                                                   group-hover/link:scale-x-100
                                                 "
@@ -106,7 +117,10 @@ export function FooterSection() {
                     </div>
 
                     <div data-footer-col className="space-y-4">
-                        <div className="text-[10px] font-bold tracking-widest text-muted-foreground/60 uppercase select-none">
+                        <div className="
+                          text-[10px] font-bold tracking-widest
+                          text-muted-foreground/60 uppercase select-none
+                        ">
                             NPM Packages
                         </div>
                         <ul className="flex flex-col gap-3 font-mono text-xs">
@@ -117,18 +131,22 @@ export function FooterSection() {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="
-                                          group/link inline-flex items-center gap-1.5
-                                          text-muted-foreground transition-colors
-                                          duration-200 hover:text-foreground
+                                          group/link inline-flex items-center
+                                          gap-1.5 text-muted-foreground
+                                          transition-colors duration-200
+                                          hover:text-foreground
                                         ">
-                                        <Icon icon="logos:npm-icon" className="size-3.5" />
+                                        <Icon icon="logos:npm-icon" className="
+                                          size-3.5
+                                        " />
                                         <span className="relative">
                                             {pkg}
                                             <span
                                                 className="
-                                                  absolute right-0 -bottom-0.5 left-0
+                                                  absolute inset-x-0 -bottom-0.5
                                                   h-px origin-left scale-x-0
-                                                  bg-foreground/40 transition-transform
+                                                  bg-foreground/40
+                                                  transition-transform
                                                   duration-300
                                                   group-hover/link:scale-x-100
                                                 "
@@ -141,7 +159,10 @@ export function FooterSection() {
                     </div>
 
                     <div data-footer-col className="space-y-4">
-                        <div className="text-[10px] font-bold tracking-widest text-muted-foreground/60 uppercase select-none">
+                        <div className="
+                          text-[10px] font-bold tracking-widest
+                          text-muted-foreground/60 uppercase select-none
+                        ">
                             Resources
                         </div>
                         <ul className="flex flex-col gap-3 text-xs">
@@ -154,16 +175,18 @@ export function FooterSection() {
                                         href={link.href}
                                         className="
                                           group/link inline-flex
-                                          text-muted-foreground transition-colors
-                                          duration-200 hover:text-foreground
+                                          text-muted-foreground
+                                          transition-colors duration-200
+                                          hover:text-foreground
                                         ">
                                         <span className="relative">
                                             {link.label}
                                             <span
                                                 className="
-                                                  absolute right-0 -bottom-0.5 left-0
+                                                  absolute inset-x-0 -bottom-0.5
                                                   h-px origin-left scale-x-0
-                                                  bg-foreground/40 transition-transform
+                                                  bg-foreground/40
+                                                  transition-transform
                                                   duration-300
                                                   group-hover/link:scale-x-100
                                                 "
@@ -179,10 +202,10 @@ export function FooterSection() {
                 <div
                     data-footer-col
                     className="
-                  mt-8 flex flex-col items-start justify-between gap-4
-                  text-[11px] text-muted-foreground select-none
-                  md:flex-row md:items-center
-                ">
+                      mt-8 flex flex-col items-start justify-between gap-4
+                      text-[11px] text-muted-foreground select-none
+                      md:flex-row md:items-center
+                    ">
                     <div className="flex items-center gap-2">
                         <span>
                             MIT License • Copyright © {new Date().getFullYear()} Hakim Saoudi
@@ -195,7 +218,8 @@ export function FooterSection() {
                             rel="noopener noreferrer"
                             className="
                               group/link inline-flex items-center gap-1.5
-                              text-muted-foreground transition-colors duration-200
+                              text-muted-foreground transition-colors
+                              duration-200
                               hover:text-foreground
                             ">
                             <Icon icon="mdi:github" className="size-4" />
@@ -203,7 +227,7 @@ export function FooterSection() {
                                 GitHub
                                 <span
                                     className="
-                                      absolute right-0 -bottom-0.5 left-0 h-px
+                                      absolute inset-x-0 -bottom-0.5 h-px
                                       origin-left scale-x-0 bg-foreground/40
                                       transition-transform duration-300
                                       group-hover/link:scale-x-100

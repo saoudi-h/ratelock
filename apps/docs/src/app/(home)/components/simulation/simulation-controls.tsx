@@ -35,22 +35,39 @@ export function SimulationControls({
     return (
         <div
             ref={controlsRef}
-            className="mt-2 flex flex-col md:flex-row items-center justify-between gap-4 w-full relative z-30">
+            className="
+              relative z-30 mt-2 flex w-full flex-col items-center
+              justify-between gap-4
+              md:flex-row
+            ">
             {/* Zone Left: Auto Requests control dial */}
-            <div className="flex justify-start w-full md:w-auto">
+            <div className="
+              flex w-full justify-start
+              md:w-auto
+            ">
                 <div
                     ref={autoToggleRef}
                     className={`
-                    flex items-center gap-4 px-4 py-2 rounded-2xl border border-border/70 
-                    bg-card/85 shadow-sm backdrop-blur-sm select-none w-full md:w-auto min-w-[280px]
-                    transition-opacity duration-200
-                    ${!isPlaying ? 'opacity-50 pointer-events-none' : ''}
-                `}>
+                      flex w-full min-w-[280px] items-center gap-4 rounded-2xl
+                      border border-border/70 bg-card/85 px-4 py-2 shadow-sm
+                      backdrop-blur-sm transition-opacity duration-200
+                      select-none
+                      md:w-auto
+                      ${!isPlaying ? 'pointer-events-none opacity-50' : ''}
+                    `}>
                     <div className="flex items-center gap-2.5">
                         <Bolt
-                            className={`size-3.5 transition-colors duration-300 ${autoRequests ? 'text-amber-500 fill-amber-500 animate-pulse' : 'text-muted-foreground'}`}
+                            className={`
+                              size-3.5 transition-colors duration-300
+                              ${autoRequests ? `
+                                animate-pulse fill-amber-500 text-amber-500
+                              ` : `text-muted-foreground`}
+                            `}
                         />
-                        <span className="text-[10px] font-bold text-muted-foreground tracking-wide uppercase whitespace-nowrap">
+                        <span className="
+                          text-[10px] font-bold tracking-wide whitespace-nowrap
+                          text-muted-foreground uppercase
+                        ">
                             Auto requests
                         </span>
                         <Switch
@@ -60,8 +77,11 @@ export function SimulationControls({
                         />
                     </div>
                     <div className="h-4 w-px bg-border/70" />
-                    <div className="flex-1 flex items-center gap-2">
-                        <span className="text-[10px] font-mono font-bold text-muted-foreground whitespace-nowrap w-8">
+                    <div className="flex flex-1 items-center gap-2">
+                        <span className="
+                          w-8 font-mono text-[10px] font-bold whitespace-nowrap
+                          text-muted-foreground
+                        ">
                             {(autoInterval / 1000).toFixed(1)}s
                         </span>
                         <Slider
@@ -83,14 +103,21 @@ export function SimulationControls({
             </div>
 
             {/* Zone Center: Tactile Send Request button */}
-            <div className="flex justify-center md:absolute md:left-1/2 md:-translate-x-1/2">
+            <div className="
+              flex justify-center
+              md:absolute md:left-1/2 md:-translate-x-1/2
+            ">
                 <Button
                     ref={sendButtonRef}
                     variant="solid"
                     size="xl"
                     onClick={onSendRequest}
                     disabled={!isPlaying}
-                    className="font-bold tracking-wide uppercase shadow-sm hover:shadow-md cursor-pointer select-none"
+                    className="
+                      cursor-pointer font-bold tracking-wide uppercase shadow-sm
+                      select-none
+                      hover:shadow-md
+                    "
                 >
                     <Plain2 className="size-4" />
                     <span>Send request</span>
@@ -98,12 +125,18 @@ export function SimulationControls({
             </div>
 
             {/* Zone Right: Reset Simulation & View Code buttons */}
-            <div className="flex items-center gap-2 justify-end w-full md:w-auto">
+            <div className="
+              flex w-full items-center justify-end gap-2
+              md:w-auto
+            ">
                 <Button
                     size="sm"
                     variant="outline"
                     onClick={onViewCode}
-                    className="rounded-xl text-muted-foreground hover:text-foreground shadow-sm"
+                    className="
+                      rounded-xl text-muted-foreground shadow-sm
+                      hover:text-foreground
+                    "
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -126,7 +159,10 @@ export function SimulationControls({
                     size="icon-sm"
                     variant="outline"
                     onClick={onReset}
-                    className="rounded-xl text-muted-foreground hover:text-foreground shadow-sm"
+                    className="
+                      rounded-xl text-muted-foreground shadow-sm
+                      hover:text-foreground
+                    "
                     title="Reset Simulation"
                 >
                     <svg
@@ -139,7 +175,10 @@ export function SimulationControls({
                         strokeWidth="2.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        className="size-4 hover:rotate-180 transition-transform duration-500">
+                        className="
+                          size-4 transition-transform duration-500
+                          hover:rotate-180
+                        ">
                         <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
                         <path d="M21 3v5h-5" />
                         <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />

@@ -137,10 +137,10 @@ export function DenyCacheVisualization() {
         <div
             ref={ref}
             className="
-              flex flex-col justify-between h-full
+              flex h-full flex-col justify-between
               lg:col-span-5
             ">
-            <BentoBase className="gap-8 h-full">
+            <BentoBase className="h-full gap-8">
                 <div>
                     <span
                         data-deny-eyebrow
@@ -153,7 +153,9 @@ export function DenyCacheVisualization() {
                         <span
                             className={`
                               size-1.5 animate-pulse rounded-full
-                              ${denyCacheFlooded ? 'bg-emerald-500' : 'bg-red-500'}
+                              ${denyCacheFlooded ? 'bg-emerald-500' : `
+                                bg-red-500
+                              `}
                             `}
                         />
                         {denyCacheFlooded
@@ -162,7 +164,9 @@ export function DenyCacheVisualization() {
                     </span>
                     <h3
                         data-deny-title
-                        className="mt-3 font-heading text-xl font-bold text-foreground">
+                        className="
+                          mt-3 font-heading text-xl font-bold text-foreground
+                        ">
                         Spam Protection with Deny Cache
                     </h3>
                     <p
@@ -177,36 +181,62 @@ export function DenyCacheVisualization() {
                 <div
                     data-deny-diagram
                     className="
-                      relative flex h-48 w-full flex-col items-center justify-center
-                      overflow-hidden rounded-3xl border border-border/40 bg-muted/40
-                      p-4 font-mono text-[10px] shadow-inner select-none
+                      relative flex h-48 w-full flex-col items-center
+                      justify-center overflow-hidden rounded-3xl border
+                      border-border/40 bg-muted/40 p-4 font-mono text-[10px]
+                      shadow-inner select-none
                     ">
                     <div
                         data-deny-client
-                        className="absolute top-6 flex flex-col items-center gap-1">
-                        <Icon icon="solar:user-bold-duotone" className="size-6 text-zinc-500" />
-                        <span className="text-[8px] font-bold tracking-widest text-zinc-400 uppercase">
+                        className="
+                          absolute top-6 flex flex-col items-center gap-1
+                        ">
+                        <Icon icon="solar:user-bold-duotone" className="
+                          size-6 text-zinc-500
+                        " />
+                        <span className="
+                          text-[8px] font-bold tracking-widest text-zinc-400
+                          uppercase
+                        ">
                             Spam Client
                         </span>
                     </div>
 
                     <div
                         data-deny-db
-                        className="absolute bottom-6 z-10 flex flex-col items-center gap-1">
+                        className="
+                          absolute bottom-6 z-10 flex flex-col items-center
+                          gap-1
+                        ">
                         <Icon
                             icon="solar:database-bold-duotone"
-                            className={`size-6 transition-colors duration-300 ${
+                            className={`
+                              size-6 transition-colors duration-300
+                              ${
                                 denyCacheFlooded
-                                    ? 'text-emerald-500 drop-shadow-[0_0_6px_rgba(16,185,129,0.3)] filter'
-                                    : 'text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.4)] filter'
-                            }`}
+                                    ? `
+                                      text-emerald-500
+                                      drop-shadow-[0_0_6px_rgba(16,185,129,0.3)]
+                                      filter
+                                    `
+                                    : `
+                                      text-red-500
+                                      drop-shadow-[0_0_8px_rgba(239,68,68,0.4)]
+                                      filter
+                                    `
+                            }
+                            `}
                         />
                         <span
-                            className={`text-[8px] font-bold tracking-widest uppercase transition-colors duration-300 ${
+                            className={`
+                              text-[8px] font-bold tracking-widest uppercase
+                              transition-colors duration-300
+                              ${
                                 denyCacheFlooded
                                     ? 'text-emerald-500'
                                     : 'font-extrabold text-red-500'
-                            }`}>
+                            }
+                            `}>
                             Database Server
                         </span>
                     </div>
@@ -216,30 +246,43 @@ export function DenyCacheVisualization() {
                     <div
                         data-deny-shield
                         className={`
-                          absolute top-1/2 z-10 flex -translate-y-1/2 items-center gap-2
-                          rounded-2xl border bg-background/90 px-4 py-2 shadow-sm
-                          transition-colors duration-300 opacity-100
+                          absolute top-1/2 z-10 flex -translate-y-1/2
+                          items-center gap-2 rounded-2xl border bg-background/90
+                          px-4 py-2 opacity-100 shadow-sm transition-colors
+                          duration-300
                           ${
                               denyCacheFlooded
-                                  ? 'border-emerald-500/30 bg-emerald-950/10 text-emerald-400'
-                                  : 'border-zinc-800 bg-zinc-900/20 text-zinc-500'
+                                  ? `
+                                    border-emerald-500/30 bg-emerald-950/10
+                                    text-emerald-400
+                                  `
+                                  : `
+                                    border-zinc-800 bg-zinc-900/20 text-zinc-500
+                                  `
                           }
                         `}>
                         <Icon
                             icon="solar:shield-bold-duotone"
-                            className={`size-4 transition-colors duration-300 ${
-                                denyCacheFlooded ? 'text-emerald-500' : 'text-zinc-600'
-                            }`}
+                            className={`
+                              size-4 transition-colors duration-300
+                              ${
+                                denyCacheFlooded ? 'text-emerald-500' : `
+                                  text-zinc-600
+                                `
+                            }
+                            `}
                         />
-                        <span className="text-[9px] font-bold tracking-wider uppercase">
+                        <span className="
+                          text-[9px] font-bold tracking-wider uppercase
+                        ">
                             Deny Cache
                         </span>
                     </div>
 
                     <div
                         className="
-                          pointer-events-none absolute inset-y-[36px] left-1/2 w-10
-                          -translate-x-1/2 overflow-hidden
+                          pointer-events-none absolute inset-y-[36px] left-1/2
+                          w-10 -translate-x-1/2 overflow-hidden
                         ">
                         <div
                             key={denyCacheFlooded ? 'shielded-flow' : 'direct-flow'}
@@ -278,18 +321,28 @@ export function DenyCacheVisualization() {
                 <div className="space-y-2">
                     <div
                         data-deny-stat
-                        className="flex items-center justify-between text-xs font-semibold">
+                        className="
+                          flex items-center justify-between text-xs
+                          font-semibold
+                        ">
                         <span className="text-muted-foreground">Without Cache (DB Hits):</span>
                         <span className="font-mono text-muted-foreground">~1,200 ops/s</span>
                     </div>
                     <div
                         data-deny-stat
-                        className="flex items-center justify-between text-xs font-bold text-foreground">
+                        className="
+                          flex items-center justify-between text-xs font-bold
+                          text-foreground
+                        ">
                         <span className="flex items-center gap-1.5">
-                            <span className="size-1.5 rounded-full bg-emerald-500" />
+                            <span className="
+                              size-1.5 rounded-full bg-emerald-500
+                            " />
                             With Deny Cache (Shielded):
                         </span>
-                        <span ref={opsRef} className="font-mono text-emerald-500">
+                        <span ref={opsRef} className="
+                          font-mono text-emerald-500
+                        ">
                             0 ops/s
                         </span>
                     </div>

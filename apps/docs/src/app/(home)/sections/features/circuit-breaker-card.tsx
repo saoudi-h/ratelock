@@ -83,13 +83,15 @@ export function CircuitBreakerCard() {
                     '<'
                 )
 
-            return registerReplay(() => tl.restart(true, false))
+            return registerReplay(() => {
+                tl.restart(true, false)
+            })
         },
         { scope: ref }
     )
 
     return (
-        <div ref={ref} className="h-full [perspective:900px]">
+        <div ref={ref} className="h-full perspective-[900px]">
             <FeatureBentoCard
                 title="Resilient Circuit Breaker"
                 description="Avoid thread pool saturation when your databases fail. RateLock automatically halts queries, redirects calls to fail-safes, and probes recovery periodically."
@@ -110,22 +112,32 @@ export function CircuitBreakerCard() {
                         ">
                         Circuit telemetry
                     </div>
-                    <div data-breaker-row className="flex items-center justify-between">
+                    <div data-breaker-row className="
+                      flex items-center justify-between
+                    ">
                         <span className="text-muted-foreground/80">State:</span>
                         <div
                             data-breaker-state
                             className="flex items-center gap-1.5">
-                            <span className="size-2 animate-pulse rounded-full bg-amber-500" />
-                            <span className="font-bold tracking-wide text-amber-500 uppercase">
+                            <span className="
+                              size-2 animate-pulse rounded-full bg-amber-500
+                            " />
+                            <span className="
+                              font-bold tracking-wide text-amber-500 uppercase
+                            ">
                                 Half-Open
                             </span>
                         </div>
                     </div>
-                    <div data-breaker-row className="flex items-center justify-between">
+                    <div data-breaker-row className="
+                      flex items-center justify-between
+                    ">
                         <span className="text-muted-foreground/80">Failure threshold:</span>
                         <span className="font-bold text-foreground">5 failed attempts</span>
                     </div>
-                    <div data-breaker-row className="flex items-center justify-between">
+                    <div data-breaker-row className="
+                      flex items-center justify-between
+                    ">
                         <span className="text-muted-foreground/80">Probing rate:</span>
                         <span className="font-bold text-foreground">1 request / 5s</span>
                     </div>

@@ -123,21 +123,23 @@ export function EngineBentoCard({
     )
 
     return (
-        <div ref={ref} className="[perspective:900px]">
+        <div ref={ref} className="perspective-[900px]">
             <BentoBase>
                 <div>
                     <div className="flex items-center justify-between">
                         <div
                             data-engine-icon
                             className={`
-                              flex size-11 items-center justify-center rounded-2xl
-                              bg-muted/65
+                              flex size-11 items-center justify-center
+                              rounded-2xl bg-muted/65
                               ${color}
                             `}>
                             <Icon icon={icon} className="size-6" />
                         </div>
                         <div className="flex items-center gap-2">
-                            <Icon data-engine-brand icon={brandIcon} className="size-5" />
+                            <Icon data-engine-brand icon={brandIcon} className="
+                              size-5
+                            " />
                             <Badge
                                 data-engine-driver
                                 variant="outline"
@@ -186,8 +188,9 @@ export function EngineBentoCard({
                             <span className="text-muted-foreground/90">{m.name}:</span>
                             <span
                                 className="
-                                  rounded-lg border border-border/40 bg-background
-                                  px-2 py-0.5 font-bold text-foreground shadow-xs
+                                  rounded-lg border border-border/40
+                                  bg-background px-2 py-0.5 font-bold
+                                  text-foreground shadow-xs
                                 ">
                                 {m.val}
                             </span>
@@ -208,7 +211,9 @@ export function EngineBentoCard({
                         ">
                         Recommended for
                     </span>
-                    <span className="mt-1 text-sm/normal font-semibold text-foreground">
+                    <span className="
+                      mt-1 text-sm/normal font-semibold text-foreground
+                    ">
                         {bestFor}
                     </span>
                 </div>

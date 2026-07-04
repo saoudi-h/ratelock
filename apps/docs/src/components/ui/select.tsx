@@ -117,10 +117,6 @@ function SelectContent({
                           before:pointer-events-none before:absolute
                           before:inset-0 before:-z-1 before:rounded-[inherit]
                           before:backdrop-blur-2xl before:backdrop-saturate-150
-                          data-closed:animate-out data-closed:fade-out-0
-                          data-closed:zoom-out-95
-                          data-open:animate-in data-open:fade-in-0
-                          data-open:zoom-in-95
                           data-[align-trigger=true]:animate-none
                           data-[side=bottom]:slide-in-from-top-2
                           data-[side=inline-end]:slide-in-from-left-2
@@ -137,6 +133,10 @@ function SelectContent({
                           **:data-[variant=destructive]:text-accent-foreground!
                           **:data-[variant=destructive]:focus:bg-foreground/10!
                           dark:ring-foreground/10
+                          data-open:animate-in data-open:fade-in-0
+                          data-open:zoom-in-95
+                          data-closed:animate-out data-closed:fade-out-0
+                          data-closed:zoom-out-95
                         `,
                         className
                     )}
@@ -180,7 +180,9 @@ function SelectItem({ className, children, ...props }: SelectPrimitive.Item.Prop
                 className
             )}
             {...props}>
-            <SelectPrimitive.ItemText className="flex flex-1 shrink-0 gap-2 whitespace-nowrap">
+            <SelectPrimitive.ItemText className="
+              flex flex-1 shrink-0 gap-2 whitespace-nowrap
+            ">
                 {children}
             </SelectPrimitive.ItemText>
             <SelectPrimitive.ItemIndicator

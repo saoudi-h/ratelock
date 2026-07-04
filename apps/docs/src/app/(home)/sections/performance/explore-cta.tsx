@@ -65,11 +65,15 @@ export function ExploreCta() {
 
         return () => {
           split.revert();
-          registerReplay(() => tl.restart(true, false))();
+          registerReplay(() => {
+                tl.restart(true, false)
+            })();
         };
       }
 
-      return registerReplay(() => tl.restart(true, false));
+      return registerReplay(() => {
+                tl.restart(true, false)
+            });
     },
     { scope: ref },
   );
@@ -80,22 +84,20 @@ export function ExploreCta() {
       className={cn(
         styles.bgExplore,
         `
-              group flex flex-col items-start justify-between gap-6
-              rounded-4xl border border-border/30 bg-muted/20 p-8
-              transition-colors duration-300
-              hover:border-border/60 hover:bg-muted/30
-              sm:flex-row sm:items-center
-            `,
+          group flex flex-col items-start justify-between gap-6 rounded-4xl
+          border border-border/30 bg-muted/20 p-8 transition-colors duration-300
+          hover:border-border/60 hover:bg-muted/30
+          sm:flex-row sm:items-center
+        `,
       )}
     >
       <div>
         <span
           className="
-                      inline-flex items-center gap-1.5 rounded-xl border
-                      border-border/40 bg-background px-3 py-1 font-mono
-                      text-[10px] font-bold tracking-wider
-                      text-muted-foreground uppercase shadow-xs select-none
-                    "
+            inline-flex items-center gap-1.5 rounded-xl border border-border/40
+            bg-background px-3 py-1 font-mono text-[10px] font-bold
+            tracking-wider text-muted-foreground uppercase shadow-xs select-none
+          "
         >
           <span className="size-1.5 rounded-full bg-emerald-500" />
           Verified Results
@@ -103,9 +105,9 @@ export function ExploreCta() {
         <h3
           ref={titleRef}
           className="
-                      mt-3 font-heading text-2xl font-bold text-foreground
-                      sm:text-3xl
-                    "
+            mt-3 font-heading text-2xl font-bold text-foreground
+            sm:text-3xl
+          "
         >
           See the full benchmarks
         </h3>
@@ -119,15 +121,15 @@ export function ExploreCta() {
         render={<Link href="/docs/benchmarks" />}
         variant="outline"
         size="lg"
-        className="rounded-2xl shadow-xs group/link"
+        className="group/link rounded-2xl shadow-xs"
       >
         <span>Open benchmarks</span>
         <svg
           viewBox="0 0 16 16"
           className="
-                      size-4 transition-transform duration-200
-                      group-hover/link:translate-x-0.5
-                    "
+            size-4 transition-transform duration-200
+            group-hover/link:translate-x-0.5
+          "
           aria-hidden
         >
           <path

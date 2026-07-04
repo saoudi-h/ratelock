@@ -74,13 +74,15 @@ export function ErrorPoliciesCard() {
                     '-=0.3'
                 )
 
-            return registerReplay(() => tl.restart(true, false))
+            return registerReplay(() => {
+                tl.restart(true, false)
+            })
         },
         { scope: ref }
     )
 
     return (
-        <div ref={ref} className="h-full [perspective:900px]">
+        <div ref={ref} className="h-full perspective-[900px]">
             <FeatureBentoCard
                 title="Adaptive Error Policies"
                 description="Choose how to handle rate limiting exceptions during extreme database congestion or downtime. Swap behaviors dynamically without rewriting controller logics."
@@ -93,9 +95,9 @@ export function ErrorPoliciesCard() {
                     <div
                         data-policy-row
                         className="
-                          flex items-start gap-3 rounded-2xl border border-border/40
-                          bg-background/40 p-3 shadow-xs transition-colors duration-300
-                          select-none
+                          flex items-start gap-3 rounded-2xl border
+                          border-border/40 bg-background/40 p-3 shadow-xs
+                          transition-colors duration-300 select-none
                           hover:border-primary/20
                         ">
                         <div
@@ -107,10 +109,14 @@ export function ErrorPoliciesCard() {
                             O
                         </div>
                         <div>
-                            <div className="font-heading text-xs font-bold text-foreground">
+                            <div className="
+                              font-heading text-xs font-bold text-foreground
+                            ">
                                 Fail-Open (Recommended)
                             </div>
-                            <div className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+                            <div className="
+                              mt-0.5 text-xs/relaxed text-muted-foreground
+                            ">
                                 Bypasses database failures. Ensures legitimate customers are
                                 never locked out of your application during downtime.
                             </div>
@@ -119,24 +125,28 @@ export function ErrorPoliciesCard() {
                     <div
                         data-policy-row
                         className="
-                          flex items-start gap-3 rounded-2xl border border-border/40
-                          bg-background/40 p-3 shadow-xs transition-colors duration-300
-                          select-none
+                          flex items-start gap-3 rounded-2xl border
+                          border-border/40 bg-background/40 p-3 shadow-xs
+                          transition-colors duration-300 select-none
                           hover:border-primary/20
                         ">
                         <div
                             className="
                               flex size-7 items-center justify-center rounded-xl
-                              bg-red-500/10 font-mono text-xs font-bold text-red-500
-                              select-none
+                              bg-red-500/10 font-mono text-xs font-bold
+                              text-red-500 select-none
                             ">
                             C
                         </div>
                         <div>
-                            <div className="font-heading text-xs font-bold text-foreground">
+                            <div className="
+                              font-heading text-xs font-bold text-foreground
+                            ">
                                 Fail-Closed
                             </div>
-                            <div className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+                            <div className="
+                              mt-0.5 text-xs/relaxed text-muted-foreground
+                            ">
                                 Blocks all requests if rate limiting state is offline.
                                 Prevents catastrophic security leakages during infrastructure
                                 congestion.

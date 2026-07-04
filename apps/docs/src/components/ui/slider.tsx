@@ -43,8 +43,9 @@ function Slider({
                     data-slot="slider-track"
                     className="
                       relative grow overflow-hidden rounded-full border
-                      border-border/60 bg-muted/80 dark:bg-muted-foreground/15
+                      border-border/60 bg-muted/80
                       shadow-[inset_0_1px_2px_rgba(0,0,0,0.08)] select-none
+                      dark:bg-muted-foreground/15
                       data-horizontal:h-2 data-horizontal:w-full
                       data-vertical:h-full data-vertical:w-2
                     ">
@@ -62,15 +63,14 @@ function Slider({
                         data-slot="slider-thumb"
                         key={index}
                         className="
-                          block size-4.5 shrink-0 rounded-full border
-                          border-primary/25 bg-background shadow-xs ring-2
-                          ring-primary/10
-                          transition-all duration-150
+                          block size-4.5 shrink-0 cursor-grab rounded-full
+                          border border-primary/25 bg-background shadow-xs
+                          ring-2 ring-primary/10 transition-all duration-150
                           hover:scale-110 hover:bg-card hover:ring-primary/20
                           focus-visible:ring-4 focus-visible:ring-ring/25
                           focus-visible:outline-hidden
+                          active:scale-95 active:cursor-grabbing
                           disabled:pointer-events-none disabled:opacity-50
-                          cursor-grab active:cursor-grabbing active:scale-95
                           data-vertical:h-4.5 data-vertical:w-4.5
                         "
                     />

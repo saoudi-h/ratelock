@@ -94,7 +94,9 @@ export function SimulationSection() {
                 })
             }
 
-            return registerReplay(() => tl.restart(true, false))
+            return registerReplay(() => {
+                tl.restart(true, false)
+            })
         },
         { scope: ref }
     )
@@ -103,15 +105,18 @@ export function SimulationSection() {
         <section ref={ref} className="relative bg-muted">
             <div
                 className="
-              mx-auto max-w-7xl px-6 py-20
-              md:py-28
-            ">
-                <div ref={headerRef} className="mb-12 md:mb-16">
+                  mx-auto max-w-7xl px-6 py-20
+                  md:py-28
+                ">
+                <div ref={headerRef} className="
+                  mb-12
+                  md:mb-16
+                ">
                     <h2
                         className="
-                      font-heading text-3xl font-semibold tracking-tight
-                      md:text-4xl
-                    ">
+                          font-heading text-3xl font-semibold tracking-tight
+                          md:text-4xl
+                        ">
                         Try it live
                     </h2>
                     <p className="mt-4 max-w-lg text-muted-foreground">
@@ -123,10 +128,10 @@ export function SimulationSection() {
                 <div
                     ref={simRef}
                     className="
-                  overflow-hidden rounded-2xl border border-border/70 bg-card/95
-                  p-6 shadow-sm
-                  md:p-8
-                ">
+                      overflow-hidden rounded-2xl border border-border/70
+                      bg-card/95 p-6 shadow-sm
+                      md:p-8
+                    ">
                     {isVisible ? <StrategyTabs /> : <SimulationSkeleton />}
                 </div>
             </div>

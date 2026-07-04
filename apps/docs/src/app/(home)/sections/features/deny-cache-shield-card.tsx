@@ -93,7 +93,9 @@ export function DenyCacheShieldCard() {
                     '-=0.3'
                 )
 
-            return registerReplay(() => tl.restart(true, false))
+            return registerReplay(() => {
+                tl.restart(true, false)
+            })
         },
         { scope: ref }
     )
@@ -113,22 +115,27 @@ export function DenyCacheShieldCard() {
                       bg-background/50 p-4 font-mono text-[10px] shadow-sm
                       select-none
                     ">
-                    <div className="flex items-center justify-between border-b border-border/20 pb-2">
+                    <div className="
+                      flex items-center justify-between border-b
+                      border-border/20 pb-2
+                    ">
                         <span
                             className="
-                              font-bold tracking-wider text-muted-foreground/60
-                              uppercase text-[8px]
+                              text-[8px] font-bold tracking-wider
+                              text-muted-foreground/60 uppercase
                             ">
                             DoS mitigation active
                         </span>
                         <span
                             data-telemetry-status
                             className="
-                              flex items-center gap-1 rounded-md border border-emerald-500/20
-                              bg-emerald-500/10 px-1.5 py-0.5 text-[8px] font-bold
-                              text-emerald-500
+                              flex items-center gap-1 rounded-md border
+                              border-emerald-500/20 bg-emerald-500/10 px-1.5
+                              py-0.5 text-[8px] font-bold text-emerald-500
                             ">
-                            <span className="size-1 animate-pulse rounded-full bg-emerald-500" />
+                            <span className="
+                              size-1 animate-pulse rounded-full bg-emerald-500
+                            " />
                             Protected
                         </span>
                     </div>
@@ -141,19 +148,25 @@ export function DenyCacheShieldCard() {
                         </div>
                         <div data-telemetry-row className="flex justify-between">
                             <span className="text-muted-foreground">Local Cache State:</span>
-                            <span className="font-mono font-bold text-emerald-500">
+                            <span className="
+                              font-mono font-bold text-emerald-500
+                            ">
                                 Cached (Deny)
                             </span>
                         </div>
                         <div data-telemetry-row className="flex justify-between">
                             <span className="text-muted-foreground">Database Query:</span>
-                            <span className="font-mono font-bold text-muted-foreground">
+                            <span className="
+                              font-mono font-bold text-muted-foreground
+                            ">
                                 Bypassed (0 queries)
                             </span>
                         </div>
                         <div data-telemetry-row className="flex justify-between">
                             <span className="text-muted-foreground">Response Latency:</span>
-                            <span className="font-mono font-bold text-emerald-500">
+                            <span className="
+                              font-mono font-bold text-emerald-500
+                            ">
                                 0.02ms (Local)
                             </span>
                         </div>

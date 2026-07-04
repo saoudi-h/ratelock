@@ -61,8 +61,8 @@ export function SectionHeader({
             <span
                 className={cn(
                     `
-                      inline-flex items-center gap-1.5 rounded-full border
-                      px-3 py-1 text-xs font-semibold select-none
+                      inline-flex items-center gap-1.5 rounded-full border px-3
+                      py-1 text-xs font-semibold select-none
                     `,
                     themeMap[eyebrowTheme]
                 )}>
@@ -75,7 +75,8 @@ export function SectionHeader({
                 ref={titleRef}
                 className={cn(
                     `
-                      mt-4 font-heading text-4xl/snug font-semibold tracking-tight
+                      mt-4 font-heading text-4xl/snug font-semibold
+                      tracking-tight
                       md:text-5xl/snug
                     `,
                     titleClassName
@@ -87,7 +88,9 @@ export function SectionHeader({
                 ))}
             </h2>
             {description ? (
-                <p className="mt-4 max-w-lg leading-relaxed text-muted-foreground">
+                <p className="
+                  mt-4 max-w-lg leading-relaxed text-muted-foreground
+                ">
                     {description}
                 </p>
             ) : null}

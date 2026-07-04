@@ -26,9 +26,7 @@ export const Logo: React.FC<{ iconClassName?: string; className?: string }> = ({
     return (
         <div
             className={cn(
-                `
-              flex cursor-pointer items-center justify-center gap-4 p-2
-            `,
+                `flex cursor-pointer items-center justify-center gap-4 p-2`,
                 className
             )}>
             <LogoIcon className={cn('size-7', iconClassName)} />

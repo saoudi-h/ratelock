@@ -31,7 +31,9 @@ export function HeroBadge() {
                         gsap.set(el, { y: 0, opacity: 1, clearProps: 'filter' }),
                 }
             )
-            return registerReplay(() => tl.restart(true, false))
+            return registerReplay(() => {
+                tl.restart(true, false)
+            })
         },
         { scope: ref }
     )
@@ -40,10 +42,9 @@ export function HeroBadge() {
         <span
             ref={ref}
             className="
-              gsap-prep inline-flex items-center gap-2 rounded-xl
-              border border-border/40 bg-card/50 px-3 py-1.5
-              font-mono text-xs font-semibold text-muted-foreground
-              shadow-xs select-none
+              gsap-prep inline-flex items-center gap-2 rounded-xl border
+              border-border/40 bg-card/50 px-3 py-1.5 font-mono text-xs
+              font-semibold text-muted-foreground shadow-xs select-none
             ">
             <span className="size-1.5 animate-pulse rounded-full bg-primary" />
             v0.2 • Open Source

@@ -31,22 +31,24 @@ export function PlayOverlay({ onPlay }: PlayOverlayProps) {
             {/* Ripple ring behind the button */}
             <div
               className={cn(
-                styles.animatePlayRipple ,`pointer-events-none absolute size-20
-                rounded-full border-2 border-emerald-500/30
-              `)}
+                styles.animatePlayRipple ,`
+                  pointer-events-none absolute size-20 rounded-full border-2
+                  border-emerald-500/30
+                `)}
             />
 
             {/* Main play button */}
             <div
               className={cn(
-                styles.animatePlayPulse, `relative flex size-16 items-center
-                justify-center rounded-full bg-emerald-500/90 shadow-lg
-                shadow-emerald-500/25 transition-all duration-200
-                group-hover:scale-110 group-hover:shadow-xl
-                group-hover:shadow-emerald-500/30
-                group-active:scale-95
-                hover:bg-emerald-500
-              `)}>
+                styles.animatePlayPulse, `
+                  relative flex size-16 items-center justify-center rounded-full
+                  bg-emerald-500/90 shadow-lg shadow-emerald-500/25
+                  transition-all duration-200
+                  group-hover:scale-110 group-hover:shadow-xl
+                  group-hover:shadow-emerald-500/30
+                  group-active:scale-95
+                  hover:bg-emerald-500
+                `)}>
                 <Play
                   className="
                     ml-0.5 size-7 text-white transition-transform duration-200

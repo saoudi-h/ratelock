@@ -155,7 +155,9 @@ export function HeroStats() {
       });
 
       // Register for bfcache replay (restart timeline, don't re-split)
-      registerReplay(() => tl.restart(true, false));
+      registerReplay(() => {
+                tl.restart(true, false)
+            });
 
       return () => { splits.forEach(({ split }) => split.revert()); };
     },
@@ -166,11 +168,10 @@ export function HeroStats() {
     <div
       ref={ref}
       className="
-              gsap-prep grid grid-cols-2 gap-3
-              [perspective:1000px]
-              sm:gap-4
-              lg:grid-cols-4 lg:gap-4
-            "
+        gsap-prep grid grid-cols-2 gap-3 perspective-[1000px]
+        sm:gap-4
+        lg:grid-cols-4 lg:gap-4
+      "
     >
       {STATS.map((stat) => {
         const isLong = stat.value.length > 6;
@@ -180,12 +181,11 @@ export function HeroStats() {
             <div
               data-stat-value
               className={`
-                              font-heading leading-none font-black tracking-tighter
-                              text-foreground/50 transition-colors duration-200
-                              text-shadow-xs
-                              group-hover:text-primary/80
-                              ${fontSize}
-                            `}
+                font-heading leading-none font-black tracking-tighter
+                text-foreground/50 transition-colors duration-200 text-shadow-xs
+                group-hover:text-primary/80
+                ${fontSize}
+              `}
             >
               {stat.value}
             </div>
@@ -193,18 +193,18 @@ export function HeroStats() {
               <div
                 data-stat-label
                 className="
-                                  text-[11px] font-bold tracking-wider text-muted-foreground
-                                  uppercase
-                                "
+                  text-[11px] font-bold tracking-wider text-muted-foreground
+                  uppercase
+                "
               >
                 {stat.label}
               </div>
               <div
                 data-stat-desc
                 className="
-                                  mt-1 text-[10.5px] leading-normal font-medium
-                                  text-muted-foreground/70
-                                "
+                  mt-1 text-[10.5px] leading-normal font-medium
+                  text-muted-foreground/70
+                "
               >
                 {stat.desc}
               </div>

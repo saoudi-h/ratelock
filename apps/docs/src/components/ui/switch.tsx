@@ -24,13 +24,13 @@ function Switch({
                   focus-visible:ring-ring/30
                   aria-invalid:border-destructive aria-invalid:ring-3
                   aria-invalid:ring-destructive/20
-                  data-checked:border-primary data-checked:bg-primary
-                  data-disabled:cursor-not-allowed data-disabled:opacity-50
-                  data-unchecked:border-transparent data-unchecked:bg-input/90
                   data-[size=default]:h-5 data-[size=default]:w-11
                   data-[size=sm]:h-4 data-[size=sm]:w-7
                   dark:aria-invalid:border-destructive/50
                   dark:aria-invalid:ring-destructive/40
+                  data-checked:border-primary data-checked:bg-primary
+                  data-unchecked:border-transparent data-unchecked:bg-input/90
+                  data-disabled:cursor-not-allowed data-disabled:opacity-50
                 `,
                 className
             )}
@@ -46,8 +46,8 @@ function Switch({
                   group-data-[size=sm]/switch:h-3
                   group-data-[size=sm]/switch:w-4
                   data-checked:translate-x-[calc(100%-8px)]
-                  data-unchecked:translate-x-0
                   dark:data-checked:bg-primary-foreground
+                  data-unchecked:translate-x-0
                   dark:data-unchecked:bg-foreground
                 "
             />

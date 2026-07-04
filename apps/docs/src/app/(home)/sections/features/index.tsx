@@ -27,18 +27,30 @@ export function FeaturesSection() {
                 <div
                     className="
                       grid grid-cols-1 gap-6
-                      md:grid-cols-6 md:auto-rows-fr
+                      md:auto-rows-fr md:grid-cols-6
                     ">
-                    <div className="h-full md:col-span-4">
+                    <div className="
+                      h-full
+                      md:col-span-4
+                    ">
                         <DenyCacheShieldCard />
                     </div>
-                    <div className="h-full md:col-span-2">
+                    <div className="
+                      h-full
+                      md:col-span-2
+                    ">
                         <CircuitBreakerCard />
                     </div>
-                    <div className="h-full md:col-span-2">
+                    <div className="
+                      h-full
+                      md:col-span-2
+                    ">
                         <FallbackPoliciesCard />
                     </div>
-                    <div className="h-full md:col-span-4">
+                    <div className="
+                      h-full
+                      md:col-span-4
+                    ">
                         <ErrorPoliciesCard />
                     </div>
                 </div>

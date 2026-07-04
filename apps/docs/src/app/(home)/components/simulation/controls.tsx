@@ -20,13 +20,24 @@ function getSliderValue(value: number | readonly number[]): number {
 export function ConfigPanel({ config, onConfigChange }: ConfigPanelProps) {
     if (isTokenBucketConfig(config)) {
         return (
-            <div className="flex flex-col sm:flex-row items-center gap-6 w-full py-1 text-sm">
-                <div className="flex-1 w-full space-y-1.5">
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span className="font-semibold uppercase tracking-wider text-[10px]">
+            <div className="
+              flex w-full flex-col items-center gap-6 py-1 text-sm
+              sm:flex-row
+            ">
+                <div className="w-full flex-1 space-y-1.5">
+                    <div className="
+                      flex items-center justify-between text-xs
+                      text-muted-foreground
+                    ">
+                        <span className="
+                          text-[10px] font-semibold tracking-wider uppercase
+                        ">
                             Capacity
                         </span>
-                        <span className="font-mono text-xs font-bold text-foreground bg-muted/65 border border-border/30 px-1.5 py-0.5 rounded-md">
+                        <span className="
+                          rounded-md border border-border/30 bg-muted/65 px-1.5
+                          py-0.5 font-mono text-xs font-bold text-foreground
+                        ">
                             {config.capacity}
                         </span>
                     </div>
@@ -40,12 +51,20 @@ export function ConfigPanel({ config, onConfigChange }: ConfigPanelProps) {
                     />
                 </div>
 
-                <div className="flex-1 w-full space-y-1.5">
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span className="font-semibold uppercase tracking-wider text-[10px]">
+                <div className="w-full flex-1 space-y-1.5">
+                    <div className="
+                      flex items-center justify-between text-xs
+                      text-muted-foreground
+                    ">
+                        <span className="
+                          text-[10px] font-semibold tracking-wider uppercase
+                        ">
                             Refill rate
                         </span>
-                        <span className="font-mono text-xs font-bold text-foreground bg-muted/65 border border-border/30 px-1.5 py-0.5 rounded-md">
+                        <span className="
+                          rounded-md border border-border/30 bg-muted/65 px-1.5
+                          py-0.5 font-mono text-xs font-bold text-foreground
+                        ">
                             {config.refillRate}/s
                         </span>
                     </div>
@@ -63,13 +82,24 @@ export function ConfigPanel({ config, onConfigChange }: ConfigPanelProps) {
     }
 
     return (
-        <div className="flex flex-col sm:flex-row items-center gap-6 w-full py-1 text-sm">
-            <div className="flex-1 w-full space-y-1.5">
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span className="font-semibold uppercase tracking-wider text-[10px]">
+        <div className="
+          flex w-full flex-col items-center gap-6 py-1 text-sm
+          sm:flex-row
+        ">
+            <div className="w-full flex-1 space-y-1.5">
+                <div className="
+                  flex items-center justify-between text-xs
+                  text-muted-foreground
+                ">
+                    <span className="
+                      text-[10px] font-semibold tracking-wider uppercase
+                    ">
                         Limit
                     </span>
-                    <span className="font-mono text-xs font-bold text-foreground bg-muted/65 border border-border/30 px-1.5 py-0.5 rounded-md">
+                    <span className="
+                      rounded-md border border-border/30 bg-muted/65 px-1.5
+                      py-0.5 font-mono text-xs font-bold text-foreground
+                    ">
                         {config.limit}
                     </span>
                 </div>
@@ -83,12 +113,20 @@ export function ConfigPanel({ config, onConfigChange }: ConfigPanelProps) {
                 />
             </div>
 
-            <div className="flex-1 w-full space-y-1.5">
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span className="font-semibold uppercase tracking-wider text-[10px]">
+            <div className="w-full flex-1 space-y-1.5">
+                <div className="
+                  flex items-center justify-between text-xs
+                  text-muted-foreground
+                ">
+                    <span className="
+                      text-[10px] font-semibold tracking-wider uppercase
+                    ">
                         Window
                     </span>
-                    <span className="font-mono text-xs font-bold text-foreground bg-muted/65 border border-border/30 px-1.5 py-0.5 rounded-md">
+                    <span className="
+                      rounded-md border border-border/30 bg-muted/65 px-1.5
+                      py-0.5 font-mono text-xs font-bold text-foreground
+                    ">
                         {(config.windowMs / 1000).toFixed(1)}s
                     </span>
                 </div>

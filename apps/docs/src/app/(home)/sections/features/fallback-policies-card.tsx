@@ -69,7 +69,9 @@ export function FallbackPoliciesCard() {
                     '<+=0.05'
                 )
 
-            return registerReplay(() => tl.restart(true, false))
+            return registerReplay(() => {
+                tl.restart(true, false)
+            })
         },
         { scope: ref }
     )

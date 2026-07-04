@@ -34,14 +34,16 @@ export function BentoBase({
             data-bento
             className={cn(
                 `
-                  group relative size-full rounded-4xl bg-card/60 p-1
-                  shadow-xs transition-colors duration-200 select-none
+                  group relative size-full rounded-4xl bg-card/60 p-1 shadow-xs
+                  transition-colors duration-200 select-none
                   hover:bg-card/60
                 `,
                 wrapperClassName
             )}
             {...rest}>
-            <div className={cn('relative size-full', density === 'compact' ? 'p-4' : 'p-6')}>
+            <div className={cn('relative size-full', density === 'compact' ? `
+              p-4
+            ` : `p-6`)}>
                 <div
                     aria-hidden
                     className="
@@ -49,7 +51,9 @@ export function BentoBase({
                       rounded-3xl bg-linear-to-b from-background to-transparent
                     "
                 />
-                <div className={cn('relative flex size-full flex-col justify-between', className)}>
+                <div className={cn(`
+                  relative flex size-full flex-col justify-between
+                `, className)}>
                     {children}
                 </div>
             </div>

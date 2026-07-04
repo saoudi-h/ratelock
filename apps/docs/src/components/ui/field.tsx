@@ -122,9 +122,7 @@ function FieldContent({ className, ...props }: React.ComponentProps<'div'>) {
         <div
             data-slot="field-content"
             className={cn(
-                `
-              group/field-content flex flex-1 flex-col gap-1 leading-snug
-            `,
+                `group/field-content flex flex-1 flex-col gap-1 leading-snug`,
                 className
             )}
             {...props}
@@ -249,7 +247,7 @@ function FieldError({
             return null
         }
 
-        const uniqueErrors = [...new Map(errors.map(error => [error?.message, error])).values()]
+        const uniqueErrors = [...new Map(errors.map(error => [error.message, error])).values()]
 
         if (uniqueErrors?.length == 1) {
             return uniqueErrors[0]?.message

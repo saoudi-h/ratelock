@@ -26,7 +26,9 @@ function ComboboxTrigger({ className, children, ...props }: ComboboxPrimitive.Tr
             className={cn("[&_svg:not([class*='size-'])]:size-4", className)}
             {...props}>
             {children}
-            <AltArrowDown className="pointer-events-none size-4 text-muted-foreground" />
+            <AltArrowDown className="
+              pointer-events-none size-4 text-muted-foreground
+            " />
         </ComboboxPrimitive.Trigger>
     )
 }
@@ -116,10 +118,6 @@ function ComboboxContent({
                           before:pointer-events-none before:absolute
                           before:inset-0 before:-z-1 before:rounded-[inherit]
                           before:backdrop-blur-2xl before:backdrop-saturate-150
-                          data-closed:animate-out data-closed:fade-out-0
-                          data-closed:zoom-out-95
-                          data-open:animate-in data-open:fade-in-0
-                          data-open:zoom-in-95
                           data-[chips=true]:min-w-(--anchor-width)
                           data-[side=bottom]:slide-in-from-top-2
                           data-[side=inline-end]:slide-in-from-left-2
@@ -142,6 +140,10 @@ function ComboboxContent({
                           **:data-[variant=destructive]:text-accent-foreground!
                           **:data-[variant=destructive]:focus:bg-foreground/10!
                           dark:ring-foreground/10
+                          data-open:animate-in data-open:fade-in-0
+                          data-open:zoom-in-95
+                          data-closed:animate-out data-closed:fade-out-0
+                          data-closed:zoom-out-95
                         `,
                         className
                     )}
@@ -179,10 +181,10 @@ function ComboboxItem({ className, children, ...props }: ComboboxPrimitive.Item.
                   relative flex w-full cursor-default items-center gap-2.5
                   rounded-2xl py-2 pr-8 pl-3 text-sm font-medium outline-hidden
                   select-none
-                  data-disabled:pointer-events-none data-disabled:opacity-50
                   data-highlighted:bg-accent
                   data-highlighted:text-accent-foreground
                   not-data-[variant=destructive]:data-highlighted:**:text-accent-foreground
+                  data-disabled:pointer-events-none data-disabled:opacity-50
                   [&_svg]:pointer-events-none [&_svg]:shrink-0
                   [&_svg:not([class*='size-'])]:size-4
                 `,

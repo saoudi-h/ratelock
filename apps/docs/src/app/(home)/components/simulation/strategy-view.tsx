@@ -100,16 +100,14 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
         const id = `projectile-${Date.now()}-${Math.random()}`
         setProjectiles(prev => [...prev, { id, type: 'auto', startX: x, startY: y, destX, destY }])
 
-        setTimeout(async () => {
-            if (sendRequestRef.current) {
-                await sendRequestRef.current()
-            }
+        setTimeout(() => {
+            void sendRequestRef.current?.()
         }, 180)
 
         setTimeout(() => {
             setProjectiles(prev => prev.filter(p => p.id !== id))
         }, 500)
-    }, [])
+    }, [strategyId])
 
     const {
         events,
@@ -129,27 +127,18 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
     const updateConfig = useSetAtom(updateConfigAtom)
 
     const [isDark, setIsDark] = useState(false)
-    const [isDesktop, setIsDesktop] = useState(false)
 
-    const startTimeRef = useRef<number | null>(null)
-    if (startTimeRef.current === null) {
-        startTimeRef.current = Date.now()
-    }
-    const startTime = startTimeRef.current
+    const [startTime] = useState(() => Date.now())
 
     useEffect(() => {
         const checkDark = () => setIsDark(document.documentElement.classList.contains('dark'))
-        const checkDesktop = () => setIsDesktop(window.innerWidth >= 1024)
         checkDark()
-        checkDesktop()
 
         const observer = new MutationObserver(checkDark)
         observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-        window.addEventListener('resize', checkDesktop)
 
         return () => {
             observer.disconnect()
-            window.removeEventListener('resize', checkDesktop)
         }
     }, [])
 
@@ -164,14 +153,14 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
             { id, type: 'manual', startX: x, startY: y, destX, destY },
         ])
 
-        setTimeout(async () => {
-            await sendRequest()
+        setTimeout(() => {
+            void sendRequest()
         }, 180)
 
         setTimeout(() => {
             setProjectiles(prev => prev.filter(p => p.id !== id))
         }, 500)
-    }, [sendRequest, isPlaying])
+    }, [sendRequest, isPlaying, strategyId])
 
     const handleReset = async () => {
         await resetSimulation(strategyId)
@@ -183,16 +172,23 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
         <div className="w-full space-y-6" ref={containerRef}>
             <Card
                 className="
-                  rounded-3xl border border-border/40 bg-card/70 py-0
-                  shadow-sm ring-0 overflow-hidden backdrop-blur-md
+                  overflow-hidden rounded-3xl border border-border/40 bg-card/70
+                  py-0 shadow-sm ring-0 backdrop-blur-md
                 ">
-                <CardContent className="p-6 relative flex flex-col items-stretch gap-6">
+                <CardContent className="
+                  relative flex flex-col items-stretch gap-6 p-6
+                ">
                     {/* Play overlay covering entire card when paused */}
                     {!isPlaying && <PlayOverlay onPlay={() => startPlaying(strategyId)} />}
 
                     {/* Compact Parameters Grid in the Bento Box */}
-                    <div className="flex flex-col gap-2 pb-2 border-b border-border/20">
-                        <span className="text-[10px] font-bold tracking-[0.16em] text-muted-foreground/80 uppercase">
+                    <div className="
+                      flex flex-col gap-2 border-b border-border/20 pb-2
+                    ">
+                        <span className="
+                          text-[10px] font-bold tracking-[0.16em]
+                          text-muted-foreground/80 uppercase
+                        ">
                             Parameters
                         </span>
                         <ConfigPanel
@@ -202,7 +198,7 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
                     </div>
 
                     {/* Timeline render area */}
-                    <div className="w-full relative" ref={timelineContainerRef}>
+                    <div className="relative w-full" ref={timelineContainerRef}>
 
                         {strategyId === 'fixed-window' && (
                             <FixedWindowTimeline
@@ -295,9 +291,14 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
 
             {/* Code Modal Dialog */}
             <Dialog open={isCodeOpen} onOpenChange={setIsCodeOpen}>
-                <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-hidden flex flex-col gap-4 rounded-3xl">
-                    <DialogHeader className="pb-1 border-b border-border/20">
-                        <DialogTitle className="text-base font-bold tracking-tight">
+                <DialogContent className="
+                  flex max-h-[85vh] flex-col gap-4 overflow-hidden rounded-3xl
+                  sm:max-w-2xl
+                ">
+                    <DialogHeader className="border-b border-border/20 pb-1">
+                        <DialogTitle className="
+                          text-base font-bold tracking-tight
+                        ">
                             API Implementation Example
                         </DialogTitle>
                         <DialogDescription className="text-xs">

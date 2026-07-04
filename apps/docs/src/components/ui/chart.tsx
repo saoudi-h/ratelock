@@ -213,7 +213,7 @@ function ChartTooltipContent({
                                     `,
                                     indicator === 'dot' && 'items-center'
                                 )}>
-                                {formatter && item?.value !== undefined && item.name ? (
+                                {formatter && item.value !== undefined && item.name ? (
                                     formatter(item.value, item.name, item, index, item.payload)
                                 ) : (
                                     <>
@@ -254,16 +254,14 @@ function ChartTooltipContent({
                                                 `,
                                                 nestLabel
                                                     ? 'items-end'
-                                                    : `
-                                                  items-center
-                                                `
+                                                    : `items-center`
                                             )}>
                                             <div className="grid gap-1.5">
                                                 {nestLabel ? tooltipLabel : null}
                                                 <span
                                                     className="
-                                                  text-muted-foreground
-                                                ">
+                                                      text-muted-foreground
+                                                    ">
                                                     {itemConfig?.label ?? item.name}
                                                 </span>
                                             </div>

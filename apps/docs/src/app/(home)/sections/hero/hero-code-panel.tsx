@@ -74,7 +74,9 @@ export function HeroCodePanel() {
                 },
             })
 
-            return registerReplay(() => entrance.restart(true, false))
+            return registerReplay(() => {
+                entrance.restart(true, false)
+            })
         },
         { scope: ref }
     )
@@ -83,15 +85,14 @@ export function HeroCodePanel() {
         <div
             className="
               relative flex w-full flex-col items-center justify-center
-              [perspective:1200px]
+              perspective-distant
               lg:items-end
             ">
             <div
                 ref={ref}
                 className="
-                  gsap-prep w-full max-w-125 transform-gpu transition-transform duration-500
-                  will-change-transform
-                  [transform-style:preserve-3d]
+                  gsap-prep w-full max-w-125 transform-gpu transition-transform
+                  duration-500 will-change-transform transform-3d
                   hover:scale-[1.02]
                   lg:max-w-none
                 ">
