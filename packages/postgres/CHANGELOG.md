@@ -1,4 +1,4 @@
-# @ratelock/core
+# @ratelock/postgres
 
 ## 0.2.0
 
@@ -160,14 +160,7 @@ windowMs?)` and `startAutoCleanup(driver, windowMs?)` are exported.
     installed. Both are declared as peer-optional. The CI matrix
     runs `[node, bun]` on every PR.
 
-## 0.1.1
-
 ### Patch Changes
 
-- [`10fac0b`](https://github.com/saoudi-h/ratelock/commit/10fac0b8f4a77a0aa6c630987284f3554e12b460) Thanks [@saoudi-h](https://github.com/saoudi-h)! - Patch release adding missing description fields to package manifests and removing unused TypeScript type declarations.
-
-## 0.1.0
-
-### Minor Changes
-
-- [`398232b`](https://github.com/saoudi-h/ratelock/commit/398232b11d4b0ff6e1e9e156191d8f543da35fb3) Thanks [@saoudi-h](https://github.com/saoudi-h)! - The official launch of RateLock! Featuring a high-performance core engine with extensible adapters for both local (in-memory) and Redis-backed distributed rate limiting.
+- Updated dependencies [[`60660bc`](https://github.com/saoudi-h/ratelock/commit/60660bc750809a534a4c7a8105fbb3be060c5ce4)]:
+    - @ratelock/core@0.2.0
