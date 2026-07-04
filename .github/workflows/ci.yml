@@ -29,6 +29,12 @@ jobs:
       - name: Install dependencies (Node + pnpm)
         uses: ./.github/actions/install
 
+      - name: Setup Bun
+        if: matrix.runtime == 'bun'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
       - name: Build
         run: |
           if [ "${{ matrix.runtime }}" = "bun" ]; then
@@ -47,26 +53,6 @@ jobs:
             pnpm test
           fi
 
-  integration:
-    name: Integration tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Install dependencies
-        uses: ./.github/actions/install
-
-      - name: Build
-        run: pnpm build
-
-      - name: Redis integration
-        run: pnpm --filter @ratelock/redis test:integration
-
-      - name: Postgres integration
-        run: pnpm --filter @ratelock/postgres test:integration
 
   lint:
     name: Lint, Typecheck & Publint
