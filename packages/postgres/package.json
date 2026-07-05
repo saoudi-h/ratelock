@@ -69,17 +69,17 @@
         "@eslint/js": "^10.0.1",
         "@ratelock/test-utils": "workspace:*",
         "@ratelock/vitest": "workspace:*",
-        "@tala-tools/eslint": "0.1.2",
+        "@tala-tools/eslint": "0.1.4",
         "@tala-tools/prettier": "0.0.3",
         "@tala-tools/tsconfig": "0.0.1",
-        "@types/node": "^25.9.0",
+        "@types/node": "^26.1.0",
         "@types/pg": "^8.20.0",
-        "@vitest/coverage-v8": "^4.1.6",
+        "@vitest/coverage-v8": "^4.1.9",
         "dotenv": "^17.4.2",
-        "pg": ">=8.0.0",
+        "pg": "^8.22.0",
         "postgres": ">=3.0.0",
         "typescript": "^6.0.3",
-        "vitest": "^4.1.6"
+        "vitest": "^4.1.9"
     },
     "engines": {
         "node": ">=20",

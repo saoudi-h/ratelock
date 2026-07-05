@@ -83,17 +83,17 @@
         "@eslint/js": "^10.0.1",
         "@ratelock/test-utils": "workspace:*",
         "@ratelock/vitest": "workspace:*",
-        "@tala-tools/eslint": "0.1.2",
+        "@tala-tools/eslint": "0.1.4",
         "@tala-tools/prettier": "0.0.3",
         "@tala-tools/tsconfig": "0.0.1",
-        "@types/node": "^25.9.0",
-        "@vitest/coverage-v8": "^4.1.6",
+        "@types/node": "^26.1.0",
+        "@vitest/coverage-v8": "^4.1.9",
         "dotenv": "^17.4.2",
-        "ioredis": "^5.10.1",
+        "ioredis": "^5.11.1",
         "luamin": "^1.0.4",
-        "redis": "^5.12.1",
+        "redis": "^6.1.0",
         "typescript": "^6.0.3",
-        "vitest": "^4.1.6"
+        "vitest": "^4.1.9"
     },
     "engines": {
         "node": ">=20",
