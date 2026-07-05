@@ -9,6 +9,7 @@ import { ReactLenis } from "lenis/react";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import React, { useEffect, useRef } from "react";
 import { gsap, registerGsap, ScrollTrigger } from "./(home)/_lib/gsap";
+import { Analytics } from "@/components/analytics/analytics";
 
 /**
  * Bridges Lenis with GSAP's ticker so that ScrollTrigger reads positions
@@ -64,6 +65,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
             <LenisGsapBridge />
             {children}
             <Toaster />
+            <Analytics />
           </TooltipProvider>
         </NuqsAdapter>
       </RootProvider>

@@ -1,3 +1,4 @@
+import { env } from '@env'
 import { ImageResponse } from 'next/og'
 
 const LOGO_PATH =
@@ -145,7 +146,7 @@ export function generateOGImage({ title, description, badge: _badge }: OGImagePr
                             fontFamily: 'monospace',
                             color: '#a1a1aa',
                         }}>
-                        {process.env.NEXT_PUBLIC_SITE_URL}
+                        {env.NEXT_PUBLIC_SITE_URL}
                     </span>
                 </div>
             </div>

@@ -21,6 +21,7 @@
         "@gsap/react": "^2.1.2",
         "@iconify/react": "^6.0.2",
         "@solar-icons/react-perf": "^2.1.1",
+        "@t3-oss/env-nextjs": "^0.13.11",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "cmdk": "^1.1.1",
