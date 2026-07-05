@@ -1,0 +1,87 @@
+import { CircuitBreakerOpenError } from './errors'
+import type { CircuitBreakerConfig, Limiter } from './types'
+type CircuitState = 'closed' | 'open' | 'half-open'
+
+/**
+ * Decorates a rate limiter with a Circuit Breaker resilience policy.
+ *
+ * **State Machine Behavior:**
+ * - `closed`: Requests are forwarded directly. Consecutive downstream database/network failures increment a counter.
+ * - `open`: Tripped when failure threshold is exceeded. Instantly rejects requests with a `CircuitBreakerOpenError` to avoid cascading failures.
+ * - `half-open`: Automatically entered after a `recoveryTimeoutMs` cooldown. A single successful probe transitions state back to `closed`, while any failure trips it back to `open`.
+ *
+ * @param limiter The downstream RateLimiter engine to protect.
+ * @param config Settings specifying the failure threshold and recovery timeout.
+ * @returns A protected RateLimiter engine with Circuit Breaker policy.
+ */
+export function withCircuitBreaker<T>(
+    limiter: Limiter<T>,
+    config: CircuitBreakerConfig
+): Limiter<T> {
+    const recoveryTimeoutMs = config.recoveryTimeoutMs ?? 30_000
+    let state: CircuitState = 'closed'
+    let failureCount = 0
+    let lastFailureTime = 0
+    let lastError: unknown
+
+    const tryTransition = (): void => {
+        if (state === 'open') {
+            if (Date.now() - lastFailureTime >= recoveryTimeoutMs) {
+                state = 'half-open'
+            } else {
+                throw new CircuitBreakerOpenError({ cause: lastError })
+            }
+        } else if (state === 'half-open') {
+            throw new CircuitBreakerOpenError({ cause: lastError })
+        }
+    }
+
+    const onSuccess = (): void => {
+        failureCount = 0
+        lastError = undefined
+        if (state === 'half-open') {
+            state = 'closed'
+        }
+    }
+
+    const onFailure = (err: unknown): void => {
+        failureCount++
+        lastFailureTime = Date.now()
+        lastError = err
+        if (failureCount >= config.failureThreshold) {
+            state = 'open'
+        }
+    }
+
+    const check = async (id: string): Promise<T> => {
+        tryTransition()
+        try {
+            const result = await limiter.check(id)
+            onSuccess()
+            return result
+        } catch (err) {
+            onFailure(err)
+            throw err
+        }
+    }
+
+    const checkBatch = async (ids: string[]): Promise<T[]> => {
+        tryTransition()
+        try {
+            const result = await limiter.checkBatch(ids)
+            onSuccess()
+            return result
+        } catch (err) {
+            onFailure(err)
+            throw err
+        }
+    }
+
+    return {
+        check,
+        checkBatch,
+        async destroy() {
+            await limiter.destroy?.()
+        },
+    }
+}

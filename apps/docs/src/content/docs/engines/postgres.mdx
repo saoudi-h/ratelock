@@ -1,0 +1,265 @@
+---
+title: PostgreSQL Engine
+description: PostgreSQL-backed rate limiting using UPSERTs and native SQL operations.
+---
+
+The PostgreSQL engine stores rate limit state in PostgreSQL tables using UPSERTs for atomic operations. It supports both `postgres` (porsager/postgres) and `pg` drivers, and runs on every [supported runtime](/docs/getting-started/runtimes).
+
+## Installation
+
+```bash
+npm install @ratelock/postgres postgres
+# or with pg
+npm install @ratelock/postgres pg
+```
+
+## Quick Start
+
+### With a Connection URL
+
+```typescript
+import { fixedWindow } from '@ratelock/postgres'
+
+const limiter = await fixedWindow({
+    url: 'postgres://user:pass@localhost:5432/mydb',
+    limit: 100,
+    windowMs: 60_000,
+})
+```
+
+### With an Existing Client (porsager/postgres)
+
+```typescript
+import postgres from 'postgres'
+import { fixedWindow } from '@ratelock/postgres'
+
+const sql = postgres('postgres://user:pass@localhost:5432/mydb')
+
+const limiter = await fixedWindow({
+    sql,
+    limit: 100,
+    windowMs: 60_000,
+})
+```
+
+### With an Existing Pool (pg)
+
+```typescript
+import { Pool } from 'pg'
+import { fixedWindow } from '@ratelock/postgres'
+
+const pool = new Pool({ connectionString: 'postgres://user:pass@localhost:5432/mydb' })
+
+const limiter = await fixedWindow({
+    pool,
+    limit: 100,
+    windowMs: 60_000,
+})
+```
+
+## Configuration Options
+
+All limiters in the PostgreSQL engine accept these shared base options:
+
+<AutoTypeTable path="../../packages/postgres/src/types.ts" type="PostgresLimiterBaseConfig" />
+
+## Built-in Resilience Policies
+
+All limiters accept optional resilience configurations at creation time:
+
+```typescript
+const limiter = await fixedWindow({
+    url: 'postgres://...',
+    limit: 100,
+    windowMs: 60_000,
+    cache: { maxSize: 1000, ttlMs: 30_000 },
+    retry: { maxAttempts: 3 },
+    circuitBreaker: { failureThreshold: 5, recoveryTimeoutMs: 30_000 },
+    fallback: 'allow',
+})
+```
+
+| Option           | Type                           | Description                                            |
+| ---------------- | ------------------------------ | ------------------------------------------------------ |
+| `cache`          | `CacheConfig`                  | Cache denied results in memory to reduce database load |
+| `retry`          | `RetryConfig`                  | Retry transient failures with exponential backoff      |
+| `circuitBreaker` | `CircuitBreakerConfig`         | Stop calling the database after consecutive failures   |
+| `fallback`       | `'throw' \| 'allow' \| 'deny'` | Behavior when the limiter throws                       |
+
+## Auto-Migrations
+
+On initialization, RateLock creates a dedicated `ratelock` schema and one table per strategy:
+
+```sql
+-- Created automatically:
+CREATE SCHEMA IF NOT EXISTS ratelock;
+
+CREATE TABLE IF NOT EXISTS ratelock.fixed_window (
+    key TEXT PRIMARY KEY,
+    count INTEGER NOT NULL DEFAULT 0,
+    expires_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ratelock.sliding_window (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    key TEXT NOT NULL,
+    ts TIMESTAMPTZ NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ratelock.token_bucket (
+    key TEXT PRIMARY KEY,
+    tokens DOUBLE PRECISION NOT NULL,
+    last_refill DOUBLE PRECISION NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+    capacity INTEGER NOT NULL,
+    refill_rate DOUBLE PRECISION NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ratelock.individual_fixed_window (
+    key TEXT PRIMARY KEY,
+    count INTEGER NOT NULL DEFAULT 0,
+    window_start TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    expires_at TIMESTAMPTZ NOT NULL
+);
+```
+
+<Callout title="Sliding Window is log-based" type="info">
+The PostgreSQL Sliding Window strategy uses the same algorithm as `@ratelock/redis` and `@ratelock/local`: it stores one row per request and counts entries within a rolling `[now − windowMs, now]` window. This keeps semantics identical across storage engines. Tables created by RateLock v0.1 used a counter-based approximation; the new `window_start < to_timestamp(...)` CTE migrations replace that schema automatically on the first boot.
+</Callout>
+
+Each table is indexed for the hot path:
+
+- `sliding_window` has a `(key, ts)` BTree index used by the count-and-insert CTE.
+- The three counter tables (`fixed_window`, `token_bucket`, `individual_fixed_window`) each have an index on `expires_at` to speed up cleanup of expired rows.
+
+Skip auto-migrations if you manage schema yourself:
+
+```typescript
+const limiter = await fixedWindow({
+    url: 'postgres://...',
+    limit: 100,
+    windowMs: 60_000,
+    skipMigrations: true,
+})
+```
+
+## Unlogged Tables
+
+For better write performance at the cost of crash safety, use unlogged tables:
+
+```typescript
+const limiter = await fixedWindow({
+    url: 'postgres://...',
+    limit: 100,
+    windowMs: 60_000,
+    unlogged: true,
+})
+```
+
+Unlogged tables are not written to WAL, providing significantly better write throughput. Data is lost on crash but rate limits are ephemeral anyway.
+
+## Auto-Cleanup
+
+The PostgreSQL engine runs periodic cleanup of expired rows in the background:
+
+- **Counter tables** (`fixed_window`, `token_bucket`, `individual_fixed_window`) are swept every 5 minutes — rows with `expires_at < NOW() − INTERVAL '1 hour'` are deleted.
+- **Log table** (`sliding_window`) is swept every 30 seconds — rows with `ts < now − windowMs` are deleted. The shorter cadence reflects that this table grows one row per request and the window itself bounds retention.
+
+Both timers use `setTimeout(...).unref()` so they never keep the process alive. You can also trigger a cleanup manually by passing a `PgDriver` instance and the configured `windowMs`:
+
+```typescript
+import { cleanupExpired, pgDriver, postgresDriver } from '@ratelock/postgres'
+import { Pool } from 'pg'
+
+// From an existing pg Pool. Provide the windowMs so the sliding-window
+// log table is pruned in this manual call too.
+const driver = pgDriver(new Pool({ connectionString: 'postgres://...' }))
+const deletedCount = await cleanupExpired(driver, 60_000)
+
+// Or from a porsager/postgres client
+import postgres from 'postgres'
+const sql = postgres('postgres://...')
+const deletedCount2 = await cleanupExpired(postgresDriver(sql), 60_000)
+```
+
+Wrap your existing client with `pgDriver(pool)` or `postgresDriver(sql)` to obtain a `PgDriver`. Both are exported from `@ratelock/postgres`. If you omit `windowMs`, only the counter tables are pruned.
+
+## All Exports
+
+```typescript
+import {
+    fixedWindow,
+    slidingWindow,
+    tokenBucket,
+    individualFixedWindow,
+    createConnection,
+    pgDriver,
+    postgresDriver,
+    runMigrations,
+    cleanupExpired,
+} from '@ratelock/postgres'
+```
+
+## Standalone Policies (Advanced)
+
+For advanced use cases (conditional policies, dynamic composition), import standalone wrappers directly:
+
+```typescript
+import { withCache, withRetry } from '@ratelock/postgres'
+
+const limiter = await fixedWindow({ url: 'postgres://...', limit: 100, windowMs: 60_000 })
+const cached = withCache(limiter, { maxSize: 500, ttlMs: 10_000 })
+```
+
+See [Resilience Policies](/docs/policies) for full documentation and when to use standalone vs built-in.
+
+## API Reference
+
+The factory functions accept these configuration types:
+
+<Tabs items={['fixedWindow', 'slidingWindow', 'tokenBucket', 'individualFixedWindow']}>
+    <Tab value="fixedWindow">
+        ### FixedWindowLimiterConfig
+        <AutoTypeTable
+            path="../../packages/postgres/src/fixed-window.ts"
+            type="FixedWindowLimiterConfig"
+        />
+    </Tab>
+    <Tab value="slidingWindow">
+        ### SlidingWindowLimiterConfig
+        <AutoTypeTable
+            path="../../packages/postgres/src/sliding-window.ts"
+            type="SlidingWindowLimiterConfig"
+        />
+    </Tab>
+    <Tab value="tokenBucket">
+        ### TokenBucketLimiterConfig
+        <AutoTypeTable
+            path="../../packages/postgres/src/token-bucket.ts"
+            type="TokenBucketLimiterConfig"
+        />
+    </Tab>
+    <Tab value="individualFixedWindow">
+        ### IndividualFixedWindowLimiterConfig
+        <AutoTypeTable
+            path="../../packages/postgres/src/individual-fixed-window.ts"
+            type="IndividualFixedWindowLimiterConfig"
+        />
+    </Tab>
+</Tabs>
+
+## When to Use
+
+- Applications already running PostgreSQL
+- When you want rate limiting without adding Redis to your stack
+- When you need durable, persisted rate limit state
+- When you benefit from PostgreSQL's ACID guarantees
+
+## Cleanup
+
+```typescript
+await limiter.destroy() // Stops auto-cleanup and closes the connection
+```
+
+If you provide your own client, `destroy()` does not close it - you manage the client lifecycle yourself.

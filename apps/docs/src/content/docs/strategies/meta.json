@@ -1,0 +1,4 @@
+{
+    "title": "Strategies",
+    "pages": ["index", "fixed-window", "sliding-window", "token-bucket", "individual-fixed-window"]
+}

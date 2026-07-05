@@ -1,6 +1,6 @@
 {
     "name": "@ratelock/vitest",
-    "version": "1.0.0",
+    "version": "0.0.0",
     "private": true,
     "main": "./dist/index.cjs",
     "types": "./dist/index.d.cts",
@@ -20,8 +20,8 @@
         "pre-commit": "lint-staged"
     },
     "devDependencies": {
-        "@tala-tools/eslint": "0.1.0",
-        "@tala-tools/prettier": "0.0.2",
+        "@tala-tools/eslint": "0.1.2",
+        "@tala-tools/prettier": "0.0.3",
         "@tala-tools/tsconfig": "0.0.1"
     },
     "exports": {
@@ -36,6 +36,6 @@
     },
     "module": "./dist/index.mjs",
     "dependencies": {
-        "vitest": "^4.1.5"
+        "vitest": "^4.1.6"
     }
 }

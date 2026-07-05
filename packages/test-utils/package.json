@@ -1,6 +1,6 @@
 {
     "name": "@ratelock/test-utils",
-    "version": "0.1.2",
+    "version": "0.0.1",
     "private": true,
     "type": "module",
     "main": "./dist/index.cjs",
@@ -14,37 +14,21 @@
             "import": "./dist/contracts/index.mjs",
             "require": "./dist/contracts/index.cjs"
         },
-        "./contracts/limiter.contract": {
-            "import": "./dist/contracts/limiter.contract.mjs",
-            "require": "./dist/contracts/limiter.contract.cjs"
+        "./contracts/fixed-window": {
+            "import": "./dist/contracts/fixed-window.mjs",
+            "require": "./dist/contracts/fixed-window.cjs"
         },
-        "./contracts/storage.contract": {
-            "import": "./dist/contracts/storage.contract.mjs",
-            "require": "./dist/contracts/storage.contract.cjs"
+        "./contracts/individual-fixed-window": {
+            "import": "./dist/contracts/individual-fixed-window.mjs",
+            "require": "./dist/contracts/individual-fixed-window.cjs"
         },
-        "./helpers": {
-            "import": "./dist/helpers/index.mjs",
-            "require": "./dist/helpers/index.cjs"
+        "./contracts/sliding-window": {
+            "import": "./dist/contracts/sliding-window.mjs",
+            "require": "./dist/contracts/sliding-window.cjs"
         },
-        "./helpers/random": {
-            "import": "./dist/helpers/random.mjs",
-            "require": "./dist/helpers/random.cjs"
-        },
-        "./helpers/time": {
-            "import": "./dist/helpers/time.mjs",
-            "require": "./dist/helpers/time.cjs"
-        },
-        "./mocks": {
-            "import": "./dist/mocks/index.mjs",
-            "require": "./dist/mocks/index.cjs"
-        },
-        "./mocks/clock.mock": {
-            "import": "./dist/mocks/clock.mock.mjs",
-            "require": "./dist/mocks/clock.mock.cjs"
-        },
-        "./mocks/logger.mock": {
-            "import": "./dist/mocks/logger.mock.mjs",
-            "require": "./dist/mocks/logger.mock.cjs"
+        "./contracts/token-bucket": {
+            "import": "./dist/contracts/token-bucket.mjs",
+            "require": "./dist/contracts/token-bucket.cjs"
         },
         "./package.json": "./package.json"
     },
@@ -66,21 +50,18 @@
         "@ratelock/core": "workspace:*"
     },
     "devDependencies": {
-        "@tala-tools/eslint": "0.1.0",
-        "@tala-tools/prettier": "0.0.2",
+        "@tala-tools/eslint": "0.1.2",
+        "@tala-tools/prettier": "0.0.3",
         "@tala-tools/tsconfig": "0.0.1",
-        "@types/node": "^25.6.0",
-        "@vitest/coverage-v8": "^4.1.5",
+        "@types/node": "^25.9.0",
+        "@vitest/coverage-v8": "^4.1.6",
         "chai": "^6.2.2",
         "rimraf": "^6.1.3",
         "typescript": "^6.0.3",
-        "vitest": "^4.1.5"
+        "vitest": "^4.1.6"
     },
     "engines": {
-        "node": ">=18.17.0"
-    },
-    "publishConfig": {
-        "access": "public"
+        "node": ">=20"
     },
     "module": "./dist/index.mjs"
 }

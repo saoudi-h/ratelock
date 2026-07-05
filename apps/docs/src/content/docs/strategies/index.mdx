@@ -1,0 +1,82 @@
+---
+title: Rate Limiting Strategies
+description: Overview of the 4 rate limiting algorithms available in RateLock.
+---
+
+RateLock provides 4 rate limiting strategies, each suited for different use cases.
+
+## Fixed Window
+
+Counts requests in fixed time windows. Simple and memory-efficient.
+
+**Best for:** General API rate limiting, when you don't need per-key windows.
+
+```typescript
+import { fixedWindow } from '@ratelock/local'
+
+const limiter = await fixedWindow({
+    limit: 100,
+    windowMs: 60_000, // 100 requests per minute
+})
+```
+
+## Sliding Window
+
+Smooths out the boundary problem of fixed windows by tracking individual request timestamps.
+
+**Best for:** When you need more accurate rate limiting without burst at window boundaries.
+
+```typescript
+import { slidingWindow } from '@ratelock/local'
+
+const limiter = await slidingWindow({
+    limit: 100,
+    windowMs: 60_000,
+})
+```
+
+## Token Bucket
+
+Allows bursts up to a capacity, then refills tokens at a steady rate.
+
+**Best for:** APIs that should allow occasional bursts but maintain a steady average rate.
+
+```typescript
+import { tokenBucket } from '@ratelock/local'
+
+const limiter = await tokenBucket({
+    capacity: 10, // max burst size
+    refillRate: 1, // 1 token per second
+})
+```
+
+## Individual Fixed Window
+
+Like Fixed Window, but each identifier gets its own independent window that starts on first request.
+
+**Best for:** Per-user rate limiting where each user's window should start when they first make a request.
+
+```typescript
+import { individualFixedWindow } from '@ratelock/local'
+
+const limiter = await individualFixedWindow({
+    limit: 10,
+    windowMs: 60_000,
+})
+```
+
+## Strategy Comparison
+
+| Strategy                | Memory | Accuracy  | Burst Support | Per-Key Window |
+| ----------------------- | ------ | --------- | ------------- | -------------- |
+| Fixed Window            | Low    | Good      | No            | Shared         |
+| Sliding Window          | Medium | Excellent | No            | Shared         |
+| Token Bucket            | Low    | Good      | Yes           | Shared         |
+| Individual Fixed Window | Low    | Good      | No            | Independent    |
+
+## Choosing a Strategy
+
+- **Start with Fixed Window** - it's the simplest and works for most cases
+- **Use Sliding Window** if you notice bursts at window boundaries
+- **Use Token Bucket** if you want to allow occasional bursts
+- **Use Individual Fixed Window** if each user should have their own window start time

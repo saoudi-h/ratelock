@@ -2,7 +2,7 @@ import type { UserConfigFn } from 'tsdown/config'
 import { defineConfig } from 'tsdown/config'
 
 const configFn: UserConfigFn = defineConfig(async ({ watch }) => ({
-    entry: ['./src/index.ts', './src/*/index.ts'],
+    entry: ['./src/index.ts'],
     platform: 'node',
     dts: {
         sourcemap: !!watch,

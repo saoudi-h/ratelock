@@ -1,95 +1,101 @@
-# RateLock Redis (`@ratelock/redis`)
+# @ratelock/redis
 
-<p align="center">
-  <strong>A high-performance, distributed rate limiter for Node.js, powered by Redis.</strong>
-</p>
+> Distributed rate limiting powered by Redis and atomic Lua scripts.
 
-<p align="center">
-  <a href="https://www.npmjs.com/package/@ratelock/redis"><img src="https://img.shields.io/npm/v/@ratelock/redis.svg" alt="NPM Version"></a>
-  <a href="https://github.com/saoudi-h/ratelock/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/@ratelock/redis.svg" alt="License"></a>
-</p>
+[![npm version](https://img.shields.io/npm/v/@ratelock/redis.svg)](https://www.npmjs.com/package/@ratelock/redis)
+[![License](https://img.shields.io/npm/l/@ratelock/redis.svg)](https://github.com/saoudi-h/ratelock/blob/main/LICENSE)
 
----
+## When to Use
 
-`@ratelock/redis` provides a robust, distributed rate limiting solution using Redis as a backend. It's the ideal choice for applications running in a multi-server or serverless environment, ensuring consistent rate limiting across your entire infrastructure.
+- Multi-server or serverless deployments
+- When you need consistent rate limits across processes
+- High-traffic applications requiring Redis-level performance
+- When atomicity matters (no race conditions between checks)
 
-## ✨ Key Features
-
-- **🌐 Distributed & Scalable:** Reliably enforce rate limits across any number of servers or processes.
-- **🚀 High Performance:** Leverages the speed of Redis and uses optimized Lua scripts for atomic operations, preventing race conditions and ensuring maximum performance.
-- **🛡️ Consistent State:** Provides a single source of truth for rate limit counters, no matter where the request is handled.
-- **⚙️ Simple API:** Get started quickly with a clean, factory-based API similar to other RateLock adapters.
-- **💪 Resilient:** Built to handle enterprise-level traffic and benefits from Redis's stability.
-
-## 📦 Installation
-
-This package has a peer dependency on `redis`. You need to install both:
+## Installation
 
 ```bash
 npm install @ratelock/redis redis
-# or
-yarn add @ratelock/redis redis
-# or
-pnpm add @ratelock/redis redis
+# or with ioredis
+npm install @ratelock/redis ioredis
 ```
 
-## 🚀 Getting Started
+## Quick Start
 
-Here is a basic example of how to create a **Fixed Window** rate limiter connected to your Redis instance.
+### With a Connection URL
+
+```typescript
+import { fixedWindow } from '@ratelock/redis'
+
+const limiter = await fixedWindow({
+    url: 'redis://localhost:6379',
+    limit: 100,
+    windowMs: 60_000,
+})
+```
+
+### With an Existing Client
 
 ```typescript
 import { createClient } from 'redis'
-import { createFixedWindowLimiter } from '@ratelock/redis'
+import { fixedWindow } from '@ratelock/redis'
 
-// 1. Create and connect your Redis client
-const redisClient = createClient({
-    // Your Redis configuration
-    url: 'redis://localhost:6379',
-})
+const redisClient = createClient({ url: 'redis://localhost:6379' })
 await redisClient.connect()
 
-// 2. Create the rate limiter, passing the client to the storage config
-const { limiter } = await createFixedWindowLimiter({
-    strategy: {
-        limit: 15, // Allow 15 requests
-        windowMs: 60000, // per 60 seconds
-    },
-    storage: {
-        client: redisClient,
-        // Optional prefix for all keys stored in Redis
-        prefix: 'my-app-ratelimit',
-    },
-})
-
-// 3. Use the limiter in your application (e.g., with Fastify)
-server.get('/api/protected', async (request, reply) => {
-    const userId = request.ip
-    const result = await limiter.check(userId)
-
-    if (!result.allowed) {
-        return reply.status(429).send({ message: 'Too Many Requests' })
-    }
-
-    reply.header('X-RateLimit-Limit', result.limit)
-    reply.header('X-RateLimit-Remaining', result.remaining)
-
-    return { message: 'You have access!' }
+const limiter = await fixedWindow({
+    client: redisClient,
+    limit: 100,
+    windowMs: 60_000,
+    prefix: 'my-app', // Optional key prefix
 })
 ```
 
-## 🤖 Atomic Operations with Lua
+### With ioredis
 
-To ensure the highest level of performance and prevent race conditions, `@ratelock/redis` implements all core logic in pre-loaded Lua scripts. This guarantees that operations like incrementing a counter are atomic, meaning they are performed as a single, indivisible operation within Redis.
+```typescript
+import IORedis from 'ioredis'
+import { fixedWindow } from '@ratelock/redis'
 
-## 📚 Strategies
+const limiter = await fixedWindow({
+    client: new IORedis('redis://localhost:6379'),
+    limit: 100,
+    windowMs: 60_000,
+})
+```
 
-You can easily create a limiter for any supported strategy by importing its dedicated factory function:
+## Built-in Resilience
 
-- `createFixedWindowLimiter`
-- `createSlidingWindowLimiter`
-- `createTokenBucketLimiter`
-- `createIndividualFixedWindowLimiter`
+All Redis limiters support optional resilience layers:
 
-## 📜 License
+```typescript
+const limiter = await fixedWindow({
+    url: 'redis://localhost:6379',
+    limit: 100,
+    windowMs: 60_000,
+    cache: { maxSize: 1000, ttlMs: 30_000 }, // Cache denied requests
+    retry: { maxAttempts: 3 }, // Retry on transient errors
+    circuitBreaker: { failureThreshold: 5 }, // Open circuit after failures
+    fallback: 'allow', // Fail-open policy
+})
+```
 
-This project is licensed under the MIT License.
+## All Strategies
+
+```typescript
+import { fixedWindow, slidingWindow, tokenBucket, individualFixedWindow } from '@ratelock/redis'
+```
+
+## Cleanup
+
+```typescript
+await limiter.destroy() // Closes the Redis connection (if created internally)
+```
+
+## Documentation
+
+Full API reference and guides at **[ratelock.vercel.app](https://ratelock.vercel.app)**.
+
+## License
+
+[MIT](./LICENSE)

@@ -1,0 +1,45 @@
+{
+    "name": "@ratelock/bench",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "bench:local": "tsx src/index.ts --legacy",
+        "bench:local:bun": "bun --bun run src/index.ts --legacy",
+        "bench:full": "docker compose up -d && tsx src/index.ts; status=$?; docker compose down; exit $status",
+        "bench:full:bun": "docker compose up -d && bun --bun run src/index.ts; status=$?; docker compose down; exit $status",
+        "bench:full:gc": "docker compose up -d && NODE_OPTIONS='--expose-gc' BENCH_GC=true tsx src/index.ts; status=$?; docker compose down; exit $status",
+        "bench:fair": "docker compose up -d && taskset -c 0 tsx src/index.ts; status=$?; docker compose down; exit $status",
+        "bench": "tsx src/index.ts --legacy",
+        "lint": "eslint . --max-warnings 0",
+        "lint:fix": "eslint . --max-warnings 0 --fix",
+        "format": "prettier \"**/*\" --ignore-unknown --list-different",
+        "format:fix": "prettier \"**/*\" --ignore-unknown --write",
+        "clean": "rimraf node_modules .turbo",
+        "typecheck": "tsgo --noEmit",
+        "pre-commit": "lint-staged"
+    },
+    "dependencies": {
+        "@ratelock/core": "workspace:*",
+        "@ratelock/local": "workspace:*",
+        "@ratelock/postgres": "workspace:*",
+        "@ratelock/redis": "workspace:*",
+        "ioredis": "^5.10.1",
+        "pg": "^8.21.0",
+        "postgres": "^3.4.9",
+        "rate-limiter-flexible": "^11.1.0",
+        "redis": "^5.12.1"
+    },
+    "devDependencies": {
+        "@tala-tools/eslint": "0.1.2",
+        "@tala-tools/prettier": "0.0.3",
+        "@tala-tools/tsconfig": "0.0.1",
+        "@types/node": "^25.9.0",
+        "@types/pg": "^8.20.0",
+        "tsx": "^4.22.2",
+        "typescript": "^6.0.3"
+    },
+    "engines": {
+        "node": ">=20",
+        "bun": ">=1.1"
+    }
+}
