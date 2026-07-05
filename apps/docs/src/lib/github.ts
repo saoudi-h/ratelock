@@ -1,4 +1,5 @@
 import type { ActionResponse, Feedback } from '@/components/ui-blocks/rate'
+import { env } from '@env'
 import type { Octokit } from 'octokit'
 import { App } from 'octokit'
 
@@ -10,14 +11,9 @@ let instance: Octokit | undefined
 
 async function getOctokit(): Promise<Octokit> {
     if (instance) return instance
-    const appId = process.env.GITHUB_APP_ID!
-    const privateKey = process.env.GITHUB_APP_PRIVATE_KEY!
+    const appId = env.GITHUB_APP_ID
+    const privateKey = env.GITHUB_APP_PRIVATE_KEY
 
-    if (!appId || !privateKey) {
-        throw new Error(
-            'No GitHub keys provided for GitHub App, docs feedback feature will not work.'
-        )
-    }
 
     const app = new App({
         appId,
