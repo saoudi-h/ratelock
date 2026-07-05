@@ -3,6 +3,7 @@ import { z } from 'zod'
 
 
 export const env = createEnv({
+    skipValidation: process.env.CI === 'true' || !!process.env.SKIP_ENV_VALIDATION,
     client: {
         // Next.js
         NEXT_PUBLIC_SITE_URL: z.string().min(1),
