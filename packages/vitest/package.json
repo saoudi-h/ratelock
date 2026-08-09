@@ -20,9 +20,9 @@
         "pre-commit": "lint-staged"
     },
     "devDependencies": {
-        "@tala-tools/eslint": "0.1.4",
+        "@tala-tools/eslint": "0.1.6",
         "@tala-tools/prettier": "0.0.3",
-        "@tala-tools/tsconfig": "0.0.1"
+        "@tala-tools/tsconfig": "0.0.2"
     },
     "exports": {
         ".": {
@@ -36,6 +36,6 @@
     },
     "module": "./dist/index.mjs",
     "dependencies": {
-        "vitest": "^4.1.9"
+        "vitest": "^4.1.10"
     }
 }
