@@ -18,12 +18,16 @@ export function tokenBucketContract(createLimiter: TokenBucketFactory): void {
         })
 
         it('blocks requests when tokens exhausted', async () => {
+            // Slow refill on purpose: a fast refill could restore a token
+            // between checks on slow environments and flip the denial.
+            const steadyLimiter = await createLimiter({ capacity: 5, refillRate: 1 })
             for (let i = 0; i < 5; i++) {
-                const r = await limiter.check('tb-user-2')
+                const r = await steadyLimiter.check('tb-saturated')
                 expect(r.allowed).toBe(true)
             }
-            const r = await limiter.check('tb-user-2')
+            const r = await steadyLimiter.check('tb-saturated')
             expect(r.allowed).toBe(false)
+            await steadyLimiter.destroy?.()
         })
 
         it('isolates different identifiers', async () => {
@@ -42,6 +46,16 @@ export function tokenBucketContract(createLimiter: TokenBucketFactory): void {
             const results = await limiter.checkBatch(['tb-batch-1', 'tb-batch-2'])
             expect(results).toHaveLength(2)
             expect(results[0]!.allowed).toBe(true)
+        })
+
+        it('checkBatch drains the shared bucket across duplicate identifiers', async () => {
+            const steadyLimiter = await createLimiter({ capacity: 5, refillRate: 1 })
+            const results = await steadyLimiter.checkBatch(['tb-dup', 'tb-dup'])
+            expect(results).toHaveLength(2)
+            expect(results.every(r => r.allowed)).toBe(true)
+            // Second occurrence consumes from the bucket state left by the first.
+            expect(results[1]!.tokens).toBeLessThan(results[0]!.tokens)
+            await steadyLimiter.destroy?.()
         })
     })
 }

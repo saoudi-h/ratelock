@@ -19,11 +19,16 @@ export function individualFixedWindowContract(createLimiter: IndividualFixedWind
         })
 
         it('blocks requests exceeding the limit', async () => {
+            // Long window on purpose: a short window could roll over mid-test
+            // (slow/cold drivers), legitimately resetting the counter and
+            // flipping the denial assertion.
+            const steadyLimiter = await createLimiter({ limit: 3, windowMs: 60_000 })
             for (let i = 0; i < 3; i++) {
-                await limiter.check('ifw-user-2')
+                await steadyLimiter.check('ifw-saturated')
             }
-            const r = await limiter.check('ifw-user-2')
+            const r = await steadyLimiter.check('ifw-saturated')
             expect(r.allowed).toBe(false)
+            await steadyLimiter.destroy?.()
         })
 
         it('isolates different identifiers', async () => {
@@ -45,6 +50,26 @@ export function individualFixedWindowContract(createLimiter: IndividualFixedWind
             const results = await limiter.checkBatch(['ifw-batch-1', 'ifw-batch-2'])
             expect(results).toHaveLength(2)
             expect(results[0]!.allowed).toBe(true)
+        })
+
+        it('checkBatch shares state across duplicate identifiers', async () => {
+            const steadyLimiter = await createLimiter({ limit: 3, windowMs: 60_000 })
+            const results = await steadyLimiter.checkBatch(['ifw-dup', 'ifw-other', 'ifw-dup'])
+            expect(results).toHaveLength(3)
+            // limit 3: two occurrences of the same id must both be admitted.
+            expect(results.every(r => r.allowed)).toBe(true)
+            await steadyLimiter.destroy?.()
+        })
+
+        it('checkBatch denies positions whose identifier is already exhausted', async () => {
+            const steadyLimiter = await createLimiter({ limit: 3, windowMs: 60_000 })
+            for (let i = 0; i < 3; i++) {
+                await steadyLimiter.check('ifw-exhausted')
+            }
+            const results = await steadyLimiter.checkBatch(['ifw-exhausted', 'ifw-batch-fresh'])
+            expect(results[0]!.allowed).toBe(false)
+            expect(results[1]!.allowed).toBe(true)
+            await steadyLimiter.destroy?.()
         })
     })
 }
