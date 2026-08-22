@@ -15,7 +15,7 @@
 - [x] **[CORE-02]** Fix duplicate-id batch fallback: replace `Promise.all` with sequential loop (nondeterministic results on concurrent same-key upserts, exposed by Bun SQL) `Priority: 🔵` `Complexity: S`
 - [ ] **[ENV-01]** Align `engines.node` to `>=22` in all package.json (README + CONTRIBUTING already say 22+) `Priority: 🔵` `Complexity: S`
 - [ ] **[TST-01]** Run redis/postgres `__integration__` suites against Docker, assess coverage completeness `Priority: 🔵` `Complexity: M`
-- [ ] **[REL-01]** Push `feat/bun-native-drivers`, open PR to main, let changesets + `release.yml` drive the versioning/publish flow `Priority: 🟠` `Complexity: S`
+- [x] **[REL-01]** Push `feat/bun-native-drivers`, open PR to main, let changesets + `release.yml` drive the versioning/publish flow `Priority: 🟠` `Complexity: S`
 
 ## 🔮 Backlog
 
