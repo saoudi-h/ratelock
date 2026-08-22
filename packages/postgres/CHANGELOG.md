@@ -1,5 +1,13 @@
 # @ratelock/postgres
 
+## 0.2.2
+
+### Patch Changes
+
+- [#9](https://github.com/saoudi-h/ratelock/pull/9) [`cb61c79`](https://github.com/saoudi-h/ratelock/commit/cb61c79b7017eb1615ddde64a6823d8b90d5da64) Thanks [@saoudi-h](https://github.com/saoudi-h)! - Relax the `PgPoolLike` interface so a real `pg.Pool` instance type-checks when passed via the `pool` option — its overloaded `query`/`end` signatures never satisfied the previous narrow structural type.
+
+- [#9](https://github.com/saoudi-h/ratelock/pull/9) [`cb61c79`](https://github.com/saoudi-h/ratelock/commit/cb61c79b7017eb1615ddde64a6823d8b90d5da64) Thanks [@saoudi-h](https://github.com/saoudi-h)! - Fix `checkBatch` on the sliding window when the identifier list contains duplicates: occurrences now resolve sequentially against accumulated state (matching single-check semantics and other engines) instead of sharing one pre-insert snapshot.
+
 ## 0.2.1
 
 ### Patch Changes
@@ -33,7 +41,7 @@
       root entry plus`./package.json`.
     - **Resilience configuration moves out of `RateLimiter`.** The
       `performance?: { cache, batch, lazyCleanup }`and`resilience?: {
-  retryConfig, circuitBreakerConfig }`knobs no longer exist. Retry and
+retryConfig, circuitBreakerConfig }`knobs no longer exist. Retry and
       circuit breaker are no longer mutually exclusive — they are independent
       decorators that can be stacked in any order.
     - **Cross-runtime minimum is now Node 20 / Bun 1.1.** v0.1 declared
@@ -70,7 +78,7 @@
         `withCache(withRetry(withFallback(limiter, 'deny'), { maxAttempts: 3 }),
 
     { maxSize: 1000, ttlMs: 30_000 })`. Inside each engine factory they are
-  applied in a documented recommended order: `withFallback`→
+applied in a documented recommended order: `withFallback`→
  `withCircuitBreaker`→`withRetry`→`withCache` → underlying limiter.
 
         ### Standalone engines (each is a first-class citizen)
