@@ -51,8 +51,13 @@ export function createPostgresCheckBatch(
         if (ids.length === 0) return []
         const keys = ids.map(id => buildKey(prefix, id))
         if (new Set(keys).size !== keys.length) {
+            // Sequential on purpose: concurrent same-key upserts resolve against
+            // different row snapshots depending on lock order, which scrambles
+            // per-position results. Sequential keeps single-check semantics.
             const check = createPostgresCheck(sql, prefix, capacity, refillRate)
-            return Promise.all(ids.map(id => check(id)))
+            const results: Awaited<ReturnType<typeof check>>[] = []
+            for (const id of ids) results.push(await check(id))
+            return results
         }
         const now = Date.now() / 1000
 
