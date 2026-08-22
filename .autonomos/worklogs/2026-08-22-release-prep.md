@@ -31,6 +31,7 @@
 
 ## Next steps for the next session
 
-- [REL-01] `git push -u origin feat/bun-native-drivers`, open PR to main. On merge: release.yml builds+tests, changesets/action opens "Version Packages" PR; merging that PR publishes to npm via NPM_TOKEN.
+- [REL-01] DONE: pushed `feat/bun-native-drivers`, opened PR #7 (https://github.com/saoudi-h/ratelock/pull/7). All checks green: unit tests Node+Bun matrix, lint/typecheck/publint, Vercel preview. Awaiting merge decision.
 - VERSIONING CORRECTION (maintainer decision, same day): both changesets downgraded to **patch** — pre-1.0 the second digit is the effective major and must not be bumped lightly. Both packages will publish as **0.2.1**. Policy recorded in root AGENT.md (`chore(agent): adopt patch-first versioning policy pre-1.0`).
-- Remaining sprint: [ENV-01] engines >=22 alignment could ride the same release train if desired; [TST-01] integration coverage assessment still open.
+- After merge: release.yml opens "Version Packages" PR → merging it publishes 0.2.1 × 2 to npm.
+- Remaining sprint: [ENV-01] engines >=22 alignment could ride a future train; [TST-01] integration coverage assessment still open.
