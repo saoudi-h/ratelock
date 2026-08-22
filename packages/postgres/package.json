@@ -1,7 +1,7 @@
 {
     "name": "@ratelock/postgres",
     "description": "PostgreSQL storage backend for RateLock rate limiting system",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "homepage": "https://github.com/saoudi-h/ratelock",
     "bugs": {
         "url": "https://github.com/saoudi-h/ratelock/issues"
