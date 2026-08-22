@@ -21,8 +21,12 @@ export interface RedisClient {
     }
 }
 
-function detectDriver(raw: unknown): 'redis' | 'ioredis' {
+function detectDriver(raw: unknown): 'redis' | 'ioredis' | 'bun' {
     if (raw && typeof raw === 'object') {
+        // Bun's native RedisClient exposes send(command, args); node-redis and
+        // ioredis expose sendCommand instead, so this check must come before
+        // any heuristic that falls back on shared methods like ping/get.
+        if ('send' in raw && typeof (raw as any).send === 'function') return 'bun'
         // ioredis v5 has 'status' and 'connector'; node-redis has 'isOpen'
         if ('connector' in raw) return 'ioredis'
         if ('isOpen' in raw) return 'redis'
@@ -30,13 +34,34 @@ function detectDriver(raw: unknown): 'redis' | 'ioredis' {
         if ('status' in raw) return 'ioredis'
         if ('ping' in raw) return 'redis'
     }
-    throw new Error('Unrecognized Redis client. Provide a redis (node-redis) or ioredis instance.')
+    throw new Error(
+        'Unrecognized Redis client. Provide a redis (node-redis), ioredis, or Bun RedisClient instance.'
+    )
 }
 
 async function loadFromUrl(
     url: string,
-    driver?: 'redis' | 'ioredis'
+    driver?: 'redis' | 'ioredis' | 'bun'
 ): Promise<{ client: unknown; disconnect: () => Promise<void> }> {
+    if (driver === 'bun') {
+        // Non-literal specifier keeps TS from resolving the module at compile
+        // time (no bun-types dependency); resolution happens under Bun only.
+        const bunModuleId = 'bun'
+        try {
+            const mod: any = await import(bunModuleId)
+            const client = new mod.RedisClient(url)
+            return {
+                client,
+                disconnect: async () => {
+                    void client.close()
+                },
+            }
+        } catch {
+            throw new Error(
+                'bun module not found - the "bun" driver requires the Bun runtime (>= 1.4)'
+            )
+        }
+    }
     if (driver === 'redis' || !driver) {
         try {
             const mod = await import('redis')
@@ -67,10 +92,46 @@ async function loadFromUrl(
         }
     }
     throw new Error(
-        'No Redis client found. Install redis or ioredis:\n' +
+        'No Redis client found. Install redis or ioredis, or run under Bun (>= 1.4) with driver: "bun":\n' +
             '  npm install redis\n' +
             '  npm install ioredis'
     )
+}
+
+/** Queued batch over Bun's auto-pipelined send(): commands flush concurrently on exec(). */
+function createBunBatch(client: any): {
+    get(key: string): void
+    set(key: string, value: string, ttlMs: number): void
+    del(...keys: string[]): void
+    evalsha(sha1: string, keys: string[], args: string[]): void
+    eval(script: string, keys: string[], args: string[]): void
+    exec(): Promise<unknown[]>
+} {
+    const queue: Array<() => Promise<unknown>> = []
+    const push = (fn: () => Promise<unknown>) => queue.push(fn)
+    return {
+        get(key: string) {
+            push(() => client.get(key))
+        },
+        set(key: string, value: string, ttlMs: number) {
+            push(() => client.send('SET', [key, value, 'PX', String(ttlMs)]))
+        },
+        del(...keys: string[]) {
+            const flat = keys.flat()
+            if (flat.length > 0) push(() => client.del(...flat))
+        },
+        evalsha(sha1: string, keys: string[], args: string[]) {
+            push(() => client.send('EVALSHA', [sha1, String(keys.length), ...keys, ...args]))
+        },
+        eval(script: string, keys: string[], args: string[]) {
+            push(() => client.send('EVAL', [script, String(keys.length), ...keys, ...args]))
+        },
+        async exec(): Promise<unknown[]> {
+            const pending = [...queue]
+            queue.length = 0
+            return Promise.all(pending.map(run => run()))
+        },
+    }
 }
 
 export function adaptClient(raw: unknown): RedisClient {
@@ -78,25 +139,32 @@ export function adaptClient(raw: unknown): RedisClient {
 
     return {
         async eval(script, keys, args): Promise<unknown> {
+            const client = raw as any
+            if (driver === 'bun') {
+                return client.send('EVAL', [script, String(keys.length), ...keys, ...args])
+            }
             if (driver === 'redis') {
-                const client = raw as any
                 return client.eval(script, { keys, arguments: args })
             }
-            const client = raw as any
             return client.eval(script, keys.length, ...keys, ...args)
         },
 
         async evalsha(sha1, keys, args): Promise<unknown> {
+            const client = raw as any
+            if (driver === 'bun') {
+                return client.send('EVALSHA', [sha1, String(keys.length), ...keys, ...args])
+            }
             if (driver === 'redis') {
-                const client = raw as any
                 return client.evalSha(sha1, { keys, arguments: args })
             }
-            const client = raw as any
             return client.evalsha(sha1, keys.length, ...keys, ...args)
         },
 
         async loadScript(script: string): Promise<string> {
             const client = raw as any
+            if (driver === 'bun') {
+                return client.send('SCRIPT', ['LOAD', script])
+            }
             if (driver === 'redis') {
                 return client.scriptLoad(script)
             }
@@ -110,7 +178,9 @@ export function adaptClient(raw: unknown): RedisClient {
 
         async set(key: string, value: string, ttlMs: number): Promise<void> {
             const client = raw as any
-            if (driver === 'redis') {
+            if (driver === 'bun') {
+                await client.send('SET', [key, value, 'PX', String(ttlMs)])
+            } else if (driver === 'redis') {
                 await client.set(key, value, { PX: ttlMs })
             } else {
                 await client.set(key, value, 'PX', ttlMs)
@@ -120,11 +190,17 @@ export function adaptClient(raw: unknown): RedisClient {
         async del(...keys: string[]): Promise<number> {
             if (keys.length === 0) return 0
             const client = raw as any
+            if (driver === 'bun') {
+                return client.del(...keys)
+            }
             return client.del(keys)
         },
 
         async pExpire(key: string, ttlMs: number): Promise<unknown> {
             const client = raw as any
+            if (driver === 'bun') {
+                return client.send('PEXPIRE', [key, String(ttlMs)])
+            }
             if (driver === 'redis') {
                 return client.pExpire(key, ttlMs)
             }
@@ -133,6 +209,9 @@ export function adaptClient(raw: unknown): RedisClient {
 
         multi(): any {
             const client = raw as any
+            if (driver === 'bun') {
+                return createBunBatch(client)
+            }
             const m = client.multi()
             return {
                 get(key: string) {
@@ -167,6 +246,9 @@ export function adaptClient(raw: unknown): RedisClient {
 
         pipeline(): any {
             const client = raw as any
+            if (driver === 'bun') {
+                return createBunBatch(client)
+            }
             const p = driver === 'ioredis' ? client.pipeline() : client.multi()
             return {
                 evalsha(sha1: string, keys: string[], args: string[]) {
@@ -219,6 +301,7 @@ export async function createConnection(
     throw new Error(
         'Provide either a Redis client instance or a connection URL.\n' +
             '  fixedWindow({ client: myRedisClient, ... })\n' +
-            '  fixedWindow({ url: "redis://localhost:6379", ... })'
+            '  fixedWindow({ url: "redis://localhost:6379", driver: "bun" }) // Bun >= 1.4\n' +
+            '  fixedWindow({ url: "redis://localhost:6379" })'
     )
 }
