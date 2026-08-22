@@ -1,7 +1,7 @@
 import { fixedWindow as createLocalFixed } from '@ratelock/local'
 import { performance } from 'perf_hooks'
 
-async function bench(name: string, check: (id: string) => Promise<unknown>, durationMs = 3000) {
+async function bench(name: string, check: (id: string) => Promise<unknown>, durationMs = Number(process.env.BENCH_DRIVERS_DURATION_MS ?? 3000)) {
     const latencies: number[] = []
     let ok = 0
     const start = performance.now()
@@ -56,6 +56,19 @@ async function main() {
     await bench('local        (in-memory)', id => local.check(id))
 
     // 2. Redis drivers
+    try {
+        // Bun >= 1.4 native client — auto-detected by @ratelock/redis.
+        const bunModuleId = 'bun'
+        const { RedisClient } = (await import(bunModuleId)) as any
+        const c0 = new RedisClient('redis://:testpassword@localhost:6380')
+        const { fixedWindow: r0 } = await import('@ratelock/redis')
+        const l0 = await r0({ client: c0, limit: 10000, windowMs: 60000 })
+        await bench('redis        (bun native)', id => l0.check(id))
+        c0.close()
+    } catch (e: any) {
+        console.log(`  redis (bun native): SKIPPED (${e.message})\n`)
+    }
+
     try {
         const { createClient } = await import('redis')
         const c1 = createClient({ url: 'redis://:testpassword@localhost:6380' })
