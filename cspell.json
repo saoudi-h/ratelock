@@ -4,6 +4,8 @@
     "language": "en",
     "dictionaries": ["typescript", "node", "npm", "html", "css", "bash"],
     "words": [
+        "Contentful",
+        "spoofable",
         "saoudi",
         "hakim",
         "ratelock",
