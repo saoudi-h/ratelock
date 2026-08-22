@@ -1,5 +1,11 @@
 # @ratelock/redis
 
+## 0.2.1
+
+### Patch Changes
+
+- [#7](https://github.com/saoudi-h/ratelock/pull/7) [`2000eed`](https://github.com/saoudi-h/ratelock/commit/2000eedf353249090a37cd760ce29507a7318a8a) Thanks [@saoudi-h](https://github.com/saoudi-h)! - Add Bun native RedisClient as a first-class driver (requires Bun >= 1.4). The driver is auto-detected when a `RedisClient` instance is passed as `client`, or can be forced with `driver: 'bun'` using a connection URL — no npm dependency needed. Lua scripts run through the client's raw command API with automatic pipelining; benchmarks show it as the fastest Redis path available to RateLock.
+
 ## 0.2.0
 
 ### Minor Changes
@@ -27,18 +33,18 @@
       root entry plus`./package.json`.
     - **Resilience configuration moves out of `RateLimiter`.** The
       `performance?: { cache, batch, lazyCleanup }`and`resilience?: {
-    retryConfig, circuitBreakerConfig }`knobs no longer exist. Retry and
+  retryConfig, circuitBreakerConfig }`knobs no longer exist. Retry and
       circuit breaker are no longer mutually exclusive — they are independent
       decorators that can be stacked in any order.
     - **Cross-runtime minimum is now Node 20 / Bun 1.1.** v0.1 declared
-     `engines.node >= 16`; v0.2 declares `{ "node": ">=20", "bun": ">=1.1" }`
+      `engines.node >= 16`; v0.2 declares `{ "node": ">=20", "bun": ">=1.1" }`
       and is tested on both runtimes in CI.
     - **`@ratelock/postgres`had no v0.1 release.** It ships for the first
       time in v0.2 and starts at 1.0.0.
     - **Logger injection is removed.** v0.1 strategies accepted an injected
-     `Logger`; v0.2 has no logger concept.
+      `Logger`; v0.2 has no logger concept.
     - **The v0.1 `apps/playground` is removed.\*\* Its interactive simulations
-    live now inside the docs site as in-page MDX components.
+      live now inside the docs site as in-page MDX components.
 
         ## New architecture
 
@@ -64,8 +70,8 @@
         `withCache(withRetry(withFallback(limiter, 'deny'), { maxAttempts: 3 }),
 
     { maxSize: 1000, ttlMs: 30_000 })`. Inside each engine factory they are
-    applied in a documented recommended order: `withFallback`→
-   `withCircuitBreaker`→`withRetry`→`withCache` → underlying limiter.
+  applied in a documented recommended order: `withFallback`→
+ `withCircuitBreaker`→`withRetry`→`withCache` → underlying limiter.
 
         ### Standalone engines (each is a first-class citizen)
 
