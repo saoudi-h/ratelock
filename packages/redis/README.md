@@ -64,6 +64,34 @@ const limiter = await fixedWindow({
 })
 ```
 
+### With Bun's native client (Bun >= 1.4)
+
+No dependency needed — the driver is auto-detected:
+
+```typescript
+import { fixedWindow } from '@ratelock/redis'
+
+const limiter = await fixedWindow({
+    url: 'redis://localhost:6379',
+    driver: 'bun',
+    limit: 100,
+    windowMs: 60_000,
+})
+```
+
+Or pass an existing `RedisClient` instance — detection is automatic:
+
+```typescript
+import { RedisClient } from 'bun'
+import { fixedWindow } from '@ratelock/redis'
+
+const limiter = await fixedWindow({
+    client: new RedisClient('redis://localhost:6379'),
+    limit: 100,
+    windowMs: 60_000,
+})
+```
+
 ## Built-in Resilience
 
 All Redis limiters support optional resilience layers:

@@ -10,7 +10,7 @@ The Redis engine executes atomic Lua scripts for distributed rate limiting. Each
 - **Token Bucket** uses hashes (`HMGET`/`HMSET`) to store the token count and last-refill time.
 - **Individual Fixed Window** uses two keys per identifier (start + count) with `GET`/`SET`/`INCR`.
 
-The engine supports both `redis` (node-redis) and `ioredis` clients, and runs on every [supported runtime](/docs/getting-started/runtimes).
+The engine supports `redis` (node-redis), `ioredis`, and Bun's native client (Bun >= 1.4), and runs on every [supported runtime](/docs/getting-started/runtimes).
 
 ## Installation
 
@@ -59,6 +59,21 @@ import { fixedWindow } from '@ratelock/redis'
 
 const limiter = await fixedWindow({
     client: new IORedis('redis://localhost:6379'),
+    limit: 100,
+    windowMs: 60_000,
+})
+```
+
+### With Bun's native client
+
+Zero dependency — pass a client instance or set `driver: 'bun'`:
+
+```typescript
+import { RedisClient } from 'bun'
+import { fixedWindow } from '@ratelock/redis'
+
+const limiter = await fixedWindow({
+    client: new RedisClient('redis://localhost:6379'),
     limit: 100,
     windowMs: 60_000,
 })

@@ -43,6 +43,7 @@ if (!result.allowed) {
 ## Core Features
 
 - **Cross-runtime**: Same source on Node.js 22+ and Bun 1.1+, tested on every PR
+- **Native Bun Redis client**: `@ratelock/redis` auto-detects Bun's built-in RedisClient (>= 1.4) — zero extra dependency, fastest measured path
 - **4 rate limiting strategies**: Fixed Window, Sliding Window, Token Bucket, Individual Fixed Window
 - **Built-in resilience**: Retry with backoff, circuit breaker, error policies, deny cache
 - **TypeScript first**: Full type safety, no `any` leaks

@@ -59,8 +59,13 @@ export function createPgCheckBatch(drv: PgDriver, prefix: string, windowMs: numb
         if (ids.length === 0) return []
         const keys = ids.map(id => buildKey(prefix, id))
         if (new Set(keys).size !== keys.length) {
+            // Sequential on purpose: concurrent same-key upserts resolve against
+            // different row snapshots depending on lock order, which scrambles
+            // per-position results. Sequential keeps single-check semantics.
             const check = createPgCheck(drv, prefix, windowMs, limit)
-            return Promise.all(ids.map(id => check(id)))
+            const results: Awaited<ReturnType<typeof check>>[] = []
+            for (const id of ids) results.push(await check(id))
+            return results
         }
         const nextWindowStartMs = computeNextWindowStartMs(windowMs)
         const rows = await drv.query<{
