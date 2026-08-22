@@ -8,8 +8,10 @@ export interface PostgresSqlLike {
 
 /** Représente la structure minimale et stricte attendue d'un pool pg */
 export interface PgPoolLike {
-    query<T = any>(sql: string, params?: any[]): Promise<{ rows: T[] }>
-    end(): Promise<void>
+    // pg v8 declares query/end with overloads and generics that never satisfy
+    // a narrow structural signature — accept the natural call shapes instead.
+    query(...args: any[]): Promise<{ rows: any[] }>
+    end(...args: any[]): Promise<void>
 }
 
 /** Représente la structure minimale d'un driver Pg interne ou mocké */
