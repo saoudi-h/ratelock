@@ -145,6 +145,23 @@ Or with ioredis:
   </CodeBlockTab>
 </CodeBlockTabs>
 
+### With Bun's native client
+
+On Bun >= 1.4, no extra dependency is needed — the driver is auto-detected:
+
+```typescript
+import { RedisClient } from 'bun'
+import { fixedWindow } from '@ratelock/redis'
+
+const limiter = await fixedWindow({
+    client: new RedisClient('redis://localhost:6379'),
+    limit: 100,
+    windowMs: 60_000,
+})
+```
+
+Or by URL with `driver: 'bun'`.
+
 ### PostgreSQL
 
 <CodeBlockTabs defaultValue="npm" groupId="package-manager">
