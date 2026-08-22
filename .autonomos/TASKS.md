@@ -13,7 +13,7 @@
 - [x] **[BUN-02]** Implement `bun` driver in `@ratelock/redis` (Bun 1.4 RedisClient over existing `RedisClient` interface) `Priority: 🟠` `Complexity: M`
 - [x] **[BENCH-01]** Benchmark Bun-native RedisClient vs node-redis/ioredis under Bun vs Node baseline, using `packages/bench` harness + docker compose `Priority: 🟠` `Complexity: M`
 - [x] **[CORE-02]** Fix duplicate-id batch fallback: replace `Promise.all` with sequential loop (nondeterministic results on concurrent same-key upserts, exposed by Bun SQL) `Priority: 🔵` `Complexity: S`
-- [ ] **[ENV-01]** Align `engines.node` to `>=22` in all package.json (README + CONTRIBUTING already say 22+) `Priority: 🔵` `Complexity: S`
+- [x] **[ENV-01]** Align `engines.node` to `>=22` in all package.json (README + CONTRIBUTING already say 22+) `Priority: 🔵` `Complexity: S`
 - [ ] **[TST-01]** Run redis/postgres `__integration__` suites against Docker, assess coverage completeness `Priority: 🔵` `Complexity: M`
 - [x] **[REL-01]** Push `feat/bun-native-drivers`, open PR to main, let changesets + `release.yml` drive the versioning/publish flow `Priority: 🟠` `Complexity: S`
 
