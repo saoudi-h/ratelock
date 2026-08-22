@@ -18,13 +18,17 @@ export function slidingWindowContract(createLimiter: SlidingWindowFactory): void
         })
 
         it('blocks requests exceeding the limit', async () => {
+            // Long window on purpose: entries from the first checks must not
+            // expire while the test is still issuing requests.
+            const steadyLimiter = await createLimiter({ limit: 5, windowMs: 60_000 })
             for (let i = 0; i < 5; i++) {
-                const r = await limiter.check('sl-user-2')
+                const r = await steadyLimiter.check('sw-saturated')
                 expect(r.allowed).toBe(true)
             }
-            const r = await limiter.check('sl-user-2')
+            const r = await steadyLimiter.check('sw-saturated')
             expect(r.allowed).toBe(false)
             expect(r.remaining).toBe(0)
+            await steadyLimiter.destroy?.()
         })
 
         it('provides windowStart and windowEnd', async () => {
@@ -43,6 +47,16 @@ export function slidingWindowContract(createLimiter: SlidingWindowFactory): void
             const results = await limiter.checkBatch(['sl-batch-1', 'sl-batch-2'])
             expect(results).toHaveLength(2)
             expect(results[0]!.allowed).toBe(true)
+        })
+
+        it('checkBatch accumulates duplicate identifiers into the shared window', async () => {
+            const steadyLimiter = await createLimiter({ limit: 5, windowMs: 60_000 })
+            const results = await steadyLimiter.checkBatch(['sw-dup', 'sw-dup'])
+            expect(results).toHaveLength(2)
+            expect(results.every(r => r.allowed)).toBe(true)
+            // Second occurrence must see the entry added by the first.
+            expect(results[0]!.remaining - results[1]!.remaining).toBe(1)
+            await steadyLimiter.destroy?.()
         })
     })
 }

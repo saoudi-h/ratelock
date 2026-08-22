@@ -19,13 +19,18 @@ export function fixedWindowContract(createLimiter: FixedWindowFactory): void {
         })
 
         it('blocks requests exceeding the limit', async () => {
+            // Long window on purpose: a short window could roll over mid-test
+            // (slow/cold drivers), legitimately resetting the counter and
+            // flipping the denial assertion.
+            const steadyLimiter = await createLimiter({ limit: 5, windowMs: 60_000 })
             for (let i = 0; i < 5; i++) {
-                const r = await limiter.check('user-2')
+                const r = await steadyLimiter.check('fw-saturated')
                 expect(r.allowed).toBe(true)
             }
-            const r = await limiter.check('user-2')
+            const r = await steadyLimiter.check('fw-saturated')
             expect(r.allowed).toBe(false)
             expect(r.remaining).toBe(0)
+            await steadyLimiter.destroy?.()
         })
 
         it('resets after windowMs', async () => {
@@ -82,6 +87,31 @@ export function fixedWindowContract(createLimiter: FixedWindowFactory): void {
             expect(results).toHaveLength(3)
             expect(results[0]!.allowed).toBe(true)
             expect(results[2]!.allowed).toBe(true)
+        })
+
+        it('checkBatch shares state across duplicate identifiers in position order', async () => {
+            const steadyLimiter = await createLimiter({ limit: 5, windowMs: 60_000 })
+            const results = await steadyLimiter.checkBatch(['fw-dup', 'fw-other', 'fw-dup'])
+            expect(results).toHaveLength(3)
+            expect(results.every(r => r.allowed)).toBe(true)
+            // limit 5: first occurrence consumes one slot, second occurrence
+            // must observe the accumulated state of the first.
+            expect(results[0]!.remaining).toBe(4)
+            expect(results[1]!.remaining).toBe(4)
+            expect(results[2]!.remaining).toBe(3)
+            await steadyLimiter.destroy?.()
+        })
+
+        it('checkBatch denies positions whose identifier is already exhausted', async () => {
+            const steadyLimiter = await createLimiter({ limit: 5, windowMs: 60_000 })
+            for (let i = 0; i < 5; i++) {
+                await steadyLimiter.check('fw-exhausted')
+            }
+            const results = await steadyLimiter.checkBatch(['fw-exhausted', 'fw-batch-fresh'])
+            expect(results[0]!.allowed).toBe(false)
+            expect(results[0]!.remaining).toBe(0)
+            expect(results[1]!.allowed).toBe(true)
+            await steadyLimiter.destroy?.()
         })
     })
 }

@@ -135,6 +135,15 @@ export function createPostgresCheckBatch(
     return async function checkBatch(ids: string[]) {
         if (ids.length === 0) return []
         const keys = ids.map(id => buildKey(prefix, id))
+        if (new Set(keys).size !== keys.length) {
+            // Sequential on purpose: the batch CTE inserts every input row in
+            // one statement, so duplicate ids would all resolve against the
+            // same pre-insert snapshot instead of accumulating per occurrence.
+            const check = createPostgresCheck(sql, prefix, windowMs, limit)
+            const results: Awaited<ReturnType<typeof check>>[] = []
+            for (const id of ids) results.push(await check(id))
+            return results
+        }
         const nowMs = Date.now()
         const cutoffMs = nowMs - windowMs
         const expiresAtMs = nowMs + windowMs * 2
