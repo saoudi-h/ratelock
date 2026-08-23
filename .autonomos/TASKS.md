@@ -20,7 +20,7 @@
 
 ## 🔮 Backlog
 
-- [/] **[INT-04]** Extract shared HTTP logic into private bundled `@ratelock/http-common` if duplication is confirmed when the third middleware lands (rule of three) `Priority: ⚪` `Complexity: S`
+- [x] **[INT-04]** Extract shared HTTP logic into private bundled `@ratelock/http-common` if duplication is confirmed when the third middleware lands (rule of three) `Priority: ⚪` `Complexity: S`
 - [ ] **[BUN-03]** Postgres under Bun via `Bun.SQL`. PARKED: maintainer avoids unified multi-DB APIs (scope + perf stance); revisit only if BENCH-01-style evidence shows native client wins and scope decision is explicit `Priority: ⚪` `Complexity: M`
 - [x] **[INT-01]** Hono middleware `@ratelock/hono`: engine-agnostic `rateLimit({ limiter })` accepting instance OR lazy factory (`() => Promise<Limiter>`, memoized singleton); headers `'both' | 'rfc' | 'legacy' | false` default `'both'` (+ Retry-After on 429); framework IP default + `keyGenerator` override; middleware contract tests in test-utils; README + docs page + changeset `Priority: 🟠` `Complexity: M`
 - [x] **[INT-02]** Express middleware `@ratelock/express` — support Express 4 AND 5 (async error semantics differ); `req.ip` + `trust proxy`; tests via supertest; research exact APIs first `Priority: 🟠` `Complexity: M`
