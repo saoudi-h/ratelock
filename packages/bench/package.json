@@ -12,12 +12,12 @@
         "bench": "tsx src/index.ts --legacy",
         "bench:drivers": "tsx src/driver-compare.ts",
         "bench:drivers:bun": "bun src/driver-compare.ts",
-        "lint": "eslint . --max-warnings 0",
-        "lint:fix": "eslint . --max-warnings 0 --fix",
-        "format": "prettier \"**/*\" --ignore-unknown --list-different",
-        "format:fix": "prettier \"**/*\" --ignore-unknown --write",
+        "lint": "oxlint --deny-warnings .",
+        "lint:fix": "oxlint --fix .",
+        "format": "oxfmt --check .",
+        "format:fix": "oxfmt --write .",
         "clean": "rimraf node_modules .turbo",
-        "typecheck": "tsgo --noEmit",
+        "typecheck": "tsc --noEmit",
         "pre-commit": "lint-staged"
     },
     "dependencies": {
@@ -32,16 +32,14 @@
         "redis": "^6.2.0"
     },
     "devDependencies": {
-        "@tala-tools/eslint": "0.1.6",
-        "@tala-tools/prettier": "0.0.3",
         "@tala-tools/tsconfig": "0.0.2",
         "@types/node": "^26.2.0",
         "@types/pg": "^8.21.0",
         "tsx": "^4.23.11",
-        "typescript": "^6.0.3"
+        "typescript": "7.0.2"
     },
     "engines": {
-        "node": ">=22",
-        "bun": ">=1.1"
+        "bun": ">=1.1",
+        "node": ">=22"
     }
 }

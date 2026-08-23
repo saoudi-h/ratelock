@@ -8,10 +8,10 @@
         "dev": "next dev --turbo",
         "start": "next start",
         "postinstall": "fumadocs-mdx",
-        "lint": "eslint .",
-        "lint:fix": "eslint . --fix",
-        "format": "prettier \"**/*\" --ignore-unknown --list-different",
-        "format:fix": "prettier \"**/*\" --ignore-unknown --write",
+        "lint": "oxlint --deny-warnings .",
+        "lint:fix": "oxlint --fix .",
+        "format": "oxfmt --check .",
+        "format:fix": "oxfmt --write .",
         "clean": "rimraf *.tsbuildinfo node_modules build dist .turbo .next .source",
         "typecheck": "tsc --noEmit",
         "lint-staged": "lint-staged"
@@ -58,21 +58,18 @@
         "@ratelock/postgres": "workspace:*",
         "@ratelock/redis": "workspace:*",
         "@tailwindcss/postcss": "^4.3.3",
-        "@tala-tools/eslint": "0.1.6",
-        "@tala-tools/prettier": "0.0.3",
         "@tala-tools/tsconfig": "0.0.2",
         "@types/mdx": "^2.0.14",
         "@types/node": "^26.2.0",
         "@types/react": "^19.2.18",
         "@types/react-dom": "^19.2.4",
         "babel-plugin-react-compiler": "^1.0.0",
-        "eslint": "^10.8.1",
+        "eslint-plugin-better-tailwindcss": "^4.7.0",
         "lint-staged": "^17.3.0",
         "postcss": "^8.5.26",
-        "prettier": "^3.9.6",
         "rimraf": "^6.1.3",
         "tailwindcss": "^4.3.3",
         "tw-animate-css": "^1.4.0",
-        "typescript": "^6.0.3"
+        "typescript": "7.0.2"
     }
 }

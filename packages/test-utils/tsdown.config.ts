@@ -1,7 +1,7 @@
 import type { UserConfigFn } from 'tsdown/config'
 import { defineConfig } from 'tsdown/config'
 
-const configFn: UserConfigFn = defineConfig(async ({ watch }) => ({
+const configFn: UserConfigFn = defineConfig(async ({ watch: _watch }) => ({
     entry: ['./src/**/*.ts'],
     platform: 'node',
     unused: {
