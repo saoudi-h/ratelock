@@ -1,4 +1,4 @@
 {
     "title": "Integrations",
-    "pages": ["hono", "express", "fastify", "elysia"]
+    "pages": ["hono", "express", "fastify", "elysia", "framework-recipes"]
 }

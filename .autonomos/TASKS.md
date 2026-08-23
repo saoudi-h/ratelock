@@ -26,7 +26,8 @@
 - [x] **[INT-02]** Express middleware `@ratelock/express` — support Express 4 AND 5 (async error semantics differ); `req.ip` + `trust proxy`; tests via supertest; research exact APIs first `Priority: 🟠` `Complexity: M`
 - [x] **[INT-03]** Fastify plugin `@ratelock/fastify` — fastify-plugin encapsulation pattern; `request.ip`; tests via built-in `inject()` `Priority: 🔵` `Complexity: M`
 - [x] **[INT-05]** Elysia plugin `@ratelock/elysia` — Bun-native synergy with our native driver; pin supported Elysia version range (fast-moving ecosystem) `Priority: 🔵` `Complexity: M`
-- [ ] **[INT-06]** Web-standard helper `@ratelock/web` — single Request/Response-based helper covering Next.js route handlers, SvelteKit, Astro, Remix, Nitro/H3 `Priority: 🔵` `Complexity: M`
+- [ ] **[INT-06]** Web-standard helper `@ratelock/web` — PARKED: competitor research shows market leader (Upstash) ships no framework packages for web-standard frameworks and manual 3-line pattern is the documented norm; Arcjet's counter-example is explained by IP-resolution machinery we deliberately don't own. Wake on user demand `Priority: ⚪` `Complexity: M`
+- [ ] **[DOC-03]** Framework recipes documentation — manual pattern guides for Next.js route handlers / SvelteKit / Astro / Remix (+ SolidStart), including full headers snippet, Retry-After, lazy init, per-platform IP extraction recipes (CF-Connecting-IP, Vercel, self-hosted) `Priority: 🟠` `Complexity: M`
 - [ ] **[ADP-01]** Upstash Redis adapter (serverless REST) `Priority: 🔵` `Complexity: M`
 - [ ] **[ADP-02]** Cloudflare KV adapter (edge) `Priority: 🔵` `Complexity: M`
 - [ ] **[ADP-03]** MongoDB adapter (TTL indexes) `Priority: ⚪` `Complexity: M`
