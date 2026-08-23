@@ -1,0 +1,142 @@
+---
+title: NestJS
+---
+
+# NestJS
+
+Rate limiting module for NestJS 10 and 11, powered by any RateLock engine.
+
+- **Engine-agnostic**: bring a `@ratelock/local`, `@ratelock/redis` or `@ratelock/postgres` limiter
+- **Both adapters supported**: Express and Fastify, tested on every change
+- **Application-wide by default**: registers through `APP_GUARD`; routes opt out with `@SkipRateLimit()`
+- **Lazy initialization**: pass a factory and the engine starts on the first guarded request
+- **Dual-family headers**: `RateLimit-*` (RFC 9331) and `X-RateLimit-*`, configurable
+
+## Installation
+
+<CodeBlockTabs defaultValue="pnpm" groupId="package-manager">
+  <CodeBlockTabsList>
+    <CodeBlockTabsTrigger value="npm">npm</CodeBlockTabsTrigger>
+    <CodeBlockTabsTrigger value="pnpm">pnpm</CodeBlockTabsTrigger>
+    <CodeBlockTabsTrigger value="yarn">yarn</CodeBlockTabsTrigger>
+    <CodeBlockTabsTrigger value="bun">bun</CodeBlockTabsTrigger>
+  </CodeBlockTabsList>
+  <CodeBlockTab value="npm">
+    ```bash
+    npm install @ratelock/nestjs @ratelock/redis
+    ```
+  </CodeBlockTab>
+  <CodeBlockTab value="pnpm">
+    ```bash
+    pnpm add @ratelock/nestjs @ratelock/redis
+    ```
+  </CodeBlockTab>
+  <CodeBlockTab value="yarn">
+    ```bash
+    yarn add @ratelock/nestjs @ratelock/redis
+    ```
+  </CodeBlockTab>
+  <CodeBlockTab value="bun">
+    ```bash
+    bun add @ratelock/nestjs @ratelock/redis
+    ```
+  </CodeBlockTab>
+</CodeBlockTabs>
+
+## Quick start
+
+```typescript
+import { Module } from '@nestjs/common'
+import { RatelockModule } from '@ratelock/nestjs'
+import { fixedWindow } from '@ratelock/redis'
+
+@Module({
+    imports: [
+        RatelockModule.forRoot({
+            // Lazy factory: nothing initializes until the first guarded request
+            limiter: () => fixedWindow({ url: process.env.REDIS_URL!, limit: 100, windowMs: 60_000 }),
+            limit: 100,
+            keyGenerator: req => req.ip ?? 'anon',
+        }),
+    ],
+})
+export class AppModule {}
+```
+
+Async configuration with your config service:
+
+```typescript
+RatelockModule.forRootAsync({
+    imports: [ConfigModule],
+    inject: [ConfigService],
+    useFactory: async (config: ConfigService) => ({
+        limiter: () =>
+            fixedWindow({ url: config.get('REDIS_URL')!, limit: 100, windowMs: 60_000 }),
+    }),
+})
+```
+
+Already have an instance? Pass it directly:
+
+```typescript
+const limiter = await fixedWindow({ limit: 100, windowMs: 60_000 })
+RatelockModule.forRoot({ limiter })
+```
+
+## Exempting routes
+
+```typescript
+import { Get } from '@nestjs/common'
+import { SkipRateLimit } from '@ratelock/nestjs'
+
+@Get('/health')
+@SkipRateLimit()
+health() {
+    return { status: 'up' }
+}
+```
+
+The decorator works at method or controller level; the method wins over the controller.
+
+## Manual guard binding
+
+Set `globalGuard: false` and attach the guard yourself:
+
+```typescript
+import { UseGuards } from '@nestjs/common'
+import { RatelockGuard } from '@ratelock/nestjs'
+
+@UseGuards(RatelockGuard)
+@Get('/limited')
+limited() {
+    return { ok: true }
+}
+```
+
+## Options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `limiter` | `Limiter \| (() => Limiter \| Promise<Limiter>)` | required | Any RateLock limiter. A factory is memoized and invoked once, on the first guarded request. |
+| `keyGenerator` | `(req) => string \| Promise<string>` | `req.ip` | Identifier the request is counted against; falls back to a shared `'anonymous'` bucket when unknown. |
+| `headers` | `'both' \| 'rfc' \| 'legacy' \| false` | `'both'` | Header families attached to responses. |
+| `limit` | `number` | (none) | Quota, used only to emit the `*Limit` headers. |
+| `denyStatusCode` | number | `429` | Status of the denial exception. |
+| `message` | string | `'Too Many Requests'` | JSON body carried by the denial exception. |
+| `globalGuard` | boolean | `true` | Bind through `APP_GUARD`. |
+
+Denials throw a NestJS `HttpException` carrying `{ error: message }`, so existing exception filters shape them. `Retry-After` (seconds) accompanies denials whenever the result exposes a reset or refill time.
+
+## Response headers
+
+| Family | Headers |
+|---|---|
+| RFC 9331 | `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset` |
+| Legacy | `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` |
+| Denial only | `Retry-After` |
+
+`RateLimit-Reset` is always in seconds. Token bucket results project `floor(tokens)` onto `*Remaining` and the refill time onto `Reset`.
+
+## Identifiers behind proxies
+
+The default identifier reads `request.ip`, available on both adapters and honoring their trust-proxy settings (`app.set('trust proxy')` on Express, `trustProxy` on Fastify). Behind a load balancer without trust configuration, all clients share one bucket. Set trust correctly or provide a `keyGenerator`. Never read raw `x-forwarded-for` yourself: attackers forge it per-request to bypass limits entirely.
