@@ -1,6 +1,6 @@
 {
     "name": "@ratelock/hono",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "description": "Rate limiting middleware for Hono — engine-agnostic, powered by any RateLock limiter",
     "keywords": [
         "rate-limit",
