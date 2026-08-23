@@ -1,4 +1,9 @@
 import type { BaseResult, Limiter } from '@ratelock/core'
+import {
+    collectRateLimitHeaders,
+    createLimiterResolver,
+    projectResult,
+} from '@ratelock/http-common'
 import type { FastifyInstance, FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify'
 import fastifyPlugin from 'fastify-plugin'
 
@@ -44,76 +49,13 @@ export interface RateLimitOptions<T extends BaseResult = BaseResult> {
     message?: string
 }
 
-interface HeaderInfo {
-    remaining: number | null
-    resetSeconds: number | null
-}
-
-const EPOCH_MS_THRESHOLD = 1e12
-
-function createResolver<T extends BaseResult>(input: LimiterInput<T>): () => Promise<Limiter<T>> {
-    if (typeof input === 'function') {
-        let initialized: Promise<Limiter<T>> | null = null
-        return () => {
-            initialized ??= Promise.resolve().then(input)
-            return initialized
-        }
-    }
-    return () => Promise.resolve(input)
-}
-
-function secondsUntil(value: number): number {
-    if (!Number.isFinite(value) || value <= 0) return 0
-    if (value > EPOCH_MS_THRESHOLD) return Math.max(0, Math.ceil((value - Date.now()) / 1000))
-    return Math.max(0, Math.ceil(value / 1000))
-}
-
-function project(result: Record<string, unknown>): HeaderInfo {
-    let remaining: number | null = null
-    if (typeof result.remaining === 'number') remaining = result.remaining
-    else if (typeof result.tokens === 'number') remaining = Math.floor(result.tokens)
-
-    const rawReset = result.reset ?? result.windowEnd ?? result.refillTime
-    const resetSeconds = typeof rawReset === 'number' ? secondsUntil(rawReset) : null
-
-    return { remaining, resetSeconds }
-}
-
-function applyHeaders(
-    reply: FastifyReply,
-    info: HeaderInfo,
-    mode: HeadersMode,
-    limit?: number
-): void {
-    if (mode === false) return
-    const rfc = mode === 'both' || mode === 'rfc'
-    const legacy = mode === 'both' || mode === 'legacy'
-
-    const set = (name: string, value: string) => reply.header(name, value)
-    if (limit != null && Number.isFinite(limit)) {
-        if (rfc) set('RateLimit-Limit', String(limit))
-        if (legacy) set('X-RateLimit-Limit', String(limit))
-    }
-    if (info.remaining != null) {
-        if (rfc) set('RateLimit-Remaining', String(info.remaining))
-        if (legacy) set('X-RateLimit-Remaining', String(info.remaining))
-    }
-    if (info.resetSeconds != null) {
-        if (rfc) set('RateLimit-Reset', String(info.resetSeconds))
-        if (legacy) set('X-RateLimit-Reset', String(info.resetSeconds))
-    }
-}
-
 function defaultKey(request: FastifyRequest): string {
     return request.ip
 }
 
-async function rateLimitImpl<T extends BaseResult = BaseResult>(
-    app: FastifyInstance,
-    options: RateLimitOptions<T>
-): Promise<void> {
-    const resolveLimiter = createResolver(options.limiter)
-    const mode: HeadersMode = options.headers === undefined ? 'both' : options.headers
+async function rateLimitImpl(app: FastifyInstance, options: RateLimitOptions): Promise<void> {
+    const resolveLimiter = createLimiterResolver(options.limiter)
+    const mode = options.headers === undefined ? ('both' as const) : options.headers
     const resolveKey = options.keyGenerator ?? defaultKey
 
     app.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -121,8 +63,9 @@ async function rateLimitImpl<T extends BaseResult = BaseResult>(
         const id = await resolveKey(request)
         const result = (await limiter.check(id)) as BaseResult & Record<string, unknown>
 
-        const info = project(result)
-        applyHeaders(reply, info, mode, options.limit)
+        const info = projectResult(result)
+        const headers = collectRateLimitHeaders(info, mode, options.limit)
+        for (const [name, value] of Object.entries(headers)) reply.header(name, value)
 
         if (!result.allowed) {
             if (info.resetSeconds != null) reply.header('Retry-After', String(info.resetSeconds))

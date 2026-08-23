@@ -1,7 +1,7 @@
 {
     "name": "@ratelock/express",
     "version": "0.1.0",
-    "description": "Rate limiting middleware for Express — engine-agnostic, powered by any RateLock limiter",
+    "description": "Rate limiting middleware for Express \u2014 engine-agnostic, powered by any RateLock limiter",
     "keywords": [
         "rate-limit",
         "rate-limiting",
@@ -57,6 +57,7 @@
     },
     "devDependencies": {
         "@ratelock/core": "workspace:*",
+        "@ratelock/http-common": "workspace:*",
         "@ratelock/local": "workspace:*",
         "@tala-tools/eslint": "0.1.6",
         "@tala-tools/prettier": "0.0.3",
