@@ -5,11 +5,11 @@ import type { ContentfulStatusCode } from 'hono/utils/http-status'
 /**
  * Which rate limit header families to attach to responses.
  *
- * - `'both'` — RFC 9331 (`RateLimit-*`) and the widely supported legacy
+ * - `'both'`: RFC 9331 (`RateLimit-*`) and the widely supported legacy
  *   `X-RateLimit-*` family. Best client compatibility.
- * - `'rfc'` — only the standard `RateLimit-*` headers.
- * - `'legacy'` — only `X-RateLimit-*`.
- * - `false` — no rate limit headers at all.
+ * - `'rfc'`: only the standard `RateLimit-*` headers.
+ * - `'legacy'`: only `X-RateLimit-*`.
+ * - `false`: no rate limit headers at all.
  */
 export type HeadersMode = 'both' | 'rfc' | 'legacy' | false
 
@@ -19,7 +19,7 @@ export type LimiterInput<T extends BaseResult> =
 
 export interface RateLimitOptions<T extends BaseResult = BaseResult> {
     /**
-     * The RateLock limiter enforcing the quota — any engine works
+     * The RateLock limiter enforcing the quota. Any engine works
      * (`@ratelock/local`, `@ratelock/redis`, `@ratelock/postgres`), decorated
      * or not. Pass a factory instead of an instance to defer engine
      * initialization until the first matched request (edge/cold-start friendly).
@@ -34,7 +34,7 @@ export interface RateLimitOptions<T extends BaseResult = BaseResult> {
     /** Header families attached to every handled response. Default `'both'`. */
     headers?: HeadersMode
     /**
-     * The configured quota, used only to emit the `*Limit` headers — results
+     * The configured quota, used only to emit the `*Limit` headers; results
      * do not carry it. Omit to skip those two headers.
      */
     limit?: number

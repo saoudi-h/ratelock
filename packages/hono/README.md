@@ -1,12 +1,12 @@
 # @ratelock/hono
 
-> Rate limiting middleware for [Hono](https://hono.dev) — engine-agnostic, powered by any RateLock limiter.
+> Rate limiting middleware for [Hono](https://hono.dev). Bring any RateLock limiter; the middleware stays engine-agnostic.
 
 [![npm version](https://img.shields.io/npm/v/@ratelock/hono.svg)](https://www.npmjs.com/package/@ratelock/hono)
 
 ## Why
 
-RateLock engines (`@ratelock/local`, `@ratelock/redis`, `@ratelock/postgres`) expose limiters; this package turns any of them into Hono middleware. Zero runtime dependencies beyond Hono itself — bring your own limiter, swap engines without touching your routes.
+RateLock engines (`@ratelock/local`, `@ratelock/redis`, `@ratelock/postgres`) expose limiters; this package turns any of them into Hono middleware. Zero runtime dependencies beyond Hono itself. Bring your own limiter and swap engines without touching your routes.
 
 ## Install
 
@@ -51,7 +51,7 @@ app.use('/api/*', rateLimit({ limiter }))
 | `limiter`        | `Limiter` or `() => Limiter \| Promise<Limiter>` | **required**          | Any RateLock limiter. A factory is memoized and invoked once, on the first matched request.                                 |
 | `keyGenerator`   | `(c: Context) => string \| Promise<string>`      | remote address        | Identifier the request is counted against. Falls back to a shared `'anonymous'` bucket when the runtime exposes no address. |
 | `headers`        | `'both' \| 'rfc' \| 'legacy' \| false`           | `'both'`              | `RateLimit-*` (RFC 9331) and/or `X-RateLimit-*` families.                                                                   |
-| `limit`          | `number`                                         | —                     | Quota, used only to emit the `*Limit` headers (results do not carry it).                                                    |
+| `limit`          | `number`                                         | (none)                | Quota, used only to emit the `*Limit` headers (results do not carry it).                                                    |
 | `denyStatusCode` | `ContentfulStatusCode`                           | `429`                 | Status returned when the quota is exhausted.                                                                                |
 | `message`        | `string`                                         | `'Too Many Requests'` | JSON body of the denial response.                                                                                           |
 
@@ -69,8 +69,8 @@ Denial responses include `Retry-After` (seconds) whenever the result exposes a r
 
 ## Identifiers and proxies
 
-The default key uses the runtime-provided remote address (Node socket, Bun `requestIP`, Deno `remoteAddr`). Behind a proxy or load balancer, that is your proxy's address — configure your framework's trust settings or provide a `keyGenerator` (API key, authenticated user id) instead. Never trust a raw `x-forwarded-for` header from untrusted clients: it is trivially spoofable.
+The default key uses the runtime-provided remote address (Node socket, Bun `requestIP`, Deno `remoteAddr`). Behind a proxy or load balancer, that address belongs to your proxy, so every client would share one bucket. Configure your framework's trust settings or provide a `keyGenerator` (API key, authenticated user id) instead. Never trust a raw `x-forwarded-for` header from untrusted clients: it is trivially spoofable.
 
 ## License
 
-[MIT](./LICENSE) — Hakim Saoudi
+[MIT](./LICENSE) · Hakim Saoudi

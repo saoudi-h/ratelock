@@ -36,6 +36,10 @@
       "name": "bench",
       "path": "packages/bench",
     },
+    {
+      "name": "hono",
+      "path": "packages/hono",
+    },
   ],
   "settings": {
     "cSpell.words": [],

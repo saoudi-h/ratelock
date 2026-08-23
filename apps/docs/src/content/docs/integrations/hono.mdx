@@ -6,9 +6,9 @@ title: Hono
 
 Rate limiting middleware for [Hono](https://hono.dev), powered by any RateLock engine.
 
-- **Engine-agnostic** — bring a `@ratelock/local`, `@ratelock/redis` or `@ratelock/postgres` limiter
-- **Lazy initialization** — pass a factory and the engine starts on the first matched request (cold-start friendly for edge/serverless)
-- **Dual-family headers** — `RateLimit-*` (RFC 9331) and `X-RateLimit-*`, configurable
+- **Engine-agnostic**: bring a `@ratelock/local`, `@ratelock/redis` or `@ratelock/postgres` limiter
+- **Lazy initialization**: pass a factory and the engine starts on the first matched request (cold-start friendly for edge/serverless)
+- **Dual-family headers**: `RateLimit-*` (RFC 9331) and `X-RateLimit-*`, configurable
 - **Zero runtime dependency** besides Hono itself
 
 ## Installation
@@ -78,7 +78,7 @@ app.use('/api/*', rateLimit({ limiter }))
 | `limiter` | `Limiter \| (() => Limiter \| Promise<Limiter>)` | required | Any RateLock limiter. A factory is memoized and invoked once, on the first matched request. |
 | `keyGenerator` | `(c) => string \| Promise<string>` | remote address | Identifier the request is counted against; falls back to a shared `'anonymous'` bucket when no address is available. |
 | `headers` | `'both' \| 'rfc' \| 'legacy' \| false` | `'both'` | Header families attached to responses. |
-| `limit` | `number` | — | Quota, used only to emit the `*Limit` headers. |
+| `limit` | `number` | (none) | Quota, used only to emit the `*Limit` headers. |
 | `denyStatusCode` | number | `429` | Status returned on exhaustion. |
 | `message` | string | `'Too Many Requests'` | JSON body of denial responses. |
 
@@ -94,4 +94,4 @@ app.use('/api/*', rateLimit({ limiter }))
 
 ## Identifiers behind proxies
 
-The default identifier is the runtime-provided remote address (Node socket, Bun `requestIP`, Deno `remoteAddr`). Behind a load balancer that address is your proxy's — all clients would share one bucket. Either configure your runtime's trust settings or provide a `keyGenerator`. Never read raw `x-forwarded-for` from untrusted clients: attackers can forge it per-request to bypass limits entirely.
+The default identifier is the runtime-provided remote address (Node socket, Bun `requestIP`, Deno `remoteAddr`). Behind a load balancer that address is your proxy's, so all clients would share one bucket. Configure your runtime's trust settings or provide a `keyGenerator`. Never read raw `x-forwarded-for` from untrusted clients: attackers can forge it per-request to bypass limits entirely.
