@@ -9,7 +9,7 @@
 
 - [x] **[INIT-01]** Review project context and structure `Priority: 🔵` `Complexity: S`
 - [x] **[INIT-02]** Triage legacy `BACKLOG.md` + `ANALYSIS_REPORT.md` into protocol issues/tasks `Priority: 🟠` `Complexity: M`
-- [x] **[BUN-01]** Evaluate Bun 1.4 native Redis/Postgres clients as drivers — PoC against `@ratelock/redis` + `@ratelock/postgres`, decide internal drivers vs dedicated packages, document decision `Priority: 🟠` `Complexity: L`
+- [x] **[BUN-01]** Evaluate Bun 1.4 native Redis/Postgres clients as drivers. PoC against `@ratelock/redis` + `@ratelock/postgres`, decide internal drivers vs dedicated packages, document decision `Priority: 🟠` `Complexity: L`
 - [x] **[BUN-02]** Implement `bun` driver in `@ratelock/redis` (Bun 1.4 RedisClient over existing `RedisClient` interface) `Priority: 🟠` `Complexity: M`
 - [x] **[BENCH-01]** Benchmark Bun-native RedisClient vs node-redis/ioredis under Bun vs Node baseline, using `packages/bench` harness + docker compose `Priority: 🟠` `Complexity: M`
 - [x] **[CORE-02]** Fix duplicate-id batch fallback: replace `Promise.all` with sequential loop (nondeterministic results on concurrent same-key upserts, exposed by Bun SQL) `Priority: 🔵` `Complexity: S`
@@ -20,8 +20,9 @@
 
 ## 🔮 Backlog
 
-- [ ] **[BUN-03]** Postgres under Bun via `Bun.SQL` — PARKED: maintainer avoids unified multi-DB APIs (scope + perf stance); revisit only if BENCH-01-style evidence shows native client wins and scope decision is explicit `Priority: ⚪` `Complexity: M`
-- [ ] **[INT-01]** Hono middleware `@ratelock/hono` `Priority: 🟠` `Complexity: M`
+- [ ] **[INT-04]** Extract shared HTTP logic into private bundled `@ratelock/http-common` if duplication is confirmed when the third middleware lands (rule of three) `Priority: ⚪` `Complexity: S`
+- [ ] **[BUN-03]** Postgres under Bun via `Bun.SQL`. PARKED: maintainer avoids unified multi-DB APIs (scope + perf stance); revisit only if BENCH-01-style evidence shows native client wins and scope decision is explicit `Priority: ⚪` `Complexity: M`
+- [/] **[INT-01]** Hono middleware `@ratelock/hono`: engine-agnostic `rateLimit({ limiter })` accepting instance OR lazy factory (`() => Promise<Limiter>`, memoized singleton); headers `'both' | 'rfc' | 'legacy' | false` default `'both'` (+ Retry-After on 429); framework IP default + `keyGenerator` override; middleware contract tests in test-utils; README + docs page + changeset `Priority: 🟠` `Complexity: M`
 - [ ] **[INT-02]** Express middleware `@ratelock/express` `Priority: 🔵` `Complexity: M`
 - [ ] **[INT-03]** Fastify plugin `@ratelock/fastify` `Priority: 🔵` `Complexity: M`
 - [ ] **[ADP-01]** Upstash Redis adapter (serverless REST) `Priority: 🔵` `Complexity: M`

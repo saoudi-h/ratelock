@@ -1,0 +1,97 @@
+---
+title: Hono
+---
+
+# Hono
+
+Rate limiting middleware for [Hono](https://hono.dev), powered by any RateLock engine.
+
+- **Engine-agnostic**: bring a `@ratelock/local`, `@ratelock/redis` or `@ratelock/postgres` limiter
+- **Lazy initialization**: pass a factory and the engine starts on the first matched request (cold-start friendly for edge/serverless)
+- **Dual-family headers**: `RateLimit-*` (RFC 9331) and `X-RateLimit-*`, configurable
+- **Zero runtime dependency** besides Hono itself
+
+## Installation
+
+<CodeBlockTabs defaultValue="pnpm" groupId="package-manager">
+  <CodeBlockTabsList>
+    <CodeBlockTabsTrigger value="npm">npm</CodeBlockTabsTrigger>
+    <CodeBlockTabsTrigger value="pnpm">pnpm</CodeBlockTabsTrigger>
+    <CodeBlockTabsTrigger value="yarn">yarn</CodeBlockTabsTrigger>
+    <CodeBlockTabsTrigger value="bun">bun</CodeBlockTabsTrigger>
+  </CodeBlockTabsList>
+  <CodeBlockTab value="npm">
+    ```bash
+    npm install @ratelock/hono @ratelock/redis
+    ```
+  </CodeBlockTab>
+  <CodeBlockTab value="pnpm">
+    ```bash
+    pnpm add @ratelock/hono @ratelock/redis
+    ```
+  </CodeBlockTab>
+  <CodeBlockTab value="yarn">
+    ```bash
+    yarn add @ratelock/hono @ratelock/redis
+    ```
+  </CodeBlockTab>
+  <CodeBlockTab value="bun">
+    ```bash
+    bun add @ratelock/hono @ratelock/redis
+    ```
+  </CodeBlockTab>
+</CodeBlockTabs>
+
+## Quick start
+
+```typescript
+import { Hono } from 'hono'
+import { rateLimit } from '@ratelock/hono'
+import { fixedWindow } from '@ratelock/redis'
+
+const app = new Hono()
+
+app.use(
+    '/api/*',
+    rateLimit({
+        // Lazy factory: nothing initializes until the first request hits /api/*
+        limiter: () => fixedWindow({ url: process.env.REDIS_URL!, limit: 100, windowMs: 60_000 }),
+        limit: 100,
+        keyGenerator: c => c.req.header('x-user-id') ?? 'anon',
+    })
+)
+
+app.get('/api/things', c => c.json({ things: [] }))
+```
+
+Already have an instance? Pass it directly:
+
+```typescript
+const limiter = await fixedWindow({ limit: 100, windowMs: 60_000 })
+app.use('/api/*', rateLimit({ limiter }))
+```
+
+## Options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `limiter` | `Limiter \| (() => Limiter \| Promise<Limiter>)` | required | Any RateLock limiter. A factory is memoized and invoked once, on the first matched request. |
+| `keyGenerator` | `(c) => string \| Promise<string>` | remote address | Identifier the request is counted against; falls back to a shared `'anonymous'` bucket when no address is available. |
+| `headers` | `'both' \| 'rfc' \| 'legacy' \| false` | `'both'` | Header families attached to responses. |
+| `limit` | `number` | (none) | Quota, used only to emit the `*Limit` headers. |
+| `denyStatusCode` | number | `429` | Status returned on exhaustion. |
+| `message` | string | `'Too Many Requests'` | JSON body of denial responses. |
+
+## Response headers
+
+| Family | Headers |
+|---|---|
+| RFC 9331 | `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset` |
+| Legacy | `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` |
+| Denial only | `Retry-After` |
+
+`RateLimit-Reset` is always in seconds. Token bucket results project `floor(tokens)` onto `*Remaining` and the refill time onto `Reset`.
+
+## Identifiers behind proxies
+
+The default identifier is the runtime-provided remote address (Node socket, Bun `requestIP`, Deno `remoteAddr`). Behind a load balancer that address is your proxy's, so all clients would share one bucket. Configure your runtime's trust settings or provide a `keyGenerator`. Never read raw `x-forwarded-for` from untrusted clients: attackers can forge it per-request to bypass limits entirely.
