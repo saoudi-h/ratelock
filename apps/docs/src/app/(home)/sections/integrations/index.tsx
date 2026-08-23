@@ -22,28 +22,28 @@ const MIDDLEWARES: Framework[] = [
     {
         name: 'Hono',
         tagline: 'Edge-first middleware, web-standard responses',
-        icon: 'simple-icons:hono',
+        icon: 'logos:hono',
         href: '/docs/integrations/hono',
         kind: 'middleware',
     },
     {
         name: 'Express',
         tagline: 'One package for Express 4 and 5',
-        icon: 'simple-icons:express',
+        icon: 'devicon:express',
         href: '/docs/integrations/express',
         kind: 'middleware',
     },
     {
         name: 'Fastify',
         tagline: 'onRequest plugin, encapsulation-safe',
-        icon: 'simple-icons:fastify',
+        icon: 'devicon-plain:fastify',
         href: '/docs/integrations/fastify',
         kind: 'middleware',
     },
     {
         name: 'Elysia',
         tagline: 'Bun-native, pairs with our native Redis driver',
-        icon: 'skill-icons:elysia-light',
+        icon: 'thesvg-color:elysiajs',
         href: '/docs/integrations/elysia',
         kind: 'middleware',
     },
@@ -53,28 +53,28 @@ const GUIDES: Framework[] = [
     {
         name: 'Next.js',
         tagline: 'App Router route handlers',
-        icon: 'logos:nextjs',
+        icon: 'devicon-plain:nextjs',
         href: '/docs/integrations/framework-recipes#nextjs',
         kind: 'guide',
     },
     {
         name: 'SvelteKit',
         tagline: '+server.ts endpoints',
-        icon: 'logos:svelte',
+        icon: 'devicon:svelte',
         href: '/docs/integrations/framework-recipes#sveltekit',
         kind: 'guide',
     },
     {
         name: 'Astro',
         tagline: 'API endpoints',
-        icon: 'logos:astro',
+        icon: 'devicon-plain:astro',
         href: '/docs/integrations/framework-recipes#astro',
         kind: 'guide',
     },
     {
         name: 'Remix',
         tagline: 'Loaders and actions',
-        icon: 'logos:remix',
+        icon: 'simple-icons:remix',
         href: '/docs/integrations/framework-recipes#remix',
         kind: 'guide',
     },
@@ -94,14 +94,7 @@ function FrameworkTile({ framework }: { framework: Framework }) {
             <BentoBase className="h-full">
                 <div className="flex h-full flex-col justify-between gap-4">
                     <div className="flex items-start justify-between">
-                        <Icon
-                            icon={framework.icon}
-                            className={cn(
-                                'size-8',
-                                framework.icon.startsWith('simple-icons:') &&
-                                    'text-foreground/80'
-                            )}
-                        />
+                        <Icon icon={framework.icon} className="size-8" />
                         <span
                             className={cn(
                                 `
@@ -155,7 +148,7 @@ export function IntegrationsSection() {
     )
 
     return (
-        <section className="relative border-y border-border/40 bg-background">
+        <section className="relative border-y border-border/40 bg-muted">
             <div
                 className="
                   mx-auto max-w-7xl px-6 py-20

@@ -123,39 +123,99 @@ export function FooterSection() {
                         ">
                             NPM Packages
                         </div>
-                        <ul className="flex flex-col gap-3 font-mono text-xs">
-                            {['@ratelock/local', '@ratelock/redis', '@ratelock/postgres'].map(pkg => (
-                                <li key={pkg}>
-                                    <a
-                                        href={`https://www.npmjs.com/package/${pkg}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="
-                                          group/link inline-flex items-center
-                                          gap-1.5 text-muted-foreground
-                                          transition-colors duration-200
-                                          hover:text-foreground
-                                        ">
-                                        <Icon icon="logos:npm-icon" className="
-                                          size-3.5
-                                        " />
-                                        <span className="relative">
-                                            {pkg}
-                                            <span
+                        <div className="space-y-5 font-mono text-xs">
+                            <div className="space-y-3">
+                                <div
+                                    className="
+                                      text-[9px] font-semibold tracking-widest
+                                      text-muted-foreground/40 uppercase select-none
+                                    ">
+                                    Storage
+                                </div>
+                                <ul className="flex flex-col gap-3">
+                                    {['@ratelock/local', '@ratelock/redis', '@ratelock/postgres'].map(
+                                        pkg => (
+                                            <li key={pkg}>
+                                                <a
+                                                    href={`https://www.npmjs.com/package/${pkg}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="
+                                                      group/link inline-flex items-center
+                                                      gap-1.5 text-muted-foreground
+                                                      transition-colors duration-200
+                                                      hover:text-foreground
+                                                    ">
+                                                    <Icon icon="logos:npm-icon" className="
+                                                      size-3.5
+                                                    " />
+                                                    <span className="relative">
+                                                        {pkg}
+                                                        <span
+                                                            className="
+                                                              absolute inset-x-0 -bottom-0.5
+                                                              h-px origin-left scale-x-0
+                                                              bg-foreground/40
+                                                              transition-transform
+                                                              duration-300
+                                                              group-hover/link:scale-x-100
+                                                            "
+                                                        />
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        )
+                                    )}
+                                </ul>
+                            </div>
+                            <div className="space-y-3">
+                                <div
+                                    className="
+                                      text-[9px] font-semibold tracking-widest
+                                      text-muted-foreground/40 uppercase select-none
+                                    ">
+                                    Middleware & Plugins
+                                </div>
+                                <ul className="flex flex-col gap-3">
+                                    {[
+                                        '@ratelock/hono',
+                                        '@ratelock/express',
+                                        '@ratelock/fastify',
+                                        '@ratelock/elysia',
+                                    ].map(pkg => (
+                                        <li key={pkg}>
+                                            <a
+                                                href={`https://www.npmjs.com/package/${pkg}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
                                                 className="
-                                                  absolute inset-x-0 -bottom-0.5
-                                                  h-px origin-left scale-x-0
-                                                  bg-foreground/40
-                                                  transition-transform
-                                                  duration-300
-                                                  group-hover/link:scale-x-100
-                                                "
-                                            />
-                                        </span>
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
+                                                  group/link inline-flex items-center
+                                                  gap-1.5 text-muted-foreground
+                                                  transition-colors duration-200
+                                                  hover:text-foreground
+                                                ">
+                                                <Icon icon="logos:npm-icon" className="
+                                                  size-3.5
+                                                " />
+                                                <span className="relative">
+                                                    {pkg}
+                                                    <span
+                                                        className="
+                                                          absolute inset-x-0 -bottom-0.5
+                                                          h-px origin-left scale-x-0
+                                                          bg-foreground/40
+                                                          transition-transform
+                                                          duration-300
+                                                          group-hover/link:scale-x-100
+                                                        "
+                                                    />
+                                                </span>
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
                     </div>
 
                     <div data-footer-col className="space-y-4">
