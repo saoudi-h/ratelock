@@ -1,8 +1,10 @@
+import { createRequire } from 'node:module'
+
 import { fixedWindow } from '@ratelock/local'
 import type { FastifyInstance, FastifyRequest } from 'fastify'
 import Fastify5 from 'fastify'
-import { createRequire } from 'node:module'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
 import type { RateLimitOptions } from '../src/index'
 import { rateLimit } from '../src/index'
 

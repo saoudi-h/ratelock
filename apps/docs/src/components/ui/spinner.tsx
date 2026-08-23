@@ -1,5 +1,6 @@
-import { cn } from '@/lib/utils'
 import { Refresh } from '@solar-icons/react-perf/BoldDuotone'
+
+import { cn } from '@/lib/utils'
 
 function Spinner({ className, ...props }: React.ComponentProps<'svg'>) {
     return (

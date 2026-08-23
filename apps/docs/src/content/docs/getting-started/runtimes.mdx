@@ -29,13 +29,13 @@ All three packages work on both runtimes. No engine is Bun-only or Node-only.
 
 `@ratelock/redis` and `@ratelock/postgres` declare their drivers as peer dependencies. The drivers themselves run on the supported runtimes:
 
-| Client                         | Versions | Runtime support |
-| :----------------------------- | :------: | :-------------- |
-| `ioredis`                      |   5.x    | Node.js, Bun    |
-| `redis` (node-redis)           | 4.x, 5.x | Node.js, Bun    |
-| Bun native (`RedisClient`)     | Bun >= 1.4 | Bun only       |
-| `pg` (node-postgres)           |   8.x    | Node.js, Bun    |
-| `postgres` (porsager/postgres) |   3.x    | Node.js, Bun    |
+| Client                         |  Versions  | Runtime support |
+| :----------------------------- | :--------: | :-------------- |
+| `ioredis`                      |    5.x     | Node.js, Bun    |
+| `redis` (node-redis)           |  4.x, 5.x  | Node.js, Bun    |
+| Bun native (`RedisClient`)     | Bun >= 1.4 | Bun only        |
+| `pg` (node-postgres)           |    8.x     | Node.js, Bun    |
+| `postgres` (porsager/postgres) |    3.x     | Node.js, Bun    |
 
 The Bun native Redis client is supported as a first-class driver by `@ratelock/redis`: Lua scripts run through its raw command API, with automatic pipelining batching concurrent commands. It is auto-detected when passed as `client`, or can be forced with `driver: 'bun'` — no npm dependency needed. Benchmarks show it as the fastest Redis path available to RateLock (see `packages/bench/results/driver-compare-bun-native.md`).
 

@@ -1,9 +1,11 @@
+import { createRequire } from 'node:module'
+
 import { fixedWindow } from '@ratelock/local'
 import type { Express } from 'express'
 import express5 from 'express'
-import { createRequire } from 'node:module'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { rateLimit } from '../src/index'
 
 const require = createRequire(import.meta.url)

@@ -8,6 +8,7 @@ import {
     type SlidingWindowResult,
     type TokenBucketResult,
 } from '@ratelock/local'
+
 import type {
     FixedWindowConfig,
     IndividualFixedWindowConfig,

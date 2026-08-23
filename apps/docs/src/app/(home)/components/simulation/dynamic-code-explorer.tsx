@@ -1,9 +1,10 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
-import type { StrategyId } from '@/simulation/types'
 import { useEffect, useMemo, useState } from 'react'
 import { createHighlighter } from 'shiki'
+
+import { Button } from '@/components/ui/button'
+import type { StrategyId } from '@/simulation/types'
 
 let highlighterPromise: ReturnType<typeof createHighlighter> | null = null
 
@@ -108,15 +109,17 @@ if (result.allowed) {
     }
 
     return (
-        <div className="
-          w-full overflow-hidden rounded-xl border border-border bg-background
-          shadow-xs select-text
-        ">
-            {/* Unified macOS-style header */}
-            <div className="
-              relative flex items-center justify-between border-b border-border
-              bg-muted/80 px-4 py-3 select-none
+        <div
+            className="
+              w-full overflow-hidden rounded-xl border border-border bg-background shadow-xs
+              select-text
             ">
+            {/* Unified macOS-style header */}
+            <div
+                className="
+                  relative flex items-center justify-between border-b border-border bg-muted/80 px-4
+                  py-3 select-none
+                ">
                 {/* macOS traffic light controls */}
                 <div className="flex items-center gap-1.5">
                     <span className="size-3 rounded-full bg-[#ff5f56]" />
@@ -125,10 +128,11 @@ if (result.allowed) {
                 </div>
 
                 {/* File title centered perfectly */}
-                <div className="
-                  pointer-events-none absolute left-1/2 flex -translate-x-1/2
-                  items-center gap-1.5
-                ">
+                <div
+                    className="
+                      pointer-events-none absolute left-1/2 flex -translate-x-1/2 items-center
+                      gap-1.5
+                    ">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="12"
@@ -143,30 +147,26 @@ if (result.allowed) {
                         <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
                         <path d="M14 2v4a2 2 0 0 0 2 2h4" />
                     </svg>
-                    <span className="
-                      font-mono text-xs font-bold text-muted-foreground
-                    ">
+                    <span className="font-mono text-xs font-bold text-muted-foreground">
                         api.ts
                     </span>
                 </div>
 
                 {/* Actions */}
                 <div className="flex items-center gap-2.5">
-                    <span className="
-                      rounded-md border border-border bg-background px-2 py-0.5
-                      font-mono text-[9px] font-bold tracking-[0.08em]
-                      text-muted-foreground/80 uppercase select-none
-                    ">
+                    <span
+                        className="
+                          rounded-md border border-border bg-background px-2 py-0.5 font-mono
+                          text-[9px] font-bold tracking-[0.08em] text-muted-foreground/80 uppercase
+                          select-none
+                        ">
                         TypeScript
                     </span>
                     <Button
                         size="icon-xs"
                         variant="ghost"
                         onClick={handleCopy}
-                        className="
-                          rounded-md text-muted-foreground
-                          hover:text-foreground
-                        "
+                        className="rounded-md text-muted-foreground hover:text-foreground"
                         title="Copy Code">
                         {copied ? (
                             <svg
@@ -207,8 +207,7 @@ if (result.allowed) {
                 <div
                     className="
                       text-left font-mono leading-relaxed
-                      [&_code]:font-mono! [&_code]:text-[13px]!
-                      [&_code]:leading-relaxed!
+                      [&_code]:font-mono! [&_code]:text-[13px]! [&_code]:leading-relaxed!
                       [&>pre]:m-0! [&>pre]:bg-transparent! [&>pre]:p-0!
                     "
                     dangerouslySetInnerHTML={{ __html: html }}

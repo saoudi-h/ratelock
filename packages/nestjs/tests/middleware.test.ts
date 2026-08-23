@@ -6,6 +6,7 @@ import { fixedWindow } from '@ratelock/local'
 import 'reflect-metadata'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { RatelockModule, SkipRateLimit } from '../src/index'
 
 const LIMIT = 3

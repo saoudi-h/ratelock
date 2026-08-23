@@ -5,6 +5,7 @@ import {
     slidingWindow as createLocalSliding,
     tokenBucket as createLocalToken,
 } from '@ratelock/local'
+
 import type { ScenarioConfig } from '../types'
 
 export * from './batch-check.scenario'

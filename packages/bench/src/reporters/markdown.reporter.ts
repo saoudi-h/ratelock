@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import { join } from 'path'
+
 import { config } from '../config'
 import type { BenchMetrics } from '../types'
 

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+
 import type { PgDriver } from '../src/drivers/types'
 import { fixedWindow } from '../src/fixed-window'
 import { individualFixedWindow } from '../src/individual-fixed-window'
@@ -40,12 +41,20 @@ class InstrumentedDriver implements PgDriver {
 describe('duplicate-id batch fallback (CORE-02)', () => {
     it('fixed window: duplicate ids run sequentially and stay position-aligned', async () => {
         const drv = new InstrumentedDriver()
-        const fw = await fixedWindow({ sql: drv, limit: 3, windowMs: 60_000, prefix: 't', skipMigrations: true })
+        const fw = await fixedWindow({
+            sql: drv,
+            limit: 3,
+            windowMs: 60_000,
+            prefix: 't',
+            skipMigrations: true,
+        })
 
         const results = await fw.checkBatch(['a', 'b', 'a'])
 
         expect(drv.maxInFlight).toBe(1)
-        const singles = drv.queries.filter(q => q.startsWith('INSERT INTO') && q.includes('ON CONFLICT'))
+        const singles = drv.queries.filter(
+            q => q.startsWith('INSERT INTO') && q.includes('ON CONFLICT')
+        )
         expect(singles.length).toBe(3)
         // Second 'a' consumed exactly one more slot than the first.
         expect(results.every(r => r.allowed)).toBe(true)
@@ -56,7 +65,13 @@ describe('duplicate-id batch fallback (CORE-02)', () => {
 
     it('token bucket: duplicate ids run sequentially', async () => {
         const drv = new InstrumentedDriver()
-        const tb = await tokenBucket({ sql: drv, capacity: 10, refillRate: 1, prefix: 't', skipMigrations: true })
+        const tb = await tokenBucket({
+            sql: drv,
+            capacity: 10,
+            refillRate: 1,
+            prefix: 't',
+            skipMigrations: true,
+        })
 
         await tb.checkBatch(['a', 'b', 'a'])
 
@@ -84,7 +99,13 @@ describe('duplicate-id batch fallback (CORE-02)', () => {
 
     it('unique-id fast path is untouched: one round-trip, zero single upserts', async () => {
         const drv = new InstrumentedDriver()
-        const fw = await fixedWindow({ sql: drv, limit: 3, windowMs: 60_000, prefix: 't', skipMigrations: true })
+        const fw = await fixedWindow({
+            sql: drv,
+            limit: 3,
+            windowMs: 60_000,
+            prefix: 't',
+            skipMigrations: true,
+        })
 
         const results = await fw.checkBatch(['x', 'y', 'z'])
 

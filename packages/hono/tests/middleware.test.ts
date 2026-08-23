@@ -1,6 +1,7 @@
 import { fixedWindow } from '@ratelock/local'
 import { Hono } from 'hono'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { rateLimit } from '../src/index'
 
 const LIMIT = 3

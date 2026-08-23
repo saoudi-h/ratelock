@@ -2,6 +2,7 @@
 
 import { useGSAP } from '@gsap/react'
 import { useRef } from 'react'
+
 import { gsap, registerGsap, SplitText } from '../_lib/gsap'
 
 type SplitType = 'chars' | 'words' | 'lines' | 'chars,words' | 'words,lines'

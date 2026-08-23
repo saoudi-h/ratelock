@@ -1,5 +1,6 @@
 'use client'
 
+import { CheckCircle, Magnifier } from '@solar-icons/react-perf/BoldDuotone'
 import { Command as CommandPrimitive } from 'cmdk'
 import * as React from 'react'
 
@@ -12,7 +13,6 @@ import {
 } from '@/components/ui/dialog'
 import { InputGroup, InputGroupAddon } from '@/components/ui/input-group'
 import { cn } from '@/lib/utils'
-import { CheckCircle, Magnifier } from '@solar-icons/react-perf/BoldDuotone'
 
 function Command({ className, ...props }: React.ComponentProps<typeof CommandPrimitive>) {
     return (
@@ -20,8 +20,8 @@ function Command({ className, ...props }: React.ComponentProps<typeof CommandPri
             data-slot="command"
             className={cn(
                 `
-                  flex size-full flex-col overflow-hidden rounded-4xl bg-popover
-                  p-1 text-popover-foreground
+                  flex size-full flex-col overflow-hidden rounded-4xl bg-popover p-1
+                  text-popover-foreground
                 `,
                 className
             )}
@@ -51,10 +51,7 @@ function CommandDialog({
                 <DialogDescription>{description}</DialogDescription>
             </DialogHeader>
             <DialogContent
-                className={cn(
-                    `top-1/3 translate-y-0 overflow-hidden rounded-4xl! p-0`,
-                    className
-                )}
+                className={cn(`top-1/3 translate-y-0 overflow-hidden rounded-4xl! p-0`, className)}
                 showCloseButton={showCloseButton}>
                 {children}
             </DialogContent>
@@ -93,10 +90,7 @@ function CommandList({ className, ...props }: React.ComponentProps<typeof Comman
         <CommandPrimitive.List
             data-slot="command-list"
             className={cn(
-                `
-                  no-scrollbar max-h-72 scroll-py-1 overflow-x-hidden
-                  overflow-y-auto outline-none
-                `,
+                `no-scrollbar max-h-72 scroll-py-1 overflow-x-hidden overflow-y-auto outline-none`,
                 className
             )}
             {...props}
@@ -128,8 +122,7 @@ function CommandGroup({
                 `
                   overflow-hidden p-1.5 text-foreground
                   **:[[cmdk-group-heading]]:px-3 **:[[cmdk-group-heading]]:py-2
-                  **:[[cmdk-group-heading]]:text-xs
-                  **:[[cmdk-group-heading]]:font-medium
+                  **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-medium
                   **:[[cmdk-group-heading]]:text-muted-foreground
                 `,
                 className
@@ -162,12 +155,10 @@ function CommandItem({
             data-slot="command-item"
             className={cn(
                 `
-                  group/command-item relative flex cursor-default items-center
-                  gap-2 rounded-2xl px-3 py-2 text-sm font-medium outline-hidden
-                  select-none
+                  group/command-item relative flex cursor-default items-center gap-2 rounded-2xl
+                  px-3 py-2 text-sm font-medium outline-hidden select-none
                   in-data-[slot=dialog-content]:rounded-3xl
-                  data-[disabled=true]:pointer-events-none
-                  data-[disabled=true]:opacity-50
+                  data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50
                   data-selected:bg-muted data-selected:text-foreground
                   [&_svg]:pointer-events-none [&_svg]:shrink-0
                   [&_svg:not([class*='size-'])]:size-4

@@ -1,5 +1,8 @@
 'use client'
 
+import { useAtomValue, useSetAtom } from 'jotai'
+import { useCallback, useEffect, useRef, useState } from 'react'
+
 import { Card, CardContent } from '@/components/ui/card'
 import {
     Dialog,
@@ -8,7 +11,12 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog'
-import { isPlayingAtomFamily, resetSimulationAtom, startPlayingAtom, updateConfigAtom } from '@/simulation/atoms'
+import {
+    isPlayingAtomFamily,
+    resetSimulationAtom,
+    startPlayingAtom,
+    updateConfigAtom,
+} from '@/simulation/atoms'
 import {
     type FixedWindowConfig,
     type IndividualFixedWindowConfig,
@@ -16,14 +24,13 @@ import {
     type StrategyId,
     type TokenBucketConfig,
 } from '@/simulation/types'
-import { useAtomValue, useSetAtom } from 'jotai'
-import { useCallback, useEffect, useRef, useState } from 'react'
+
 import { ConfigPanel } from './controls'
 import { DynamicCodeExplorer } from './dynamic-code-explorer'
 import { FixedWindowTimeline } from './fixed-window-timeline'
 import { IndividualFixedWindowTimeline } from './individual-fixed-window-timeline'
-import { Projectile } from './projectile'
 import { PlayOverlay } from './play-overlay'
+import { Projectile } from './projectile'
 import { SimulationControls } from './simulation-controls'
 import { SlidingWindowTimeline } from './sliding-window-timeline'
 import { TokenBucketTimeline } from './token-bucket-timeline'
@@ -172,23 +179,20 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
         <div className="w-full space-y-6" ref={containerRef}>
             <Card
                 className="
-                  overflow-hidden rounded-3xl border border-border/40 bg-card/70
-                  py-0 shadow-sm ring-0 backdrop-blur-md
+                  overflow-hidden rounded-3xl border border-border/40 bg-card/70 py-0 shadow-sm
+                  ring-0 backdrop-blur-md
                 ">
-                <CardContent className="
-                  relative flex flex-col items-stretch gap-6 p-6
-                ">
+                <CardContent className="relative flex flex-col items-stretch gap-6 p-6">
                     {/* Play overlay covering entire card when paused */}
                     {!isPlaying && <PlayOverlay onPlay={() => startPlaying(strategyId)} />}
 
                     {/* Compact Parameters Grid in the Bento Box */}
-                    <div className="
-                      flex flex-col gap-2 border-b border-border/20 pb-2
-                    ">
-                        <span className="
-                          text-[10px] font-bold tracking-[0.16em]
-                          text-muted-foreground/80 uppercase
-                        ">
+                    <div className="flex flex-col gap-2 border-b border-border/20 pb-2">
+                        <span
+                            className="
+                              text-[10px] font-bold tracking-[0.16em] text-muted-foreground/80
+                              uppercase
+                            ">
                             Parameters
                         </span>
                         <ConfigPanel
@@ -199,7 +203,6 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
 
                     {/* Timeline render area */}
                     <div className="relative w-full" ref={timelineContainerRef}>
-
                         {strategyId === 'fixed-window' && (
                             <FixedWindowTimeline
                                 events={events}
@@ -291,14 +294,13 @@ export function StrategyView({ strategyId }: StrategyViewProps) {
 
             {/* Code Modal Dialog */}
             <Dialog open={isCodeOpen} onOpenChange={setIsCodeOpen}>
-                <DialogContent className="
-                  flex max-h-[85vh] flex-col gap-4 overflow-hidden rounded-3xl
-                  sm:max-w-2xl
-                ">
+                <DialogContent
+                    className="
+                      flex max-h-[85vh] flex-col gap-4 overflow-hidden rounded-3xl
+                      sm:max-w-2xl
+                    ">
                     <DialogHeader className="border-b border-border/20 pb-1">
-                        <DialogTitle className="
-                          text-base font-bold tracking-tight
-                        ">
+                        <DialogTitle className="text-base font-bold tracking-tight">
                             API Implementation Example
                         </DialogTitle>
                         <DialogDescription className="text-xs">

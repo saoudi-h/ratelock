@@ -1,8 +1,9 @@
-"use client";
+'use client'
 
-import { useEffect } from "react";
-import { replayAll } from "../_lib/replay-registry";
-import { ScrollTrigger } from "../_lib/gsap";
+import { useEffect } from 'react'
+
+import { ScrollTrigger } from '../_lib/gsap'
+import { replayAll } from '../_lib/replay-registry'
 
 /**
  * Listens for bfcache restoration (pageshow with persisted=true)
@@ -14,20 +15,20 @@ import { ScrollTrigger } from "../_lib/gsap";
  * Call this once near the root of the app (e.g., in BfcacheRemount).
  */
 export function useReplayOnBfcache() {
-  useEffect(() => {
-    const handlePageShow = (e: PageTransitionEvent) => {
-      if (!e.persisted) return;
+    useEffect(() => {
+        const handlePageShow = (e: PageTransitionEvent) => {
+            if (!e.persisted) return
 
-      // Double rAF: let the browser finish restoring layout/scroll first
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          replayAll();
-          ScrollTrigger.refresh();
-        });
-      });
-    };
+            // Double rAF: let the browser finish restoring layout/scroll first
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    replayAll()
+                    ScrollTrigger.refresh()
+                })
+            })
+        }
 
-    window.addEventListener("pageshow", handlePageShow);
-    return () => window.removeEventListener("pageshow", handlePageShow);
-  }, []);
+        window.addEventListener('pageshow', handlePageShow)
+        return () => window.removeEventListener('pageshow', handlePageShow)
+    }, [])
 }

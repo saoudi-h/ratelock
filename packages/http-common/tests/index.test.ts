@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+
 import { collectRateLimitHeaders, createLimiterResolver, projectResult } from '../src/index'
 
 describe('createLimiterResolver', () => {

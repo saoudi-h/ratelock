@@ -25,8 +25,8 @@ export function Projectile({ startX, startY, destX, destY }: ProjectileProps) {
         <span
             aria-hidden
             className="
-              projectile pointer-events-none absolute z-40 block size-2.5
-              rounded-full bg-primary shadow-[0_0_12px_rgba(59,130,246,0.85)]
+              projectile pointer-events-none absolute z-40 block size-2.5 rounded-full bg-primary
+              shadow-[0_0_12px_rgba(59,130,246,0.85)]
             "
             style={
                 {

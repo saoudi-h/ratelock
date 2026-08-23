@@ -1,7 +1,8 @@
-import type { ActionResponse, Feedback } from '@/components/ui-blocks/rate'
 import { env } from '@env'
 import type { Octokit } from 'octokit'
 import { App } from 'octokit'
+
+import type { ActionResponse, Feedback } from '@/components/ui-blocks/rate'
 
 export const repo = 'ratelock'
 export const owner = 'saoudi-h'
@@ -13,7 +14,6 @@ async function getOctokit(): Promise<Octokit> {
     if (instance) return instance
     const appId = env.GITHUB_APP_ID
     const privateKey = env.GITHUB_APP_PRIVATE_KEY
-
 
     const app = new App({
         appId,

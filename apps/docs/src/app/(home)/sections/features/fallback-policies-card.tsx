@@ -1,10 +1,11 @@
 'use client'
 
 import { useGSAP } from '@gsap/react'
-import { registerReplay } from '../../_lib/replay-registry'
 import { useRef } from 'react'
-import { FeatureBentoCard } from '../../components/feature-bento-card'
+
 import { gsap, registerGsap } from '../../_lib/gsap'
+import { registerReplay } from '../../_lib/replay-registry'
+import { FeatureBentoCard } from '../../components/feature-bento-card'
 
 /**
  * Card showing the fallback-policy config snippet.
@@ -39,7 +40,9 @@ export function FallbackPoliciesCard() {
                 ease: 'expo.out',
             })
                 .from(
-                    root.querySelectorAll('[data-feature-icon], [data-feature-title], [data-feature-desc]'),
+                    root.querySelectorAll(
+                        '[data-feature-icon], [data-feature-title], [data-feature-desc]'
+                    ),
                     {
                         y: 12,
                         opacity: 0,
@@ -87,9 +90,9 @@ export function FallbackPoliciesCard() {
                 <div
                     data-code-snippet
                     className="
-                      mt-6 space-y-1.5 overflow-x-auto rounded-2xl border
-                      border-border/40 bg-background/50 p-5 text-left font-mono
-                      text-[10px] leading-relaxed shadow-sm select-none
+                      mt-6 space-y-1.5 overflow-x-auto rounded-2xl border border-border/40
+                      bg-background/50 p-5 text-left font-mono text-[10px] leading-relaxed shadow-sm
+                      select-none
                     ">
                     <div data-code-line>
                         <span className="text-purple-400">const</span> limiter ={' '}

@@ -1,8 +1,8 @@
 import { NavigationMenu as NavigationMenuPrimitive } from '@base-ui/react/navigation-menu'
+import { AltArrowDown } from '@solar-icons/react-perf/BoldDuotone'
 import { cva } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
-import { AltArrowDown } from '@solar-icons/react-perf/BoldDuotone'
 
 function NavigationMenu({
     align = 'start',
@@ -14,10 +14,7 @@ function NavigationMenu({
         <NavigationMenuPrimitive.Root
             data-slot="navigation-menu"
             className={cn(
-                `
-                  group/navigation-menu relative flex max-w-max flex-1
-                  items-center justify-center
-                `,
+                `group/navigation-menu relative flex max-w-max flex-1 items-center justify-center`,
                 className
             )}
             {...props}>
@@ -58,9 +55,8 @@ function NavigationMenuItem({
 
 const navigationMenuTriggerStyle = cva(
     `
-      group/navigation-menu-trigger inline-flex h-9 w-max items-center
-      justify-center rounded-3xl px-4.5 py-2.5 text-sm font-medium
-      transition-all outline-none
+      group/navigation-menu-trigger inline-flex h-9 w-max items-center justify-center rounded-3xl
+      px-4.5 py-2.5 text-sm font-medium transition-all outline-none
       hover:bg-muted
       focus:bg-muted
       focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-1
@@ -106,8 +102,7 @@ function NavigationMenuContent({ className, ...props }: NavigationMenuPrimitive.
                   data-ending-style:data-activation-direction=right:translate-x-[-50%]
                   data-starting-style:data-activation-direction=left:translate-x-[-50%]
                   data-starting-style:data-activation-direction=right:translate-x-[50%]
-                  h-full w-auto p-2.5 pr-3
-                  transition-[opacity,transform,translate] duration-[0.35s]
+                  h-full w-auto p-2.5 pr-3 transition-[opacity,transform,translate] duration-[0.35s]
                   ease-[cubic-bezier(0.22,1,0.36,1)]
                   group-data-[viewport=false]/navigation-menu:rounded-3xl
                   group-data-[viewport=false]/navigation-menu:bg-popover
@@ -158,13 +153,11 @@ function NavigationMenuPositioner({
                 alignOffset={alignOffset}
                 className={cn(
                     `
-                      isolate z-50 h-(--positioner-height)
-                      w-(--positioner-width) max-w-(--available-width)
-                      transition-[top,left,right,bottom] duration-[0.35s]
+                      isolate z-50 h-(--positioner-height) w-(--positioner-width)
+                      max-w-(--available-width) transition-[top,left,right,bottom] duration-[0.35s]
                       ease-[cubic-bezier(0.22,1,0.36,1)]
                       data-instant:transition-none
-                      data-[side=bottom]:before:inset-x-0
-                      data-[side=bottom]:before:top-[-10px]
+                      data-[side=bottom]:before:inset-x-0 data-[side=bottom]:before:top-[-10px]
                     `,
                     className
                 )}
@@ -172,20 +165,16 @@ function NavigationMenuPositioner({
                 <NavigationMenuPrimitive.Popup
                     className="
                       data-[ending-style]:easing-[ease]
-                      relative h-(--popup-height) w-(--popup-width)
-                      origin-(--transform-origin) rounded-3xl bg-popover
-                      text-popover-foreground shadow-lg ring-1 ring-foreground/5
-                      transition-[opacity,transform,width,height,scale,translate]
-                      duration-[0.35s] ease-[cubic-bezier(0.22,1,0.36,1)]
-                      outline-none
+                      relative h-(--popup-height) w-(--popup-width) origin-(--transform-origin)
+                      rounded-3xl bg-popover text-popover-foreground shadow-lg ring-1
+                      ring-foreground/5 transition-[opacity,transform,width,height,scale,translate]
+                      duration-[0.35s] ease-[cubic-bezier(0.22,1,0.36,1)] outline-none
                       data-ending-style:scale-90 data-ending-style:opacity-0
                       data-ending-style:duration-150
                       data-starting-style:scale-90 data-starting-style:opacity-0
                       dark:ring-foreground/10
                     ">
-                    <NavigationMenuPrimitive.Viewport className="
-                      relative size-full overflow-hidden
-                    " />
+                    <NavigationMenuPrimitive.Viewport className="relative size-full overflow-hidden" />
                 </NavigationMenuPrimitive.Popup>
             </NavigationMenuPrimitive.Positioner>
         </NavigationMenuPrimitive.Portal>
@@ -198,12 +187,10 @@ function NavigationMenuLink({ className, ...props }: NavigationMenuPrimitive.Lin
             data-slot="navigation-menu-link"
             className={cn(
                 `
-                  flex items-center gap-1.5 rounded-3xl p-3 text-sm
-                  transition-all outline-none
+                  flex items-center gap-1.5 rounded-3xl p-3 text-sm transition-all outline-none
                   hover:bg-muted
                   focus:bg-muted
-                  focus-visible:ring-3 focus-visible:ring-ring/30
-                  focus-visible:outline-1
+                  focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-1
                   in-data-[slot=navigation-menu-content]:rounded-2xl
                   data-[active=true]:bg-muted/50
                   data-[active=true]:hover:bg-muted
@@ -226,20 +213,14 @@ function NavigationMenuIndicator({
             data-slot="navigation-menu-indicator"
             className={cn(
                 `
-                  top-full z-1 flex h-1.5 items-end justify-center
-                  overflow-hidden
+                  top-full z-1 flex h-1.5 items-end justify-center overflow-hidden
                   data-[state=hidden]:animate-out data-[state=hidden]:fade-out
                   data-[state=visible]:animate-in data-[state=visible]:fade-in
                 `,
                 className
             )}
             {...props}>
-            <div
-                className="
-                  relative top-[60%] size-2 rotate-45 rounded-tl-sm bg-border
-                  shadow-md
-                "
-            />
+            <div className="relative top-[60%] size-2 rotate-45 rounded-tl-sm bg-border shadow-md" />
         </NavigationMenuPrimitive.Icon>
     )
 }

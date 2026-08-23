@@ -1,6 +1,7 @@
 import { fixedWindow, tokenBucket } from '@ratelock/local'
 import { Elysia } from 'elysia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { rateLimit } from '../src/index'
 
 const LIMIT = 3

@@ -1,10 +1,11 @@
 'use client'
 
 import { useGSAP } from '@gsap/react'
-import { registerReplay } from '../../_lib/replay-registry'
 import { useRef } from 'react'
-import { FeatureBentoCard } from '../../components/feature-bento-card'
+
 import { gsap, registerGsap } from '../../_lib/gsap'
+import { registerReplay } from '../../_lib/replay-registry'
+import { FeatureBentoCard } from '../../components/feature-bento-card'
 
 /**
  * Card listing the two failure-handling stances (Fail-Open / Fail-Closed).
@@ -38,7 +39,9 @@ export function ErrorPoliciesCard() {
                 ease: 'expo.out',
             })
                 .from(
-                    root.querySelectorAll('[data-feature-icon], [data-feature-title], [data-feature-desc]'),
+                    root.querySelectorAll(
+                        '[data-feature-icon], [data-feature-title], [data-feature-desc]'
+                    ),
                     {
                         y: 12,
                         opacity: 0,
@@ -95,61 +98,48 @@ export function ErrorPoliciesCard() {
                     <div
                         data-policy-row
                         className="
-                          flex items-start gap-3 rounded-2xl border
-                          border-border/40 bg-background/40 p-3 shadow-xs
-                          transition-colors duration-300 select-none
+                          flex items-start gap-3 rounded-2xl border border-border/40
+                          bg-background/40 p-3 shadow-xs transition-colors duration-300 select-none
                           hover:border-primary/20
                         ">
                         <div
                             className="
-                              flex size-7 items-center justify-center rounded-xl
-                              bg-emerald-500/10 font-mono text-xs font-bold
-                              text-emerald-500 select-none
+                              flex size-7 items-center justify-center rounded-xl bg-emerald-500/10
+                              font-mono text-xs font-bold text-emerald-500 select-none
                             ">
                             O
                         </div>
                         <div>
-                            <div className="
-                              font-heading text-xs font-bold text-foreground
-                            ">
+                            <div className="font-heading text-xs font-bold text-foreground">
                                 Fail-Open (Recommended)
                             </div>
-                            <div className="
-                              mt-0.5 text-xs/relaxed text-muted-foreground
-                            ">
-                                Bypasses database failures. Ensures legitimate customers are
-                                never locked out of your application during downtime.
+                            <div className="mt-0.5 text-xs/relaxed text-muted-foreground">
+                                Bypasses database failures. Ensures legitimate customers are never
+                                locked out of your application during downtime.
                             </div>
                         </div>
                     </div>
                     <div
                         data-policy-row
                         className="
-                          flex items-start gap-3 rounded-2xl border
-                          border-border/40 bg-background/40 p-3 shadow-xs
-                          transition-colors duration-300 select-none
+                          flex items-start gap-3 rounded-2xl border border-border/40
+                          bg-background/40 p-3 shadow-xs transition-colors duration-300 select-none
                           hover:border-primary/20
                         ">
                         <div
                             className="
-                              flex size-7 items-center justify-center rounded-xl
-                              bg-red-500/10 font-mono text-xs font-bold
-                              text-red-500 select-none
+                              flex size-7 items-center justify-center rounded-xl bg-red-500/10
+                              font-mono text-xs font-bold text-red-500 select-none
                             ">
                             C
                         </div>
                         <div>
-                            <div className="
-                              font-heading text-xs font-bold text-foreground
-                            ">
+                            <div className="font-heading text-xs font-bold text-foreground">
                                 Fail-Closed
                             </div>
-                            <div className="
-                              mt-0.5 text-xs/relaxed text-muted-foreground
-                            ">
-                                Blocks all requests if rate limiting state is offline.
-                                Prevents catastrophic security leakages during infrastructure
-                                congestion.
+                            <div className="mt-0.5 text-xs/relaxed text-muted-foreground">
+                                Blocks all requests if rate limiting state is offline. Prevents
+                                catastrophic security leakages during infrastructure congestion.
                             </div>
                         </div>
                     </div>

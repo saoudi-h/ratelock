@@ -5,6 +5,7 @@ import {
     withFallback,
     withRetry,
 } from '@ratelock/core'
+
 import type { LocalLimiterBaseConfig } from './types'
 
 type Bucket = { tokens: number; lastRefill: number }

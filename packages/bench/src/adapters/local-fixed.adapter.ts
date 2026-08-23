@@ -1,4 +1,5 @@
 import { fixedWindow as createLocalFixed } from '@ratelock/local'
+
 import { config } from '../config'
 import type { BenchmarkAdapter } from './types'
 

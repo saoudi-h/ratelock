@@ -1,5 +1,6 @@
 import { individualFixedWindowContract } from '@ratelock/test-utils'
 import { describe } from 'vitest'
+
 import { individualFixedWindow } from '../src/individual-fixed-window'
 
 describe('@ratelock/local - IndividualFixedWindow', () => {

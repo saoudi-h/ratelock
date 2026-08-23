@@ -186,9 +186,8 @@ function ChartTooltipContent({
         <div
             className={cn(
                 `
-                  grid min-w-32 items-start gap-1.5 rounded-xl bg-popover px-2.5
-                  py-1.5 text-xs text-popover-foreground shadow-lg ring-1
-                  ring-foreground/5
+                  grid min-w-32 items-start gap-1.5 rounded-xl bg-popover px-2.5 py-1.5 text-xs
+                  text-popover-foreground shadow-lg ring-1 ring-foreground/5
                   dark:ring-foreground/10
                 `,
                 className
@@ -208,8 +207,7 @@ function ChartTooltipContent({
                                 className={cn(
                                     `
                                       flex w-full flex-wrap items-stretch gap-2
-                                      [&>svg]:size-2.5
-                                      [&>svg]:text-muted-foreground
+                                      [&>svg]:size-2.5 [&>svg]:text-muted-foreground
                                     `,
                                     indicator === 'dot' && 'items-center'
                                 )}>
@@ -224,8 +222,7 @@ function ChartTooltipContent({
                                                 <div
                                                     className={cn(
                                                         `
-                                                          shrink-0 rounded-[2px]
-                                                          border-border
+                                                          shrink-0 rounded-[2px] border-border
                                                           bg-(--color-bg)
                                                         `,
                                                         {
@@ -248,28 +245,19 @@ function ChartTooltipContent({
                                         )}
                                         <div
                                             className={cn(
-                                                `
-                                                  flex flex-1 justify-between
-                                                  leading-none
-                                                `,
-                                                nestLabel
-                                                    ? 'items-end'
-                                                    : `items-center`
+                                                `flex flex-1 justify-between leading-none`,
+                                                nestLabel ? 'items-end' : `items-center`
                                             )}>
                                             <div className="grid gap-1.5">
                                                 {nestLabel ? tooltipLabel : null}
-                                                <span
-                                                    className="
-                                                      text-muted-foreground
-                                                    ">
+                                                <span className="text-muted-foreground">
                                                     {itemConfig?.label ?? item.name}
                                                 </span>
                                             </div>
                                             {item.value != null && (
                                                 <span
                                                     className="
-                                                      font-mono font-medium
-                                                      text-foreground
+                                                      font-mono font-medium text-foreground
                                                       tabular-nums
                                                     ">
                                                     {typeof item.value === 'number'

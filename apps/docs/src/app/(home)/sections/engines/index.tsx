@@ -49,11 +49,7 @@ const ENGINES = [
 export function EnginesSection() {
     return (
         <section className="relative border-y border-border/40 bg-muted/30">
-            <div
-                className="
-                  mx-auto max-w-7xl px-6 py-20
-                  md:py-28
-                ">
+            <div className="mx-auto max-w-7xl px-6 py-20 md:py-28">
                 <div className="mb-16">
                     <SectionHeader
                         eyebrow="Infrastructure"
@@ -64,11 +60,7 @@ export function EnginesSection() {
                     />
                 </div>
 
-                <div
-                    className="
-                      grid grid-cols-1 gap-6
-                      md:auto-rows-fr md:grid-cols-3
-                    ">
+                <div className="grid grid-cols-1 gap-6 md:auto-rows-fr md:grid-cols-3">
                     {ENGINES.map((engine, i) => (
                         <EngineBentoCard key={engine.name} index={i} {...engine} />
                     ))}

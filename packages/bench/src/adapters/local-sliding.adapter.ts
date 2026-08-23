@@ -1,4 +1,5 @@
 import { slidingWindow as createLocalSliding } from '@ratelock/local'
+
 import { config } from '../config'
 import type { BenchmarkAdapter } from './types'
 

@@ -1,7 +1,7 @@
 .illustration {
-  --hero-border: oklch(0.85 0 0 / 0.45);
+    --hero-border: oklch(0.85 0 0 / 0.45);
 }
 
 :global(.dark) .illustration {
-  --hero-border: oklch(0.45 0 0 / 0.35);
+    --hero-border: oklch(0.45 0 0 / 0.35);
 }

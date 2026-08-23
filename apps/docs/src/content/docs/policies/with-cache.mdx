@@ -38,10 +38,10 @@ The wrapped limiter exposes an `invalidate(id)` method. Call it when the underly
 ```typescript
 const cached = withCache(limiter, { maxSize: 1000, ttlMs: 30_000 })
 
-await cached.check('user:123')        // denied — cached
+await cached.check('user:123') // denied — cached
 // … admin lifts the block via your custom back-office …
-cached.invalidate('user:123')          // evict the stale "denied" entry
-await cached.check('user:123')         // back to the backend
+cached.invalidate('user:123') // evict the stale "denied" entry
+await cached.check('user:123') // back to the backend
 ```
 
 `invalidate(id)` only evicts the entry from the in-memory cache — it does not modify the downstream limiter's state. Calling it on an unknown id is a no-op.

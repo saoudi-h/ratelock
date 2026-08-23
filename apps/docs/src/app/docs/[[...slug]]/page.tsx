@@ -1,7 +1,3 @@
-import { Rate } from '@/components/ui-blocks/rate'
-import { onRateAction } from '@/lib/github'
-import { source } from '@/lib/source'
-import { getMDXComponents } from '@/mdx-components'
 import {
     DocsPage,
     MarkdownCopyButton,
@@ -11,6 +7,11 @@ import {
 import { createRelativeLink } from 'fumadocs-ui/mdx'
 import { DocsBody, DocsDescription, DocsTitle } from 'fumadocs-ui/page'
 import { notFound } from 'next/navigation'
+
+import { Rate } from '@/components/ui-blocks/rate'
+import { onRateAction } from '@/lib/github'
+import { source } from '@/lib/source'
+import { getMDXComponents } from '@/mdx-components'
 
 export default async function Page(props: { params: Promise<{ slug?: string[] }> }) {
     const params = await props.params
@@ -24,9 +25,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
         <DocsPage toc={page.data.toc} full={page.data.full}>
             <DocsTitle>{page.data.title}</DocsTitle>
             <DocsDescription>{page.data.description}</DocsDescription>
-            <div className="
-              flex flex-row flex-wrap items-center gap-2 border-b pb-6
-            ">
+            <div className="flex flex-row flex-wrap items-center gap-2 border-b pb-6">
                 <MarkdownCopyButton markdownUrl={markdownUrl} />
                 <ViewOptionsPopover
                     markdownUrl={markdownUrl}
@@ -56,7 +55,7 @@ export async function generateMetadata(props: { params: Promise<{ slug?: string[
     if (!page) return {}
 
     const image = {
-        url: ['/og', ...params.slug ?? [], 'image.png'].join('/'),
+        url: ['/og', ...(params.slug ?? []), 'image.png'].join('/'),
         width: 1200,
         height: 630,
     }

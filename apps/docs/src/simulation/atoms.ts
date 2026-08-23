@@ -1,5 +1,6 @@
 import { atom } from 'jotai'
 import { atomFamily } from 'jotai/utils'
+
 import { destroyLimiter } from './engine'
 import type { RequestEvent, StrategyConfig, StrategyId, StrategySpecificConfig } from './types'
 import { DEFAULT_CONFIGS } from './types'

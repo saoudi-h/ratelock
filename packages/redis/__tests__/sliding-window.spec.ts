@@ -1,5 +1,6 @@
 import { slidingWindowContract } from '@ratelock/test-utils'
 import { describe } from 'vitest'
+
 import { slidingWindow } from '../src/sliding-window'
 import { MockRedisClient } from './client.mock'
 

@@ -1,7 +1,9 @@
 'use client'
 
-import type { FixedWindowConfig, RequestEvent } from '@/simulation/types'
 import { useMemo } from 'react'
+
+import type { FixedWindowConfig, RequestEvent } from '@/simulation/types'
+
 import { UnifiedTimelineBase, type TimelineWindow } from './unified-timeline'
 import { useNow } from './use-simulation'
 
@@ -72,16 +74,16 @@ export function FixedWindowTimeline({
             startTime={startTime}
             isPlaying={isPlaying}>
             {/* Floating HUD Left */}
-            <div className="
-              pointer-events-none absolute top-3 left-3 z-30 flex flex-wrap
-              items-center gap-1.5 select-none
-            ">
+            <div
+                className="
+                  pointer-events-none absolute top-3 left-3 z-30 flex flex-wrap items-center gap-1.5
+                  select-none
+                ">
                 <span
                     className="
-                      inline-flex items-center gap-1.5 rounded-md border
-                      border-border/40 bg-background/60 px-2 py-0.5 text-[10px]
-                      font-medium text-muted-foreground shadow-2xs
-                      backdrop-blur-md
+                      inline-flex items-center gap-1.5 rounded-md border border-border/40
+                      bg-background/60 px-2 py-0.5 text-[10px] font-medium text-muted-foreground
+                      shadow-2xs backdrop-blur-md
                     ">
                     <span className="size-1.5 rounded-full bg-blue-500" />
                     Total:{' '}
@@ -89,22 +91,19 @@ export function FixedWindowTimeline({
                 </span>
                 <span
                     className="
-                      inline-flex items-center gap-1.5 rounded-md border
-                      border-border/40 bg-background/60 px-2 py-0.5 text-[10px]
-                      font-medium text-emerald-500/90 shadow-2xs
-                      backdrop-blur-md
+                      inline-flex items-center gap-1.5 rounded-md border border-border/40
+                      bg-background/60 px-2 py-0.5 text-[10px] font-medium text-emerald-500/90
+                      shadow-2xs backdrop-blur-md
                     ">
-                    <span className="
-                      size-1.5 animate-pulse rounded-full bg-emerald-500
-                    " />
+                    <span className="size-1.5 animate-pulse rounded-full bg-emerald-500" />
                     Allowed:{' '}
                     <span className="font-mono font-bold text-foreground">{allowedCount}</span>
                 </span>
                 <span
                     className="
-                      inline-flex items-center gap-1.5 rounded-md border
-                      border-border/40 bg-background/60 px-2 py-0.5 text-[10px]
-                      font-medium text-rose-500/90 shadow-2xs backdrop-blur-md
+                      inline-flex items-center gap-1.5 rounded-md border border-border/40
+                      bg-background/60 px-2 py-0.5 text-[10px] font-medium text-rose-500/90
+                      shadow-2xs backdrop-blur-md
                     ">
                     <span className="size-1.5 rounded-full bg-rose-500" />
                     Denied:{' '}
@@ -113,25 +112,24 @@ export function FixedWindowTimeline({
             </div>
 
             {/* Floating HUD Right */}
-            <div className="
-              pointer-events-none absolute top-3 right-3 z-30 flex flex-wrap
-              items-center gap-1.5 select-none
-            ">
+            <div
+                className="
+                  pointer-events-none absolute top-3 right-3 z-30 flex flex-wrap items-center
+                  gap-1.5 select-none
+                ">
                 <span
                     className="
-                      inline-flex items-center gap-1 rounded-md border
-                      border-border/40 bg-background/60 px-2 py-0.5 font-mono
-                      text-[10px] text-muted-foreground shadow-2xs
-                      backdrop-blur-md
+                      inline-flex items-center gap-1 rounded-md border border-border/40
+                      bg-background/60 px-2 py-0.5 font-mono text-[10px] text-muted-foreground
+                      shadow-2xs backdrop-blur-md
                     ">
                     Limit: <span className="font-bold text-foreground">{limit}</span>
                 </span>
                 <span
                     className="
-                      inline-flex items-center gap-1 rounded-md border
-                      border-border/40 bg-background/60 px-2 py-0.5 font-mono
-                      text-[10px] text-muted-foreground shadow-2xs
-                      backdrop-blur-md
+                      inline-flex items-center gap-1 rounded-md border border-border/40
+                      bg-background/60 px-2 py-0.5 font-mono text-[10px] text-muted-foreground
+                      shadow-2xs backdrop-blur-md
                     ">
                     Remaining:{' '}
                     <span className="font-bold text-foreground tabular-nums">
@@ -140,10 +138,9 @@ export function FixedWindowTimeline({
                 </span>
                 <span
                     className="
-                      inline-flex items-center gap-1 rounded-md border
-                      border-border/40 bg-background/60 px-2 py-0.5 font-mono
-                      text-[10px] text-muted-foreground shadow-2xs
-                      backdrop-blur-md
+                      inline-flex items-center gap-1 rounded-md border border-border/40
+                      bg-background/60 px-2 py-0.5 font-mono text-[10px] text-muted-foreground
+                      shadow-2xs backdrop-blur-md
                     ">
                     Reset:{' '}
                     <span className="font-bold text-foreground tabular-nums">

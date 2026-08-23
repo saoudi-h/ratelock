@@ -106,10 +106,7 @@ export async function GET(request: NextRequest) {
         )
     }
 
-    return Response.json(
-        { things: [] },
-        { headers: rateLimitHeaders(result) }
-    )
+    return Response.json({ things: [] }, { headers: rateLimitHeaders(result) })
 }
 ```
 
@@ -131,15 +128,18 @@ export const GET: RequestHandler = async ({ request }) => {
     const result = await limiter.check(id)
 
     if (!result.allowed) {
-        return json({ error: 'Too Many Requests' }, {
-            status: 429,
-            headers: {
-                ...rateLimitHeaders(result),
-                ...(retryAfterSeconds(result) != null
-                    ? { 'Retry-After': String(retryAfterSeconds(result)) }
-                    : {}),
-            },
-        })
+        return json(
+            { error: 'Too Many Requests' },
+            {
+                status: 429,
+                headers: {
+                    ...rateLimitHeaders(result),
+                    ...(retryAfterSeconds(result) != null
+                        ? { 'Retry-After': String(retryAfterSeconds(result)) }
+                        : {}),
+                },
+            }
+        )
     }
 
     return json({ things: [] }, { headers: rateLimitHeaders(result) })
@@ -216,12 +216,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 Web-standard `Request` objects do not expose the remote address, so pick an identifier deliberately:
 
-| Deployment | Recommended identifier |
-|---|---|
-| Cloudflare | `CF-Connecting-IP` header (set by Cloudflare itself, trustworthy there) |
-| Vercel | `x-forwarded-for` (last entry) or `x-real-ip` |
-| Self-hosted behind your own proxy | `x-forwarded-for`, only because you control the proxy chain |
-| Authenticated routes | User id or API key: always more precise than any IP |
+| Deployment                        | Recommended identifier                                                  |
+| --------------------------------- | ----------------------------------------------------------------------- |
+| Cloudflare                        | `CF-Connecting-IP` header (set by Cloudflare itself, trustworthy there) |
+| Vercel                            | `x-forwarded-for` (last entry) or `x-real-ip`                           |
+| Self-hosted behind your own proxy | `x-forwarded-for`, only because you control the proxy chain             |
+| Authenticated routes              | User id or API key: always more precise than any IP                     |
 
 Never read `x-forwarded-for` on a server reachable without your proxy in front of it: clients can forge that header per-request and rotate it to bypass limits entirely.
 

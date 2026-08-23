@@ -1,6 +1,5 @@
-import type { BaseResult, FallbackPolicy, Limiter } from './types'
-
 import { RatelockError } from './errors'
+import type { BaseResult, FallbackPolicy, Limiter } from './types'
 
 /**
  * Decorates a rate limiter with a Fallback resilience policy.

@@ -1,8 +1,11 @@
-import { Funnel_Display, Funnel_Sans, Ubuntu_Mono } from 'next/font/google'
 import type { Metadata } from 'next'
+import { Funnel_Display, Funnel_Sans, Ubuntu_Mono } from 'next/font/google'
 import type { ReactNode } from 'react'
+
 import { createMetadata } from '@/lib/metadata'
+
 import Providers from './Providers'
+
 import './globals.css'
 
 export const metadata: Metadata = createMetadata({
