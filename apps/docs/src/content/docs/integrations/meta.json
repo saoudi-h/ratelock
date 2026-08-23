@@ -1,4 +1,4 @@
 {
     "title": "Integrations",
-    "pages": ["hono"]
+    "pages": ["hono", "express"]
 }
