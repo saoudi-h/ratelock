@@ -1,0 +1,230 @@
+---
+title: Framework Recipes
+---
+
+# Framework Recipes
+
+Web-standard frameworks (Next.js, SvelteKit, Astro, Remix) share one shape: handlers receive a standard `Request` and return a standard `Response`. There is no middleware pipeline to hook into, so instead of a dedicated package you wire a limiter directly inside each handler.
+
+This page shows the full production pattern for each framework: lazy engine initialization, denial responses and rate limit headers.
+
+## Shared building block
+
+Every recipe below reuses two things: a lazily initialized limiter, and a small header helper. Put them in a shared module, for example `lib/rate-limit.ts`:
+
+```ts
+import { fixedWindow } from '@ratelock/redis'
+import type { BaseResult } from '@ratelock/core'
+
+// Module scope: initialized once per server instance.
+const getLimiter = (() => {
+    let pending: Promise<ReturnType<typeof fixedWindow>> | undefined
+
+    return () => {
+        pending ??= fixedWindow({
+            url: process.env.REDIS_URL!,
+            limit: 100,
+            windowMs: 60_000,
+        })
+        return pending
+    }
+})()
+
+function rateLimitHeaders(result: BaseResult & Record<string, unknown>): Record<string, string> {
+    const headers: Record<string, string> = {}
+
+    if (typeof result.remaining === 'number') {
+        headers['RateLimit-Remaining'] = String(result.remaining)
+    } else if (typeof result.tokens === 'number') {
+        headers['RateLimit-Remaining'] = String(Math.floor(result.tokens))
+    }
+
+    const rawReset =
+        typeof result.reset === 'number'
+            ? result.reset
+            : typeof result.refillTime === 'number'
+              ? result.refillTime
+              : undefined
+
+    if (rawReset != null) {
+        const seconds =
+            rawReset > 1e12 ? Math.ceil((rawReset - Date.now()) / 1000) : Math.ceil(rawReset / 1000)
+        headers['RateLimit-Reset'] = String(Math.max(0, seconds))
+    }
+
+    return headers
+}
+
+export { getLimiter, rateLimitHeaders }
+```
+
+A denied request should also carry `Retry-After`. Compute it from the same fields:
+
+```ts
+function retryAfterSeconds(result: BaseResult & Record<string, unknown>): number | undefined {
+    const rawReset =
+        typeof result.reset === 'number'
+            ? result.reset
+            : typeof result.refillTime === 'number'
+              ? result.refillTime
+              : undefined
+    if (rawReset == null) return undefined
+    const seconds =
+        rawReset > 1e12 ? Math.ceil((rawReset - Date.now()) / 1000) : Math.ceil(rawReset / 1000)
+    return Math.max(0, seconds)
+}
+
+export { retryAfterSeconds }
+```
+
+## Next.js
+
+App Router route handlers receive a web-standard `Request` (or `NextRequest`) and return a `Response`.
+
+```ts
+// app/api/things/route.ts
+import type { NextRequest } from 'next/server'
+import { getLimiter, rateLimitHeaders, retryAfterSeconds } from '@/lib/rate-limit'
+
+export async function GET(request: NextRequest) {
+    const limiter = await getLimiter()
+    const id = request.headers.get('x-user-id') ?? 'anon'
+    const result = await limiter.check(id)
+
+    if (!result.allowed) {
+        return Response.json(
+            { error: 'Too Many Requests' },
+            {
+                status: 429,
+                headers: {
+                    ...rateLimitHeaders(result),
+                    ...(retryAfterSeconds(result) != null
+                        ? { 'Retry-After': String(retryAfterSeconds(result)) }
+                        : {}),
+                },
+            }
+        )
+    }
+
+    return Response.json(
+        { things: [] },
+        { headers: rateLimitHeaders(result) }
+    )
+}
+```
+
+For a global interception point, Next.js also supports `middleware.ts`, which runs before routing on every matched path. It executes in the edge runtime, so pair it with an HTTP-reachable engine rather than a TCP connection.
+
+## SvelteKit
+
+Server endpoints in `+server.ts` files receive an event containing the standard `Request`.
+
+```ts
+// src/routes/api/things/+server.ts
+import { json } from '@sveltejs/kit'
+import type { RequestHandler } from './$types'
+import { getLimiter, rateLimitHeaders, retryAfterSeconds } from '$lib/rate-limit'
+
+export const GET: RequestHandler = async ({ request }) => {
+    const limiter = await getLimiter()
+    const id = request.headers.get('x-user-id') ?? 'anon'
+    const result = await limiter.check(id)
+
+    if (!result.allowed) {
+        return json({ error: 'Too Many Requests' }, {
+            status: 429,
+            headers: {
+                ...rateLimitHeaders(result),
+                ...(retryAfterSeconds(result) != null
+                    ? { 'Retry-After': String(retryAfterSeconds(result)) }
+                    : {}),
+            },
+        })
+    }
+
+    return json({ things: [] }, { headers: rateLimitHeaders(result) })
+}
+```
+
+## Astro
+
+API endpoints receive an `APIContext` whose `request` is a standard `Request`.
+
+```ts
+// src/pages/api/things.ts
+import type { APIRoute } from 'astro'
+import { getLimiter, rateLimitHeaders, retryAfterSeconds } from '../../lib/rate-limit'
+
+export const GET: APIRoute = async ({ request }) => {
+    const limiter = await getLimiter()
+    const id = request.headers.get('x-user-id') ?? 'anon'
+    const result = await limiter.check(id)
+
+    if (!result.allowed) {
+        return Response.json(
+            { error: 'Too Many Requests' },
+            {
+                status: 429,
+                headers: {
+                    ...rateLimitHeaders(result),
+                    ...(retryAfterSeconds(result) != null
+                        ? { 'Retry-After': String(retryAfterSeconds(result)) }
+                        : {}),
+                },
+            }
+        )
+    }
+
+    return Response.json({ things: [] }, { headers: rateLimitHeaders(result) })
+}
+```
+
+## Remix
+
+Loaders and actions receive `{ request }` and return a `Response`.
+
+```ts
+// app/routes/api.things.tsx
+import type { LoaderFunctionArgs } from '@remix-run/node'
+import { getLimiter, rateLimitHeaders, retryAfterSeconds } from '~/lib/rate-limit'
+
+export async function loader({ request }: LoaderFunctionArgs) {
+    const limiter = await getLimiter()
+    const id = request.headers.get('x-user-id') ?? 'anon'
+    const result = await limiter.check(id)
+
+    if (!result.allowed) {
+        return Response.json(
+            { error: 'Too Many Requests' },
+            {
+                status: 429,
+                headers: {
+                    ...rateLimitHeaders(result),
+                    ...(retryAfterSeconds(result) != null
+                        ? { 'Retry-After': String(retryAfterSeconds(result)) }
+                        : {}),
+                },
+            }
+        )
+    }
+
+    return Response.json({ things: [] }, { headers: rateLimitHeaders(result) })
+}
+```
+
+## Choosing an identifier
+
+Web-standard `Request` objects do not expose the remote address, so pick an identifier deliberately:
+
+| Deployment | Recommended identifier |
+|---|---|
+| Cloudflare | `CF-Connecting-IP` header (set by Cloudflare itself, trustworthy there) |
+| Vercel | `x-forwarded-for` (last entry) or `x-real-ip` |
+| Self-hosted behind your own proxy | `x-forwarded-for`, only because you control the proxy chain |
+| Authenticated routes | User id or API key: always more precise than any IP |
+
+Never read `x-forwarded-for` on a server reachable without your proxy in front of it: clients can forge that header per-request and rotate it to bypass limits entirely.
+
+## SolidStart
+
+SolidStart API routes follow the same fetch-standard shape (`Request` in, `Response` out). The SvelteKit recipe applies verbatim once you swap the route file convention.

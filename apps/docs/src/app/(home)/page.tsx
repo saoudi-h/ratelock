@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { EnginesSection } from './sections/engines'
 import { FeaturesSection } from './sections/features'
+import { IntegrationsSection } from './sections/integrations'
 import { PerformanceSection } from './sections/performance'
 import { FooterSection } from './sections/footer-section'
 import { HeroSection } from './sections/hero'
@@ -28,6 +29,7 @@ export default function HomePage() {
                 <FeaturesSection />
                 <SimulationSection />
                 <EnginesSection />
+                <IntegrationsSection />
                 <PerformanceSection />
                 <FooterSection />
             </main>
