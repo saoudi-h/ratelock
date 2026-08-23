@@ -1,4 +1,9 @@
 import type { BaseResult, Limiter } from '@ratelock/core'
+import {
+    collectRateLimitHeaders,
+    createLimiterResolver,
+    projectResult,
+} from '@ratelock/http-common'
 import type { NextFunction, Request, RequestHandler, Response } from 'express'
 
 /**
@@ -43,60 +48,6 @@ export interface RateLimitOptions<T extends BaseResult = BaseResult> {
     message?: string
 }
 
-interface HeaderInfo {
-    remaining: number | null
-    resetSeconds: number | null
-}
-
-const EPOCH_MS_THRESHOLD = 1e12
-
-function createResolver<T extends BaseResult>(input: LimiterInput<T>): () => Promise<Limiter<T>> {
-    if (typeof input === 'function') {
-        let initialized: Promise<Limiter<T>> | null = null
-        return () => {
-            initialized ??= Promise.resolve().then(input)
-            return initialized
-        }
-    }
-    return () => Promise.resolve(input)
-}
-
-function secondsUntil(value: number): number {
-    if (!Number.isFinite(value) || value <= 0) return 0
-    if (value > EPOCH_MS_THRESHOLD) return Math.max(0, Math.ceil((value - Date.now()) / 1000))
-    return Math.max(0, Math.ceil(value / 1000))
-}
-
-function project(result: Record<string, unknown>): HeaderInfo {
-    let remaining: number | null = null
-    if (typeof result.remaining === 'number') remaining = result.remaining
-    else if (typeof result.tokens === 'number') remaining = Math.floor(result.tokens)
-
-    const rawReset = result.reset ?? result.windowEnd ?? result.refillTime
-    const resetSeconds = typeof rawReset === 'number' ? secondsUntil(rawReset) : null
-
-    return { remaining, resetSeconds }
-}
-
-function applyHeaders(res: Response, info: HeaderInfo, mode: HeadersMode, limit?: number): void {
-    if (mode === false) return
-    const rfc = mode === 'both' || mode === 'rfc'
-    const legacy = mode === 'both' || mode === 'legacy'
-
-    if (limit != null && Number.isFinite(limit)) {
-        if (rfc) res.setHeader('RateLimit-Limit', String(limit))
-        if (legacy) res.setHeader('X-RateLimit-Limit', String(limit))
-    }
-    if (info.remaining != null) {
-        if (rfc) res.setHeader('RateLimit-Remaining', String(info.remaining))
-        if (legacy) res.setHeader('X-RateLimit-Remaining', String(info.remaining))
-    }
-    if (info.resetSeconds != null) {
-        if (rfc) res.setHeader('RateLimit-Reset', String(info.resetSeconds))
-        if (legacy) res.setHeader('X-RateLimit-Reset', String(info.resetSeconds))
-    }
-}
-
 function defaultKey(req: Request): string {
     return req.ip ?? 'anonymous'
 }
@@ -126,8 +77,8 @@ function defaultKey(req: Request): string {
 export function rateLimit<T extends BaseResult = BaseResult>(
     options: RateLimitOptions<T>
 ): RequestHandler {
-    const resolveLimiter = createResolver(options.limiter)
-    const mode: HeadersMode = options.headers === undefined ? 'both' : options.headers
+    const resolveLimiter = createLimiterResolver(options.limiter)
+    const mode = options.headers === undefined ? ('both' as const) : options.headers
     const resolveKey = options.keyGenerator ?? defaultKey
 
     return function rateLimitHandler(req: Request, res: Response, next: NextFunction) {
@@ -136,8 +87,9 @@ export function rateLimit<T extends BaseResult = BaseResult>(
             const id = await resolveKey(req)
             const result = (await limiter.check(id)) as BaseResult & Record<string, unknown>
 
-            const info = project(result)
-            applyHeaders(res, info, mode, options.limit)
+            const info = projectResult(result)
+            const headers = collectRateLimitHeaders(info, mode, options.limit)
+            for (const [name, value] of Object.entries(headers)) res.setHeader(name, value)
 
             if (!result.allowed) {
                 res.statusCode = options.denyStatusCode ?? 429

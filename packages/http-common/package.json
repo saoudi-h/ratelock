@@ -1,30 +1,9 @@
 {
-    "name": "@ratelock/hono",
-    "version": "0.1.0",
-    "description": "Rate limiting middleware for Hono \u2014 engine-agnostic, powered by any RateLock limiter",
-    "keywords": [
-        "rate-limit",
-        "rate-limiting",
-        "hono",
-        "middleware",
-        "edge",
-        "ratelock"
-    ],
-    "homepage": "https://github.com/saoudi-h/ratelock",
-    "bugs": {
-        "url": "https://github.com/saoudi-h/ratelock/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/saoudi-h/ratelock.git",
-        "directory": "packages/hono"
-    },
+    "name": "@ratelock/http-common",
+    "version": "0.0.0",
+    "private": true,
+    "description": "Internal shared logic for RateLock framework integrations. Never published; bundled into consumers at build time.",
     "license": "MIT",
-    "author": {
-        "name": "Saoudi Hakim",
-        "url": "https://hakimsaoudi.dev",
-        "email": "saoudihakim@gmail.com"
-    },
     "type": "module",
     "main": "./dist/index.cjs",
     "types": "./dist/index.d.cts",
@@ -35,14 +14,8 @@
         },
         "./package.json": "./package.json"
     },
-    "files": [
-        "dist",
-        "README.md",
-        "LICENSE"
-    ],
     "scripts": {
         "build": "tsdown",
-        "dev": "tsdown --watch",
         "lint": "eslint . --max-warnings 0",
         "lint:fix": "eslint . --max-warnings 0 --fix",
         "format": "prettier \"**/*\" --ignore-unknown --list-different",
@@ -53,18 +26,13 @@
         "test:run": "vitest run",
         "pre-commit": "lint-staged"
     },
-    "peerDependencies": {
-        "hono": "^4.0.0"
-    },
+    "dependencies": {},
     "devDependencies": {
         "@ratelock/core": "workspace:*",
-        "@ratelock/http-common": "workspace:*",
-        "@ratelock/local": "workspace:*",
         "@tala-tools/eslint": "0.1.6",
         "@tala-tools/prettier": "0.0.3",
         "@tala-tools/tsconfig": "0.0.2",
         "@types/node": "^26.2.0",
-        "hono": "^4.9.0",
         "vitest": "^4.1.10"
     },
     "engines": {
