@@ -1,0 +1,98 @@
+---
+title: Express
+---
+
+# Express
+
+Rate limiting middleware for Express 4 and 5, powered by any RateLock engine.
+
+- **Engine-agnostic**: bring a `@ratelock/local`, `@ratelock/redis` or `@ratelock/postgres` limiter
+- **Both majors supported**: async failures always flow through `next(err)`, which Express 4 requires
+- **Lazy initialization**: pass a factory and the engine starts on the first matched request
+- **Dual-family headers**: `RateLimit-*` (RFC 9331) and `X-RateLimit-*`, configurable
+- **Zero runtime dependency** besides Express itself
+
+## Installation
+
+<CodeBlockTabs defaultValue="pnpm" groupId="package-manager">
+  <CodeBlockTabsList>
+    <CodeBlockTabsTrigger value="npm">npm</CodeBlockTabsTrigger>
+    <CodeBlockTabsTrigger value="pnpm">pnpm</CodeBlockTabsTrigger>
+    <CodeBlockTabsTrigger value="yarn">yarn</CodeBlockTabsTrigger>
+    <CodeBlockTabsTrigger value="bun">bun</CodeBlockTabsTrigger>
+  </CodeBlockTabsList>
+  <CodeBlockTab value="npm">
+    ```bash
+    npm install @ratelock/express @ratelock/redis
+    ```
+  </CodeBlockTab>
+  <CodeBlockTab value="pnpm">
+    ```bash
+    pnpm add @ratelock/express @ratelock/redis
+    ```
+  </CodeBlockTab>
+  <CodeBlockTab value="yarn">
+    ```bash
+    yarn add @ratelock/express @ratelock/redis
+    ```
+  </CodeBlockTab>
+  <CodeBlockTab value="bun">
+    ```bash
+    bun add @ratelock/express @ratelock/redis
+    ```
+  </CodeBlockTab>
+</CodeBlockTabs>
+
+## Quick start
+
+```typescript
+import express from 'express'
+import { rateLimit } from '@ratelock/express'
+import { fixedWindow } from '@ratelock/redis'
+
+const app = express()
+
+app.use(
+    '/api',
+    rateLimit({
+        // Lazy factory: nothing initializes until the first request hits /api
+        limiter: () => fixedWindow({ url: process.env.REDIS_URL!, limit: 100, windowMs: 60_000 }),
+        limit: 100,
+        keyGenerator: req => req.ip ?? 'anon',
+    })
+)
+
+app.get('/api/things', (_req, res) => res.json({ things: [] }))
+```
+
+Already have an instance? Pass it directly:
+
+```typescript
+const limiter = await fixedWindow({ limit: 100, windowMs: 60_000 })
+app.use('/api', rateLimit({ limiter }))
+```
+
+## Options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `limiter` | `Limiter \| (() => Limiter \| Promise<Limiter>)` | required | Any RateLock limiter. A factory is memoized and invoked once, on the first matched request. |
+| `keyGenerator` | `(req) => string \| Promise<string>` | `req.ip` | Identifier the request is counted against; falls back to a shared `'anonymous'` bucket when unknown. |
+| `headers` | `'both' \| 'rfc' \| 'legacy' \| false` | `'both'` | Header families attached to responses. |
+| `limit` | `number` | (none) | Quota, used only to emit the `*Limit` headers. |
+| `denyStatusCode` | number | `429` | Status returned on exhaustion. |
+| `message` | string | `'Too Many Requests'` | JSON body of denial responses. |
+
+## Response headers
+
+| Family | Headers |
+|---|---|
+| RFC 9331 | `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset` |
+| Legacy | `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` |
+| Denial only | `Retry-After` |
+
+`RateLimit-Reset` is always in seconds. Token bucket results project `floor(tokens)` onto `*Remaining` and the refill time onto `Reset`.
+
+## Identifiers behind proxies
+
+The default identifier reads `req.ip`, which honors your app's `trust proxy` setting. Behind a load balancer without trust configuration, all clients share one bucket. Set `trust proxy` correctly or provide a `keyGenerator`. Never read raw `x-forwarded-for` yourself: attackers forge it per-request to bypass limits entirely.
