@@ -1,6 +1,6 @@
 {
     "name": "@ratelock/nestjs",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "description": "Rate limiting module for NestJS — engine-agnostic guard powered by any RateLock limiter",
     "keywords": [
         "rate-limit",
