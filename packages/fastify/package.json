@@ -1,6 +1,6 @@
 {
     "name": "@ratelock/fastify",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "description": "Rate limiting plugin for Fastify — engine-agnostic, powered by any RateLock limiter",
     "keywords": [
         "rate-limit",
