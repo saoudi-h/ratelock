@@ -1,0 +1,84 @@
+{
+    "name": "@ratelock/nestjs",
+    "version": "0.0.0",
+    "description": "Rate limiting module for NestJS — engine-agnostic guard powered by any RateLock limiter",
+    "keywords": [
+        "rate-limit",
+        "rate-limiting",
+        "nestjs",
+        "guard",
+        "middleware",
+        "ratelock"
+    ],
+    "homepage": "https://github.com/saoudi-h/ratelock",
+    "bugs": {
+        "url": "https://github.com/saoudi-h/ratelock/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/saoudi-h/ratelock.git",
+        "directory": "packages/nestjs"
+    },
+    "license": "MIT",
+    "author": {
+        "name": "Saoudi Hakim",
+        "url": "https://hakimsaoudi.dev",
+        "email": "saoudihakim@gmail.com"
+    },
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "types": "./dist/index.d.cts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        },
+        "./package.json": "./package.json"
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "build": "tsdown",
+        "dev": "tsdown --watch",
+        "lint": "eslint . --max-warnings 0",
+        "lint:fix": "eslint . --max-warnings 0 --fix",
+        "format": "prettier \"**/*\" --ignore-unknown --list-different",
+        "format:fix": "prettier \"**/*\" --ignore-unknown --write",
+        "clean": "rimraf dist .turbo node_modules",
+        "typecheck": "tsgo --noEmit",
+        "test": "vitest",
+        "test:run": "vitest run",
+        "pre-commit": "lint-staged"
+    },
+    "peerDependencies": {
+        "@nestjs/common": "^10.0.0 || ^11.0.0",
+        "@nestjs/core": "^10.0.0 || ^11.0.0"
+    },
+    "devDependencies": {
+        "@nestjs/common": "^11.0.0",
+        "@nestjs/core": "^11.0.0",
+        "@nestjs/platform-express": "^11.0.0",
+        "@nestjs/platform-fastify": "^11.0.0",
+        "@nestjs/testing": "^11.0.0",
+        "@ratelock/core": "workspace:*",
+        "@ratelock/http-common": "workspace:*",
+        "@ratelock/local": "workspace:*",
+        "@tala-tools/eslint": "0.1.6",
+        "@tala-tools/prettier": "0.0.3",
+        "@tala-tools/tsconfig": "0.0.2",
+        "@types/node": "^26.2.0",
+        "@types/supertest": "^6.0.0",
+        "reflect-metadata": "^0.2.0",
+        "rxjs": "^7.8.0",
+        "supertest": "^7.1.0",
+        "vitest": "^4.1.10"
+    },
+    "engines": {
+        "node": ">=22"
+    },
+    "sideEffects": false,
+    "module": "./dist/index.mjs"
+}
