@@ -23,37 +23,34 @@
         "autonomos": "autonomos"
     },
     "devDependencies": {
-        "@commitlint/cli": "^21.2.1",
-        "@commitlint/config-conventional": "^21.2.0",
+        "@commitlint/cli": "^21.2.2",
+        "@commitlint/config-conventional": "^21.2.2",
         "@commitlint/types": "^21.2.0",
         "@ratelock/vitest": "workspace:*",
-        "@tala-tools/eslint": "0.1.6",
-        "@tala-tools/prettier": "0.0.3",
         "@tala-tools/tsconfig": "0.0.2",
-        "@types/eslint": "^9.6.1",
         "@types/node": "^26.2.0",
-        "@typescript/native-preview": "7.0.0-dev.20260707.2",
-        "@vitest/coverage-v8": "^4.1.10",
-        "@vitest/ui": "^4.1.10",
+        "@vitest/coverage-v8": "^4.1.11",
+        "@vitest/ui": "^4.1.11",
         "chai": "^6.2.2",
         "consola": "^3.4.2",
         "cspell": "^10.0.1",
-        "eslint": "^10.8.1",
-        "happy-dom": "^20.11.2",
+        "happy-dom": "^20.11.6",
         "husky": "^9.1.7",
         "lint-staged": "^17.3.0",
-        "prettier": "^3.9.6",
-        "prettier-plugin-organize-imports": "^4.3.0",
-        "publint": "^0.3.23",
+        "publint": "^0.3.24",
         "rimraf": "^6.1.3",
         "tsdown": "0.22.14",
-        "tsx": "^4.23.11",
-        "turbo": "^2.10.9",
-        "typescript": "^6.0.3",
+        "tsx": "^4.23.12",
+        "turbo": "^2.10.11",
+        "typescript": "7.0.2",
         "unplugin-unused": "^0.6.0",
         "vite-tsconfig-paths": "^6.1.1",
         "vitest": "^4.1.10",
-        "@autonomos/cli": "^0.4.1"
+        "@autonomos/cli": "^0.4.1",
+        "@tala-tools/oxfmt": "0.0.1",
+        "@tala-tools/oxlint": "0.0.1",
+        "oxfmt": "^0.64.0",
+        "oxlint": "^1.79.0"
     },
     "packageManager": "pnpm@11.20.0",
     "engines": {
@@ -87,7 +84,7 @@
     },
     "license": "MIT",
     "dependencies": {
-        "@changesets/changelog-github": "^0.7.0",
-        "@changesets/cli": "^2.31.1"
+        "@changesets/changelog-github": "^1.0.0",
+        "@changesets/cli": "^3.0.1"
     }
 }
