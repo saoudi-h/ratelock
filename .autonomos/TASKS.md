@@ -25,7 +25,7 @@
 - [x] **[INT-01]** Hono middleware `@ratelock/hono`: engine-agnostic `rateLimit({ limiter })` accepting instance OR lazy factory (`() => Promise<Limiter>`, memoized singleton); headers `'both' | 'rfc' | 'legacy' | false` default `'both'` (+ Retry-After on 429); framework IP default + `keyGenerator` override; middleware contract tests in test-utils; README + docs page + changeset `Priority: 🟠` `Complexity: M`
 - [x] **[INT-02]** Express middleware `@ratelock/express` — support Express 4 AND 5 (async error semantics differ); `req.ip` + `trust proxy`; tests via supertest; research exact APIs first `Priority: 🟠` `Complexity: M`
 - [x] **[INT-03]** Fastify plugin `@ratelock/fastify` — fastify-plugin encapsulation pattern; `request.ip`; tests via built-in `inject()` `Priority: 🔵` `Complexity: M`
-- [ ] **[INT-05]** Elysia plugin `@ratelock/elysia` — Bun-native synergy with our native driver; pin supported Elysia version range (fast-moving ecosystem) `Priority: 🔵` `Complexity: M`
+- [/] **[INT-05]** Elysia plugin `@ratelock/elysia` — Bun-native synergy with our native driver; pin supported Elysia version range (fast-moving ecosystem) `Priority: 🔵` `Complexity: M`
 - [ ] **[INT-06]** Web-standard helper `@ratelock/web` — single Request/Response-based helper covering Next.js route handlers, SvelteKit, Astro, Remix, Nitro/H3 `Priority: 🔵` `Complexity: M`
 - [ ] **[ADP-01]** Upstash Redis adapter (serverless REST) `Priority: 🔵` `Complexity: M`
 - [ ] **[ADP-02]** Cloudflare KV adapter (edge) `Priority: 🔵` `Complexity: M`
