@@ -7,6 +7,8 @@
 
 ## 🚀 Active Sprint
 
+- [x] **[TOOL-01]** Update dependencies; migrate lint/format from `@tala-tools/eslint`+`@tala-tools/prettier` to `@tala-tools/oxlint`+`@tala-tools/oxfmt`; evaluate TypeScript 7 adoption vs ecosystem tool compatibility (reference migration: solar-icons) `Priority: 🟠` `Complexity: L`
+
 - [x] **[INIT-01]** Review project context and structure `Priority: 🔵` `Complexity: S`
 - [x] **[INIT-02]** Triage legacy `BACKLOG.md` + `ANALYSIS_REPORT.md` into protocol issues/tasks `Priority: 🟠` `Complexity: M`
 - [x] **[BUN-01]** Evaluate Bun 1.4 native Redis/Postgres clients as drivers. PoC against `@ratelock/redis` + `@ratelock/postgres`, decide internal drivers vs dedicated packages, document decision `Priority: 🟠` `Complexity: L`

@@ -138,8 +138,8 @@ Follow the prompts to describe your change. This ensures proper versioning and c
 ## Code Style
 
 - **TypeScript** — strict mode, no `any` unless absolutely necessary
-- **Formatting** — handled by Prettier (run `pnpm format:fix`)
-- **Linting** — ESLint with `@tala-tools/eslint` (run `pnpm lint:fix`)
+- **Formatting** — handled by oxfmt via `@tala-tools/oxfmt` (run `pnpm format:fix`)
+- **Linting** — oxlint with `@tala-tools/oxlint` (run `pnpm lint:fix`)
 - **No comments in code** unless explaining non-obvious behavior
 
 ## Reporting Bugs
