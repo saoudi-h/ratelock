@@ -8,7 +8,7 @@ import { useRef, useState } from 'react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { isSimulationVisibleAtom } from '@/simulation/atoms'
 
-import { gsap, registerGsap, ScrollTrigger } from '../_lib/gsap'
+import { gsap, registerGsap } from '../_lib/gsap'
 import { registerReplay } from '../_lib/replay-registry'
 
 function SimulationSkeleton() {
@@ -35,10 +35,9 @@ const StrategyTabs = dynamic(
 )
 
 /**
- * Wraps the live, in-browser rate-limiting simulation. Replaces
- * `IntersectionObserver` with a GSAP `ScrollTrigger` (one source of
- * truth for scroll across the app) and uses a single fade-up
- * timeline for the header card.
+ * Wraps the live, in-browser rate-limiting simulation. The observer
+ * lazy-loads the interactive UI, while one ScrollTrigger controls the
+ * section's entrance timeline.
  */
 export function SimulationSection() {
     registerGsap()
@@ -53,17 +52,34 @@ export function SimulationSection() {
             if (!ref.current) return
             const root = ref.current
 
-            ScrollTrigger.create({
-                trigger: root,
-                start: 'top 95%',
-                once: true,
-                onEnter: () => {
-                    setIsVisible(true)
-                    setIsSimulationVisible(true)
+            const revealSimulation = () => {
+                setIsVisible(true)
+                setIsSimulationVisible(true)
+                visibilityObserver.disconnect()
+            }
+            const visibilityObserver = new IntersectionObserver(
+                ([entry]) => {
+                    if (entry?.isIntersecting) {
+                        revealSimulation()
+                    }
+                },
+                { rootMargin: '0px 0px -5% 0px', threshold: 0 }
+            )
+
+            if (root.getBoundingClientRect().top <= window.innerHeight * 0.95) {
+                revealSimulation()
+            } else {
+                visibilityObserver.observe(root)
+            }
+
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: root,
+                    start: 'top 85%',
+                    once: true,
+                    invalidateOnRefresh: true,
                 },
             })
-
-            const tl = gsap.timeline()
 
             if (headerRef.current) {
                 tl.from(headerRef.current, {
@@ -72,33 +88,31 @@ export function SimulationSection() {
                     filter: 'blur(8px)',
                     duration: 0.9,
                     ease: 'expo.out',
-                    scrollTrigger: {
-                        trigger: root,
-                        start: 'top 85%',
-                        once: true,
-                    },
                 })
             }
 
             if (simRef.current) {
-                tl.from(simRef.current, {
-                    y: 40,
-                    opacity: 0,
-                    filter: 'blur(10px)',
-                    duration: 1,
-                    ease: 'expo.out',
-                    delay: 0.2,
-                    scrollTrigger: {
-                        trigger: root,
-                        start: 'top 80%',
-                        once: true,
+                tl.from(
+                    simRef.current,
+                    {
+                        y: 40,
+                        opacity: 0,
+                        filter: 'blur(10px)',
+                        duration: 1,
+                        ease: 'expo.out',
                     },
-                })
+                    '-=0.45'
+                )
             }
 
-            return registerReplay(() => {
+            const unregisterReplay = registerReplay(() => {
                 tl.restart(true, false)
             })
+
+            return () => {
+                visibilityObserver.disconnect()
+                unregisterReplay()
+            }
         },
         { scope: ref }
     )

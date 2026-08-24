@@ -7,6 +7,10 @@
 
 ## 🚀 Active Sprint
 
+- [/] **[DOCS-02]** Fix 5 non-blocking errors reported by Next.js devtools in `apps/docs`; update Next.js past 16.3.0 plus all other workspace dependencies `Priority: 🟠` `Complexity: M`
+
+- [x] **[DOCS-01]** Fix the GSAP ScrollTrigger crash after browser back navigation restores the home page `Priority: 🔴` `Complexity: M`
+
 - [x] **[TOOL-01]** Update dependencies; migrate lint/format from `@tala-tools/eslint`+`@tala-tools/prettier` to `@tala-tools/oxlint`+`@tala-tools/oxfmt`; evaluate TypeScript 7 adoption vs ecosystem tool compatibility (reference migration: solar-icons) `Priority: 🟠` `Complexity: L`
 
 - [x] **[INIT-01]** Review project context and structure `Priority: 🔵` `Complexity: S`

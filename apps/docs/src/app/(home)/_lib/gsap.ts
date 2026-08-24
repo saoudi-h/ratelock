@@ -10,6 +10,7 @@ export function registerGsap() {
     if (registered || typeof window === 'undefined') return
     gsap.registerPlugin(ScrollTrigger, SplitText)
     gsap.config({ nullTargetWarn: false })
+    ScrollTrigger.config({ limitCallbacks: true })
     gsap.ticker.lagSmoothing(0)
     registered = true
 }

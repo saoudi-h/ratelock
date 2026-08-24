@@ -34,9 +34,7 @@ export function ExploreCta() {
             if (!ref.current) return
             const root = ref.current
 
-            const tl = gsap.timeline()
-
-            tl.from(root, {
+            const rootTween = gsap.from(root, {
                 y: 60,
                 opacity: 0,
                 filter: 'blur(8px)',
@@ -46,11 +44,12 @@ export function ExploreCta() {
             })
 
             if (titleRef.current) {
+                let titleTween: gsap.core.Tween | undefined
                 const split = SplitText.create(titleRef.current, {
                     type: 'chars',
                     autoSplit: true,
                     onSplit: self => {
-                        tl.from(self.chars, {
+                        titleTween = gsap.from(self.chars, {
                             yPercent: 110,
                             opacity: 0,
                             rotation: 6,
@@ -63,19 +62,23 @@ export function ExploreCta() {
                                 once: true,
                             },
                         })
+                        return titleTween
                     },
+                })
+
+                const unregisterReplay = registerReplay(() => {
+                    rootTween.restart(true, false)
+                    titleTween?.restart(true, false)
                 })
 
                 return () => {
                     split.revert()
-                    registerReplay(() => {
-                        tl.restart(true, false)
-                    })()
+                    unregisterReplay()
                 }
             }
 
             return registerReplay(() => {
-                tl.restart(true, false)
+                rootTween.restart(true, false)
             })
         },
         { scope: ref }

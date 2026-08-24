@@ -66,7 +66,7 @@ export function useSplitReveal<T extends HTMLElement = HTMLHeadingElement>({
                     const pieces = (self as unknown as Record<string, Element[]>)[targetKey]
                     if (!pieces?.length) return
 
-                    gsap.from(pieces, {
+                    return gsap.from(pieces, {
                         ...from,
                         duration,
                         ease,
@@ -85,7 +85,11 @@ export function useSplitReveal<T extends HTMLElement = HTMLHeadingElement>({
 
             return () => split.revert()
         },
-        { dependencies: [type, stagger, duration, ease, delay, onScroll, start, once] }
+        {
+            dependencies: [type, stagger, duration, ease, delay, onScroll, start, once],
+            scope: ref,
+            revertOnUpdate: true,
+        }
     )
 
     return ref
