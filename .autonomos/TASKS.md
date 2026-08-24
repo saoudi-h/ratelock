@@ -7,7 +7,10 @@
 
 ## 🚀 Active Sprint
 
-- [/] **[DOCS-02]** Fix 5 non-blocking errors reported by Next.js devtools in `apps/docs`; update Next.js past 16.3.0 plus all other workspace dependencies `Priority: 🟠` `Complexity: M`
+- [x] **[DOCS-02]** Fix 5 non-blocking errors reported by Next.js devtools in `apps/docs`; update Next.js past 16.3.0 plus all other workspace dependencies `Priority: 🟠` `Complexity: M`
+      - Fixed: hydration mismatch (`toLocaleString()` without locale → `'en-US'`), 3× Base UI `nativeButton` warnings (Button wrapper now auto-derives `nativeButton` from the `render` element type), script-in-component console error (cascade of the hydration remount)
+      - Deps: next 16.3.0→16.3.2, fumadocs-core/mdx, nuqs, shadcn, shiki, sonner, redis, pg, vitest, cspell, hono… ; replaced deprecated `@solar-icons/react-perf` with `@solar-icons/react` (imports: `/BoldDuotone` → `/bold-duotone`, names gain `Icon` suffix, `Plain2` → `Plane2Icon`)
+      - Intentionally NOT bumped: `express4`/`fastify4` aliases + `fastify-plugin@^5` (dual v4/v5 peer support)
 
 - [x] **[DOCS-01]** Fix the GSAP ScrollTrigger crash after browser back navigation restores the home page `Priority: 🔴` `Complexity: M`
 

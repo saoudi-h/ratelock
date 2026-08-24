@@ -1,7 +1,7 @@
 'use client'
 
 import { Checkbox as CheckboxPrimitive } from '@base-ui/react/checkbox'
-import { CheckCircle } from '@solar-icons/react-perf/BoldDuotone'
+import { CheckCircleIcon } from '@solar-icons/react/bold-duotone'
 
 import { cn } from '@/lib/utils'
 
@@ -31,7 +31,7 @@ function Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) {
             <CheckboxPrimitive.Indicator
                 data-slot="checkbox-indicator"
                 className="grid place-content-center text-current transition-none [&>svg]:size-3.5">
-                <CheckCircle />
+                <CheckCircleIcon />
             </CheckboxPrimitive.Indicator>
         </CheckboxPrimitive.Root>
     )

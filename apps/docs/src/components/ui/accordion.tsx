@@ -1,5 +1,5 @@
 import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
-import { AltArrowDown, AltArrowUp } from '@solar-icons/react-perf/BoldDuotone'
+import { AltArrowDownIcon, AltArrowUpIcon } from '@solar-icons/react/bold-duotone'
 
 import { cn } from '@/lib/utils'
 
@@ -43,14 +43,14 @@ function AccordionTrigger({ className, children, ...props }: AccordionPrimitive.
                 )}
                 {...props}>
                 {children}
-                <AltArrowDown
+                <AltArrowDownIcon
                     data-slot="accordion-trigger-icon"
                     className="
                       pointer-events-none shrink-0
                       group-aria-expanded/accordion-trigger:hidden
                     "
                 />
-                <AltArrowUp
+                <AltArrowUpIcon
                     data-slot="accordion-trigger-icon"
                     className="
                       pointer-events-none hidden shrink-0

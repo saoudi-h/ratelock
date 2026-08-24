@@ -2,7 +2,7 @@
 
 import { useGSAP } from '@gsap/react'
 import { Icon } from '@iconify/react'
-import { ArrowRightBold } from '@solar-icons/react-perf'
+import { ArrowRightBoldIcon } from '@solar-icons/react'
 import Link from 'next/link'
 import { useRef, useState } from 'react'
 
@@ -81,7 +81,7 @@ export function HeroCtas({ command = 'npm install @ratelock/local' }: HeroCtasPr
                     size="xl"
                     className="shadow-sm">
                     <span>Get Started</span>
-                    <ArrowRightBold
+                    <ArrowRightBoldIcon
                         className="
                           size-4 transition-transform duration-200
                           group-hover/button:translate-x-0.5

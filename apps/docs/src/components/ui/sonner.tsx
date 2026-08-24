@@ -1,12 +1,6 @@
 'use client'
 
-import {
-    CheckCircle,
-    DangerTriangle,
-    Forbidden,
-    InfoCircle,
-    Refresh,
-} from '@solar-icons/react-perf/BoldDuotone'
+import { CheckCircleIcon, DangerTriangleIcon, ForbiddenIcon, InfoCircleIcon, RefreshIcon } from '@solar-icons/react/bold-duotone'
 import { useTheme } from 'next-themes'
 import { Toaster as Sonner, type ToasterProps } from 'sonner'
 
@@ -18,11 +12,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
             theme={theme as ToasterProps['theme']}
             className="toaster group"
             icons={{
-                success: <CheckCircle className="size-4" />,
-                info: <InfoCircle className="size-4" />,
-                warning: <DangerTriangle className="size-4" />,
-                error: <Forbidden className="size-4" />,
-                loading: <Refresh className="size-4 animate-spin" />,
+                success: <CheckCircleIcon className="size-4" />,
+                info: <InfoCircleIcon className="size-4" />,
+                warning: <DangerTriangleIcon className="size-4" />,
+                error: <ForbiddenIcon className="size-4" />,
+                loading: <RefreshIcon className="size-4 animate-spin" />,
             }}
             style={
                 {

@@ -1,4 +1,4 @@
-import { AltArrowDown } from '@solar-icons/react-perf/BoldDuotone'
+import { AltArrowDownIcon } from '@solar-icons/react/bold-duotone'
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
@@ -34,7 +34,7 @@ function NativeSelect({ className, size = 'default', ...props }: NativeSelectPro
                 "
                 {...props}
             />
-            <AltArrowDown
+            <AltArrowDownIcon
                 className="
                   pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2
                   text-muted-foreground select-none

@@ -1,4 +1,4 @@
-import { AltArrowLeft, AltArrowRight, MenuDots } from '@solar-icons/react-perf/BoldDuotone'
+import { AltArrowLeftIcon, AltArrowRightIcon, MenuDotsIcon } from '@solar-icons/react/bold-duotone'
 import * as React from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -65,7 +65,7 @@ function PaginationPrevious({
             size="default"
             className={cn('pl-2!', className)}
             {...props}>
-            <AltArrowLeft data-icon="inline-start" />
+            <AltArrowLeftIcon data-icon="inline-start" />
             <span className="hidden sm:block">{text}</span>
         </PaginationLink>
     )
@@ -83,7 +83,7 @@ function PaginationNext({
             className={cn('pr-2!', className)}
             {...props}>
             <span className="hidden sm:block">{text}</span>
-            <AltArrowRight data-icon="inline-end" />
+            <AltArrowRightIcon data-icon="inline-end" />
         </PaginationLink>
     )
 }
@@ -98,7 +98,7 @@ function PaginationEllipsis({ className, ...props }: React.ComponentProps<'span'
                 className
             )}
             {...props}>
-            <MenuDots />
+            <MenuDotsIcon />
             <span className="sr-only">More pages</span>
         </span>
     )

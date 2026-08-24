@@ -1,6 +1,6 @@
 'use client'
 
-import { CheckCircle, Magnifier } from '@solar-icons/react-perf/BoldDuotone'
+import { CheckCircleIcon, MagnifierIcon } from '@solar-icons/react/bold-duotone'
 import { Command as CommandPrimitive } from 'cmdk'
 import * as React from 'react'
 
@@ -78,7 +78,7 @@ function CommandInput({
                     {...props}
                 />
                 <InputGroupAddon>
-                    <Magnifier className="size-4 shrink-0 opacity-50" />
+                    <MagnifierIcon className="size-4 shrink-0 opacity-50" />
                 </InputGroupAddon>
             </InputGroup>
         </div>
@@ -168,7 +168,7 @@ function CommandItem({
             )}
             {...props}>
             {children}
-            <CheckCircle
+            <CheckCircleIcon
                 className="
                   ml-auto opacity-0
                   group-has-data-[slot=command-shortcut]/command-item:hidden

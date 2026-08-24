@@ -1,6 +1,6 @@
 'use client'
 
-import { MinusCircle } from '@solar-icons/react-perf/BoldDuotone'
+import { MinusCircleIcon } from '@solar-icons/react/bold-duotone'
 import { OTPInput, OTPInputContext } from 'input-otp'
 import * as React from 'react'
 
@@ -94,7 +94,7 @@ function InputOTPSeparator({ ...props }: React.ComponentProps<'div'>) {
             className="flex items-center [&_svg:not([class*='size-'])]:size-4"
             role="separator"
             {...props}>
-            <MinusCircle />
+            <MinusCircleIcon />
         </div>
     )
 }

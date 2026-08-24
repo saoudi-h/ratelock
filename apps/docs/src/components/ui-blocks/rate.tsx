@@ -1,6 +1,6 @@
 'use client'
 
-import { Dislike, Like } from '@solar-icons/react-perf/BoldDuotone'
+import { DislikeIcon, LikeIcon } from '@solar-icons/react/bold-duotone'
 import { cva } from 'class-variance-authority'
 import { Collapsible, CollapsibleContent } from 'fumadocs-ui/components/ui/collapsible'
 import { usePathname } from 'next/navigation'
@@ -89,14 +89,14 @@ export function Rate({
                     disabled={previous !== null}
                     className={cn(rateButtonVariants({ active: activeOpinion === 'good' }))}
                     onClick={() => setOpinion('good')}>
-                    <Like />
+                    <LikeIcon />
                     Good
                 </button>
                 <button
                     disabled={previous !== null}
                     className={cn(rateButtonVariants({ active: activeOpinion === 'bad' }))}
                     onClick={() => setOpinion('bad')}>
-                    <Dislike />
+                    <DislikeIcon />
                     Bad
                 </button>
             </div>

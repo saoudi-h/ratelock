@@ -2,7 +2,7 @@
 
 import { Menu as MenuPrimitive } from '@base-ui/react/menu'
 import { Menubar as MenubarPrimitive } from '@base-ui/react/menubar'
-import { CheckCircle } from '@solar-icons/react-perf/BoldDuotone'
+import { CheckCircleIcon } from '@solar-icons/react/bold-duotone'
 import * as React from 'react'
 
 import {
@@ -170,7 +170,7 @@ function MenubarCheckboxItem({
                   [&_svg:not([class*='size-'])]:size-4
                 ">
                 <MenuPrimitive.CheckboxItemIndicator>
-                    <CheckCircle />
+                    <CheckCircleIcon />
                 </MenuPrimitive.CheckboxItemIndicator>
             </span>
             {children}
@@ -214,7 +214,7 @@ function MenubarRadioItem({
                   [&_svg:not([class*='size-'])]:size-4
                 ">
                 <MenuPrimitive.RadioItemIndicator>
-                    <CheckCircle />
+                    <CheckCircleIcon />
                 </MenuPrimitive.RadioItemIndicator>
             </span>
             {children}

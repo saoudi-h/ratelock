@@ -1,6 +1,6 @@
 'use client'
 
-import { Bolt, Plain2 } from '@solar-icons/react-perf/BoldDuotone'
+import { BoltIcon, Plane2Icon } from '@solar-icons/react/bold-duotone'
 
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
@@ -52,7 +52,7 @@ export function SimulationControls({
                       ${!isPlaying ? 'pointer-events-none opacity-50' : ''}
                     `}>
                     <div className="flex items-center gap-2.5">
-                        <Bolt
+                        <BoltIcon
                             className={`
                               size-3.5 transition-colors duration-300
                               ${
@@ -114,7 +114,7 @@ export function SimulationControls({
                       cursor-pointer font-bold tracking-wide uppercase shadow-sm select-none
                       hover:shadow-md
                     ">
-                    <Plain2 className="size-4" />
+                    <Plane2Icon className="size-4" />
                     <span>Send request</span>
                 </Button>
             </div>

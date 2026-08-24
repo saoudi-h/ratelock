@@ -1,4 +1,4 @@
-import { CheckCircle } from '@solar-icons/react-perf/BoldDuotone'
+import { CheckCircleIcon } from '@solar-icons/react/bold-duotone'
 import React from 'react'
 
 import { LAYOUT } from './layout-config'
@@ -93,7 +93,7 @@ export function RateCards({ valueRefs }: RateCardsProps) {
                                         justifyContent: 'center',
                                         flexShrink: 0,
                                     }}>
-                                    <CheckCircle
+                                    <CheckCircleIcon
                                         size={20}
                                         color="var(--primary)"
                                         data-animate="card-check"

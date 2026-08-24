@@ -1,7 +1,7 @@
 'use client'
 
 import { ContextMenu as ContextMenuPrimitive } from '@base-ui/react/context-menu'
-import { AltArrowRight, CheckCircle } from '@solar-icons/react-perf/BoldDuotone'
+import { AltArrowRightIcon, CheckCircleIcon } from '@solar-icons/react/bold-duotone'
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
@@ -167,7 +167,7 @@ function ContextMenuSubTrigger({
             )}
             {...props}>
             {children}
-            <AltArrowRight className="ml-auto" />
+            <AltArrowRightIcon className="ml-auto" />
         </ContextMenuPrimitive.SubmenuTrigger>
     )
 }
@@ -224,7 +224,7 @@ function ContextMenuCheckboxItem({
             {...props}>
             <span className="pointer-events-none absolute right-2">
                 <ContextMenuPrimitive.CheckboxItemIndicator>
-                    <CheckCircle />
+                    <CheckCircleIcon />
                 </ContextMenuPrimitive.CheckboxItemIndicator>
             </span>
             {children}
@@ -263,7 +263,7 @@ function ContextMenuRadioItem({
             {...props}>
             <span className="pointer-events-none absolute right-2">
                 <ContextMenuPrimitive.RadioItemIndicator>
-                    <CheckCircle />
+                    <CheckCircleIcon />
                 </ContextMenuPrimitive.RadioItemIndicator>
             </span>
             {children}

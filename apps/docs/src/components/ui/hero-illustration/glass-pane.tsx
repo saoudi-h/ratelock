@@ -1,4 +1,4 @@
-import { ShieldMinimalistic } from '@solar-icons/react-perf/BoldDuotone'
+import { ShieldMinimalisticIcon } from '@solar-icons/react/bold-duotone'
 import React from 'react'
 
 import { LAYOUT } from './layout-config'
@@ -103,7 +103,7 @@ export function GlassPane({ totalRef, chartSvgRef, chartStrokeRef, chartFillRef 
                                 justifyContent: 'center',
                                 color: 'var(--primary)',
                             }}>
-                            <ShieldMinimalistic size={18} />
+                            <ShieldMinimalisticIcon size={18} />
                         </div>
 
                         {/* Rate badge */}

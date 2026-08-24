@@ -26,16 +26,16 @@
         "@ratelock/postgres": "workspace:*",
         "@ratelock/redis": "workspace:*",
         "ioredis": "^6.0.0",
-        "pg": "^8.22.0",
+        "pg": "^8.23.0",
         "postgres": "^3.4.9",
         "rate-limiter-flexible": "^11.2.0",
-        "redis": "^6.2.0"
+        "redis": "^6.2.1"
     },
     "devDependencies": {
         "@tala-tools/tsconfig": "0.0.2",
         "@types/node": "^26.2.0",
-        "@types/pg": "^8.21.0",
-        "tsx": "^4.23.11",
+        "@types/pg": "^8.23.1",
+        "tsx": "^4.23.12",
         "typescript": "7.0.2"
     },
     "engines": {

@@ -1,10 +1,10 @@
-import { Refresh } from '@solar-icons/react-perf/BoldDuotone'
+import { RefreshIcon } from '@solar-icons/react/bold-duotone'
 
 import { cn } from '@/lib/utils'
 
 function Spinner({ className, ...props }: React.ComponentProps<'svg'>) {
     return (
-        <Refresh
+        <RefreshIcon
             role="status"
             aria-label="Loading"
             className={cn(`size-4 animate-spin`, className)}

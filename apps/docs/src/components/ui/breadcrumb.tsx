@@ -1,6 +1,6 @@
 import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
-import { AltArrowRight, MenuDots } from '@solar-icons/react-perf/BoldDuotone'
+import { AltArrowRightIcon, MenuDotsIcon } from '@solar-icons/react/bold-duotone'
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
@@ -74,7 +74,7 @@ function BreadcrumbSeparator({ children, className, ...props }: React.ComponentP
             aria-hidden="true"
             className={cn('[&>svg]:size-3.5', className)}
             {...props}>
-            {children ?? <AltArrowRight />}
+            {children ?? <AltArrowRightIcon />}
         </li>
     )
 }
@@ -87,7 +87,7 @@ function BreadcrumbEllipsis({ className, ...props }: React.ComponentProps<'span'
             aria-hidden="true"
             className={cn(`flex size-5 items-center justify-center [&>svg]:size-4`, className)}
             {...props}>
-            <MenuDots />
+            <MenuDotsIcon />
             <span className="sr-only">More</span>
         </span>
     )

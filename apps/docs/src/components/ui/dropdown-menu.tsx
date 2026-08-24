@@ -1,7 +1,7 @@
 'use client'
 
 import { Menu as MenuPrimitive } from '@base-ui/react/menu'
-import { AltArrowRight, CheckCircle } from '@solar-icons/react-perf/BoldDuotone'
+import { AltArrowRightIcon, CheckCircleIcon } from '@solar-icons/react/bold-duotone'
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
@@ -164,7 +164,7 @@ function DropdownMenuSubTrigger({
             )}
             {...props}>
             {children}
-            <AltArrowRight className="ml-auto" />
+            <AltArrowRightIcon className="ml-auto" />
         </MenuPrimitive.SubmenuTrigger>
     )
 }
@@ -245,7 +245,7 @@ function DropdownMenuCheckboxItem({
                 className="pointer-events-none absolute right-2 flex items-center justify-center"
                 data-slot="dropdown-menu-checkbox-item-indicator">
                 <MenuPrimitive.CheckboxItemIndicator>
-                    <CheckCircle />
+                    <CheckCircleIcon />
                 </MenuPrimitive.CheckboxItemIndicator>
             </span>
             {children}
@@ -287,7 +287,7 @@ function DropdownMenuRadioItem({
                 className="pointer-events-none absolute right-2 flex items-center justify-center"
                 data-slot="dropdown-menu-radio-item-indicator">
                 <MenuPrimitive.RadioItemIndicator>
-                    <CheckCircle />
+                    <CheckCircleIcon />
                 </MenuPrimitive.RadioItemIndicator>
             </span>
             {children}

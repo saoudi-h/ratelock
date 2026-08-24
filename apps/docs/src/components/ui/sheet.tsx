@@ -1,7 +1,7 @@
 'use client'
 
 import { Dialog as SheetPrimitive } from '@base-ui/react/dialog'
-import { CloseCircle } from '@solar-icons/react-perf/BoldDuotone'
+import { CloseCircleIcon } from '@solar-icons/react/bold-duotone'
 import * as React from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -96,7 +96,7 @@ function SheetContent({
                                 size="icon-sm"
                             />
                         }>
-                        <CloseCircle />
+                        <CloseCircleIcon />
                         <span className="sr-only">Close</span>
                     </SheetPrimitive.Close>
                 )}

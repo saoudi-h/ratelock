@@ -1,5 +1,5 @@
 import { NavigationMenu as NavigationMenuPrimitive } from '@base-ui/react/navigation-menu'
-import { AltArrowDown } from '@solar-icons/react-perf/BoldDuotone'
+import { AltArrowDownIcon } from '@solar-icons/react/bold-duotone'
 import { cva } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
@@ -80,7 +80,7 @@ function NavigationMenuTrigger({
             className={cn(navigationMenuTriggerStyle(), 'group', className)}
             {...props}>
             {children}{' '}
-            <AltArrowDown
+            <AltArrowDownIcon
                 className="
                   relative top-px ml-1 size-3 transition duration-300
                   group-data-popup-open/navigation-menu-trigger:rotate-180

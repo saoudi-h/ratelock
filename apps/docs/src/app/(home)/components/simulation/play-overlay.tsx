@@ -1,6 +1,6 @@
 'use client'
 
-import { Play } from '@solar-icons/react-perf/category/style/BoldDuotone'
+import { PlayIcon } from '@solar-icons/react/bold-duotone'
 
 import { cn } from '@/lib/utils'
 
@@ -51,7 +51,7 @@ export function PlayOverlay({ onPlay }: PlayOverlayProps) {
                       hover:bg-emerald-500
                     `
                 )}>
-                <Play
+                <PlayIcon
                     className="
                       ml-0.5 size-7 text-white transition-transform duration-200
                       group-hover:scale-125

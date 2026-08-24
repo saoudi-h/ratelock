@@ -1,7 +1,7 @@
 'use client'
 
 import { Select as SelectPrimitive } from '@base-ui/react/select'
-import { AltArrowDown, AltArrowUp, CheckCircle } from '@solar-icons/react-perf/BoldDuotone'
+import { AltArrowDownIcon, AltArrowUpIcon, CheckCircleIcon } from '@solar-icons/react/bold-duotone'
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
@@ -64,7 +64,7 @@ function SelectTrigger({
             {children}
             <SelectPrimitive.Icon
                 render={
-                    <AltArrowDown className="pointer-events-none size-4 text-muted-foreground" />
+                    <AltArrowDownIcon className="pointer-events-none size-4 text-muted-foreground" />
                 }
             />
         </SelectPrimitive.Trigger>
@@ -177,7 +177,7 @@ function SelectItem({ className, children, ...props }: SelectPrimitive.Item.Prop
                         "
                     />
                 }>
-                <CheckCircle className="pointer-events-none" />
+                <CheckCircleIcon className="pointer-events-none" />
             </SelectPrimitive.ItemIndicator>
         </SelectPrimitive.Item>
     )
@@ -208,7 +208,7 @@ function SelectScrollUpButton({
                 className
             )}
             {...props}>
-            <AltArrowUp />
+            <AltArrowUpIcon />
         </SelectPrimitive.ScrollUpArrow>
     )
 }
@@ -229,7 +229,7 @@ function SelectScrollDownButton({
                 className
             )}
             {...props}>
-            <AltArrowDown />
+            <AltArrowDownIcon />
         </SelectPrimitive.ScrollDownArrow>
     )
 }

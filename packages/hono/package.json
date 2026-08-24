@@ -61,7 +61,7 @@
         "@ratelock/local": "workspace:*",
         "@tala-tools/tsconfig": "0.0.2",
         "@types/node": "^26.2.0",
-        "hono": "^4.9.0",
+        "hono": "^4.13.3",
         "vitest": "^4.1.11"
     },
     "peerDependencies": {

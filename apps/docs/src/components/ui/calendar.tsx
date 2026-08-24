@@ -1,6 +1,6 @@
 'use client'
 
-import { AltArrowDown, AltArrowLeft, AltArrowRight } from '@solar-icons/react-perf/BoldDuotone'
+import { AltArrowDownIcon, AltArrowLeftIcon, AltArrowRightIcon } from '@solar-icons/react/bold-duotone'
 import * as React from 'react'
 import { DayPicker, getDefaultClassNames, type DayButton, type Locale } from 'react-day-picker'
 
@@ -157,14 +157,14 @@ function Calendar({
                 },
                 Chevron: ({ className, orientation, ...props }) => {
                     if (orientation === 'left') {
-                        return <AltArrowLeft className={cn('size-4', className)} {...props} />
+                        return <AltArrowLeftIcon className={cn('size-4', className)} {...props} />
                     }
 
                     if (orientation === 'right') {
-                        return <AltArrowRight className={cn('size-4', className)} {...props} />
+                        return <AltArrowRightIcon className={cn('size-4', className)} {...props} />
                     }
 
-                    return <AltArrowDown className={cn('size-4', className)} {...props} />
+                    return <AltArrowDownIcon className={cn('size-4', className)} {...props} />
                 },
                 DayButton: ({ ...props }) => <CalendarDayButton locale={locale} {...props} />,
                 WeekNumber: ({ children, ...props }) => {

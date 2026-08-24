@@ -81,7 +81,7 @@
         "dotenv": "^17.4.2",
         "ioredis": "^6.0.0",
         "luamin": "^1.0.4",
-        "redis": "^6.2.0",
+        "redis": "^6.2.1",
         "typescript": "7.0.2",
         "vitest": "^4.1.11"
     },

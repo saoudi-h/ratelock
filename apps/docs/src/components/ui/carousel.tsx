@@ -1,6 +1,6 @@
 'use client'
 
-import { AltArrowLeft, AltArrowRight } from '@solar-icons/react-perf/BoldDuotone'
+import { AltArrowLeftIcon, AltArrowRightIcon } from '@solar-icons/react/bold-duotone'
 import useEmblaCarousel, { type UseEmblaCarouselType } from 'embla-carousel-react'
 import * as React from 'react'
 
@@ -185,7 +185,7 @@ function CarouselPrevious({
             disabled={!canScrollPrev}
             onClick={scrollPrev}
             {...props}>
-            <AltArrowLeft />
+            <AltArrowLeftIcon />
             <span className="sr-only">Previous slide</span>
         </Button>
     )
@@ -214,7 +214,7 @@ function CarouselNext({
             disabled={!canScrollNext}
             onClick={scrollNext}
             {...props}>
-            <AltArrowRight />
+            <AltArrowRightIcon />
             <span className="sr-only">Next slide</span>
         </Button>
     )
