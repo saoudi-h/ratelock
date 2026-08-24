@@ -2,6 +2,7 @@
 
 import { useGSAP } from '@gsap/react'
 import { useRef } from 'react'
+
 import { gsap, registerGsap } from '../../_lib/gsap'
 import { registerReplay } from '../../_lib/replay-registry'
 
@@ -27,8 +28,7 @@ export function HeroBadge() {
                     duration: 0.6,
                     ease: 'expo.out',
                     onStart: () => el.classList.remove('gsap-prep'),
-                    onInterrupt: () =>
-                        gsap.set(el, { y: 0, opacity: 1, clearProps: 'filter' }),
+                    onInterrupt: () => gsap.set(el, { y: 0, opacity: 1, clearProps: 'filter' }),
                 }
             )
             return registerReplay(() => {
@@ -42,9 +42,9 @@ export function HeroBadge() {
         <span
             ref={ref}
             className="
-              gsap-prep inline-flex items-center gap-2 rounded-xl border
-              border-border/40 bg-card/50 px-3 py-1.5 font-mono text-xs
-              font-semibold text-muted-foreground shadow-xs select-none
+              gsap-prep inline-flex items-center gap-2 rounded-xl border border-border/40 bg-card/50
+              px-3 py-1.5 font-mono text-xs font-semibold text-muted-foreground shadow-xs
+              select-none
             ">
             <span className="size-1.5 animate-pulse rounded-full bg-primary" />
             v0.2 • Open Source

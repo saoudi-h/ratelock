@@ -2,6 +2,7 @@
 
 import { Menu as MenuPrimitive } from '@base-ui/react/menu'
 import { Menubar as MenubarPrimitive } from '@base-ui/react/menubar'
+import { CheckCircle } from '@solar-icons/react-perf/BoldDuotone'
 import * as React from 'react'
 
 import {
@@ -20,7 +21,6 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
-import { CheckCircle } from '@solar-icons/react-perf/BoldDuotone'
 
 function Menubar({ className, ...props }: MenubarPrimitive.Props) {
     return (
@@ -50,8 +50,8 @@ function MenubarTrigger({ className, ...props }: React.ComponentProps<typeof Dro
             data-slot="menubar-trigger"
             className={cn(
                 `
-                  flex items-center rounded-2xl px-2 py-0.75 text-sm font-medium
-                  outline-hidden select-none
+                  flex items-center rounded-2xl px-2 py-0.75 text-sm font-medium outline-hidden
+                  select-none
                   hover:bg-muted
                   aria-expanded:bg-muted
                 `,
@@ -77,12 +77,10 @@ function MenubarContent({
             sideOffset={sideOffset}
             className={cn(
                 `
-                  relative min-w-48 animate-none! rounded-3xl bg-popover/70
-                  p-1.5 text-popover-foreground shadow-lg ring-1
-                  ring-foreground/5 duration-100
-                  before:pointer-events-none before:absolute before:inset-0
-                  before:-z-1 before:rounded-[inherit] before:backdrop-blur-2xl
-                  before:backdrop-saturate-150
+                  relative min-w-48 animate-none! rounded-3xl bg-popover/70 p-1.5
+                  text-popover-foreground shadow-lg ring-1 ring-foreground/5 duration-100
+                  before:pointer-events-none before:absolute before:inset-0 before:-z-1
+                  before:rounded-[inherit] before:backdrop-blur-2xl before:backdrop-saturate-150
                   data-[side=bottom]:slide-in-from-top-2
                   data-[side=inline-end]:slide-in-from-left-2
                   data-[side=inline-start]:slide-in-from-right-2
@@ -120,8 +118,7 @@ function MenubarItem({
             data-variant={variant}
             className={cn(
                 `
-                  group/menubar-item gap-2.5 rounded-2xl px-3 py-2 text-sm
-                  font-medium
+                  group/menubar-item gap-2.5 rounded-2xl px-3 py-2 text-sm font-medium
                   focus:bg-accent focus:text-accent-foreground
                   not-data-[variant=destructive]:focus:**:text-accent-foreground
                   data-inset:pl-9.5
@@ -155,9 +152,8 @@ function MenubarCheckboxItem({
             data-inset={inset}
             className={cn(
                 `
-                  relative flex cursor-default items-center gap-2.5 rounded-2xl
-                  py-2 pr-3 pl-9.5 text-sm font-medium outline-hidden
-                  select-none
+                  relative flex cursor-default items-center gap-2.5 rounded-2xl py-2 pr-3 pl-9.5
+                  text-sm font-medium outline-hidden select-none
                   focus:bg-accent focus:text-accent-foreground
                   focus:**:text-accent-foreground
                   data-inset:pl-9.5
@@ -170,8 +166,7 @@ function MenubarCheckboxItem({
             {...props}>
             <span
                 className="
-                  pointer-events-none absolute left-3 flex size-4 items-center
-                  justify-center
+                  pointer-events-none absolute left-3 flex size-4 items-center justify-center
                   [&_svg:not([class*='size-'])]:size-4
                 ">
                 <MenuPrimitive.CheckboxItemIndicator>
@@ -201,9 +196,8 @@ function MenubarRadioItem({
             data-inset={inset}
             className={cn(
                 `
-                  relative flex cursor-default items-center gap-2.5 rounded-2xl
-                  py-2 pr-3 pl-9.5 text-sm font-medium outline-hidden
-                  select-none
+                  relative flex cursor-default items-center gap-2.5 rounded-2xl py-2 pr-3 pl-9.5
+                  text-sm font-medium outline-hidden select-none
                   focus:bg-accent focus:text-accent-foreground
                   focus:**:text-accent-foreground
                   data-inset:pl-9.5
@@ -216,8 +210,7 @@ function MenubarRadioItem({
             {...props}>
             <span
                 className="
-                  pointer-events-none absolute left-3 flex size-4 items-center
-                  justify-center
+                  pointer-events-none absolute left-3 flex size-4 items-center justify-center
                   [&_svg:not([class*='size-'])]:size-4
                 ">
                 <MenuPrimitive.RadioItemIndicator>
@@ -241,10 +234,7 @@ function MenubarLabel({
             data-slot="menubar-label"
             data-inset={inset}
             className={cn(
-                `
-                  px-3.5 py-2.5 text-xs text-muted-foreground
-                  data-inset:pl-9.5
-                `,
+                `px-3.5 py-2.5 text-xs text-muted-foreground data-inset:pl-9.5`,
                 className
             )}
             {...props}
@@ -323,12 +313,10 @@ function MenubarSubContent({
             data-slot="menubar-sub-content"
             className={cn(
                 `
-                  relative min-w-32 animate-none! rounded-3xl bg-popover/70
-                  p-1.5 text-popover-foreground shadow-lg ring-1
-                  ring-foreground/5 duration-100
-                  before:pointer-events-none before:absolute before:inset-0
-                  before:-z-1 before:rounded-[inherit] before:backdrop-blur-2xl
-                  before:backdrop-saturate-150
+                  relative min-w-32 animate-none! rounded-3xl bg-popover/70 p-1.5
+                  text-popover-foreground shadow-lg ring-1 ring-foreground/5 duration-100
+                  before:pointer-events-none before:absolute before:inset-0 before:-z-1
+                  before:rounded-[inherit] before:backdrop-blur-2xl before:backdrop-saturate-150
                   data-[side=bottom]:slide-in-from-top-2
                   data-[side=left]:slide-in-from-right-2
                   data-[side=right]:slide-in-from-left-2
@@ -343,8 +331,7 @@ function MenubarSubContent({
                   **:data-[variant=destructive]:focus:bg-foreground/10!
                   dark:ring-foreground/10
                   data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95
-                  data-closed:animate-out data-closed:fade-out-0
-                  data-closed:zoom-out-95
+                  data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95
                 `,
                 className
             )}

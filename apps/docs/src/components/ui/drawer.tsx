@@ -54,11 +54,10 @@ function DrawerContent({
                 data-slot="drawer-content"
                 className={cn(
                     `
-                      group/drawer-content fixed z-50 flex h-auto flex-col
-                      bg-transparent p-4 text-sm
-                      before:absolute before:inset-2 before:-z-10
-                      before:rounded-4xl before:border before:border-border
-                      before:bg-popover before:shadow-xl
+                      group/drawer-content fixed z-50 flex h-auto flex-col bg-transparent p-4
+                      text-sm
+                      before:absolute before:inset-2 before:-z-10 before:rounded-4xl before:border
+                      before:border-border before:bg-popover before:shadow-xl
                       data-[vaul-drawer-direction=bottom]:inset-x-0
                       data-[vaul-drawer-direction=bottom]:bottom-0
                       data-[vaul-drawer-direction=bottom]:mt-24
@@ -70,8 +69,7 @@ function DrawerContent({
                       data-[vaul-drawer-direction=right]:right-0
                       data-[vaul-drawer-direction=right]:w-3/4
                       data-[vaul-drawer-direction=top]:inset-x-0
-                      data-[vaul-drawer-direction=top]:top-0
-                      data-[vaul-drawer-direction=top]:mb-24
+                      data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24
                       data-[vaul-drawer-direction=top]:max-h-[80vh]
                       data-[vaul-drawer-direction=left]:sm:max-w-sm
                       data-[vaul-drawer-direction=right]:sm:max-w-sm
@@ -81,8 +79,7 @@ function DrawerContent({
                 {...props}>
                 <div
                     className="
-                      mx-auto mt-4 hidden h-1.5 w-[100px] shrink-0 rounded-full
-                      bg-muted
+                      mx-auto mt-4 hidden h-1.5 w-[100px] shrink-0 rounded-full bg-muted
                       group-data-[vaul-drawer-direction=bottom]/drawer-content:block
                     "
                 />

@@ -1,12 +1,14 @@
 'use client'
 
-import { LogoLink } from '@/components/ui-blocks/logo'
 import { useGSAP } from '@gsap/react'
-import { registerReplay } from '../_lib/replay-registry'
 import { Icon } from '@iconify/react'
 import Link from 'next/link'
 import { useRef } from 'react'
+
+import { LogoLink } from '@/components/ui-blocks/logo'
+
 import { gsap, registerGsap } from '../_lib/gsap'
+import { registerReplay } from '../_lib/replay-registry'
 
 /**
  * Site-wide footer. Motion is intentionally restrained — a footer
@@ -52,33 +54,29 @@ export function FooterSection() {
     )
 
     return (
-        <footer ref={ref} className="
-          relative border-t border-border/40 bg-muted/20
-        ">
+        <footer ref={ref} className="relative border-t border-border/40 bg-muted/20">
             <div className="mx-auto max-w-7xl px-6 py-16">
                 <div
                     className="
-                      grid grid-cols-1 items-start gap-10 border-b
-                      border-border/20 pb-12
+                      grid grid-cols-1 items-start gap-10 border-b border-border/20 pb-12
                       md:grid-cols-4
                     ">
                     <div data-footer-col className="space-y-4">
                         <div className="flex items-center gap-2.5 select-none">
                             <LogoLink />
                         </div>
-                        <p className="
-                          max-w-sm text-xs/relaxed text-muted-foreground
-                        ">
+                        <p className="max-w-sm text-xs/relaxed text-muted-foreground">
                             A highly precise, resilient rate limiting suite for TypeScript. Built to
                             scale gracefully with your local storage, Redis, or PostgreSQL backends.
                         </p>
                     </div>
 
                     <div data-footer-col className="space-y-4">
-                        <div className="
-                          text-[10px] font-bold tracking-widest
-                          text-muted-foreground/60 uppercase select-none
-                        ">
+                        <div
+                            className="
+                              text-[10px] font-bold tracking-widest text-muted-foreground/60
+                              uppercase select-none
+                            ">
                             Documentation
                         </div>
                         <ul className="flex flex-col gap-3 text-xs">
@@ -92,8 +90,7 @@ export function FooterSection() {
                                     <Link
                                         href={link.href}
                                         className="
-                                          group/link inline-flex
-                                          text-muted-foreground
+                                          group/link inline-flex text-muted-foreground
                                           transition-colors duration-200
                                           hover:text-foreground
                                         ">
@@ -101,10 +98,8 @@ export function FooterSection() {
                                             {link.label}
                                             <span
                                                 className="
-                                                  absolute inset-x-0 -bottom-0.5
-                                                  h-px origin-left scale-x-0
-                                                  bg-foreground/40
-                                                  transition-transform
+                                                  absolute inset-x-0 -bottom-0.5 h-px origin-left
+                                                  scale-x-0 bg-foreground/40 transition-transform
                                                   duration-300
                                                   group-hover/link:scale-x-100
                                                 "
@@ -117,10 +112,11 @@ export function FooterSection() {
                     </div>
 
                     <div data-footer-col className="space-y-4">
-                        <div className="
-                          text-[10px] font-bold tracking-widest
-                          text-muted-foreground/60 uppercase select-none
-                        ">
+                        <div
+                            className="
+                              text-[10px] font-bold tracking-widest text-muted-foreground/60
+                              uppercase select-none
+                            ">
                             NPM Packages
                         </div>
                         <div className="space-y-5 font-mono text-xs">
@@ -133,39 +129,37 @@ export function FooterSection() {
                                     Storage
                                 </div>
                                 <ul className="flex flex-col gap-3">
-                                    {['@ratelock/local', '@ratelock/redis', '@ratelock/postgres'].map(
-                                        pkg => (
-                                            <li key={pkg}>
-                                                <a
-                                                    href={`https://www.npmjs.com/package/${pkg}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="
-                                                      group/link inline-flex items-center
-                                                      gap-1.5 text-muted-foreground
-                                                      transition-colors duration-200
-                                                      hover:text-foreground
-                                                    ">
-                                                    <Icon icon="logos:npm-icon" className="
-                                                      size-3.5
-                                                    " />
-                                                    <span className="relative">
-                                                        {pkg}
-                                                        <span
-                                                            className="
-                                                              absolute inset-x-0 -bottom-0.5
-                                                              h-px origin-left scale-x-0
-                                                              bg-foreground/40
-                                                              transition-transform
-                                                              duration-300
-                                                              group-hover/link:scale-x-100
-                                                            "
-                                                        />
-                                                    </span>
-                                                </a>
-                                            </li>
-                                        )
-                                    )}
+                                    {[
+                                        '@ratelock/local',
+                                        '@ratelock/redis',
+                                        '@ratelock/postgres',
+                                    ].map(pkg => (
+                                        <li key={pkg}>
+                                            <a
+                                                href={`https://www.npmjs.com/package/${pkg}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="
+                                                  group/link inline-flex items-center gap-1.5
+                                                  text-muted-foreground transition-colors
+                                                  duration-200
+                                                  hover:text-foreground
+                                                ">
+                                                <Icon icon="logos:npm-icon" className="size-3.5" />
+                                                <span className="relative">
+                                                    {pkg}
+                                                    <span
+                                                        className="
+                                                          absolute inset-x-0 -bottom-0.5 h-px
+                                                          origin-left scale-x-0 bg-foreground/40
+                                                          transition-transform duration-300
+                                                          group-hover/link:scale-x-100
+                                                        "
+                                                    />
+                                                </span>
+                                            </a>
+                                        </li>
+                                    ))}
                                 </ul>
                             </div>
                             <div className="space-y-3">
@@ -189,23 +183,19 @@ export function FooterSection() {
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="
-                                                  group/link inline-flex items-center
-                                                  gap-1.5 text-muted-foreground
-                                                  transition-colors duration-200
+                                                  group/link inline-flex items-center gap-1.5
+                                                  text-muted-foreground transition-colors
+                                                  duration-200
                                                   hover:text-foreground
                                                 ">
-                                                <Icon icon="logos:npm-icon" className="
-                                                  size-3.5
-                                                " />
+                                                <Icon icon="logos:npm-icon" className="size-3.5" />
                                                 <span className="relative">
                                                     {pkg}
                                                     <span
                                                         className="
-                                                          absolute inset-x-0 -bottom-0.5
-                                                          h-px origin-left scale-x-0
-                                                          bg-foreground/40
-                                                          transition-transform
-                                                          duration-300
+                                                          absolute inset-x-0 -bottom-0.5 h-px
+                                                          origin-left scale-x-0 bg-foreground/40
+                                                          transition-transform duration-300
                                                           group-hover/link:scale-x-100
                                                         "
                                                     />
@@ -219,10 +209,11 @@ export function FooterSection() {
                     </div>
 
                     <div data-footer-col className="space-y-4">
-                        <div className="
-                          text-[10px] font-bold tracking-widest
-                          text-muted-foreground/60 uppercase select-none
-                        ">
+                        <div
+                            className="
+                              text-[10px] font-bold tracking-widest text-muted-foreground/60
+                              uppercase select-none
+                            ">
                             Resources
                         </div>
                         <ul className="flex flex-col gap-3 text-xs">
@@ -234,8 +225,7 @@ export function FooterSection() {
                                     <Link
                                         href={link.href}
                                         className="
-                                          group/link inline-flex
-                                          text-muted-foreground
+                                          group/link inline-flex text-muted-foreground
                                           transition-colors duration-200
                                           hover:text-foreground
                                         ">
@@ -243,10 +233,8 @@ export function FooterSection() {
                                             {link.label}
                                             <span
                                                 className="
-                                                  absolute inset-x-0 -bottom-0.5
-                                                  h-px origin-left scale-x-0
-                                                  bg-foreground/40
-                                                  transition-transform
+                                                  absolute inset-x-0 -bottom-0.5 h-px origin-left
+                                                  scale-x-0 bg-foreground/40 transition-transform
                                                   duration-300
                                                   group-hover/link:scale-x-100
                                                 "
@@ -262,8 +250,8 @@ export function FooterSection() {
                 <div
                     data-footer-col
                     className="
-                      mt-8 flex flex-col items-start justify-between gap-4
-                      text-[11px] text-muted-foreground select-none
+                      mt-8 flex flex-col items-start justify-between gap-4 text-[11px]
+                      text-muted-foreground select-none
                       md:flex-row md:items-center
                     ">
                     <div className="flex items-center gap-2">
@@ -277,9 +265,8 @@ export function FooterSection() {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="
-                              group/link inline-flex items-center gap-1.5
-                              text-muted-foreground transition-colors
-                              duration-200
+                              group/link inline-flex items-center gap-1.5 text-muted-foreground
+                              transition-colors duration-200
                               hover:text-foreground
                             ">
                             <Icon icon="mdi:github" className="size-4" />
@@ -287,9 +274,8 @@ export function FooterSection() {
                                 GitHub
                                 <span
                                     className="
-                                      absolute inset-x-0 -bottom-0.5 h-px
-                                      origin-left scale-x-0 bg-foreground/40
-                                      transition-transform duration-300
+                                      absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0
+                                      bg-foreground/40 transition-transform duration-300
                                       group-hover/link:scale-x-100
                                     "
                                 />

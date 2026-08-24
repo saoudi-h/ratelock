@@ -5,6 +5,7 @@ import {
     tokenBucketContract,
 } from '@ratelock/test-utils'
 import { describe, expect, it } from 'vitest'
+
 import { fixedWindow, individualFixedWindow, slidingWindow, tokenBucket } from '../src'
 
 const REDIS_URL = process.env.REDIS_URL ?? 'redis://:testpassword@localhost:6380'

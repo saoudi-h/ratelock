@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
-type RestartFn = () => void;
+type RestartFn = () => void
 
-const registry = new Set<RestartFn>();
+const registry = new Set<RestartFn>()
 
 /**
  * Register a GSAP timeline restart callback.
@@ -10,8 +10,8 @@ const registry = new Set<RestartFn>();
  * Returns an unregister function for cleanup on actual unmount.
  */
 export function registerReplay(fn: RestartFn): () => void {
-  registry.add(fn);
-  return () => registry.delete(fn);
+    registry.add(fn)
+    return () => registry.delete(fn)
 }
 
 /**
@@ -19,11 +19,11 @@ export function registerReplay(fn: RestartFn): () => void {
  * Called on pageshow with persisted=true (bfcache restoration).
  */
 export function replayAll(): void {
-  registry.forEach((fn) => {
-    try {
-      fn();
-    } catch (e) {
-      console.error("[replay-registry] Error replaying animation:", e);
-    }
-  });
+    registry.forEach(fn => {
+        try {
+            fn()
+        } catch (e) {
+            console.error('[replay-registry] Error replaying animation:', e)
+        }
+    })
 }

@@ -1,26 +1,23 @@
 'use client'
 
-import { cn } from '@/lib/utils'
+import { Dislike, Like } from '@solar-icons/react-perf/BoldDuotone'
 import { cva } from 'class-variance-authority'
 import { Collapsible, CollapsibleContent } from 'fumadocs-ui/components/ui/collapsible'
-import { Dislike, Like } from '@solar-icons/react-perf/BoldDuotone'
 import { usePathname } from 'next/navigation'
 import { type SyntheticEvent, useEffect, useState, useTransition } from 'react'
 
+import { cn } from '@/lib/utils'
+
 const rateButtonVariants = cva(
     `
-      inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm
-      font-medium
+      inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium
       disabled:cursor-not-allowed
       [&_svg]:size-4
     `,
     {
         variants: {
             active: {
-                true: `
-                  bg-fd-accent text-fd-accent-foreground
-                  [&_svg]:fill-current
-                `,
+                true: `bg-fd-accent text-fd-accent-foreground [&_svg]:fill-current`,
                 false: 'text-fd-muted-foreground',
             },
         },
@@ -105,10 +102,11 @@ export function Rate({
             </div>
             <CollapsibleContent className="mt-3">
                 {previous ? (
-                    <div className="
-                      flex flex-col items-center gap-3 rounded-xl bg-fd-card
-                      px-3 py-6 text-center text-sm text-fd-muted-foreground
-                    ">
+                    <div
+                        className="
+                          flex flex-col items-center gap-3 rounded-xl bg-fd-card px-3 py-6
+                          text-center text-sm text-fd-muted-foreground
+                        ">
                         <p>Thank you for your feedback!</p>
                         <div className="flex flex-row items-center gap-2">
                             <a
@@ -116,9 +114,8 @@ export function Rate({
                                 rel="noreferrer noopener"
                                 target="_blank"
                                 className="
-                                  inline-flex items-center justify-center
-                                  rounded-md bg-fd-primary px-3 py-1.5 text-xs
-                                  font-medium text-fd-primary-foreground
+                                  inline-flex items-center justify-center rounded-md bg-fd-primary
+                                  px-3 py-1.5 text-xs font-medium text-fd-primary-foreground
                                   shadow-sm transition-colors
                                   hover:bg-fd-primary/90
                                 ">
@@ -126,9 +123,8 @@ export function Rate({
                             </a>
                             <button
                                 className="
-                                  inline-flex items-center justify-center
-                                  rounded-md border bg-fd-secondary px-3 py-1.5
-                                  text-xs font-medium transition-colors
+                                  inline-flex items-center justify-center rounded-md border
+                                  bg-fd-secondary px-3 py-1.5 text-xs font-medium transition-colors
                                   hover:bg-fd-muted
                                 "
                                 onClick={() => {
@@ -160,9 +156,8 @@ export function Rate({
                         <button
                             type="submit"
                             className="
-                              inline-flex w-fit items-center justify-center
-                              rounded-md border bg-fd-background px-3 py-1.5
-                              text-sm font-medium transition-colors
+                              inline-flex w-fit items-center justify-center rounded-md border
+                              bg-fd-background px-3 py-1.5 text-sm font-medium transition-colors
                               hover:bg-fd-muted
                               disabled:opacity-50
                             "

@@ -1,13 +1,15 @@
 'use client'
 
-import { cn } from '@/lib/utils'
+import { useGSAP } from '@gsap/react'
 import { Icon } from '@iconify/react'
 import Link from 'next/link'
 import { useRef } from 'react'
-import { useGSAP } from '@gsap/react'
+
+import { cn } from '@/lib/utils'
+
+import { gsap, registerGsap } from '../../_lib/gsap'
 import { BentoBase } from '../../components/bento-base'
 import { SectionHeader } from '../../components/section-header'
-import { gsap, registerGsap } from '../../_lib/gsap'
 
 interface Framework {
     name: string
@@ -98,22 +100,24 @@ function FrameworkTile({ framework }: { framework: Framework }) {
                         <span
                             className={cn(
                                 `
-                                  inline-flex items-center gap-1 rounded-full border px-2
-                                  py-0.5 text-[10px] font-semibold uppercase tracking-wide
-                                  select-none
+                                  inline-flex items-center gap-1 rounded-full border px-2 py-0.5
+                                  text-[10px] font-semibold tracking-wide uppercase select-none
                                 `,
                                 isMiddleware
-                                    ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-500'
-                                    : 'border-sky-500/20 bg-sky-500/5 text-sky-500'
+                                    ? `border-emerald-500/20 bg-emerald-500/5 text-emerald-500`
+                                    : `border-sky-500/20 bg-sky-500/5 text-sky-500`
                             )}>
                             {isMiddleware ? 'Middleware' : 'Guide'}
                         </span>
                     </div>
                     <div>
-                        <h3 className="font-heading text-lg font-bold tracking-tight text-foreground">
+                        <h3
+                            className="
+                              font-heading text-lg font-bold tracking-tight text-foreground
+                            ">
                             {framework.name}
                         </h3>
-                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                        <p className="mt-1 text-sm/relaxed text-muted-foreground">
                             {framework.tagline}
                         </p>
                     </div>
@@ -149,12 +153,7 @@ export function IntegrationsSection() {
 
     return (
         <section className="relative border-y border-border/40 bg-muted">
-            <div
-                className="
-                  mx-auto max-w-7xl px-6 py-20
-                  md:py-28
-                "
-                ref={ref}>
+            <div className="mx-auto max-w-7xl px-6 py-20 md:py-28" ref={ref}>
                 <div className="mb-16">
                     <SectionHeader
                         eyebrow="Integrations"
@@ -166,20 +165,12 @@ export function IntegrationsSection() {
                 </div>
 
                 <div className="space-y-6">
-                    <div
-                        className="
-                          grid grid-cols-1 gap-6
-                          sm:grid-cols-2 lg:grid-cols-4
-                        ">
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                         {MIDDLEWARES.map(framework => (
                             <FrameworkTile key={framework.name} framework={framework} />
                         ))}
                     </div>
-                    <div
-                        className="
-                          grid grid-cols-1 gap-6
-                          sm:grid-cols-2 lg:grid-cols-4
-                        ">
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                         {GUIDES.map(framework => (
                             <FrameworkTile key={framework.name} framework={framework} />
                         ))}

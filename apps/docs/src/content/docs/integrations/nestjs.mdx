@@ -15,32 +15,18 @@ Rate limiting module for NestJS 10 and 11, powered by any RateLock engine.
 ## Installation
 
 <CodeBlockTabs defaultValue="pnpm" groupId="package-manager">
-  <CodeBlockTabsList>
-    <CodeBlockTabsTrigger value="npm">npm</CodeBlockTabsTrigger>
-    <CodeBlockTabsTrigger value="pnpm">pnpm</CodeBlockTabsTrigger>
-    <CodeBlockTabsTrigger value="yarn">yarn</CodeBlockTabsTrigger>
-    <CodeBlockTabsTrigger value="bun">bun</CodeBlockTabsTrigger>
-  </CodeBlockTabsList>
-  <CodeBlockTab value="npm">
-    ```bash
-    npm install @ratelock/nestjs @ratelock/redis
-    ```
-  </CodeBlockTab>
-  <CodeBlockTab value="pnpm">
-    ```bash
-    pnpm add @ratelock/nestjs @ratelock/redis
-    ```
-  </CodeBlockTab>
-  <CodeBlockTab value="yarn">
-    ```bash
-    yarn add @ratelock/nestjs @ratelock/redis
-    ```
-  </CodeBlockTab>
-  <CodeBlockTab value="bun">
-    ```bash
-    bun add @ratelock/nestjs @ratelock/redis
-    ```
-  </CodeBlockTab>
+    <CodeBlockTabsList>
+        <CodeBlockTabsTrigger value="npm">npm</CodeBlockTabsTrigger>
+        <CodeBlockTabsTrigger value="pnpm">pnpm</CodeBlockTabsTrigger>
+        <CodeBlockTabsTrigger value="yarn">yarn</CodeBlockTabsTrigger>
+        <CodeBlockTabsTrigger value="bun">bun</CodeBlockTabsTrigger>
+    </CodeBlockTabsList>
+    <CodeBlockTab value="npm">
+        ```bash npm install @ratelock/nestjs @ratelock/redis ```
+    </CodeBlockTab>
+    <CodeBlockTab value="pnpm">```bash pnpm add @ratelock/nestjs @ratelock/redis ```</CodeBlockTab>
+    <CodeBlockTab value="yarn">```bash yarn add @ratelock/nestjs @ratelock/redis ```</CodeBlockTab>
+    <CodeBlockTab value="bun">```bash bun add @ratelock/nestjs @ratelock/redis ```</CodeBlockTab>
 </CodeBlockTabs>
 
 ## Quick start
@@ -54,7 +40,8 @@ import { fixedWindow } from '@ratelock/redis'
     imports: [
         RatelockModule.forRoot({
             // Lazy factory: nothing initializes until the first guarded request
-            limiter: () => fixedWindow({ url: process.env.REDIS_URL!, limit: 100, windowMs: 60_000 }),
+            limiter: () =>
+                fixedWindow({ url: process.env.REDIS_URL!, limit: 100, windowMs: 60_000 }),
             limit: 100,
             keyGenerator: req => req.ip ?? 'anon',
         }),
@@ -70,8 +57,7 @@ RatelockModule.forRootAsync({
     imports: [ConfigModule],
     inject: [ConfigService],
     useFactory: async (config: ConfigService) => ({
-        limiter: () =>
-            fixedWindow({ url: config.get('REDIS_URL')!, limit: 100, windowMs: 60_000 }),
+        limiter: () => fixedWindow({ url: config.get('REDIS_URL')!, limit: 100, windowMs: 60_000 }),
     }),
 })
 ```
@@ -115,25 +101,25 @@ limited() {
 
 ## Options
 
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `limiter` | `Limiter \| (() => Limiter \| Promise<Limiter>)` | required | Any RateLock limiter. A factory is memoized and invoked once, on the first guarded request. |
-| `keyGenerator` | `(req) => string \| Promise<string>` | `req.ip` | Identifier the request is counted against; falls back to a shared `'anonymous'` bucket when unknown. |
-| `headers` | `'both' \| 'rfc' \| 'legacy' \| false` | `'both'` | Header families attached to responses. |
-| `limit` | `number` | (none) | Quota, used only to emit the `*Limit` headers. |
-| `denyStatusCode` | number | `429` | Status of the denial exception. |
-| `message` | string | `'Too Many Requests'` | JSON body carried by the denial exception. |
-| `globalGuard` | boolean | `true` | Bind through `APP_GUARD`. |
+| Option           | Type                                             | Default               | Description                                                                                          |
+| ---------------- | ------------------------------------------------ | --------------------- | ---------------------------------------------------------------------------------------------------- |
+| `limiter`        | `Limiter \| (() => Limiter \| Promise<Limiter>)` | required              | Any RateLock limiter. A factory is memoized and invoked once, on the first guarded request.          |
+| `keyGenerator`   | `(req) => string \| Promise<string>`             | `req.ip`              | Identifier the request is counted against; falls back to a shared `'anonymous'` bucket when unknown. |
+| `headers`        | `'both' \| 'rfc' \| 'legacy' \| false`           | `'both'`              | Header families attached to responses.                                                               |
+| `limit`          | `number`                                         | (none)                | Quota, used only to emit the `*Limit` headers.                                                       |
+| `denyStatusCode` | number                                           | `429`                 | Status of the denial exception.                                                                      |
+| `message`        | string                                           | `'Too Many Requests'` | JSON body carried by the denial exception.                                                           |
+| `globalGuard`    | boolean                                          | `true`                | Bind through `APP_GUARD`.                                                                            |
 
 Denials throw a NestJS `HttpException` carrying `{ error: message }`, so existing exception filters shape them. `Retry-After` (seconds) accompanies denials whenever the result exposes a reset or refill time.
 
 ## Response headers
 
-| Family | Headers |
-|---|---|
-| RFC 9331 | `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset` |
-| Legacy | `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` |
-| Denial only | `Retry-After` |
+| Family      | Headers                                                           |
+| ----------- | ----------------------------------------------------------------- |
+| RFC 9331    | `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset`       |
+| Legacy      | `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` |
+| Denial only | `Retry-After`                                                     |
 
 `RateLimit-Reset` is always in seconds. Token bucket results project `floor(tokens)` onto `*Remaining` and the refill time onto `Reset`.
 

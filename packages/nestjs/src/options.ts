@@ -1,4 +1,5 @@
 import type { BaseResult, Limiter } from '@ratelock/core'
+
 import type { PlatformRequest } from './platform'
 
 /**
@@ -14,7 +15,8 @@ export type HeadersMode = 'both' | 'rfc' | 'legacy' | false
 
 /** A limiter instance, or a lazy factory invoked once on the first matched request. */
 export type LimiterInput<T extends BaseResult> =
-    Limiter<T> | (() => Limiter<T> | Promise<Limiter<T>>)
+    | Limiter<T>
+    | (() => Limiter<T> | Promise<Limiter<T>>)
 
 export interface RatelockModuleOptions<T extends BaseResult = BaseResult> {
     /**

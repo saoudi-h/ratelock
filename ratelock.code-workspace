@@ -43,6 +43,6 @@
   ],
   "settings": {
     "cSpell.words": [],
-    "typescript.native-preview.tsdk": "/home/hakim/projects/ratelock/node_modules/@typescript/native-preview",
+    "typescript.tsdk": "node_modules/typescript/lib",
   },
 }

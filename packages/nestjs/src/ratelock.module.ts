@@ -2,6 +2,7 @@ import { Module, type DynamicModule, type Provider, type Type } from '@nestjs/co
 import { APP_GUARD } from '@nestjs/core'
 import type { BaseResult } from '@ratelock/core'
 import { createLimiterResolver } from '@ratelock/http-common'
+
 import type { RatelockModuleOptions } from './options'
 import { RatelockGuard } from './ratelock.guard'
 import { RATELOCK_OPTIONS, RATELOCK_RESOLVER } from './tokens'

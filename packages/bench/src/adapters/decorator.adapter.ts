@@ -1,5 +1,6 @@
 import { withCache, withCircuitBreaker, withFallback, withRetry } from '@ratelock/core'
 import { fixedWindow as createLocalFixed } from '@ratelock/local'
+
 import { config } from '../config'
 import { type FaultProfile, type FaultStats, wrapWithFaults } from './fault-injector'
 import type { BenchmarkAdapter } from './types'

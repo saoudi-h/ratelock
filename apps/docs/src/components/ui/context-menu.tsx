@@ -1,10 +1,10 @@
 'use client'
 
 import { ContextMenu as ContextMenuPrimitive } from '@base-ui/react/context-menu'
+import { AltArrowRight, CheckCircle } from '@solar-icons/react-perf/BoldDuotone'
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
-import { AltArrowRight, CheckCircle } from '@solar-icons/react-perf/BoldDuotone'
 
 function ContextMenu({ ...props }: ContextMenuPrimitive.Root.Props) {
     return <ContextMenuPrimitive.Root data-slot="context-menu" {...props} />
@@ -46,13 +46,12 @@ function ContextMenuContent({
                     className={cn(
                         `
                           relative z-50 max-h-(--available-height) min-w-48
-                          origin-(--transform-origin) animate-none!
-                          overflow-x-hidden overflow-y-auto rounded-3xl
-                          bg-popover/70 p-1.5 text-popover-foreground shadow-lg
-                          ring-1 ring-foreground/5 duration-100 outline-none
-                          before:pointer-events-none before:absolute
-                          before:inset-0 before:-z-1 before:rounded-[inherit]
-                          before:backdrop-blur-2xl before:backdrop-saturate-150
+                          origin-(--transform-origin) animate-none! overflow-x-hidden
+                          overflow-y-auto rounded-3xl bg-popover/70 p-1.5 text-popover-foreground
+                          shadow-lg ring-1 ring-foreground/5 duration-100 outline-none
+                          before:pointer-events-none before:absolute before:inset-0 before:-z-1
+                          before:rounded-[inherit] before:backdrop-blur-2xl
+                          before:backdrop-saturate-150
                           data-[side=bottom]:slide-in-from-top-2
                           data-[side=inline-end]:slide-in-from-left-2
                           data-[side=inline-start]:slide-in-from-right-2
@@ -68,10 +67,8 @@ function ContextMenuContent({
                           **:data-[variant=destructive]:text-accent-foreground!
                           **:data-[variant=destructive]:focus:bg-foreground/10!
                           dark:ring-foreground/10
-                          data-open:animate-in data-open:fade-in-0
-                          data-open:zoom-in-95
-                          data-closed:animate-out data-closed:fade-out-0
-                          data-closed:zoom-out-95
+                          data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95
+                          data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95
                         `,
                         className
                     )}
@@ -97,13 +94,7 @@ function ContextMenuLabel({
         <ContextMenuPrimitive.GroupLabel
             data-slot="context-menu-label"
             data-inset={inset}
-            className={cn(
-                `
-                  px-3 py-2.5 text-xs text-muted-foreground
-                  data-inset:pl-9.5
-                `,
-                className
-            )}
+            className={cn(`px-3 py-2.5 text-xs text-muted-foreground data-inset:pl-9.5`, className)}
             {...props}
         />
     )
@@ -125,9 +116,8 @@ function ContextMenuItem({
             data-variant={variant}
             className={cn(
                 `
-                  group/context-menu-item relative flex cursor-default
-                  items-center gap-2.5 rounded-2xl px-3 py-2 text-sm font-medium
-                  outline-hidden select-none
+                  group/context-menu-item relative flex cursor-default items-center gap-2.5
+                  rounded-2xl px-3 py-2 text-sm font-medium outline-hidden select-none
                   focus:bg-accent focus:text-accent-foreground
                   data-inset:pl-9.5
                   data-[variant=destructive]:text-destructive
@@ -165,8 +155,8 @@ function ContextMenuSubTrigger({
             data-inset={inset}
             className={cn(
                 `
-                  flex cursor-default items-center rounded-2xl px-3 py-2 text-sm
-                  font-medium outline-hidden select-none
+                  flex cursor-default items-center rounded-2xl px-3 py-2 text-sm font-medium
+                  outline-hidden select-none
                   focus:bg-accent focus:text-accent-foreground
                   data-inset:pl-9.5
                   data-open:bg-accent data-open:text-accent-foreground
@@ -188,9 +178,8 @@ function ContextMenuSubContent({ ...props }: React.ComponentProps<typeof Context
             data-slot="context-menu-sub-content"
             className="
               relative animate-none! bg-popover/70 shadow-lg
-              before:pointer-events-none before:absolute before:inset-0
-              before:-z-1 before:rounded-[inherit] before:backdrop-blur-2xl
-              before:backdrop-saturate-150
+              before:pointer-events-none before:absolute before:inset-0 before:-z-1
+              before:rounded-[inherit] before:backdrop-blur-2xl before:backdrop-saturate-150
               **:data-[slot$=-item]:focus:bg-foreground/10
               **:data-[slot$=-item]:data-highlighted:bg-foreground/10
               **:data-[slot$=-separator]:bg-foreground/5
@@ -221,8 +210,8 @@ function ContextMenuCheckboxItem({
             data-inset={inset}
             className={cn(
                 `
-                  relative flex cursor-default items-center gap-2.5 rounded-2xl
-                  py-2 pr-8 pl-3 text-sm font-medium outline-hidden select-none
+                  relative flex cursor-default items-center gap-2.5 rounded-2xl py-2 pr-8 pl-3
+                  text-sm font-medium outline-hidden select-none
                   focus:bg-accent focus:text-accent-foreground
                   data-inset:pl-9.5
                   data-disabled:pointer-events-none data-disabled:opacity-50
@@ -261,8 +250,8 @@ function ContextMenuRadioItem({
             data-inset={inset}
             className={cn(
                 `
-                  relative flex cursor-default items-center gap-2.5 rounded-2xl
-                  py-2 pr-8 pl-3 text-sm font-medium outline-hidden select-none
+                  relative flex cursor-default items-center gap-2.5 rounded-2xl py-2 pr-8 pl-3
+                  text-sm font-medium outline-hidden select-none
                   focus:bg-accent focus:text-accent-foreground
                   data-inset:pl-9.5
                   data-disabled:pointer-events-none data-disabled:opacity-50

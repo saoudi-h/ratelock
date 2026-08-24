@@ -1,13 +1,15 @@
 'use client'
 
-import { Skeleton } from '@/components/ui/skeleton'
-import { isSimulationVisibleAtom } from '@/simulation/atoms'
 import { useGSAP } from '@gsap/react'
-import { registerReplay } from '../_lib/replay-registry'
 import { useSetAtom } from 'jotai'
 import dynamic from 'next/dynamic'
 import { useRef, useState } from 'react'
+
+import { Skeleton } from '@/components/ui/skeleton'
+import { isSimulationVisibleAtom } from '@/simulation/atoms'
+
 import { gsap, registerGsap, ScrollTrigger } from '../_lib/gsap'
+import { registerReplay } from '../_lib/replay-registry'
 
 function SimulationSkeleton() {
     return (
@@ -103,20 +105,9 @@ export function SimulationSection() {
 
     return (
         <section ref={ref} className="relative bg-muted">
-            <div
-                className="
-                  mx-auto max-w-7xl px-6 py-20
-                  md:py-28
-                ">
-                <div ref={headerRef} className="
-                  mb-12
-                  md:mb-16
-                ">
-                    <h2
-                        className="
-                          font-heading text-3xl font-semibold tracking-tight
-                          md:text-4xl
-                        ">
+            <div className="mx-auto max-w-7xl px-6 py-20 md:py-28">
+                <div ref={headerRef} className="mb-12 md:mb-16">
+                    <h2 className="font-heading text-3xl font-semibold tracking-tight md:text-4xl">
                         Try it live
                     </h2>
                     <p className="mt-4 max-w-lg text-muted-foreground">
@@ -128,8 +119,7 @@ export function SimulationSection() {
                 <div
                     ref={simRef}
                     className="
-                      overflow-hidden rounded-2xl border border-border/70
-                      bg-card/95 p-6 shadow-sm
+                      overflow-hidden rounded-2xl border border-border/70 bg-card/95 p-6 shadow-sm
                       md:p-8
                     ">
                     {isVisible ? <StrategyTabs /> : <SimulationSkeleton />}

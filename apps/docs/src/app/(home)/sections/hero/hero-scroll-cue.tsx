@@ -2,6 +2,7 @@
 
 import { useGSAP } from '@gsap/react'
 import { useRef } from 'react'
+
 import { gsap, registerGsap } from '../../_lib/gsap'
 import { registerReplay } from '../../_lib/replay-registry'
 
@@ -77,18 +78,13 @@ export function HeroScrollCue() {
               gsap-prep pointer-events-none flex flex-col items-center gap-2
               text-muted-foreground/70 select-none
             ">
-            <span className="font-mono text-[10px] tracking-[0.3em] uppercase">
-                Scroll
-            </span>
+            <span className="font-mono text-[10px] tracking-[0.3em] uppercase">Scroll</span>
             <div
                 className="
-                  relative flex h-9 w-5 items-start justify-center rounded-full
-                  border border-border/60 p-1
+                  relative flex h-9 w-5 items-start justify-center rounded-full border
+                  border-border/60 p-1
                 ">
-                <span
-                    data-scroll-dot
-                    className="size-1 rounded-full bg-foreground/60"
-                />
+                <span data-scroll-dot className="size-1 rounded-full bg-foreground/60" />
             </div>
         </div>
     )

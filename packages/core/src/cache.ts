@@ -58,7 +58,7 @@ export function withCache<T>(limiter: Limiter<T>, config?: CacheConfig): Limiter
             return result
         },
         async checkBatch(ids: string[]): Promise<T[]> {
-            const results: T[] = new Array(ids.length)
+            const results: T[] = Array.from({ length: ids.length }) as T[]
             const uncachedIndices: number[] = []
             const uncachedIds: string[] = []
 

@@ -28,16 +28,16 @@ export function SpotlightCard({ children, className = '' }: SpotlightCardProps) 
             onMouseEnter={() => setIsFocused(true)}
             onMouseLeave={() => setIsFocused(false)}
             className={`
-              relative overflow-hidden rounded-2xl border border-border/70
-              bg-card p-8 transition-all duration-300
+              relative overflow-hidden rounded-2xl border border-border/70 bg-card p-8
+              transition-all duration-300
               hover:border-primary/20 hover:shadow-lg
               ${className}
             `}>
             {isFocused && (
                 <div
                     className="
-                      pointer-events-none absolute -inset-px rounded-2xl
-                      transition-opacity duration-300
+                      pointer-events-none absolute -inset-px rounded-2xl transition-opacity
+                      duration-300
                     "
                     style={{
                         background: `radial-gradient(350px circle at ${coords.x}px ${coords.y}px, var(--color-primary-rgb, oklch(0.70 0.20 160 / 10%)), transparent 80%)`,

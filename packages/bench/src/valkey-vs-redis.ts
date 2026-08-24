@@ -1,6 +1,7 @@
+import { performance } from 'perf_hooks'
+
 import { fixedWindow } from '@ratelock/redis'
 import IORedis from 'ioredis'
-import { performance } from 'perf_hooks'
 import { createClient } from 'redis'
 
 async function bench(name: string, check: (id: string) => Promise<unknown>, durationMs = 3000) {

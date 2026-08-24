@@ -1,5 +1,6 @@
-import { Logo } from '@/components/ui-blocks/logo'
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared'
+
+import { Logo } from '@/components/ui-blocks/logo'
 
 export const baseOptions: BaseLayoutProps = {
     nav: {

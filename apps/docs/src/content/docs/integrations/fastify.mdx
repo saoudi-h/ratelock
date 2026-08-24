@@ -14,32 +14,18 @@ Rate limiting plugin for Fastify 4 and 5, powered by any RateLock engine.
 ## Installation
 
 <CodeBlockTabs defaultValue="pnpm" groupId="package-manager">
-  <CodeBlockTabsList>
-    <CodeBlockTabsTrigger value="npm">npm</CodeBlockTabsTrigger>
-    <CodeBlockTabsTrigger value="pnpm">pnpm</CodeBlockTabsTrigger>
-    <CodeBlockTabsTrigger value="yarn">yarn</CodeBlockTabsTrigger>
-    <CodeBlockTabsTrigger value="bun">bun</CodeBlockTabsTrigger>
-  </CodeBlockTabsList>
-  <CodeBlockTab value="npm">
-    ```bash
-    npm install @ratelock/fastify @ratelock/redis
-    ```
-  </CodeBlockTab>
-  <CodeBlockTab value="pnpm">
-    ```bash
-    pnpm add @ratelock/fastify @ratelock/redis
-    ```
-  </CodeBlockTab>
-  <CodeBlockTab value="yarn">
-    ```bash
-    yarn add @ratelock/fastify @ratelock/redis
-    ```
-  </CodeBlockTab>
-  <CodeBlockTab value="bun">
-    ```bash
-    bun add @ratelock/fastify @ratelock/redis
-    ```
-  </CodeBlockTab>
+    <CodeBlockTabsList>
+        <CodeBlockTabsTrigger value="npm">npm</CodeBlockTabsTrigger>
+        <CodeBlockTabsTrigger value="pnpm">pnpm</CodeBlockTabsTrigger>
+        <CodeBlockTabsTrigger value="yarn">yarn</CodeBlockTabsTrigger>
+        <CodeBlockTabsTrigger value="bun">bun</CodeBlockTabsTrigger>
+    </CodeBlockTabsList>
+    <CodeBlockTab value="npm">
+        ```bash npm install @ratelock/fastify @ratelock/redis ```
+    </CodeBlockTab>
+    <CodeBlockTab value="pnpm">```bash pnpm add @ratelock/fastify @ratelock/redis ```</CodeBlockTab>
+    <CodeBlockTab value="yarn">```bash yarn add @ratelock/fastify @ratelock/redis ```</CodeBlockTab>
+    <CodeBlockTab value="bun">```bash bun add @ratelock/fastify @ratelock/redis ```</CodeBlockTab>
 </CodeBlockTabs>
 
 ## Quick start
@@ -70,22 +56,22 @@ The plugin adds an `onRequest` hook, the earliest point of the Fastify lifecycle
 
 ## Options
 
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `limiter` | `Limiter \| (() => Limiter \| Promise<Limiter>)` | required | Any RateLock limiter. A factory is memoized and invoked once, on the first request. |
-| `keyGenerator` | `(request) => string \| Promise<string>` | `request.ip` | Identifier the request is counted against; falls back to a shared `'anonymous'` bucket when unknown. |
-| `headers` | `'both' \| 'rfc' \| 'legacy' \| false` | `'both'` | Header families attached to responses. |
-| `limit` | `number` | (none) | Quota, used only to emit the `*Limit` headers. |
-| `denyStatusCode` | number | `429` | Status returned on exhaustion. |
-| `message` | string | `'Too Many Requests'` | JSON body of denial responses. |
+| Option           | Type                                             | Default               | Description                                                                                          |
+| ---------------- | ------------------------------------------------ | --------------------- | ---------------------------------------------------------------------------------------------------- |
+| `limiter`        | `Limiter \| (() => Limiter \| Promise<Limiter>)` | required              | Any RateLock limiter. A factory is memoized and invoked once, on the first request.                  |
+| `keyGenerator`   | `(request) => string \| Promise<string>`         | `request.ip`          | Identifier the request is counted against; falls back to a shared `'anonymous'` bucket when unknown. |
+| `headers`        | `'both' \| 'rfc' \| 'legacy' \| false`           | `'both'`              | Header families attached to responses.                                                               |
+| `limit`          | `number`                                         | (none)                | Quota, used only to emit the `*Limit` headers.                                                       |
+| `denyStatusCode` | number                                           | `429`                 | Status returned on exhaustion.                                                                       |
+| `message`        | string                                           | `'Too Many Requests'` | JSON body of denial responses.                                                                       |
 
 ## Response headers
 
-| Family | Headers |
-|---|---|
-| RFC 9331 | `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset` |
-| Legacy | `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` |
-| Denial only | `Retry-After` |
+| Family      | Headers                                                           |
+| ----------- | ----------------------------------------------------------------- |
+| RFC 9331    | `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset`       |
+| Legacy      | `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` |
+| Denial only | `Retry-After`                                                     |
 
 `RateLimit-Reset` is always in seconds. Token bucket results project `floor(tokens)` onto `*Remaining` and the refill time onto `Reset`.
 

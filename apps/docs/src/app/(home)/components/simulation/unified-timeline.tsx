@@ -1,8 +1,9 @@
 'use client'
 
-import type { RequestEvent } from '@/simulation/types'
-import type { ReactNode} from 'react';
+import type { ReactNode } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
+
+import type { RequestEvent } from '@/simulation/types'
 
 export interface TimelineWindow {
     id: string
@@ -116,16 +117,15 @@ export function UnifiedTimelineBase({
     return (
         <div
             className={`
-              relative overflow-hidden rounded-xl border border-border/80
-              bg-background/40 shadow-inner backdrop-blur-xs
+              relative overflow-hidden rounded-xl border border-border/80 bg-background/40
+              shadow-inner backdrop-blur-xs
               ${className ?? ''}
             `}
             style={{ height }}>
             {/* Grille d'arrière-plan statique de la simulation */}
             <div
                 className="
-                  simulation-grid pointer-events-none absolute inset-0
-                  opacity-20
+                  simulation-grid pointer-events-none absolute inset-0 opacity-20
                   dark:opacity-30
                 "
             />
@@ -133,17 +133,15 @@ export function UnifiedTimelineBase({
             {/* Ligne verticale de repère central (Now) */}
             <div
                 className="
-                  pointer-events-none absolute inset-y-0 left-1/2 z-10 w-px
-                  -translate-x-1/2 bg-primary/30
+                  pointer-events-none absolute inset-y-0 left-1/2 z-10 w-px -translate-x-1/2
+                  bg-primary/30
                 "
             />
             <div
                 className="
-                  pointer-events-none absolute top-2.5 left-1/2 z-20
-                  -translate-x-1/2 rounded-full border border-primary/20
-                  bg-background/90 px-2 py-0.5 font-mono text-[9px]
-                  font-semibold tracking-[0.16em] text-primary uppercase
-                  shadow-sm
+                  pointer-events-none absolute top-2.5 left-1/2 z-20 -translate-x-1/2 rounded-full
+                  border border-primary/20 bg-background/90 px-2 py-0.5 font-mono text-[9px]
+                  font-semibold tracking-[0.16em] text-primary uppercase shadow-sm
                 ">
                 now
             </div>
@@ -163,9 +161,7 @@ export function UnifiedTimelineBase({
                             left: `${window.left}%`,
                             width: `${window.width}%`,
                         }}>
-                        <div className="
-                          flex items-start justify-between gap-2 p-3
-                        ">
+                        <div className="flex items-start justify-between gap-2 p-3">
                             {window.label ? (
                                 <p
                                     className="
@@ -178,17 +174,14 @@ export function UnifiedTimelineBase({
                             {window.eventCount !== undefined && window.limit !== undefined ? (
                                 <div
                                     className="
-                                      rounded-md border border-border/40
-                                      bg-background/95 px-1.5 py-0.5 font-mono
-                                      text-[9px] text-muted-foreground shadow-xs
+                                      rounded-md border border-border/40 bg-background/95 px-1.5
+                                      py-0.5 font-mono text-[9px] text-muted-foreground shadow-xs
                                     ">
                                     <span
                                         className={
                                             window.eventCount > window.limit
                                                 ? `font-bold text-rose-500`
-                                                : `
-                                                  font-semibold text-foreground
-                                                `
+                                                : `font-semibold text-foreground`
                                         }>
                                         {window.eventCount}
                                     </span>{' '}
@@ -243,9 +236,7 @@ export function UnifiedTimelineBase({
                                 left: `${window.left}%`,
                                 width: `${window.width}%`,
                             }}>
-                            <div className="
-                              flex items-start justify-between gap-2 p-3
-                            ">
+                            <div className="flex items-start justify-between gap-2 p-3">
                                 {window.label ? (
                                     <p
                                         className="
@@ -258,19 +249,15 @@ export function UnifiedTimelineBase({
                                 {window.eventCount !== undefined && window.limit !== undefined ? (
                                     <div
                                         className="
-                                          rounded-md border border-border/40
-                                          bg-background/95 px-1.5 py-0.5
-                                          font-mono text-[9px]
-                                          text-muted-foreground shadow-xs
+                                          rounded-md border border-border/40 bg-background/95 px-1.5
+                                          py-0.5 font-mono text-[9px] text-muted-foreground
+                                          shadow-xs
                                         ">
                                         <span
                                             className={
                                                 window.eventCount > window.limit
                                                     ? `font-bold text-rose-500`
-                                                    : `
-                                                      font-semibold
-                                                      text-foreground
-                                                    `
+                                                    : `font-semibold text-foreground`
                                             }>
                                             {window.eventCount}
                                         </span>{' '}
@@ -283,12 +270,7 @@ export function UnifiedTimelineBase({
                 })}
 
                 {/* Séparateur horizontal de frise */}
-                <div
-                    className="
-                      pointer-events-none absolute inset-x-0 top-1/2 h-px
-                      bg-border/40
-                    "
-                />
+                <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-border/40" />
 
                 {/* Couche des points d'événements */}
                 {positionedEvents.map(({ event, left, accent }) => {
@@ -298,12 +280,10 @@ export function UnifiedTimelineBase({
                         <div
                             key={event.id}
                             className={`
-                              absolute top-1/2 z-30 -translate-1/2 cursor-help
-                              transition-transform duration-150
+                              absolute top-1/2 z-30 -translate-1/2 cursor-help transition-transform
+                              duration-150
                               hover:scale-125
-                              ${
-                                isNew ? 'animate-event-pop' : ''
-                            }
+                              ${isNew ? 'animate-event-pop' : ''}
                             `}
                             style={{ left: `${left}%` }}
                             title={`${event.allowed ? 'allowed' : 'denied'} · ${event.remaining} remaining · User: ${event.userId}`}>

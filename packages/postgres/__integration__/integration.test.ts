@@ -7,6 +7,7 @@ import {
 import pg from 'pg'
 import postgres from 'postgres'
 import { afterAll, beforeAll, describe } from 'vitest'
+
 import { fixedWindow, individualFixedWindow, slidingWindow, tokenBucket } from '../src'
 
 const POSTGRES_URL =

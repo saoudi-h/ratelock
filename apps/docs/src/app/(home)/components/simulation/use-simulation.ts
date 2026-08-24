@@ -1,3 +1,6 @@
+import { useAtomValue, useSetAtom } from 'jotai'
+import { useCallback, useEffect, useRef, useState } from 'react'
+
 import {
     addEventAtom,
     autoIntervalAtomFamily,
@@ -7,8 +10,6 @@ import {
 } from '@/simulation/atoms'
 import { checkRateLimit } from '@/simulation/engine'
 import type { StrategyId, StrategySpecificConfig } from '@/simulation/types'
-import { useAtomValue, useSetAtom } from 'jotai'
-import { useCallback, useEffect, useRef, useState } from 'react'
 
 let eventIdCounter = 0
 
@@ -36,7 +37,11 @@ export function useNow(throttleMs = 16, isPlaying = true) {
     return now
 }
 
-export function useSimulation(strategyId: StrategyId, onAutoRequestTriggered?: () => void, isPlaying = true) {
+export function useSimulation(
+    strategyId: StrategyId,
+    onAutoRequestTriggered?: () => void,
+    isPlaying = true
+) {
     const events = useAtomValue(eventsAtomFamily(strategyId))
     const autoRequests = useAtomValue(autoRequestsAtomFamily(strategyId))
     const setAutoRequests = useSetAtom(autoRequestsAtomFamily(strategyId))

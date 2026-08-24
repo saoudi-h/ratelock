@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+
 import { RatelockError } from '../src/errors'
 import { withFallback } from '../src/fallback'
 import type { Limiter } from '../src/types'

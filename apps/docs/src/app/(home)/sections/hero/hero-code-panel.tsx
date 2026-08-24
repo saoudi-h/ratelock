@@ -2,9 +2,10 @@
 
 import { useGSAP } from '@gsap/react'
 import { useRef } from 'react'
-import { AnimatedCodePanel } from '../../components/animated-code-panel'
+
 import { gsap, registerGsap } from '../../_lib/gsap'
 import { registerReplay } from '../../_lib/replay-registry'
+import { AnimatedCodePanel } from '../../components/animated-code-panel'
 
 /**
  * Wraps the rotating code window with its own entrance: slides in from
@@ -84,15 +85,14 @@ export function HeroCodePanel() {
     return (
         <div
             className="
-              relative flex w-full flex-col items-center justify-center
-              perspective-distant
+              relative flex w-full flex-col items-center justify-center perspective-distant
               lg:items-end
             ">
             <div
                 ref={ref}
                 className="
-                  gsap-prep w-full max-w-125 transform-gpu transition-transform
-                  duration-500 will-change-transform transform-3d
+                  gsap-prep w-full max-w-125 transform-gpu transition-transform duration-500
+                  will-change-transform transform-3d
                   hover:scale-[1.02]
                   lg:max-w-none
                 ">

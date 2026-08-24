@@ -37,10 +37,9 @@ function ItemSeparator({ className, ...props }: React.ComponentProps<typeof Sepa
 
 const itemVariants = cva(
     `
-      group/item flex w-full flex-wrap items-center rounded-2xl border text-sm
-      transition-colors duration-100 outline-none
-      focus-visible:border-ring focus-visible:ring-[3px]
-      focus-visible:ring-ring/50
+      group/item flex w-full flex-wrap items-center rounded-2xl border text-sm transition-colors
+      duration-100 outline-none
+      focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
       [a]:transition-colors
       [a]:hover:bg-muted
     `,
@@ -54,10 +53,7 @@ const itemVariants = cva(
             size: {
                 default: 'gap-3.5 px-4 py-3.5',
                 sm: 'gap-3.5 px-3.5 py-3',
-                xs: `
-                  gap-2.5 px-3 py-2.5
-                  in-data-[slot=dropdown-menu-content]:p-0
-                `,
+                xs: `gap-2.5 px-3 py-2.5 in-data-[slot=dropdown-menu-content]:p-0`,
             },
         },
         defaultVariants: {
@@ -106,8 +102,7 @@ const itemMediaVariants = cva(
                 image: `
                   size-10 overflow-hidden rounded-xl
                   group-data-[size=sm]/item:size-8
-                  group-data-[size=xs]/item:size-6
-                  group-data-[size=xs]/item:rounded-lg
+                  group-data-[size=xs]/item:size-6 group-data-[size=xs]/item:rounded-lg
                   [&_img]:size-full [&_img]:object-cover
                 `,
             },
@@ -156,8 +151,8 @@ function ItemTitle({ className, ...props }: React.ComponentProps<'div'>) {
             data-slot="item-title"
             className={cn(
                 `
-                  line-clamp-1 flex w-fit items-center gap-2 text-sm/snug
-                  font-medium underline-offset-4
+                  line-clamp-1 flex w-fit items-center gap-2 text-sm/snug font-medium
+                  underline-offset-4
                 `,
                 className
             )}
@@ -172,8 +167,7 @@ function ItemDescription({ className, ...props }: React.ComponentProps<'p'>) {
             data-slot="item-description"
             className={cn(
                 `
-                  line-clamp-2 text-left text-sm font-normal
-                  text-muted-foreground
+                  line-clamp-2 text-left text-sm font-normal text-muted-foreground
                   [&>a]:underline [&>a]:underline-offset-4
                   [&>a:hover]:text-primary
                 `,

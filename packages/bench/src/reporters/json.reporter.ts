@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import { join } from 'path'
+
 import type { BenchmarkSuite } from '../types'
 
 export function saveRawJson(reports: Record<string, any[]>, outDir: string): void {

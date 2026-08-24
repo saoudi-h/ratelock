@@ -1,8 +1,8 @@
+import { AltArrowLeft, AltArrowRight, MenuDots } from '@solar-icons/react-perf/BoldDuotone'
 import * as React from 'react'
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { AltArrowLeft, AltArrowRight, MenuDots } from '@solar-icons/react-perf/BoldDuotone'
 
 function Pagination({ className, ...props }: React.ComponentProps<'nav'>) {
     return (
@@ -66,13 +66,7 @@ function PaginationPrevious({
             className={cn('pl-2!', className)}
             {...props}>
             <AltArrowLeft data-icon="inline-start" />
-            <span
-                className="
-                  hidden
-                  sm:block
-                ">
-                {text}
-            </span>
+            <span className="hidden sm:block">{text}</span>
         </PaginationLink>
     )
 }
@@ -88,13 +82,7 @@ function PaginationNext({
             size="default"
             className={cn('pr-2!', className)}
             {...props}>
-            <span
-                className="
-                  hidden
-                  sm:block
-                ">
-                {text}
-            </span>
+            <span className="hidden sm:block">{text}</span>
             <AltArrowRight data-icon="inline-end" />
         </PaginationLink>
     )
@@ -106,10 +94,7 @@ function PaginationEllipsis({ className, ...props }: React.ComponentProps<'span'
             aria-hidden
             data-slot="pagination-ellipsis"
             className={cn(
-                `
-                  flex size-9 items-center justify-center
-                  [&_svg:not([class*='size-'])]:size-4
-                `,
+                `flex size-9 items-center justify-center [&_svg:not([class*='size-'])]:size-4`,
                 className
             )}
             {...props}>

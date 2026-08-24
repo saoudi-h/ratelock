@@ -1,11 +1,11 @@
 'use client'
 
 import { Dialog as DialogPrimitive } from '@base-ui/react/dialog'
+import { CloseCircle } from '@solar-icons/react-perf/BoldDuotone'
 import * as React from 'react'
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { CloseCircle } from '@solar-icons/react-perf/BoldDuotone'
 
 function Dialog({ ...props }: DialogPrimitive.Root.Props) {
     return <DialogPrimitive.Root data-slot="dialog" {...props} />
@@ -56,16 +56,13 @@ function DialogContent({
                 data-slot="dialog-content"
                 className={cn(
                     `
-                      fixed top-1/2 left-1/2 z-50 grid w-full
-                      max-w-[calc(100%-2rem)] -translate-1/2 gap-6 rounded-4xl
-                      bg-popover p-6 text-sm text-popover-foreground shadow-xl
+                      fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-1/2
+                      gap-6 rounded-4xl bg-popover p-6 text-sm text-popover-foreground shadow-xl
                       ring-1 ring-foreground/5 duration-100 outline-none
                       sm:max-w-md
                       dark:ring-foreground/10
-                      data-open:animate-in data-open:fade-in-0
-                      data-open:zoom-in-95
-                      data-closed:animate-out data-closed:fade-out-0
-                      data-closed:zoom-out-95
+                      data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95
+                      data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95
                     `,
                     className
                 )}
@@ -111,13 +108,7 @@ function DialogFooter({
     return (
         <div
             data-slot="dialog-footer"
-            className={cn(
-                `
-                  flex flex-col-reverse gap-2
-                  sm:flex-row sm:justify-end
-                `,
-                className
-            )}
+            className={cn(`flex flex-col-reverse gap-2 sm:flex-row sm:justify-end`, className)}
             {...props}>
             {children}
             {showCloseButton && (

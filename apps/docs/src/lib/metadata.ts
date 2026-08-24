@@ -9,7 +9,6 @@ export const baseUrl =
         ? siteUrl
         : new URL(`https://${process.env.VERCEL_URL}`)
 
-
 export function createMetadata(override: Metadata): Metadata {
     return {
         ...override,

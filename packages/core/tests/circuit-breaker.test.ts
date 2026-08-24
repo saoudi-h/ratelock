@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+
 import { withCircuitBreaker } from '../src/circuit-breaker'
 import { CircuitBreakerOpenError } from '../src/errors'
 import type { Limiter } from '../src/types'

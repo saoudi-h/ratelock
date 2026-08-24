@@ -1,10 +1,11 @@
 'use client'
 
 import { useGSAP } from '@gsap/react'
-import { registerReplay } from '../../_lib/replay-registry'
 import { useRef } from 'react'
-import { FeatureBentoCard } from '../../components/feature-bento-card'
+
 import { gsap, registerGsap } from '../../_lib/gsap'
+import { registerReplay } from '../../_lib/replay-registry'
+import { FeatureBentoCard } from '../../components/feature-bento-card'
 
 /**
  * Card showing how RateLock's local deny cache intercepts spam before
@@ -111,62 +112,48 @@ export function DenyCacheShieldCard() {
                 footerTags={['Bypasses database queries', 'Configurable TTL limits']}>
                 <div
                     className="
-                      mt-2 w-full space-y-3 rounded-2xl border border-border/40
-                      bg-background/50 p-4 font-mono text-[10px] shadow-sm
-                      select-none
+                      mt-2 w-full space-y-3 rounded-2xl border border-border/40 bg-background/50 p-4
+                      font-mono text-[10px] shadow-sm select-none
                     ">
                     <div className="
-                      flex items-center justify-between border-b
-                      border-border/20 pb-2
+                      flex items-center justify-between border-b border-border/20 pb-2
                     ">
                         <span
                             className="
-                              text-[8px] font-bold tracking-wider
-                              text-muted-foreground/60 uppercase
+                              text-[8px] font-bold tracking-wider text-muted-foreground/60 uppercase
                             ">
                             DoS mitigation active
                         </span>
                         <span
                             data-telemetry-status
                             className="
-                              flex items-center gap-1 rounded-md border
-                              border-emerald-500/20 bg-emerald-500/10 px-1.5
-                              py-0.5 text-[8px] font-bold text-emerald-500
+                              flex items-center gap-1 rounded-md border border-emerald-500/20
+                              bg-emerald-500/10 px-1.5 py-0.5 text-[8px] font-bold text-emerald-500
                             ">
-                            <span className="
-                              size-1 animate-pulse rounded-full bg-emerald-500
-                            " />
+                            <span className="size-1 animate-pulse rounded-full bg-emerald-500" />
                             Protected
                         </span>
                     </div>
                     <div className="space-y-1.5">
                         <div data-telemetry-row className="flex justify-between">
                             <span className="text-muted-foreground">Blocked Request IP:</span>
-                            <span className="font-mono font-bold text-red-500">
-                                192.168.1.92
-                            </span>
+                            <span className="font-mono font-bold text-red-500">192.168.1.92</span>
                         </div>
                         <div data-telemetry-row className="flex justify-between">
                             <span className="text-muted-foreground">Local Cache State:</span>
-                            <span className="
-                              font-mono font-bold text-emerald-500
-                            ">
+                            <span className="font-mono font-bold text-emerald-500">
                                 Cached (Deny)
                             </span>
                         </div>
                         <div data-telemetry-row className="flex justify-between">
                             <span className="text-muted-foreground">Database Query:</span>
-                            <span className="
-                              font-mono font-bold text-muted-foreground
-                            ">
+                            <span className="font-mono font-bold text-muted-foreground">
                                 Bypassed (0 queries)
                             </span>
                         </div>
                         <div data-telemetry-row className="flex justify-between">
                             <span className="text-muted-foreground">Response Latency:</span>
-                            <span className="
-                              font-mono font-bold text-emerald-500
-                            ">
+                            <span className="font-mono font-bold text-emerald-500">
                                 0.02ms (Local)
                             </span>
                         </div>

@@ -13,9 +13,8 @@ function Card({
             data-size={size}
             className={cn(
                 `
-                  group/card flex flex-col gap-6 overflow-hidden rounded-xl
-                  bg-card py-6 text-sm text-card-foreground shadow-md ring-1
-                  ring-foreground/5
+                  group/card flex flex-col gap-6 overflow-hidden rounded-xl bg-card py-6 text-sm
+                  text-card-foreground shadow-md ring-1 ring-foreground/5
                   has-[>img:first-child]:pt-0
                   data-[size=sm]:gap-4 data-[size=sm]:py-4
                   dark:ring-foreground/10
@@ -35,8 +34,8 @@ function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
             data-slot="card-header"
             className={cn(
                 `
-                  group/card-header @container/card-header grid auto-rows-min
-                  items-start gap-1.5 rounded-t-xl px-6
+                  group/card-header @container/card-header grid auto-rows-min items-start gap-1.5
+                  rounded-t-xl px-6
                   group-data-[size=sm]/card:px-4
                   has-data-[slot=card-action]:grid-cols-[1fr_auto]
                   has-data-[slot=card-description]:grid-rows-[auto_auto]
@@ -87,13 +86,7 @@ function CardContent({ className, ...props }: React.ComponentProps<'div'>) {
     return (
         <div
             data-slot="card-content"
-            className={cn(
-                `
-                  px-6
-                  group-data-[size=sm]/card:px-4
-                `,
-                className
-            )}
+            className={cn(`px-6 group-data-[size=sm]/card:px-4`, className)}
             {...props}
         />
     )

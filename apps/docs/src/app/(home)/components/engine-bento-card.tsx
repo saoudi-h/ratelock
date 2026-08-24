@@ -1,11 +1,13 @@
 'use client'
 
-import { Badge } from '@/components/ui/badge'
-import { Icon } from '@iconify/react'
 import { useGSAP } from '@gsap/react'
+import { Icon } from '@iconify/react'
 import { useRef } from 'react'
-import { BentoBase } from './bento-base'
+
+import { Badge } from '@/components/ui/badge'
+
 import { gsap, registerGsap } from '../_lib/gsap'
+import { BentoBase } from './bento-base'
 
 interface EngineBentoCardProps {
     name: string
@@ -130,23 +132,19 @@ export function EngineBentoCard({
                         <div
                             data-engine-icon
                             className={`
-                              flex size-11 items-center justify-center
-                              rounded-2xl bg-muted/65
+                              flex size-11 items-center justify-center rounded-2xl bg-muted/65
                               ${color}
                             `}>
                             <Icon icon={icon} className="size-6" />
                         </div>
                         <div className="flex items-center gap-2">
-                            <Icon data-engine-brand icon={brandIcon} className="
-                              size-5
-                            " />
+                            <Icon data-engine-brand icon={brandIcon} className="size-5" />
                             <Badge
                                 data-engine-driver
                                 variant="outline"
                                 className="
-                                  border-border/40 bg-background/50 font-mono
-                                  text-[10px] font-bold tracking-wider
-                                  text-muted-foreground uppercase
+                                  border-border/40 bg-background/50 font-mono text-[10px] font-bold
+                                  tracking-wider text-muted-foreground uppercase
                                 ">
                                 Driver
                             </Badge>
@@ -155,28 +153,24 @@ export function EngineBentoCard({
                     <h3
                         data-engine-title
                         className="
-                          mt-6 font-heading text-xl font-bold tracking-tight
-                          text-foreground
+                          mt-6 font-heading text-xl font-bold tracking-tight text-foreground
                         ">
                         {name}
                     </h3>
-                    <p
-                        data-engine-tagline
-                        className="mt-2 text-sm/relaxed text-muted-foreground">
+                    <p data-engine-tagline className="mt-2 text-sm/relaxed text-muted-foreground">
                         {tagline}
                     </p>
                 </div>
 
                 <div
                     className="
-                      mt-6 space-y-2 rounded-2xl border border-border/40
-                      bg-muted/40 p-4 font-mono text-[11px] shadow-xs
-                      select-none
+                      mt-6 space-y-2 rounded-2xl border border-border/40 bg-muted/40 p-4 font-mono
+                      text-[11px] shadow-xs select-none
                     ">
                     <div
                         className="
-                          border-b border-border/20 pb-1.5 text-[9px] font-bold
-                          tracking-wider text-muted-foreground/80 uppercase
+                          border-b border-border/20 pb-1.5 text-[9px] font-bold tracking-wider
+                          text-muted-foreground/80 uppercase
                         ">
                         Backend telemetry
                     </div>
@@ -188,9 +182,8 @@ export function EngineBentoCard({
                             <span className="text-muted-foreground/90">{m.name}:</span>
                             <span
                                 className="
-                                  rounded-lg border border-border/40
-                                  bg-background px-2 py-0.5 font-bold
-                                  text-foreground shadow-xs
+                                  rounded-lg border border-border/40 bg-background px-2 py-0.5
+                                  font-bold text-foreground shadow-xs
                                 ">
                                 {m.val}
                             </span>
@@ -201,19 +194,16 @@ export function EngineBentoCard({
                 <div
                     data-engine-footer
                     className="
-                      relative mt-6 flex flex-col justify-end border-t
-                      border-border/20 pt-4
+                      relative mt-6 flex flex-col justify-end border-t border-border/20 pt-4
                     ">
                     <span
                         className="
-                          text-[10px] font-bold tracking-wide
-                          text-muted-foreground/60 uppercase select-none
+                          text-[10px] font-bold tracking-wide text-muted-foreground/60 uppercase
+                          select-none
                         ">
                         Recommended for
                     </span>
-                    <span className="
-                      mt-1 text-sm/normal font-semibold text-foreground
-                    ">
+                    <span className="mt-1 text-sm/normal font-semibold text-foreground">
                         {bestFor}
                     </span>
                 </div>

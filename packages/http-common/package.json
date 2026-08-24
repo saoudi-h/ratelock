@@ -5,7 +5,9 @@
     "description": "Internal shared logic for RateLock framework integrations. Never published; bundled into consumers at build time.",
     "license": "MIT",
     "type": "module",
+    "sideEffects": false,
     "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
     "types": "./dist/index.d.cts",
     "exports": {
         ".": {
@@ -16,12 +18,12 @@
     },
     "scripts": {
         "build": "tsdown",
-        "lint": "eslint . --max-warnings 0",
-        "lint:fix": "eslint . --max-warnings 0 --fix",
-        "format": "prettier \"**/*\" --ignore-unknown --list-different",
-        "format:fix": "prettier \"**/*\" --ignore-unknown --write",
+        "lint": "oxlint --deny-warnings .",
+        "lint:fix": "oxlint --fix .",
+        "format": "oxfmt --check .",
+        "format:fix": "oxfmt --write .",
         "clean": "rimraf dist .turbo node_modules",
-        "typecheck": "tsgo --noEmit",
+        "typecheck": "tsc --noEmit",
         "test": "vitest",
         "test:run": "vitest run",
         "pre-commit": "lint-staged"
@@ -29,16 +31,12 @@
     "dependencies": {},
     "devDependencies": {
         "@ratelock/core": "workspace:*",
-        "@tala-tools/eslint": "0.1.6",
-        "@tala-tools/prettier": "0.0.3",
         "@tala-tools/tsconfig": "0.0.2",
         "@types/node": "^26.2.0",
-        "vitest": "^4.1.10"
+        "vitest": "^4.1.11"
     },
     "engines": {
-        "node": ">=22",
-        "bun": ">=1.1"
-    },
-    "sideEffects": false,
-    "module": "./dist/index.mjs"
+        "bun": ">=1.1",
+        "node": ">=22"
+    }
 }

@@ -7,31 +7,31 @@
 
 ## Environment
 
-| | |
-|---|---|
-| Bun | 1.4.0 |
-| Node | v25.9.0 (`.nvmrc`) |
+|          |                       |
+| -------- | --------------------- |
+| Bun      | 1.4.0                 |
+| Node     | v25.9.0 (`.nvmrc`)    |
 | Platform | linux x64, bare metal |
 
 ## Results (two runs each)
 
 ### Throughput (ops/s)
 
-| Variant | Run 1 | Run 2 | Delta vs best Node combo |
-|---|---|---|---|
-| **bun native** (Bun) | **76,393** | **75,572** | **+40%** |
-| ioredis (Bun) | 74,345 | 67,333 | +28% |
-| node-redis (Node) | 54,560 | 49,821 | baseline |
-| node-redis (Bun) | 45,616 | 50,177 | −9% |
-| ioredis (Node) | 45,561 | 47,048 | −12% |
+| Variant              | Run 1      | Run 2      | Delta vs best Node combo |
+| -------------------- | ---------- | ---------- | ------------------------ |
+| **bun native** (Bun) | **76,393** | **75,572** | **+40%**                 |
+| ioredis (Bun)        | 74,345     | 67,333     | +28%                     |
+| node-redis (Node)    | 54,560     | 49,821     | baseline                 |
+| node-redis (Bun)     | 45,616     | 50,177     | −9%                      |
+| ioredis (Node)       | 45,561     | 47,048     | −12%                     |
 
 ### Latency — bun native run 1 vs node-redis/Node run 1
 
 | Percentile | bun native | node-redis (Node) | ioredis (Node) |
-|---|---|---|---|
-| p50 | **122μs** | 168μs | 161μs |
-| p95 | **185μs** | 245μs | 474μs |
-| p99 | **219μs** | 299μs | 619μs |
+| ---------- | ---------- | ----------------- | -------------- |
+| p50        | **122μs**  | 168μs             | 161μs          |
+| p95        | **185μs**  | 245μs             | 474μs          |
+| p99        | **219μs**  | 299μs             | 619μs          |
 
 ## Findings
 

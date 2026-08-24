@@ -1,8 +1,10 @@
 'use client'
 
-import { cn } from '@/lib/utils'
 import { Icon } from '@iconify/react'
 import type { ReactNode } from 'react'
+
+import { cn } from '@/lib/utils'
+
 import { BentoBase } from './bento-base'
 
 interface FeatureBentoCardProps {
@@ -42,22 +44,12 @@ export function FeatureBentoCard({
                 colSpan === '3' && 'md:col-span-3'
             )}
             {...rest}>
-            <div
-                className={cn(
-                    'grid gap-8',
-                    colSpan === '2' && `
-                      items-start
-                      md:grid-cols-2
-                    `
-                )}>
+            <div className={cn('grid gap-8', colSpan === '2' && `items-start md:grid-cols-2`)}>
                 <div>
                     <div
                         data-feature-icon
                         className={cn(
-                            `
-                              flex size-12 items-center justify-center
-                              rounded-2xl
-                            `,
+                            `flex size-12 items-center justify-center rounded-2xl`,
                             iconBgColor,
                             iconColor
                         )}>
@@ -66,14 +58,11 @@ export function FeatureBentoCard({
                     <h3
                         data-feature-title
                         className="
-                          mt-8 font-heading text-xl font-bold tracking-tight
-                          text-foreground
+                          mt-8 font-heading text-xl font-bold tracking-tight text-foreground
                         ">
                         {title}
                     </h3>
-                    <p
-                        data-feature-desc
-                        className="mt-3 text-sm/relaxed text-muted-foreground">
+                    <p data-feature-desc className="mt-3 text-sm/relaxed text-muted-foreground">
                         {description}
                     </p>
                 </div>
@@ -85,16 +74,12 @@ export function FeatureBentoCard({
                 <div
                     data-feature-footer
                     className="
-                      mt-8 flex flex-wrap items-center gap-4 border-t
-                      border-border/20 pt-5 text-xs font-semibold
-                      text-muted-foreground
+                      mt-8 flex flex-wrap items-center gap-4 border-t border-border/20 pt-5 text-xs
+                      font-semibold text-muted-foreground
                     ">
                     {footerTags.map(tag => (
                         <span key={tag} className="flex items-center gap-1.5">
-                            <Icon
-                                icon="lucide:check"
-                                className="size-3.5 text-emerald-500"
-                            />
+                            <Icon icon="lucide:check" className="size-3.5 text-emerald-500" />
                             {tag}
                         </span>
                     ))}

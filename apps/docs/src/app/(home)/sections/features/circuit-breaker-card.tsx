@@ -1,10 +1,11 @@
 'use client'
 
 import { useGSAP } from '@gsap/react'
-import { registerReplay } from '../../_lib/replay-registry'
 import { useRef } from 'react'
-import { FeatureBentoCard } from '../../components/feature-bento-card'
+
 import { gsap, registerGsap } from '../../_lib/gsap'
+import { registerReplay } from '../../_lib/replay-registry'
+import { FeatureBentoCard } from '../../components/feature-bento-card'
 
 /**
  * Card explaining how the circuit breaker isolates failing backends.
@@ -41,7 +42,9 @@ export function CircuitBreakerCard() {
                 ease: 'expo.out',
             })
                 .from(
-                    root.querySelectorAll('[data-feature-icon], [data-feature-title], [data-feature-desc]'),
+                    root.querySelectorAll(
+                        '[data-feature-icon], [data-feature-title], [data-feature-desc]'
+                    ),
                     {
                         y: 12,
                         opacity: 0,
@@ -101,43 +104,30 @@ export function CircuitBreakerCard() {
                 <div
                     data-breaker-panel
                     className="
-                      mt-6 space-y-2.5 rounded-2xl border border-border/40
-                      bg-background/50 p-4 font-mono text-[10px] shadow-sm
-                      select-none
+                      mt-6 space-y-2.5 rounded-2xl border border-border/40 bg-background/50 p-4
+                      font-mono text-[10px] shadow-sm select-none
                     ">
                     <div
                         className="
-                          border-b border-border/20 pb-1.5 text-[8px] font-bold
-                          tracking-wider text-muted-foreground/60 uppercase
+                          border-b border-border/20 pb-1.5 text-[8px] font-bold tracking-wider
+                          text-muted-foreground/60 uppercase
                         ">
                         Circuit telemetry
                     </div>
-                    <div data-breaker-row className="
-                      flex items-center justify-between
-                    ">
+                    <div data-breaker-row className="flex items-center justify-between">
                         <span className="text-muted-foreground/80">State:</span>
-                        <div
-                            data-breaker-state
-                            className="flex items-center gap-1.5">
-                            <span className="
-                              size-2 animate-pulse rounded-full bg-amber-500
-                            " />
-                            <span className="
-                              font-bold tracking-wide text-amber-500 uppercase
-                            ">
+                        <div data-breaker-state className="flex items-center gap-1.5">
+                            <span className="size-2 animate-pulse rounded-full bg-amber-500" />
+                            <span className="font-bold tracking-wide text-amber-500 uppercase">
                                 Half-Open
                             </span>
                         </div>
                     </div>
-                    <div data-breaker-row className="
-                      flex items-center justify-between
-                    ">
+                    <div data-breaker-row className="flex items-center justify-between">
                         <span className="text-muted-foreground/80">Failure threshold:</span>
                         <span className="font-bold text-foreground">5 failed attempts</span>
                     </div>
-                    <div data-breaker-row className="
-                      flex items-center justify-between
-                    ">
+                    <div data-breaker-row className="flex items-center justify-between">
                         <span className="text-muted-foreground/80">Probing rate:</span>
                         <span className="font-bold text-foreground">1 request / 5s</span>
                     </div>

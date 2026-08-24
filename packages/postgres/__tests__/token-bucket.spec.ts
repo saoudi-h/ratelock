@@ -1,5 +1,6 @@
 import { tokenBucketContract } from '@ratelock/test-utils'
 import { describe } from 'vitest'
+
 import { tokenBucket } from '../src/token-bucket'
 import { MockPgDriver } from './driver.mock'
 

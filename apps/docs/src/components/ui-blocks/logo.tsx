@@ -1,7 +1,8 @@
-import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import type { SVGProps } from 'react'
 import React from 'react'
+
+import { cn } from '@/lib/utils'
 
 export const LogoIcon: React.FC<SVGProps<SVGSVGElement>> = props => {
     return (
@@ -24,11 +25,7 @@ export const Logo: React.FC<{ iconClassName?: string; className?: string }> = ({
     iconClassName,
 }) => {
     return (
-        <div
-            className={cn(
-                `flex cursor-pointer items-center justify-center gap-4 p-2`,
-                className
-            )}>
+        <div className={cn(`flex cursor-pointer items-center justify-center gap-4 p-2`, className)}>
             <LogoIcon className={cn('size-7', iconClassName)} />
             <h3 className={`font-heading text-lg font-bold tracking-tight`}>Ratelock</h3>
         </div>

@@ -1,16 +1,13 @@
 import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
+import { AltArrowDown, AltArrowUp } from '@solar-icons/react-perf/BoldDuotone'
 
 import { cn } from '@/lib/utils'
-import { AltArrowDown, AltArrowUp } from '@solar-icons/react-perf/BoldDuotone'
 
 function Accordion({ className, ...props }: AccordionPrimitive.Root.Props) {
     return (
         <AccordionPrimitive.Root
             data-slot="accordion"
-            className={cn(
-                `flex w-full flex-col overflow-hidden rounded-2xl border`,
-                className
-            )}
+            className={cn(`flex w-full flex-col overflow-hidden rounded-2xl border`, className)}
             {...props}
         />
     )
@@ -20,13 +17,7 @@ function AccordionItem({ className, ...props }: AccordionPrimitive.Item.Props) {
     return (
         <AccordionPrimitive.Item
             data-slot="accordion-item"
-            className={cn(
-                `
-                  not-last:border-b
-                  data-open:bg-muted/50
-                `,
-                className
-            )}
+            className={cn(`not-last:border-b data-open:bg-muted/50`, className)}
             {...props}
         />
     )
@@ -39,9 +30,9 @@ function AccordionTrigger({ className, children, ...props }: AccordionPrimitive.
                 data-slot="accordion-trigger"
                 className={cn(
                     `
-                      group/accordion-trigger relative flex flex-1 items-start
-                      justify-between gap-6 border border-transparent p-4
-                      text-left text-sm font-medium transition-all outline-none
+                      group/accordion-trigger relative flex flex-1 items-start justify-between gap-6
+                      border border-transparent p-4 text-left text-sm font-medium transition-all
+                      outline-none
                       hover:underline
                       aria-disabled:pointer-events-none aria-disabled:opacity-50
                       **:data-[slot=accordion-trigger-icon]:ml-auto

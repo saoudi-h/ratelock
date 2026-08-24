@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { existsSync, mkdirSync } from 'fs'
 import { join } from 'path'
+
 import { config } from './config'
 import {
     runMatrix1,

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+
 import { adaptClient, createConnection } from '../src/client'
 
 /** Minimal stand-in for Bun's native RedisClient: send()-only surface. */

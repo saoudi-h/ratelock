@@ -1,11 +1,12 @@
 'use client'
 
 import { useGSAP } from '@gsap/react'
-import { registerReplay } from '../../_lib/replay-registry'
 import { Icon } from '@iconify/react'
 import { useRef, useState } from 'react'
-import { BentoBase } from '../../components/bento-base'
+
 import { gsap, registerGsap } from '../../_lib/gsap'
+import { registerReplay } from '../../_lib/replay-registry'
+import { BentoBase } from '../../components/bento-base'
 import { BACKEND_DATA, type BackendType } from './data'
 
 /**
@@ -104,36 +105,22 @@ export function ThroughputComparison() {
     )
 
     return (
-        <div
-            ref={ref}
-            className="
-              flex h-full flex-col justify-between
-              lg:col-span-7
-            ">
+        <div ref={ref} className="flex h-full flex-col justify-between lg:col-span-7">
             <BentoBase className="h-full gap-8">
-                <div
-                    className="
-                      flex flex-col gap-4
-                      sm:flex-row sm:items-center sm:justify-between
-                    ">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <span
                             data-throughput-eyebrow
                             className="
-                              inline-flex items-center gap-1.5 rounded-xl border
-                              border-border/40 bg-background px-3 py-1 font-mono
-                              text-[10px] font-bold tracking-wider
-                              text-muted-foreground uppercase shadow-xs
-                              select-none
+                              inline-flex items-center gap-1.5 rounded-xl border border-border/40
+                              bg-background px-3 py-1 font-mono text-[10px] font-bold tracking-wider
+                              text-muted-foreground uppercase shadow-xs select-none
                             ">
                             Compare Backends
                         </span>
                         <h3
                             data-throughput-title
-                            className="
-                              mt-3 font-heading text-xl font-bold
-                              text-foreground
-                            ">
+                            className="mt-3 font-heading text-xl font-bold text-foreground">
                             Throughput Comparison
                         </h3>
                     </div>
@@ -141,29 +128,21 @@ export function ThroughputComparison() {
                     <div
                         data-throughput-tabs
                         className="
-                          flex rounded-xl border border-border/40 bg-muted/40
-                          p-1 shadow-xs
+                          flex rounded-xl border border-border/40 bg-muted/40 p-1 shadow-xs
                         ">
                         {(['memory', 'redis', 'postgres'] as BackendType[]).map(type => (
                             <button
                                 key={type}
                                 onClick={() => setActiveBackend(type)}
                                 className={`
-                                  relative cursor-pointer rounded-lg px-3.5
-                                  py-1.5 text-xs font-semibold tracking-wider
-                                  uppercase transition-all duration-200
+                                  relative cursor-pointer rounded-lg px-3.5 py-1.5 text-xs
+                                  font-semibold tracking-wider uppercase transition-all duration-200
                                   select-none
                                   active:scale-[0.97]
                                   ${
                                       activeBackend === type
-                                          ? `
-                                            bg-background text-foreground
-                                            shadow-xs
-                                          `
-                                          : `
-                                            text-muted-foreground
-                                            hover:text-foreground
-                                          `
+                                          ? `bg-background text-foreground shadow-xs`
+                                          : `text-muted-foreground hover:text-foreground`
                                   }
                                 `}>
                                 {type === 'memory'
@@ -187,8 +166,7 @@ export function ThroughputComparison() {
                                 <div
                                     data-bar-label
                                     className="
-                                      flex items-center justify-between text-xs
-                                      font-semibold
+                                      flex items-center justify-between text-xs font-semibold
                                     ">
                                     <span
                                         className={`
@@ -200,25 +178,23 @@ export function ThroughputComparison() {
                                           }
                                         `}>
                                         {metric.isRateLock && (
-                                            <span className="
-                                              size-1.5 animate-pulse
-                                              rounded-full bg-emerald-500
-                                            " />
+                                            <span
+                                                className="
+                                                  size-1.5 animate-pulse rounded-full bg-emerald-500
+                                                "
+                                            />
                                         )}
                                         {metric.name}
                                     </span>
-                                    <span className="
-                                      font-mono text-muted-foreground
-                                    ">
+                                    <span className="font-mono text-muted-foreground">
                                         {metric.throughput.toLocaleString()} ops/s •{' '}
                                         {metric.latency}
                                     </span>
                                 </div>
                                 <div
                                     className="
-                                      relative h-8 w-full overflow-hidden
-                                      rounded-2xl border border-border/20
-                                      bg-muted/20 p-1
+                                      relative h-8 w-full overflow-hidden rounded-2xl border
+                                      border-border/20 bg-muted/20 p-1
                                     ">
                                     <div
                                         data-bar-fill
@@ -239,26 +215,21 @@ export function ThroughputComparison() {
                 <div
                     data-throughput-footer
                     className="
-                      flex flex-col gap-3 rounded-2xl border border-border/20
-                      bg-muted/20 p-4 text-xs/relaxed text-muted-foreground
+                      flex flex-col gap-3 rounded-2xl border border-border/20 bg-muted/20 p-4
+                      text-xs/relaxed text-muted-foreground
                       sm:flex-row sm:items-center sm:justify-between
                     ">
                     <div className="flex items-center gap-2">
-                        <Icon
-                            icon="lucide:arrow-up-right"
-                            className="size-4 text-emerald-500"
-                        />
+                        <Icon icon="lucide:arrow-up-right" className="size-4 text-emerald-500" />
                         <span>
                             RateLock throughput is{' '}
-                            <strong className="text-foreground">{current.multiplier}</strong>{' '}
-                            higher under this workload.
+                            <strong className="text-foreground">{current.multiplier}</strong> higher
+                            under this workload.
                         </span>
                     </div>
-                    <span className="
-                      font-mono text-[10px] text-muted-foreground/60 select-none
-                    ">
-                        Matrix 4 Baseline • 80 Concurrency • Reference Hardware (AMD Ryzen 7
-                        5800X, 32GB RAM)
+                    <span className="font-mono text-[10px] text-muted-foreground/60 select-none">
+                        Matrix 4 Baseline • 80 Concurrency • Reference Hardware (AMD Ryzen 7 5800X,
+                        32GB RAM)
                     </span>
                 </div>
             </BentoBase>

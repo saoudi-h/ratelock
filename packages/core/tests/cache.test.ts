@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+
 import { withCache } from '../src/cache'
 import type { Limiter } from '../src/types'
 

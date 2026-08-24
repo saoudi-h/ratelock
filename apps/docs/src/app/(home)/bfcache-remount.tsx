@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import { useReplayOnBfcache } from "./_hooks/use-replay-on-bfcache";
+import { useReplayOnBfcache } from './_hooks/use-replay-on-bfcache'
 
 /**
  * Wraps the home page and replays all GSAP animations when the page
@@ -10,6 +10,6 @@ import { useReplayOnBfcache } from "./_hooks/use-replay-on-bfcache";
  * Individual components register their timelines via registerReplay().
  */
 export function BfcacheRemount({ children }: { children: React.ReactNode }) {
-  useReplayOnBfcache();
-  return <>{children}</>;
+    useReplayOnBfcache()
+    return <>{children}</>
 }

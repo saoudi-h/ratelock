@@ -1,7 +1,12 @@
-import { fixedWindow as createLocalFixed } from '@ratelock/local'
 import { performance } from 'perf_hooks'
 
-async function bench(name: string, check: (id: string) => Promise<unknown>, durationMs = Number(process.env.BENCH_DRIVERS_DURATION_MS ?? 3000)) {
+import { fixedWindow as createLocalFixed } from '@ratelock/local'
+
+async function bench(
+    name: string,
+    check: (id: string) => Promise<unknown>,
+    durationMs = Number(process.env.BENCH_DRIVERS_DURATION_MS ?? 3000)
+) {
     const latencies: number[] = []
     let ok = 0
     const start = performance.now()

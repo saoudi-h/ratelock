@@ -1,4 +1,5 @@
 import { performance } from 'perf_hooks'
+
 import type { BenchmarkAdapter } from './adapters/types'
 import { config } from './config'
 import { DiverseKeysScenario } from './scenarios'

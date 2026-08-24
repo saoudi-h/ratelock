@@ -26,15 +26,13 @@ const buttonGroupVariants = cva(
                 horizontal: `
                   *:data-slot:rounded-r-none
                   [&>[data-slot]:not(:has(~[data-slot]))]:rounded-r-4xl!
-                  [&>[data-slot]~[data-slot]]:rounded-l-none
-                  [&>[data-slot]~[data-slot]]:border-l-0
+                  [&>[data-slot]~[data-slot]]:rounded-l-none [&>[data-slot]~[data-slot]]:border-l-0
                 `,
                 vertical: `
                   flex-col
                   *:data-slot:rounded-b-none
                   [&>[data-slot]:not(:has(~[data-slot]))]:rounded-b-4xl!
-                  [&>[data-slot]~[data-slot]]:rounded-t-none
-                  [&>[data-slot]~[data-slot]]:border-t-0
+                  [&>[data-slot]~[data-slot]]:rounded-t-none [&>[data-slot]~[data-slot]]:border-t-0
                 `,
             },
         },
@@ -67,8 +65,7 @@ function ButtonGroupText({ className, render, ...props }: useRender.ComponentPro
             {
                 className: cn(
                     `
-                      flex items-center gap-2 rounded-4xl border bg-muted px-2.5
-                      text-sm font-medium
+                      flex items-center gap-2 rounded-4xl border bg-muted px-2.5 text-sm font-medium
                       [&_svg]:pointer-events-none
                       [&_svg:not([class*='size-'])]:size-4
                     `,

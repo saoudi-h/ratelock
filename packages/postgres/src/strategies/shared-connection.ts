@@ -33,7 +33,6 @@ export async function detectAndCreate(
         if (driver === 'postgres') {
             try {
                 const mod = await import('postgres')
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 const sql = (mod.default ?? mod)(config.url)
                 return { mode: 'postgres', driver: postgresDriver(sql), sql, end: () => sql.end() }
             } catch {

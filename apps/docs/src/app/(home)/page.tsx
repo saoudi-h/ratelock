@@ -1,12 +1,13 @@
 import type { Metadata } from 'next'
+
+import { BfcacheRemount } from './bfcache-remount'
 import { EnginesSection } from './sections/engines'
 import { FeaturesSection } from './sections/features'
-import { IntegrationsSection } from './sections/integrations'
-import { PerformanceSection } from './sections/performance'
 import { FooterSection } from './sections/footer-section'
 import { HeroSection } from './sections/hero'
+import { IntegrationsSection } from './sections/integrations'
+import { PerformanceSection } from './sections/performance'
 import { SimulationSection } from './sections/simulation-section'
-import { BfcacheRemount } from './bfcache-remount'
 
 export const metadata: Metadata = {
     title: 'RateLock',
