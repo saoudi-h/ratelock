@@ -1,6 +1,6 @@
 {
     "name": "@ratelock/elysia",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Rate limiting plugin for Elysia — engine-agnostic, powered by any RateLock limiter",
     "keywords": [
         "bun",
