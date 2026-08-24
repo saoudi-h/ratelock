@@ -187,7 +187,7 @@ export function ThroughputComparison() {
                                         {metric.name}
                                     </span>
                                     <span className="font-mono text-muted-foreground">
-                                        {metric.throughput.toLocaleString()} ops/s •{' '}
+                                        {metric.throughput.toLocaleString('en-US')} ops/s •{' '}
                                         {metric.latency}
                                     </span>
                                 </div>
