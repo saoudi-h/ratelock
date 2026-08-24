@@ -15,7 +15,7 @@ RateLock is a high-performance, extensible rate limiting library for Node.js and
 
 - **Commits:** Conventional Commits, enforced by husky `commit-msg` (commitlint). Allowed types: build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test.
 - **Versioning:** pre-1.0 policy: the second digit is the effective major. Features ship as **patch** changesets by default; never bump the minor without an explicit maintainer decision. Breaking changes wait for the 1.0 train.
-- **Changesets:** required for user-facing changes. No root `changeset` script; use `pnpm exec changeset`.
+- **Changesets:** required for user-facing changes. No root `changeset` script; use `pnpm exec changeset`. Tooling-only migrations (lint/format/build/typecheck tooling) get NO changeset unless the built output observably changes — dist is bundler-generated and regenerates declarations, so source formatting never reaches consumers. Verify before bumping, don't bump on principle.
 - **Definition of done (per CONTRIBUTING.md):** `pnpm build && pnpm lint && pnpm typecheck && pnpm test` all pass.
 - **Cross-runtime policy:** a test passing on Node but failing on Bun is a real bug, not a flake.
 - **Integration tests** (Redis/Postgres via Docker/testcontainers) run Node-only; Bun CI runs mock suites only.
