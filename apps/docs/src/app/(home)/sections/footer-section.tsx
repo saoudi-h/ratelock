@@ -176,6 +176,7 @@ export function FooterSection() {
                                         '@ratelock/express',
                                         '@ratelock/fastify',
                                         '@ratelock/elysia',
+                                        '@ratelock/nestjs',
                                     ].map(pkg => (
                                         <li key={pkg}>
                                             <a

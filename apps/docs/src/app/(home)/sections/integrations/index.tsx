@@ -31,7 +31,7 @@ const MIDDLEWARES: Framework[] = [
     {
         name: 'Express',
         tagline: 'One package for Express 4 and 5',
-        icon: 'devicon:express',
+        icon: 'simple-icons:express',
         href: '/docs/integrations/express',
         kind: 'middleware',
     },
@@ -47,6 +47,13 @@ const MIDDLEWARES: Framework[] = [
         tagline: 'Bun-native, pairs with our native Redis driver',
         icon: 'thesvg-color:elysiajs',
         href: '/docs/integrations/elysia',
+        kind: 'middleware',
+    },
+    {
+        name: 'NestJS',
+        tagline: 'Global guard, DI-friendly, decorators included',
+        icon: 'bxl:nest-js',
+        href: '/docs/integrations/nestjs',
         kind: 'middleware',
     },
 ]
@@ -165,7 +172,7 @@ export function IntegrationsSection() {
                 </div>
 
                 <div className="space-y-6">
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
                         {MIDDLEWARES.map(framework => (
                             <FrameworkTile key={framework.name} framework={framework} />
                         ))}
