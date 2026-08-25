@@ -3,11 +3,12 @@
 import { useGSAP } from '@gsap/react'
 import { Icon } from '@iconify/react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useRef } from 'react'
 
 import { LogoLink } from '@/components/ui-blocks/logo'
 
-import { gsap, registerGsap } from '../_lib/gsap'
+import { gsap, registerGsap, ScrollTrigger } from '../_lib/gsap'
 import { registerReplay } from '../_lib/replay-registry'
 
 /**
@@ -15,42 +16,68 @@ import { registerReplay } from '../_lib/replay-registry'
  * shouldn't compete with the content above it. The whole block
  * fades and lifts in once, the columns stagger a few px into
  * place, and the underline on each link draws on hover (CSS only).
+ *
+ * The footer lives in the (home) layout, so React keeps the same
+ * mounted instance across client-side navigations. ScrollTrigger
+ * caches its start/end against the document it was created in;
+ * without a rebuild the cached start can become unreachable on a
+ * shorter page and the footer would never reveal. Re-creating the
+ * context per pathname re-measures triggers for the current page.
  */
 export function FooterSection() {
     registerGsap()
     const ref = useRef<HTMLElement>(null)
+    const pathname = usePathname()
 
     useGSAP(
         () => {
             if (!ref.current) return
             const root = ref.current
 
-            const tl = gsap.timeline()
-
-            tl.from(root, {
-                y: 30,
-                opacity: 0,
-                filter: 'blur(6px)',
-                duration: 0.9,
-                ease: 'expo.out',
-                scrollTrigger: { trigger: root, start: 'top 95%', once: true },
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: root,
+                    start: 'top 95%',
+                    once: true,
+                    invalidateOnRefresh: true,
+                },
             })
 
-            tl.from(root.querySelectorAll('[data-footer-col]'), {
-                y: 18,
-                opacity: 0,
-                duration: 0.6,
-                ease: 'expo.out',
-                stagger: 0.07,
-                scrollTrigger: { trigger: root, start: 'top 95%', once: true },
-                delay: 0.1,
-            })
+            tl.fromTo(
+                root,
+                { y: 30, opacity: 0, filter: 'blur(6px)' },
+                { y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.9, ease: 'expo.out' }
+            )
 
-            return registerReplay(() => {
+            tl.fromTo(
+                root.querySelectorAll('[data-footer-col]'),
+                { y: 18, opacity: 0 },
+                {
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.6,
+                    ease: 'expo.out',
+                    stagger: 0.07,
+                },
+                0.1
+            )
+
+            // Re-measure after the new page's layout settles (fonts, images).
+            // Same guard as agency/apps/portfolio AnimatedFooter / studio BaseFooter.
+            const timer = setTimeout(() => {
+                ScrollTrigger.refresh()
+            }, 100)
+
+            const unregisterReplay = registerReplay(() => {
                 tl.restart(true, false)
             })
+
+            return () => {
+                clearTimeout(timer)
+                unregisterReplay()
+            }
         },
-        { scope: ref }
+        { scope: ref, dependencies: [pathname], revertOnUpdate: true }
     )
 
     return (
@@ -219,6 +246,7 @@ export function FooterSection() {
                         </div>
                         <ul className="flex flex-col gap-3 text-xs">
                             {[
+                                { href: '/blog', label: 'Blog' },
                                 { href: '/docs/community/license', label: 'License' },
                                 { href: '/docs/community/changelog', label: 'Changelog' },
                             ].map(link => (

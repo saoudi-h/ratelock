@@ -3,7 +3,6 @@ import type { Metadata } from 'next'
 import { BfcacheRemount } from './bfcache-remount'
 import { EnginesSection } from './sections/engines'
 import { FeaturesSection } from './sections/features'
-import { FooterSection } from './sections/footer-section'
 import { HeroSection } from './sections/hero'
 import { IntegrationsSection } from './sections/integrations'
 import { PerformanceSection } from './sections/performance'
@@ -32,7 +31,6 @@ export default function HomePage() {
                 <EnginesSection />
                 <IntegrationsSection />
                 <PerformanceSection />
-                <FooterSection />
             </main>
         </BfcacheRemount>
     )

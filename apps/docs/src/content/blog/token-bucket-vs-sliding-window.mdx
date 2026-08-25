@@ -1,0 +1,104 @@
+---
+title: 'Token Bucket vs Sliding Window: Choosing a Rate Limiting Strategy'
+description: 'Compare Fixed Window, Sliding Window, Token Bucket, and Individual Fixed Window for Node.js APIs.'
+author: 'RateLock Team'
+date: 2026-08-25
+tags: ['token-bucket', 'sliding-window', 'fixed-window', 'strategy']
+featured: true
+status: published
+---
+
+A rate limit is an admission policy. It decides which requests an API accepts, how quickly a client can send them, and when the client can try again.
+
+The algorithm controls that behaviour. Fixed Window is easy to operate. Sliding Window removes the boundary effect of fixed windows. Token Bucket accepts bursts while enforcing a sustained rate. Individual Fixed Window gives each identifier its own window start.
+
+RateLock exposes all four strategies through the same `Limiter` shape. The choice belongs to the traffic pattern, not to the framework that receives the request.
+
+## Start with one limiter
+
+The local engine is enough to compare strategies without running Redis or PostgreSQL:
+
+```ts
+import { fixedWindow } from '@ratelock/local'
+
+const limiter = await fixedWindow({
+    limit: 100,
+    windowMs: 60_000,
+})
+
+const result = await limiter.check('user:123')
+
+if (!result.allowed) {
+    return new Response('Too Many Requests', { status: 429 })
+}
+```
+
+Every strategy keeps the same `check(id)` call. The result fields change with the strategy, because each algorithm has a different notion of time and remaining capacity.
+
+## Fixed Window: the smallest mental model
+
+Fixed Window divides time into equal intervals. Each identifier gets a counter for the current interval. When the interval ends, the counter resets.
+
+With `limit: 100` and `windowMs: 60_000`, a client can make 100 requests in the current minute. RateLock aligns the local and Redis fixed-window implementations to epoch boundaries, so identifiers share the same reset boundary.
+
+That boundary creates a known burst. A client can spend its quota at the end of one window and spend another quota at the start of the next. A `100` request limit can therefore admit close to 200 requests across a short boundary interval.
+
+Use Fixed Window when the rule needs to stay easy to explain and that boundary burst fits the endpoint's risk. It is a good starting point for simple API protection, development, and endpoints where a short burst has limited consequences.
+
+Read the [Fixed Window documentation](/docs/strategies/fixed-window) for the result fields and configuration.
+
+## Sliding Window: count the recent past
+
+Sliding Window counts requests from the last `windowMs` milliseconds. The window moves with time instead of resetting at a shared boundary.
+
+RateLock's local engine stores request timestamps per identifier and removes timestamps older than the rolling window. The Redis engine stores the timestamps in a sorted set and performs the cleanup, count, and insert in one Lua script.
+
+This model removes the fixed-window boundary burst. A request made 100 milliseconds ago still belongs to a 60-second window, even if a clock-aligned minute has changed.
+
+The trade-off is state. The limiter tracks request timestamps rather than one count and one reset time. The exact cost depends on the engine, request pattern, and number of active identifiers, so measure it with the backend and workload you plan to run.
+
+Use Sliding Window when the endpoint needs a rolling limit and the boundary behaviour of Fixed Window is too permissive.
+
+See the [Sliding Window documentation](/docs/strategies/sliding-window) for the timestamp model and result fields.
+
+## Token Bucket: allow bursts, limit the average
+
+Token Bucket starts with a bucket containing up to `capacity` tokens. Each allowed request consumes one token. Tokens return at `refillRate` tokens per second, up to the capacity.
+
+```ts
+import { tokenBucket } from '@ratelock/local'
+
+const limiter = await tokenBucket({
+    capacity: 10,
+    refillRate: 1,
+})
+```
+
+This configuration allows a burst of up to 10 requests when the bucket is full. After that burst, the client receives one new token per second. The burst size and sustained rate are separate settings, so you can model clients that need occasional bursts without allowing unlimited continuous traffic.
+
+RateLock returns the remaining whole tokens and a `refillTime` in milliseconds when a request is denied. That value gives the caller a concrete recovery interval.
+
+Use Token Bucket for webhooks, SDK retries, imports, or other endpoints where a short burst is useful and the long-term rate still needs a ceiling.
+
+See the [Token Bucket documentation](/docs/strategies/token-bucket) for configuration and retry headers.
+
+## Individual Fixed Window: give each key a fresh start
+
+Individual Fixed Window follows the fixed-window counter model, but it starts a separate window when each identifier makes its first request.
+
+This avoids penalising a new identifier that arrives near the end of a shared window. It fits per-user quotas, signup flows, and onboarding actions where each user should receive a full duration from their first request.
+
+See the [Individual Fixed Window documentation](/docs/strategies/individual-fixed-window).
+
+## Which strategy should you choose?
+
+| Requirement | Strategy |
+| --- | --- |
+| The simplest rule is enough | Fixed Window |
+| The limit should cover a rolling period | Sliding Window |
+| The endpoint needs bursts and a sustained rate | Token Bucket |
+| Each identifier needs its own window start | Individual Fixed Window |
+
+The backend remains a separate decision. You can use `@ratelock/local` for a single process, then move to Redis or PostgreSQL while keeping the same limiter contract. The strategy still needs to match the traffic after that move.
+
+Before you commit to an algorithm, open the [Strategy Simulator](/#simulation). The simulator runs `@ratelock/local` in the browser, sends requests against the strategies, and shows how the counters and windows change over time. Use the traffic pattern that resembles your endpoint, then read the matching strategy documentation before choosing an engine.
