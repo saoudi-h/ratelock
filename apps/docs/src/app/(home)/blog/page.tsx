@@ -2,7 +2,6 @@ import { AltArrowRightIcon } from '@solar-icons/react/bold-duotone'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
-import { createMetadata } from '@/lib/metadata'
 import { blogSource } from '@/lib/source'
 
 import { BentoBase } from '../components/bento-base'
@@ -12,11 +11,13 @@ import { TagPill } from './components/tag-pill'
 
 type BlogPost = ReturnType<typeof blogSource.getPages>[number]
 
-export const metadata: Metadata = createMetadata({
+export const metadata: Metadata = {
     title: 'Blog',
     description:
-        'Articles on rate limiting — integrations, strategies, and resilience notes from the RateLock project.',
-})
+        'Articles on rate limiting. Integrations, strategies, and resilience notes from the RateLock project.',
+    openGraph: { siteName: 'RateLock' },
+    twitter: { card: 'summary_large_image' },
+}
 
 function formatDate(value: Date | string) {
     const d = value instanceof Date ? value : new Date(value)
@@ -106,21 +107,42 @@ export default async function BlogPage(props: { searchParams: Promise<{ tag?: st
                     className="mt-8 flex flex-wrap gap-2 border-y border-border py-4">
                     <Link
                         href="/blog"
-                        className={`rounded-full border px-3 py-1 text-sm ${!activeTag ? 'border-foreground bg-foreground text-background' : 'border-border hover:bg-muted'}`}>
+                        className={`rounded-full border px-3 py-1 text-sm ${
+                            !activeTag
+                                ? `
+                          border-foreground bg-foreground text-background
+                        `
+                                : `
+                          border-border
+                          hover:bg-muted
+                        `
+                        }`}>
                         All
                     </Link>
                     {allTags.map(t => (
                         <Link
                             key={t}
                             href={`/blog?tag=${encodeURIComponent(t)}`}
-                            className={`rounded-full border px-3 py-1 text-sm ${activeTag === t.toLowerCase() ? 'border-foreground bg-foreground text-background' : 'border-border hover:bg-muted'}`}>
+                            className={`rounded-full border px-3 py-1 text-sm ${
+                                activeTag === t.toLowerCase()
+                                    ? `
+                              border-foreground bg-foreground text-background
+                            `
+                                    : `
+                              border-border
+                              hover:bg-muted
+                            `
+                            }`}>
                             {t}
                         </Link>
                     ))}
                     {activeTag && (
                         <Link
                             href="/blog"
-                            className="ml-2 text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground">
+                            className="
+                              ml-2 text-sm text-muted-foreground underline underline-offset-4
+                              hover:text-foreground
+                            ">
                             Clear
                         </Link>
                     )}
@@ -145,24 +167,41 @@ export default async function BlogPage(props: { searchParams: Promise<{ tag?: st
                                             }
                                         />
                                         {isDraft(featured) && (
-                                            <span className="inline-flex items-center rounded-full border border-amber-500/30 bg-amber-500/15 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:text-amber-300">
+                                            <span
+                                                className="
+                                              inline-flex items-center rounded-full border
+                                              border-amber-500/30 bg-amber-500/15 px-2.5 py-0.5
+                                              text-xs font-semibold text-amber-700
+                                              dark:text-amber-300
+                                            ">
                                                 Draft
                                             </span>
                                         )}
                                     </div>
                                     <h2
                                         className="
-                                          mt-4 font-heading text-2xl font-bold tracking-tight text-foreground
-                                          group-hover:text-primary md:text-3xl
+                                          mt-4 font-heading text-2xl font-bold tracking-tight
+                                          text-foreground
+                                          group-hover:text-primary
+                                          md:text-3xl
                                         ">
                                         {featured.data.title}
                                     </h2>
                                     <p className="mt-2 text-sm/relaxed text-muted-foreground">
                                         {featured.data.description}
                                     </p>
-                                    <div className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
+                                    <div
+                                        className="
+                                      mt-5 inline-flex items-center gap-1.5 text-sm font-semibold
+                                      text-primary
+                                    ">
                                         Read article
-                                        <AltArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
+                                        <AltArrowRightIcon
+                                            className="
+                                          size-4 transition-transform
+                                          group-hover:translate-x-0.5
+                                        "
+                                        />
                                     </div>
                                 </div>
 
@@ -170,7 +209,9 @@ export default async function BlogPage(props: { searchParams: Promise<{ tag?: st
                                     post={featured}
                                     sizes="(min-width: 768px) 50vw, 100vw"
                                     priority
-                                    className="aspect-video rounded-3xl border border-border/40 shadow-xs"
+                                    className="
+                                      aspect-video rounded-3xl border border-border/40 shadow-xs
+                                    "
                                 />
                             </div>
                         </BentoBase>
@@ -179,14 +220,21 @@ export default async function BlogPage(props: { searchParams: Promise<{ tag?: st
 
                 <div className="mt-8">
                     {filtered.length === 0 ? (
-                        <div className="rounded-4xl border border-dashed border-border p-10 text-center">
+                        <div
+                            className="
+                          rounded-4xl border border-dashed border-border p-10 text-center
+                        ">
                             <p className="text-sm font-medium">
                                 {activeTag ? `No articles for “${activeTag}”.` : 'No articles yet.'}
                             </p>
                             {activeTag && (
                                 <Link
                                     href="/blog"
-                                    className="mt-2 inline-flex text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground">
+                                    className="
+                                      mt-2 inline-flex text-sm text-muted-foreground underline
+                                      underline-offset-4
+                                      hover:text-foreground
+                                    ">
                                     Show all
                                 </Link>
                             )}
@@ -206,15 +254,30 @@ export default async function BlogPage(props: { searchParams: Promise<{ tag?: st
                                             <PostCover
                                                 post={post}
                                                 sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                                                className="aspect-video rounded-xl border border-border/40"
+                                                className="
+                                                  aspect-video rounded-xl border border-border/40
+                                                "
                                             />
-                                            <div className="flex flex-wrap items-center justify-between gap-2">
-                                                <span className="text-xs font-medium text-muted-foreground">
+                                            <div
+                                                className="
+                                              flex flex-wrap items-center justify-between gap-2
+                                            ">
+                                                <span
+                                                    className="
+                                                  text-xs font-medium text-muted-foreground
+                                                ">
                                                     {formatDate(post.data.date as Date)}
                                                 </span>
                                                 <span className="flex items-center gap-2">
                                                     {isDraft(post) && (
-                                                        <span className="inline-flex items-center rounded-full border border-amber-500/30 bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-700 dark:text-amber-300">
+                                                        <span
+                                                            className="
+                                                          inline-flex items-center rounded-full
+                                                          border border-amber-500/30 bg-amber-500/15
+                                                          px-2 py-0.5 text-[11px] font-semibold
+                                                          text-amber-700
+                                                          dark:text-amber-300
+                                                        ">
                                                             Draft
                                                         </span>
                                                     )}
@@ -232,12 +295,17 @@ export default async function BlogPage(props: { searchParams: Promise<{ tag?: st
                                             <div>
                                                 <h3
                                                     className="
-                                                      font-heading text-lg font-bold tracking-tight text-foreground
+                                                      font-heading text-lg font-bold tracking-tight
+                                                      text-foreground
                                                       group-hover:text-primary
                                                     ">
                                                     {post.data.title}
                                                 </h3>
-                                                <p className="mt-1 line-clamp-2 text-sm/relaxed text-muted-foreground">
+                                                <p
+                                                    className="
+                                                  mt-1 line-clamp-2 text-sm/relaxed
+                                                  text-muted-foreground
+                                                ">
                                                     {post.data.description}
                                                 </p>
                                             </div>
@@ -249,19 +317,31 @@ export default async function BlogPage(props: { searchParams: Promise<{ tag?: st
                     ) : null}
                 </div>
 
-                <div className="mt-10 flex flex-col gap-3 border-t border-border pt-6 md:flex-row md:items-center md:justify-between">
+                <div
+                    className="
+                  mt-10 flex flex-col gap-3 border-t border-border pt-6
+                  md:flex-row md:items-center md:justify-between
+                ">
                     <p className="text-sm text-muted-foreground">
                         New articles land here first, then on social channels.
                     </p>
                     <div className="flex gap-2">
                         <Link
                             href="/blog/rss.xml"
-                            className="inline-flex h-8 items-center rounded-full bg-foreground px-4 text-sm font-medium text-background hover:bg-foreground/90">
+                            className="
+                              inline-flex h-8 items-center rounded-full bg-foreground px-4 text-sm
+                              font-medium text-background
+                              hover:bg-foreground/90
+                            ">
                             RSS
                         </Link>
                         <Link
                             href="/docs"
-                            className="inline-flex h-8 items-center rounded-full border border-border px-4 text-sm font-medium hover:bg-muted">
+                            className="
+                              inline-flex h-8 items-center rounded-full border border-border px-4
+                              text-sm font-medium
+                              hover:bg-muted
+                            ">
                             Docs
                         </Link>
                     </div>
