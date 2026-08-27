@@ -109,9 +109,7 @@ export default async function BlogPage(props: { searchParams: Promise<{ tag?: st
                         href="/blog"
                         className={`rounded-full border px-3 py-1 text-sm ${
                             !activeTag
-                                ? `
-                          border-foreground bg-foreground text-background
-                        `
+                                ? `border-foreground bg-foreground text-background`
                                 : `
                           border-border
                           hover:bg-muted
@@ -125,9 +123,7 @@ export default async function BlogPage(props: { searchParams: Promise<{ tag?: st
                             href={`/blog?tag=${encodeURIComponent(t)}`}
                             className={`rounded-full border px-3 py-1 text-sm ${
                                 activeTag === t.toLowerCase()
-                                    ? `
-                              border-foreground bg-foreground text-background
-                            `
+                                    ? `border-foreground bg-foreground text-background`
                                     : `
                               border-border
                               hover:bg-muted
@@ -169,11 +165,11 @@ export default async function BlogPage(props: { searchParams: Promise<{ tag?: st
                                         {isDraft(featured) && (
                                             <span
                                                 className="
-                                              inline-flex items-center rounded-full border
-                                              border-amber-500/30 bg-amber-500/15 px-2.5 py-0.5
-                                              text-xs font-semibold text-amber-700
-                                              dark:text-amber-300
-                                            ">
+                                                  inline-flex items-center rounded-full border
+                                                  border-amber-500/30 bg-amber-500/15 px-2.5 py-0.5
+                                                  text-xs font-semibold text-amber-700
+                                                  dark:text-amber-300
+                                                ">
                                                 Draft
                                             </span>
                                         )}
@@ -192,15 +188,15 @@ export default async function BlogPage(props: { searchParams: Promise<{ tag?: st
                                     </p>
                                     <div
                                         className="
-                                      mt-5 inline-flex items-center gap-1.5 text-sm font-semibold
-                                      text-primary
-                                    ">
+                                          mt-5 inline-flex items-center gap-1.5 text-sm
+                                          font-semibold text-primary
+                                        ">
                                         Read article
                                         <AltArrowRightIcon
                                             className="
-                                          size-4 transition-transform
-                                          group-hover:translate-x-0.5
-                                        "
+                                              size-4 transition-transform
+                                              group-hover:translate-x-0.5
+                                            "
                                         />
                                     </div>
                                 </div>
@@ -222,8 +218,8 @@ export default async function BlogPage(props: { searchParams: Promise<{ tag?: st
                     {filtered.length === 0 ? (
                         <div
                             className="
-                          rounded-4xl border border-dashed border-border p-10 text-center
-                        ">
+                              rounded-4xl border border-dashed border-border p-10 text-center
+                            ">
                             <p className="text-sm font-medium">
                                 {activeTag ? `No articles for “${activeTag}”.` : 'No articles yet.'}
                             </p>
@@ -260,24 +256,25 @@ export default async function BlogPage(props: { searchParams: Promise<{ tag?: st
                                             />
                                             <div
                                                 className="
-                                              flex flex-wrap items-center justify-between gap-2
-                                            ">
+                                                  flex flex-wrap items-center justify-between gap-2
+                                                ">
                                                 <span
                                                     className="
-                                                  text-xs font-medium text-muted-foreground
-                                                ">
+                                                      text-xs font-medium text-muted-foreground
+                                                    ">
                                                     {formatDate(post.data.date as Date)}
                                                 </span>
                                                 <span className="flex items-center gap-2">
                                                     {isDraft(post) && (
                                                         <span
                                                             className="
-                                                          inline-flex items-center rounded-full
-                                                          border border-amber-500/30 bg-amber-500/15
-                                                          px-2 py-0.5 text-[11px] font-semibold
-                                                          text-amber-700
-                                                          dark:text-amber-300
-                                                        ">
+                                                              inline-flex items-center rounded-full
+                                                              border border-amber-500/30
+                                                              bg-amber-500/15 px-2 py-0.5
+                                                              text-[11px] font-semibold
+                                                              text-amber-700
+                                                              dark:text-amber-300
+                                                            ">
                                                             Draft
                                                         </span>
                                                     )}
@@ -303,9 +300,9 @@ export default async function BlogPage(props: { searchParams: Promise<{ tag?: st
                                                 </h3>
                                                 <p
                                                     className="
-                                                  mt-1 line-clamp-2 text-sm/relaxed
-                                                  text-muted-foreground
-                                                ">
+                                                      mt-1 line-clamp-2 text-sm/relaxed
+                                                      text-muted-foreground
+                                                    ">
                                                     {post.data.description}
                                                 </p>
                                             </div>
@@ -319,9 +316,9 @@ export default async function BlogPage(props: { searchParams: Promise<{ tag?: st
 
                 <div
                     className="
-                  mt-10 flex flex-col gap-3 border-t border-border pt-6
-                  md:flex-row md:items-center md:justify-between
-                ">
+                      mt-10 flex flex-col gap-3 border-t border-border pt-6
+                      md:flex-row md:items-center md:justify-between
+                    ">
                     <p className="text-sm text-muted-foreground">
                         New articles land here first, then on social channels.
                     </p>

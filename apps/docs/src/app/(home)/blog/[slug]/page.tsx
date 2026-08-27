@@ -72,10 +72,10 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
                 {isDraft(page) && (
                     <div
                         className="
-                      mt-6 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm
-                      font-medium text-amber-800
-                      dark:text-amber-200
-                    ">
+                          mt-6 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3
+                          text-sm font-medium text-amber-800
+                          dark:text-amber-200
+                        ">
                         Draft. This post is only visible in development. Set{' '}
                         <code className="rounded-sm bg-amber-500/20 px-1 py-0.5">
                             status: published
@@ -92,7 +92,10 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
 
                 <h1
                     data-post-title
-                    className="mt-4 font-heading text-4xl leading-tight font-bold tracking-tight md:text-[40px]">
+                    className="
+                      mt-4 font-heading text-4xl leading-tight font-bold tracking-tight
+                      md:text-[40px]
+                    ">
                     {page.data.title}
                 </h1>
                 <p data-post-desc className="mt-3 text-base/relaxed text-muted-foreground">
@@ -108,9 +111,9 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
                     <div className="flex min-w-0 flex-1 items-center gap-3 px-3 py-2">
                         <div
                             className="
-                          flex size-9 shrink-0 items-center justify-center rounded-full
-                          bg-primary/15 text-xs font-bold text-primary
-                        ">
+                              flex size-9 shrink-0 items-center justify-center rounded-full
+                              bg-primary/15 text-xs font-bold text-primary
+                            ">
                             {(page.data.author as string).slice(0, 2).toUpperCase()}
                         </div>
                         <div className="min-w-0">
@@ -177,13 +180,14 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
                                     <BentoBase density="compact" className="h-full">
                                         <div
                                             className="
-                                          flex h-full min-h-40 flex-col justify-between gap-4
-                                        ">
+                                              flex h-full min-h-40 flex-col justify-between gap-4
+                                            ">
                                             <div className="flex items-start justify-between gap-2">
                                                 <span
                                                     className="
-                                                  pt-0.5 text-xs font-medium text-muted-foreground
-                                                ">
+                                                      pt-0.5 text-xs font-medium
+                                                      text-muted-foreground
+                                                    ">
                                                     {new Date(
                                                         p.data.date as Date
                                                     ).toLocaleDateString('en-US', {
@@ -203,30 +207,30 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
                                             <div>
                                                 <div
                                                     className="
-                                                  font-heading text-lg font-bold tracking-tight
-                                                  text-foreground
-                                                  group-hover:text-primary
-                                                ">
+                                                      font-heading text-lg font-bold tracking-tight
+                                                      text-foreground
+                                                      group-hover:text-primary
+                                                    ">
                                                     {p.data.title}
                                                 </div>
                                                 <div
                                                     className="
-                                                  mt-1 line-clamp-2 text-sm/relaxed
-                                                  text-muted-foreground
-                                                ">
+                                                      mt-1 line-clamp-2 text-sm/relaxed
+                                                      text-muted-foreground
+                                                    ">
                                                     {p.data.description}
                                                 </div>
                                                 <div
                                                     className="
-                                                  mt-3 inline-flex items-center gap-1.5 text-sm
-                                                  font-semibold text-primary
-                                                ">
+                                                      mt-3 inline-flex items-center gap-1.5 text-sm
+                                                      font-semibold text-primary
+                                                    ">
                                                     Read article{' '}
                                                     <AltArrowRightIcon
                                                         className="
-                                                      size-4 transition-transform
-                                                      group-hover:translate-x-0.5
-                                                    "
+                                                          size-4 transition-transform
+                                                          group-hover:translate-x-0.5
+                                                        "
                                                     />
                                                 </div>
                                             </div>
