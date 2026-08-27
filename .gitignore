@@ -48,3 +48,4 @@ packages/bench/results/*.json
 conclusions.md
 tmp/
 .playwright-mcp/
+__pycache__

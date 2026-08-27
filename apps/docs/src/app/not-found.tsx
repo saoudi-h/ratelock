@@ -20,9 +20,7 @@ export default function NotFound() {
               text-center
             ">
             <div
-                className="
-                  relative w-full max-w-lg
-                ">
+                className="relative w-full max-w-lg">
                 <div className="relative">
                     <p className="text-9xl font-semibold text-primary">404</p>
                     <h1 className="mt-2 text-3xl font-bold tracking-tight">Page not found</h1>
