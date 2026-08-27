@@ -1,8 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { siteUrl } from '@/lib/metadata'
-
 export const OG_SIZE = { width: 1200, height: 630 }
 
 const FALLBACK_COVER = 'blog-fallback-og.png'
@@ -70,70 +68,11 @@ export function OgTemplate({
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'space-between',
+                gap: 48,
                 backgroundColor: '#0c0c0c',
                 padding: 56,
-                position: 'relative',
                 overflow: 'hidden',
             }}>
-            <svg
-                width="800"
-                height="800"
-                style={{
-                    position: 'absolute',
-                    top: '-100px',
-                    right: '-200px',
-                    pointerEvents: 'none',
-                    display: 'flex',
-                }}>
-                <defs>
-                    <radialGradient id="glow-warm" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stopColor="#f97316" stopOpacity={0.12} />
-                        <stop offset="50%" stopColor="#ea580c" stopOpacity={0.04} />
-                        <stop offset="100%" stopColor="#ea580c" stopOpacity={0} />
-                    </radialGradient>
-                </defs>
-                <rect width="800" height="800" fill="url(#glow-warm)" />
-            </svg>
-
-            <svg
-                width="500"
-                height="630"
-                style={{
-                    position: 'absolute',
-                    right: 0,
-                    top: 0,
-                    pointerEvents: 'none',
-                    display: 'flex',
-                }}>
-                <g opacity={0.06}>
-                    <path d={LOGO_PATH} fill="white" transform="translate(60, 40) scale(0.7)" />
-                    <path d={LOGO_PATH} fill="white" transform="translate(200, 120) scale(0.5)" />
-                    <path d={LOGO_PATH} fill="white" transform="translate(340, 60) scale(0.6)" />
-                    <path d={LOGO_PATH} fill="white" transform="translate(120, 220) scale(0.4)" />
-                    <path d={LOGO_PATH} fill="white" transform="translate(280, 280) scale(0.55)" />
-                    <path d={LOGO_PATH} fill="white" transform="translate(420, 200) scale(0.45)" />
-                    <path d={LOGO_PATH} fill="white" transform="translate(50, 380) scale(0.5)" />
-                    <path d={LOGO_PATH} fill="white" transform="translate(220, 400) scale(0.65)" />
-                    <path d={LOGO_PATH} fill="white" transform="translate(380, 360) scale(0.4)" />
-                    <path d={LOGO_PATH} fill="white" transform="translate(140, 500) scale(0.55)" />
-                    <path d={LOGO_PATH} fill="white" transform="translate(320, 520) scale(0.5)" />
-                    <path d={LOGO_PATH} fill="white" transform="translate(450, 460) scale(0.6)" />
-                </g>
-            </svg>
-
-            <div
-                style={{
-                    position: 'absolute',
-                    width: 24,
-                    height: 24,
-                    borderRadius: 12,
-                    backgroundColor: '#f97316',
-                    left: 920,
-                    bottom: 16,
-                    display: 'flex',
-                }}
-            />
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                 <svg
@@ -159,7 +98,6 @@ export function OgTemplate({
                     display: 'flex',
                     alignItems: 'center',
                     gap: 48,
-                    position: 'relative',
                 }}>
                 <div
                     style={{
@@ -202,17 +140,6 @@ export function OgTemplate({
                     {/* oxlint-disable-next-line nextjs/no-img-element -- satori ImageResponse requires <img> */}
                     <img src={cover} width={440} height={430} style={{ objectFit: 'cover' }} />
                 </div>
-            </div>
-
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'flex-end',
-                    fontSize: 20,
-                    color: '#a1a1aa',
-                    fontFamily: 'monospace',
-                }}>
-                {`${siteUrl.host}/blog`}
             </div>
         </div>
     )
