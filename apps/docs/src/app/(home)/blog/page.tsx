@@ -110,10 +110,7 @@ export default async function BlogPage(props: { searchParams: Promise<{ tag?: st
                         className={`rounded-full border px-3 py-1 text-sm ${
                             !activeTag
                                 ? `border-foreground bg-foreground text-background`
-                                : `
-                          border-border
-                          hover:bg-muted
-                        `
+                                : `border-border hover:bg-muted`
                         }`}>
                         All
                     </Link>
@@ -124,10 +121,7 @@ export default async function BlogPage(props: { searchParams: Promise<{ tag?: st
                             className={`rounded-full border px-3 py-1 text-sm ${
                                 activeTag === t.toLowerCase()
                                     ? `border-foreground bg-foreground text-background`
-                                    : `
-                              border-border
-                              hover:bg-muted
-                            `
+                                    : `border-border hover:bg-muted`
                             }`}>
                             {t}
                         </Link>

@@ -93,7 +93,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
                 <h1
                     data-post-title
                     className="
-                      mt-4 font-heading text-4xl leading-tight font-bold tracking-tight
+                      mt-4 font-heading text-4xl/tight font-bold tracking-tight
                       md:text-[40px]
                     ">
                     {page.data.title}
