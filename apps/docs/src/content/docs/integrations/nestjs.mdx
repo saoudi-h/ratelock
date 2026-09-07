@@ -6,7 +6,7 @@ title: NestJS
 
 Rate limiting module for NestJS 10 and 11, powered by any RateLock engine.
 
-- **Engine-agnostic**: bring a `@ratelock/local`, `@ratelock/redis` or `@ratelock/postgres` limiter
+- **Engine-agnostic**: bring a `@ratelock/local`, `@ratelock/redis`, `@ratelock/upstash` or `@ratelock/postgres` limiter
 - **Both adapters supported**: Express and Fastify, tested on every change
 - **Application-wide by default**: registers through `APP_GUARD`; routes opt out with `@SkipRateLimit()`
 - **Lazy initialization**: pass a factory and the engine starts on the first guarded request

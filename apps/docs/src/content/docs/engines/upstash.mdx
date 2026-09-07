@@ -1,0 +1,257 @@
+---
+title: Upstash Redis Engine
+description: Edge-compatible rate limiting powered by Upstash Redis over HTTP.
+---
+
+`@ratelock/upstash` is the HTTP-native Redis engine for RateLock. It uses the
+official `@upstash/redis` client, so it works in serverless and Edge runtimes
+where a TCP Redis client cannot open a connection.
+
+The adapter exposes the same four strategies, result contracts, and resilience
+policies as [`@ratelock/redis`](/docs/engines/redis).
+
+<Callout title="Choose the transport for your runtime" type="info">
+    Use `@ratelock/upstash` for Edge or serverless handlers. Use `@ratelock/redis` with node-redis,
+    ioredis, or Bun's native client when your process can keep a TCP connection open.
+</Callout>
+
+## Installation
+
+```bash
+npm install @ratelock/upstash @upstash/redis
+# or
+pnpm add @ratelock/upstash @upstash/redis
+```
+
+Configure the REST endpoint and token through your deployment's secret
+manager:
+
+```bash
+UPSTASH_REDIS_REST_URL=https://your-database.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your-secret-token
+```
+
+`@upstash/redis` is a peer dependency. Keep the standard token private; it can
+execute writes and Lua scripts.
+
+## Quick start
+
+```typescript
+import { Redis } from '@upstash/redis'
+import { fixedWindow } from '@ratelock/upstash'
+
+const redis = Redis.fromEnv()
+
+const limiter = await fixedWindow({
+    client: redis,
+    limit: 100,
+    windowMs: 60_000,
+    prefix: 'api',
+})
+
+const result = await limiter.check('user:123')
+```
+
+The factory receives an existing Upstash client. Constructing the client and
+keeping credentials outside RateLock makes the same adapter usable with
+environment variables, framework bindings, or a custom secret manager.
+
+Cloudflare Workers and Pages use the provider-specific Upstash entry point:
+
+```typescript
+import { Redis } from '@upstash/redis/cloudflare'
+
+const redis = Redis.fromEnv(env)
+```
+
+Use the standard `@upstash/redis` entry point shown above for Node.js-based
+serverless platforms and Edge platforms that support it. The RateLock adapter
+only depends on the shared REST command surface.
+
+## Edge and serverless handlers
+
+Initialize the limiter once per warm isolate and reuse the promise between
+requests:
+
+```typescript
+import { Redis } from '@upstash/redis'
+import { fixedWindow } from '@ratelock/upstash'
+
+const limiterPromise = fixedWindow({
+    client: Redis.fromEnv(),
+    limit: 100,
+    windowMs: 60_000,
+})
+
+export default async function handler(request: Request): Promise<Response> {
+    const limiter = await limiterPromise
+    const id = request.headers.get('x-user-id') ?? 'anonymous'
+    const result = await limiter.check(id)
+
+    const resetSeconds = Math.max(0, Math.ceil((result.reset - Date.now()) / 1000))
+    const headers = {
+        'RateLimit-Remaining': String(result.remaining),
+        'RateLimit-Reset': String(resetSeconds),
+    }
+
+    if (!result.allowed) {
+        return new Response('Too Many Requests', {
+            status: 429,
+            headers: { ...headers, 'Retry-After': String(resetSeconds) },
+        })
+    }
+
+    return new Response('OK', { headers })
+}
+```
+
+For Cloudflare module workers, bindings arrive through the `env` argument.
+Use the Cloudflare entry point and memoize the limiter for the warm isolate:
+
+```typescript
+import { Redis } from '@upstash/redis/cloudflare'
+import { fixedWindow } from '@ratelock/upstash'
+
+type Env = {
+    UPSTASH_REDIS_REST_URL: string
+    UPSTASH_REDIS_REST_TOKEN: string
+}
+
+let limiterPromise: ReturnType<typeof fixedWindow> | undefined
+
+function getLimiter(env: Env) {
+    return (limiterPromise ??= fixedWindow({
+        client: Redis.fromEnv(env),
+        limit: 100,
+        windowMs: 60_000,
+    }))
+}
+
+export default {
+    async fetch(request: Request, env: Env): Promise<Response> {
+        const limiter = await getLimiter(env)
+        const result = await limiter.check(request.headers.get('x-user-id') ?? 'anonymous')
+        return new Response(result.allowed ? 'OK' : 'Too Many Requests', {
+            status: result.allowed ? 200 : 429,
+            headers: { 'RateLimit-Remaining': String(result.remaining) },
+        })
+    },
+}
+```
+
+See the [framework recipes](/docs/integrations/framework-recipes) for a
+Next.js Edge middleware example and identifier guidance behind proxies.
+
+## Configuration options
+
+All Upstash limiters accept these shared base options:
+
+<AutoTypeTable path="../../packages/upstash/src/types.ts" type="UpstashLimiterBaseConfig" />
+
+The strategy-specific options are the same as the other RateLock engines:
+
+<Tabs items={['fixedWindow', 'slidingWindow', 'tokenBucket', 'individualFixedWindow']}>
+    <Tab value="fixedWindow">
+        ### FixedWindowLimiterConfig
+        <AutoTypeTable
+            path="../../packages/upstash/src/fixed-window.ts"
+            type="FixedWindowLimiterConfig"
+        />
+    </Tab>
+    <Tab value="slidingWindow">
+        ### SlidingWindowLimiterConfig
+        <AutoTypeTable
+            path="../../packages/upstash/src/sliding-window.ts"
+            type="SlidingWindowLimiterConfig"
+        />
+    </Tab>
+    <Tab value="tokenBucket">
+        ### TokenBucketLimiterConfig
+        <AutoTypeTable
+            path="../../packages/upstash/src/token-bucket.ts"
+            type="TokenBucketLimiterConfig"
+        />
+    </Tab>
+    <Tab value="individualFixedWindow">
+        ### IndividualFixedWindowLimiterConfig
+        <AutoTypeTable
+            path="../../packages/upstash/src/individual-fixed-window.ts"
+            type="IndividualFixedWindowLimiterConfig"
+        />
+    </Tab>
+</Tabs>
+
+## Built-in resilience policies
+
+Every strategy accepts the same resilience configuration:
+
+```typescript
+const limiter = await fixedWindow({
+    client: Redis.fromEnv(),
+    limit: 100,
+    windowMs: 60_000,
+    cache: { maxSize: 1000, ttlMs: 30_000 },
+    retry: { maxAttempts: 3 },
+    circuitBreaker: { failureThreshold: 5, recoveryTimeoutMs: 30_000 },
+    fallback: 'allow',
+})
+```
+
+| Option           | Description                                                                |
+| ---------------- | -------------------------------------------------------------------------- |
+| `cache`          | Cache denied results in the current isolate to reduce repeated REST calls. |
+| `retry`          | Retry transient Upstash or network failures with exponential backoff.      |
+| `circuitBreaker` | Temporarily stop calling Upstash after consecutive failures.               |
+| `fallback`       | Choose whether backend failures throw, allow, or deny.                     |
+
+The package also re-exports `withCache`, `withRetry`, `withCircuitBreaker`,
+and `withFallback` for standalone composition.
+
+## Batch checks and atomicity
+
+`checkBatch` uses one Upstash HTTP pipeline and preserves the order of the
+input identifiers. Upstash pipelines are not transactions: commands from
+other clients can interleave between pipeline entries. Each individual Lua
+script invocation is still atomic, which protects the state transition for a
+single identifier.
+
+## Cleanup
+
+```typescript
+await limiter.destroy()
+```
+
+`destroy()` is intentionally a no-op for this engine. The REST client owns no
+TCP socket that RateLock should close. The `Redis` client remains owned by your
+application.
+
+## Testing
+
+Unit tests run against a local Upstash-shaped client and are part of the fast
+test suite. The package-specific integration command starts Redis and the
+Serverless Redis HTTP bridge used to exercise the real `@upstash/redis` REST
+path without a remote account:
+
+```bash
+pnpm --filter @ratelock/upstash test:run
+pnpm --filter @ratelock/upstash test:integration
+```
+
+The real-service suite is also available when credentials are present:
+
+```bash
+pnpm --filter @ratelock/upstash test:integration:remote
+```
+
+It reads `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` and is not a
+default CI gate.
+
+## When to use
+
+- Cloudflare Workers, Vercel Edge, and other fetch-based serverless handlers
+- Applications that already use Upstash Redis
+- Distributed limits without managing a Redis TCP connection
+- Deployments where a warm isolate can reuse the client and limiter promise
+
+For a long-lived Node.js or Bun process with a connection-oriented Redis
+deployment, compare the [Redis engine](/docs/engines/redis) instead.

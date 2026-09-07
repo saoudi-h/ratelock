@@ -6,7 +6,7 @@ title: Hono
 
 Rate limiting middleware for [Hono](https://hono.dev), powered by any RateLock engine.
 
-- **Engine-agnostic**: bring a `@ratelock/local`, `@ratelock/redis` or `@ratelock/postgres` limiter
+- **Engine-agnostic**: bring a `@ratelock/local`, `@ratelock/redis`, `@ratelock/upstash` or `@ratelock/postgres` limiter
 - **Lazy initialization**: pass a factory and the engine starts on the first matched request (cold-start friendly for edge/serverless)
 - **Dual-family headers**: `RateLimit-*` (RFC 9331) and `X-RateLimit-*`, configurable
 - **Zero runtime dependency** besides Hono itself

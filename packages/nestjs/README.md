@@ -4,12 +4,12 @@
 
 ## Why
 
-RateLock engines (`@ratelock/local`, `@ratelock/redis`, `@ratelock/postgres`) expose limiters; this package wraps any of them in a NestJS dynamic module and an application-wide guard. Works with both the Express and Fastify adapters. Zero runtime dependencies beyond `@nestjs/common` and `@nestjs/core` peers.
+RateLock engines (`@ratelock/local`, `@ratelock/redis`, `@ratelock/upstash`, `@ratelock/postgres`) expose limiters; this package wraps any of them in a NestJS dynamic module and an application-wide guard. Works with both the Express and Fastify adapters. Zero runtime dependencies beyond `@nestjs/common` and `@nestjs/core` peers.
 
 ## Install
 
 ```bash
-pnpm add @ratelock/nestjs @ratelock/local   # or @ratelock/redis, @ratelock/postgres
+pnpm add @ratelock/nestjs @ratelock/local   # or @ratelock/redis, @ratelock/upstash, @ratelock/postgres
 ```
 
 ## Quick start

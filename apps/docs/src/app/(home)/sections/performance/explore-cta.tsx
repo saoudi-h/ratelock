@@ -112,8 +112,8 @@ export function ExploreCta() {
                     See the full benchmarks
                 </h3>
                 <p className="mt-2 max-w-xl text-sm/relaxed text-muted-foreground">
-                    Explore latency, throughput and memory profiles for every backend shipped with
-                    RateLock, plus the exact scripts we used to measure them.
+                    Explore latency, throughput and memory profiles for every benchmarked backend
+                    shipped with RateLock, plus the exact scripts we used to measure them.
                 </p>
             </div>
 

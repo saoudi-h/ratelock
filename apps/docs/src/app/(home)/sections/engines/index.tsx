@@ -32,6 +32,19 @@ const ENGINES = [
         color: 'text-red-500',
     },
     {
+        name: 'Upstash Redis',
+        tagline: 'HTTP-native Redis for Edge functions',
+        bestFor: 'Serverless and globally distributed handlers',
+        metrics: [
+            { name: 'Transport', val: 'HTTPS / fetch' },
+            { name: 'Atomicity', val: 'Lua scripts' },
+            { name: 'Lifecycle', val: 'No socket' },
+        ],
+        icon: 'solar:cloud-bold-duotone',
+        brandIcon: 'simple-icons:upstash',
+        color: 'text-violet-500',
+    },
+    {
         name: 'PostgreSQL',
         tagline: 'Isolated transactional UPSERT queries',
         bestFor: 'Enterprise databases already in your stack',
@@ -46,6 +59,9 @@ const ENGINES = [
     },
 ]
 
+const ENGINES_GRID_CLASS =
+    'grid grid-cols-1 gap-6 md:auto-rows-fr md:grid-cols-2 lg:grid-cols-4'
+
 export function EnginesSection() {
     return (
         <section className="relative border-y border-border/40 bg-muted/30">
@@ -56,15 +72,15 @@ export function EnginesSection() {
                         eyebrowIcon="solar:database-bold-duotone"
                         eyebrowTheme="primary"
                         title={`One API,\nany backend.`}
-                        description="Scale from rapid local edge nodes up to massive Postgres or Redis clusters. Swap storage backends instantly by changing a single package import."
+                        description="Scale from local isolate state to HTTP-native Upstash Redis, TCP Redis, or PostgreSQL. Swap storage backends by changing a single package import."
                     />
                 </div>
 
-                <div className="grid grid-cols-1 gap-6 md:auto-rows-fr md:grid-cols-3">
+                <div className={ENGINES_GRID_CLASS}>
                     {ENGINES.map((engine, i) => (
                         <EngineBentoCard key={engine.name} index={i} {...engine} />
                     ))}
-                    <div className="md:col-span-3">
+                    <div className="md:col-span-2 lg:col-span-4">
                         <SwapBackendsTile />
                     </div>
                 </div>

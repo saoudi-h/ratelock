@@ -273,7 +273,7 @@ export function SwapBackendsTile() {
 
                         <div data-swap-step className="space-y-2">
                             <div className="text-[10px] font-bold text-muted-foreground">
-                                2. Production (Distributed Redis)
+                                2. Production (Edge / HTTP Redis)
                             </div>
                             <div
                                 className="
@@ -283,12 +283,12 @@ export function SwapBackendsTile() {
                                 <span className="text-red-400">import</span> &#123; fixedWindow
                                 &#125; <span className="text-red-400">from</span>{' '}
                                 <span className="text-emerald-400">
-                                    &apos;@ratelock/redis&apos;
+                                    &apos;@ratelock/upstash&apos;
                                 </span>
                                 <br />
                                 <span className="text-muted-foreground">
-                                    // Swaps engine underneath. Resilience wrappers remain
-                                    identical!
+                                    // Shared state without a TCP connection. The limiter API and
+                                    resilience wrappers remain identical!
                                 </span>
                             </div>
                         </div>

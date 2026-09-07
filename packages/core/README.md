@@ -7,7 +7,7 @@
 
 ---
 
-> **Note:** `@ratelock/core` is primarily an internal package. You typically don't need to install it directly - it's pulled in automatically by storage adapters like `@ratelock/local`, `@ratelock/redis`, and `@ratelock/postgres`.
+> **Note:** `@ratelock/core` is primarily an internal package. You typically don't need to install it directly - it's pulled in automatically by storage adapters like `@ratelock/local`, `@ratelock/redis`, `@ratelock/upstash`, and `@ratelock/postgres`.
 
 ## What's Inside
 

@@ -6,12 +6,12 @@
 
 ## Why
 
-RateLock engines (`@ratelock/local`, `@ratelock/redis`, `@ratelock/postgres`) expose limiters; this package turns any of them into Hono middleware. Zero runtime dependencies beyond Hono itself. Bring your own limiter and swap engines without touching your routes.
+RateLock engines (`@ratelock/local`, `@ratelock/redis`, `@ratelock/upstash`, `@ratelock/postgres`) expose limiters; this package turns any of them into Hono middleware. Zero runtime dependencies beyond Hono itself. Bring your own limiter and swap engines without touching your routes.
 
 ## Install
 
 ```bash
-pnpm add @ratelock/hono @ratelock/local   # or @ratelock/redis, @ratelock/postgres
+pnpm add @ratelock/hono @ratelock/local   # or @ratelock/redis, @ratelock/upstash, @ratelock/postgres
 ```
 
 ## Quick start

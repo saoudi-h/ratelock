@@ -48,6 +48,18 @@ const limiter = await tokenBucket({
   refillRate: 10,
 })`,
     },
+    {
+        package: '@ratelock/upstash',
+        file: 'upstash-edge-setup.ts',
+        code: `import { Redis } from '@upstash/redis'
+import { fixedWindow } from '@ratelock/upstash'
+
+const limiter = await fixedWindow({
+  client: Redis.fromEnv(),
+  limit: 100,
+  windowMs: 60_000,
+})`,
+    },
 ]
 
 let highlighterPromise: ReturnType<typeof createHighlighter> | null = null

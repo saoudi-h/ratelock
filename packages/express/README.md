@@ -4,12 +4,12 @@
 
 ## Why
 
-RateLock engines (`@ratelock/local`, `@ratelock/redis`, `@ratelock/postgres`) expose limiters; this package turns any of them into Express middleware. Zero runtime dependencies beyond Express itself. Swap engines without touching your routes.
+RateLock engines (`@ratelock/local`, `@ratelock/redis`, `@ratelock/upstash`, `@ratelock/postgres`) expose limiters; this package turns any of them into Express middleware. Zero runtime dependencies beyond Express itself. Swap engines without touching your routes.
 
 ## Install
 
 ```bash
-pnpm add @ratelock/express @ratelock/local   # or @ratelock/redis, @ratelock/postgres
+pnpm add @ratelock/express @ratelock/local   # or @ratelock/redis, @ratelock/upstash, @ratelock/postgres
 ```
 
 ## Quick start

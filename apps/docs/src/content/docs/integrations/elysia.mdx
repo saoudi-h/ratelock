@@ -6,7 +6,7 @@ title: Elysia
 
 Rate limiting plugin for [Elysia](https://elysiajs.com) (`>=1.1 <2`), powered by any RateLock engine.
 
-- **Engine-agnostic**: bring a `@ratelock/local`, `@ratelock/redis` or `@ratelock/postgres` limiter
+- **Engine-agnostic**: bring a `@ratelock/local`, `@ratelock/redis`, `@ratelock/upstash` or `@ratelock/postgres` limiter
 - **Bun-first synergy**: pairs naturally with the native Bun Redis driver of `@ratelock/redis`
 - **Lazy initialization**: pass a factory and the engine starts on the first matched request
 - **Dual-family headers**: `RateLimit-*` (RFC 9331) and `X-RateLimit-*`, configurable

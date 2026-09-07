@@ -22,7 +22,7 @@ interface EngineBentoCardProps {
 }
 
 /**
- * Storage-engine card (Local / Redis / Postgres).
+ * Storage-engine card (Local / Redis / Upstash / Postgres).
  *
  * Each card lifts in with a slight tilt, scaled-up icon, and the
  * telemetry table builds row-by-row. The tilt direction alternates

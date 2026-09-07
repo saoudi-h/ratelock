@@ -7,15 +7,17 @@ RateLock storage engines provide the storage layer for rate limit state. Each en
 
 ## Available Engines
 
-| Engine                               | Package              | Best For                               |
-| ------------------------------------ | -------------------- | -------------------------------------- |
-| [Local](/docs/engines/local)         | `@ratelock/local`    | Single-process apps, zero dependencies |
-| [Redis](/docs/engines/redis)         | `@ratelock/redis`    | Distributed systems, high traffic      |
-| [PostgreSQL](/docs/engines/postgres) | `@ratelock/postgres` | Apps already using Postgres            |
+| Engine                                 | Package              | Best For                               |
+| -------------------------------------- | -------------------- | -------------------------------------- |
+| [Local](/docs/engines/local)           | `@ratelock/local`    | Single-process apps, zero dependencies |
+| [Redis](/docs/engines/redis)           | `@ratelock/redis`    | Distributed systems, high traffic      |
+| [Upstash Redis](/docs/engines/upstash) | `@ratelock/upstash`  | Edge and serverless deployments        |
+| [PostgreSQL](/docs/engines/postgres)   | `@ratelock/postgres` | Apps already using Postgres            |
 
 ## Same API, Different Backends
 
-All storage engines expose the same interface, and all of them run on every [supported runtime](/docs/getting-started/runtimes):
+All storage engines expose the same interface. Their runtime support depends
+on the transport used by the adapter; see the [runtime matrix](/docs/getting-started/runtimes).
 
 ```typescript
 // All engines support these methods
@@ -23,13 +25,14 @@ const limiter = await fixedWindow({ ... })
 
 await limiter.check('user:123')        // Check single identifier
 await limiter.checkBatch(['a', 'b'])   // Check multiple identifiers
-await limiter.destroy()                // Clean up resources
+await limiter.destroy()                // Clean up resources when needed
 ```
 
 ## Choosing an Engine
 
 - **Start with Local** if you're running a single process or developing locally
-- **Use Redis** if you have multiple servers or need the highest performance
+- **Use Upstash Redis** for Edge/serverless handlers or an HTTP-only deployment
+- **Use Redis** if you have multiple servers or need the highest performance over TCP
 - **Use PostgreSQL** if you already have Postgres and don't want to add Redis
 
 ## Using Multiple Engines

@@ -4,12 +4,12 @@
 
 ## Why
 
-RateLock engines (`@ratelock/local`, `@ratelock/redis`, `@ratelock/postgres`) expose limiters; this package turns any of them into an Elysia plugin through a global `onBeforeHandle` hook. Designed for Bun-first deployments and pairs naturally with the native Bun Redis driver of `@ratelock/redis`.
+RateLock engines (`@ratelock/local`, `@ratelock/redis`, `@ratelock/upstash`, `@ratelock/postgres`) expose limiters; this package turns any of them into an Elysia plugin through a global `onBeforeHandle` hook. Designed for Bun-first deployments and pairs naturally with the native Bun Redis driver of `@ratelock/redis`.
 
 ## Install
 
 ```bash
-bun add @ratelock/elysia @ratelock/local   # or @ratelock/redis, @ratelock/postgres
+bun add @ratelock/elysia @ratelock/local   # or @ratelock/redis, @ratelock/upstash, @ratelock/postgres
 ```
 
 ## Quick start

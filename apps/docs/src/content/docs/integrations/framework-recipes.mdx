@@ -110,7 +110,44 @@ export async function GET(request: NextRequest) {
 }
 ```
 
-For a global interception point, Next.js also supports `middleware.ts`, which runs before routing on every matched path. It executes in the Edge runtime, but the Redis client used in this recipe is connection-oriented and is not supported there. Use a Node.js route handler with this setup; an HTTP-native backend adapter would be a separate integration.
+For a global interception point, Next.js also supports `middleware.ts`, which runs before routing on every matched path. The connection-oriented client used in the recipe above is not supported in the Edge runtime. Use `@ratelock/upstash` with the official Upstash REST client instead:
+
+```ts
+// middleware.ts
+import { Redis } from '@upstash/redis'
+import { fixedWindow } from '@ratelock/upstash'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+
+const limiterPromise = fixedWindow({
+    client: Redis.fromEnv(),
+    limit: 100,
+    windowMs: 60_000,
+})
+
+export default async function middleware(request: NextRequest) {
+    const limiter = await limiterPromise
+    const id = request.headers.get('x-user-id') ?? 'anon'
+    const result = await limiter.check(id)
+
+    if (!result.allowed) {
+        const retryAfter = Math.max(0, Math.ceil((result.reset - Date.now()) / 1000))
+        return new Response('Too Many Requests', {
+            status: 429,
+            headers: {
+                'RateLimit-Remaining': String(result.remaining),
+                'RateLimit-Reset': String(retryAfter),
+                'Retry-After': String(retryAfter),
+            },
+        })
+    }
+
+    return NextResponse.next()
+}
+```
+
+Install it with `npm install @ratelock/upstash @upstash/redis`. Keep the REST
+token in the framework's server-side secret configuration.
 
 ## SvelteKit
 
