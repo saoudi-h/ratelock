@@ -1,8 +1,23 @@
 import type { CacheConfig, CircuitBreakerConfig, FallbackPolicy, RetryConfig } from '@ratelock/core'
-import type { Redis } from '@upstash/redis'
 
-/** The official Upstash REST client surface used by RateLock. */
-export type UpstashRedisClient = Pick<Redis, 'evalsha' | 'scriptLoad' | 'pipeline'>
+/** The pipeline surface required from the official Upstash REST client. */
+export interface UpstashRedisPipeline {
+    evalsha(sha1: string, keys: string[], args: string[]): unknown
+    exec(): Promise<unknown[]>
+}
+
+/**
+ * The small structural surface required from `@upstash/redis`.
+ *
+ * It is intentionally not imported from the Node.js entry point so the
+ * generated declarations remain usable with `@upstash/redis/cloudflare` and
+ * other provider-specific Upstash entry points.
+ */
+export interface UpstashRedisClient {
+    evalsha(sha1: string, keys: string[], args: string[]): Promise<unknown>
+    scriptLoad(script: string): Promise<string>
+    pipeline(): UpstashRedisPipeline
+}
 
 /** Base configuration shared by all Upstash-backed rate limiters. */
 export type UpstashLimiterBaseConfig = {
