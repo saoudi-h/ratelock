@@ -1,0 +1,24 @@
+{
+    "extends": "@tala-tools/tsconfig/base.json",
+    "compilerOptions": {
+        "target": "esnext",
+        "lib": ["es2022"],
+        "moduleDetection": "force",
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "types": ["node", "vitest"],
+        "strict": true,
+        "noUnusedLocals": true,
+        "declaration": true,
+        "esModuleInterop": true,
+        "isolatedModules": true,
+        "verbatimModuleSyntax": true,
+        "skipLibCheck": true,
+        "outDir": "./dist",
+        "paths": {
+            "@/*": ["./src/*"]
+        }
+    },
+    "include": ["./src/**/*", "tsdown.config.ts", "lint-staged.config.mjs"],
+    "exclude": ["dist", "build", "node_modules", ".vscode", ".turbo"]
+}

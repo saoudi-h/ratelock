@@ -7,7 +7,7 @@ status: "active"
 
 ## 🧠 Context & Objectives
 
-RateLock is a high-performance, extensible rate limiting library for Node.js and Bun (same source, no shims). Monorepo publishing `@ratelock/core`, `@ratelock/local`, `@ratelock/redis`, `@ratelock/postgres`; plus private tooling (`@ratelock/test-utils`, `@ratelock/vitest`, `@ratelock/bench`) and a docs app.
+RateLock is a high-performance, extensible rate limiting library for Node.js, Bun, and serverless/Edge HTTP runtimes (same contracts, transport-specific adapters). Monorepo publishing `@ratelock/core`, `@ratelock/local`, `@ratelock/redis`, `@ratelock/upstash`, `@ratelock/postgres`; plus private tooling (`@ratelock/redis-common`, `@ratelock/test-utils`, `@ratelock/vitest`, `@ratelock/bench`) and a docs app.
 
 **Architecture:** core holds only contracts + composable resilience decorators (`withCache`, `withRetry`, `withCircuitBreaker`, `withFallback`) around the `Limiter<T>` interface (`check` / `checkBatch` / optional `destroy`). Each engine package exports one async factory per strategy (`fixedWindow`, `slidingWindow`, `tokenBucket`, `individualFixedWindow`) returning a decorated `Limiter<T>`. Cross-engine behavioral parity is enforced by contract tests in `packages/test-utils/src/contracts/*`, run against every engine. Users never install `@ratelock/core` directly; engines re-export its decorators.
 
@@ -25,7 +25,7 @@ RateLock is a high-performance, extensible rate limiting library for Node.js and
 
 - **Tooling:** pnpm@11 workspaces + Turborepo; TypeScript strict via `@tala-tools/tsconfig`, typechecked with the native `tsc` from **TypeScript 7** (maintainer-approved migration; tsdown dts + full DoD verified on TS 7.0.2). Builds via tsdown (ESM+CJS dual, publint on build); lint/format via **oxlint + oxfmt** through shared `@tala-tools/oxlint` / `@tala-tools/oxfmt` presets (root configs; `apps/docs` overrides with next+tailwind). Canonical pipeline order is **format first, lint last** (`oxfmt --write` → `oxlint --fix`): better-tailwindcss owns the final className shape in docs, so a couple of docs files intentionally keep the plugin's wrapping and are reported by `oxfmt --check`; lint is the gated tool and stays green. Vitest 4 with workspace projects composed from `@ratelock/vitest`; husky + lint-staged on pre-commit; Changesets v3 + GitHub Actions publish from main.
 - **Docs app:** Next.js 16 App Router + Fumadocs MDX, deployed on Vercel.
-- **CI gates (`.github/workflows/ci.yml`):** unit tests on Node + Bun matrix; then build → lint → typecheck → publint over `packages/{core,local,redis,postgres}`. cspell is not in CI.
+- **CI gates (`.github/workflows/ci.yml`):** unit tests on Node + Bun matrix; then build → lint → typecheck → publint over the published packages (`packages/{core,local,redis,upstash,postgres}`). cspell is not in CI. Upstash real-service integration remains opt-in and is not a PR gate.
 
 ## 📁 Key Directories
 
@@ -34,6 +34,8 @@ RateLock is a high-performance, extensible rate limiting library for Node.js and
 | `packages/core` | Contracts (`Limiter<T>`, result/option types), decorators, errors, validators |
 | `packages/local` | In-memory engine (zero deps, browser-safe) |
 | `packages/redis` | Redis engine, Lua scripts, dual driver (node-redis / ioredis) |
+| `packages/redis-common` | Private transport-neutral Lua strategy implementation shared by Redis adapters |
+| `packages/upstash` | Edge/serverless Upstash Redis REST adapter |
 | `packages/postgres` | Postgres engine, UPSERTs, drivers under `src/drivers/`, `migrations.ts`, `cleanup.ts` |
 | `packages/test-utils` | Contract test suites asserting parity across engines |
 | `packages/vitest` | Shared Vitest configs (base preset, workspace project globs) |
@@ -47,5 +49,5 @@ RateLock is a high-performance, extensible rate limiting library for Node.js and
 - `next build` for the docs app sets `typescript.ignoreBuildErrors: true`; `pnpm typecheck` is the only TS gate.
 - Docs env validation needs real values locally (`.env.local`, see `apps/docs/.env.example`); auto-skipped when `CI=true`.
 - Non-default ports for integration infra: Redis **6380**, PostgreSQL **5434** (docker-compose inside package dirs). Intentional, test-only: avoids conflicts with other projects running on the maintainer's machine; do not "normalize" back to 6379/5432.
-- All packages are published at v0.2 via Changesets (`release.yml` on main). Keep changesets flowing for user-facing changes.
+- Published packages use Changesets (`release.yml` on main); private shared packages are never published. Keep changesets flowing for user-facing changes.
 - Untracked stale `dist/` and `coverage/` dirs may exist in packages; do not trust them as current state.

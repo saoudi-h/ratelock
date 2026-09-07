@@ -2,9 +2,9 @@ import type { Limiter, SlidingWindowOptions, SlidingWindowResult } from '@ratelo
 import { createSlidingWindow } from '@ratelock/redis-common'
 
 import { createConnection } from './client'
-import type { RedisLimiterBaseConfig } from './types'
+import type { UpstashLimiterBaseConfig } from './types'
 
-export type SlidingWindowLimiterConfig = SlidingWindowOptions & RedisLimiterBaseConfig
+export type SlidingWindowLimiterConfig = SlidingWindowOptions & UpstashLimiterBaseConfig
 
 export async function slidingWindow(
     config: SlidingWindowLimiterConfig

@@ -1,18 +1,14 @@
 {
-    "name": "@ratelock/redis",
-    "version": "0.2.1",
-    "description": "Redis storage backend for RateLock rate limiting system",
+    "name": "@ratelock/upstash",
+    "version": "0.1.0",
+    "description": "Edge-compatible Upstash Redis storage backend for RateLock",
     "keywords": [
-        "api-rate-limit",
-        "bun",
-        "cross-runtime",
-        "fixed-window",
+        "edge",
         "rate-limit",
         "rate-limiting",
-        "redis",
-        "sliding-window",
-        "throttle",
-        "token-bucket"
+        "ratelock",
+        "serverless",
+        "upstash"
     ],
     "homepage": "https://github.com/saoudi-h/ratelock",
     "bugs": {
@@ -27,7 +23,7 @@
     "repository": {
         "type": "git",
         "url": "git+https://github.com/saoudi-h/ratelock.git",
-        "directory": "packages/redis"
+        "directory": "packages/upstash"
     },
     "files": [
         "dist",
@@ -52,22 +48,19 @@
     "scripts": {
         "build": "tsdown",
         "dev": "tsdown --watch",
-        "test": "vitest --exclude \"**/*.integration.test.ts\"",
-        "test:ui": "vitest --exclude \"**/*.integration.test.ts\" --ui",
-        "test:run": "vitest run --exclude \"**/*.integration.test.ts\"",
-        "test:coverage": "vitest run --coverage",
-        "test:coverage:dev": "pnpm run docker:up && vitest run --coverage && pnpm run docker:down",
+        "test": "vitest --exclude \"**/__integration__/**\"",
+        "test:ui": "vitest --exclude \"**/__integration__/**\" --ui",
+        "test:run": "vitest run --exclude \"**/__integration__/**\"",
+        "test:integration": "node scripts/test-integration.mjs",
+        "test:integration:remote": "vitest run --config vitest.integration.config.ts",
         "lint": "oxlint --deny-warnings .",
         "lint:fix": "oxlint --fix .",
         "format": "oxfmt --check .",
-        "typecheck": "tsc --noEmit",
+        "format:fix": "oxfmt --write .",
         "clean": "rimraf dist .turbo node_modules",
+        "typecheck": "tsc --noEmit",
         "prepack": "tsdown",
-        "docker:up": "docker-compose --env-file .env.test -f docker-compose.test.yml up -d --wait",
-        "docker:down": "docker-compose --env-file .env.test -f docker-compose.test.yml down",
-        "test:integration": "pnpm run docker:up && vitest run --config vitest.integration.config.ts; status=$?; pnpm run docker:down; exit $status",
-        "pre-commit": "lint-staged",
-        "format:fix": "oxfmt --write ."
+        "pre-commit": "lint-staged"
     },
     "dependencies": {
         "@ratelock/core": "workspace:*"
@@ -78,28 +71,15 @@
         "@ratelock/vitest": "workspace:*",
         "@tala-tools/tsconfig": "0.0.2",
         "@types/node": "^26.2.0",
-        "@vitest/coverage-v8": "^4.1.11",
-        "dotenv": "^17.4.2",
-        "ioredis": "^6.0.0",
-        "luamin": "^1.0.4",
-        "redis": "^6.2.1",
+        "@upstash/redis": "^1.38.4",
+        "rimraf": "^6.1.3",
         "typescript": "7.0.2",
         "vitest": "^4.1.11"
     },
     "peerDependencies": {
-        "ioredis": "^5.0.0",
-        "redis": "^4.0.0 || ^5.0.0"
-    },
-    "peerDependenciesMeta": {
-        "redis": {
-            "optional": true
-        },
-        "ioredis": {
-            "optional": true
-        }
+        "@upstash/redis": ">=1.34.0 <2"
     },
     "engines": {
-        "bun": ">=1.1",
         "node": ">=22"
     }
 }

@@ -2,10 +2,10 @@ import type { FixedWindowResult, IndividualFixedWindowOptions, Limiter } from '@
 import { createIndividualFixedWindow } from '@ratelock/redis-common'
 
 import { createConnection } from './client'
-import type { RedisLimiterBaseConfig } from './types'
+import type { UpstashLimiterBaseConfig } from './types'
 
 export type IndividualFixedWindowLimiterConfig = IndividualFixedWindowOptions &
-    RedisLimiterBaseConfig
+    UpstashLimiterBaseConfig
 
 export async function individualFixedWindow(
     config: IndividualFixedWindowLimiterConfig

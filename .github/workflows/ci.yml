@@ -77,7 +77,7 @@ jobs:
 
       - name: Publint
         run: |
-          for pkg in packages/core packages/local packages/redis packages/postgres; do
+          for pkg in packages/core packages/local packages/redis packages/upstash packages/postgres; do
             echo "Checking $pkg..."
             (cd $pkg && npx publint)
           done

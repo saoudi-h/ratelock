@@ -2,9 +2,9 @@ import type { FixedWindowOptions, FixedWindowResult, Limiter } from '@ratelock/c
 import { createFixedWindow } from '@ratelock/redis-common'
 
 import { createConnection } from './client'
-import type { RedisLimiterBaseConfig } from './types'
+import type { UpstashLimiterBaseConfig } from './types'
 
-export type FixedWindowLimiterConfig = FixedWindowOptions & RedisLimiterBaseConfig
+export type FixedWindowLimiterConfig = FixedWindowOptions & UpstashLimiterBaseConfig
 
 export async function fixedWindow(
     config: FixedWindowLimiterConfig
