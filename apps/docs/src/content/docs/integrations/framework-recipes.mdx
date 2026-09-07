@@ -4,7 +4,7 @@ title: Framework Recipes
 
 # Framework Recipes
 
-Web-standard frameworks (Next.js, SvelteKit, Astro, Remix) share one shape: handlers receive a standard `Request` and return a standard `Response`. There is no middleware pipeline to hook into, so instead of a dedicated package you wire a limiter directly inside each handler.
+Web-standard frameworks (Next.js, SvelteKit, Astro, Remix, SolidStart) share one shape: handlers receive a standard `Request` and return a standard `Response`. There is no middleware pipeline to hook into, so instead of a dedicated package you wire a limiter directly inside each handler.
 
 This page shows the full production pattern for each framework: lazy engine initialization, denial responses and rate limit headers.
 
@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
 }
 ```
 
-For a global interception point, Next.js also supports `middleware.ts`, which runs before routing on every matched path. It executes in the edge runtime, so pair it with an HTTP-reachable engine rather than a TCP connection.
+For a global interception point, Next.js also supports `middleware.ts`, which runs before routing on every matched path. It executes in the Edge runtime, but the Redis client used in this recipe is connection-oriented and is not supported there. Use a Node.js route handler with this setup; an HTTP-native backend adapter would be a separate integration.
 
 ## SvelteKit
 
@@ -227,4 +227,33 @@ Never read `x-forwarded-for` on a server reachable without your proxy in front o
 
 ## SolidStart
 
-SolidStart API routes follow the same fetch-standard shape (`Request` in, `Response` out). The SvelteKit recipe applies verbatim once you swap the route file convention.
+SolidStart API routes live in `src/routes` and export functions named after the HTTP methods they handle. The handler receives an `APIEvent`; its `request` property is a standard `Request`.
+
+```ts
+// src/routes/api/things.ts
+import type { APIEvent } from '@solidjs/start/server'
+import { getLimiter, rateLimitHeaders, retryAfterSeconds } from '~/lib/rate-limit'
+
+export async function GET({ request }: APIEvent) {
+    const limiter = await getLimiter()
+    const id = request.headers.get('x-user-id') ?? 'anon'
+    const result = await limiter.check(id)
+
+    if (!result.allowed) {
+        return Response.json(
+            { error: 'Too Many Requests' },
+            {
+                status: 429,
+                headers: {
+                    ...rateLimitHeaders(result),
+                    ...(retryAfterSeconds(result) != null
+                        ? { 'Retry-After': String(retryAfterSeconds(result)) }
+                        : {}),
+                },
+            }
+        )
+    }
+
+    return Response.json({ things: [] }, { headers: rateLimitHeaders(result) })
+}
+```
