@@ -1,5 +1,11 @@
 # @ratelock/upstash
 
+## 0.2.1
+
+### Patch Changes
+
+- [#33](https://github.com/saoudi-h/ratelock/pull/33) [`57a4d92`](https://github.com/saoudi-h/ratelock/commit/57a4d92767f94a71fe951e8f55d495181ca769c8) Thanks [@saoudi-h](https://github.com/saoudi-h)! - Refine the package README to focus on consumer usage and remove contributor-only testing instructions.
+
 ## 0.2.0
 
 ### Minor Changes
