@@ -1,6 +1,6 @@
 {
     "name": "@ratelock/upstash",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "Edge-compatible Upstash Redis storage backend for RateLock",
     "keywords": [
         "edge",
