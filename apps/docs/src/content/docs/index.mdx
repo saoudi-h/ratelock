@@ -10,13 +10,14 @@ RateLock is a rate limiting library for Node.js and Bun with per-engine implemen
 Most rate limiting libraries use a single backend abstraction. RateLock implements each engine natively:
 
 - **Redis** uses Lua scripts for atomicity
+- **Upstash Redis** uses HTTP pipelines and Lua scripts for Edge/serverless deployments
 - **PostgreSQL** uses UPSERTs for consistency
 - **In-Memory** uses Maps for zero-overhead single-process apps
 
 ## Features
 
 - **4 rate limiting strategies**: Fixed Window, Sliding Window, Token Bucket, Individual Fixed Window
-- **3 storage engines**: In-Memory, Redis, PostgreSQL
+- **4 storage engines**: In-Memory, Redis, Upstash Redis, PostgreSQL
 - **Built-in resilience**: Retry with backoff, circuit breaker, fallback policies, deny cache
 - **TypeScript first**: No `any` leaks, strict config types
 - **Dual driver support**: Redis (node-redis or ioredis), PostgreSQL (pg or porsager/postgres)
