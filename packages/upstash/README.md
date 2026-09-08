@@ -193,30 +193,6 @@ Calling `destroy()` is safe, but it is intentionally a no-op. The REST client
 does not own a TCP socket for RateLock to close, and the client instance
 remains under your application's control.
 
-## Testing
-
-The default unit suite uses an Upstash-shaped in-memory client and does not
-need a network service:
-
-```bash
-pnpm --filter @ratelock/upstash test:run
-```
-
-The package also provides a reproducible HTTP integration suite. It starts a
-local Redis instance and the Serverless Redis HTTP bridge recommended by
-Upstash, then runs the real `@upstash/redis` client against it:
-
-```bash
-pnpm --filter @ratelock/upstash test:integration
-```
-
-For an optional validation against a real Upstash database, set
-`UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` and run:
-
-```bash
-pnpm --filter @ratelock/upstash test:integration:remote
-```
-
 ## Documentation
 
 Full guides and API reference are available at

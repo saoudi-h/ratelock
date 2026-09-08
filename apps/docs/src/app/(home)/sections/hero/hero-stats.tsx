@@ -17,12 +17,12 @@ const STATS: Stat[] = [
     {
         value: '4',
         label: 'Strategies',
-        desc: 'Fixed Window, Sliding Window, Token Bucket and Leaky Bucket.',
+        desc: 'Fixed Window, Sliding Window, Token Bucket and Individual Fixed Window.',
     },
     {
-        value: '3',
+        value: '4',
         label: 'Storage Engines',
-        desc: 'Memory, Redis, PostgreSQL',
+        desc: 'Memory, Redis, Upstash Redis, PostgreSQL',
     },
     {
         value: 'Atomic',

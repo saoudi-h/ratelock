@@ -225,27 +225,6 @@ await limiter.destroy()
 TCP socket that RateLock should close. The `Redis` client remains owned by your
 application.
 
-## Testing
-
-Unit tests run against a local Upstash-shaped client and are part of the fast
-test suite. The package-specific integration command starts Redis and the
-Serverless Redis HTTP bridge used to exercise the real `@upstash/redis` REST
-path without a remote account:
-
-```bash
-pnpm --filter @ratelock/upstash test:run
-pnpm --filter @ratelock/upstash test:integration
-```
-
-The real-service suite is also available when credentials are present:
-
-```bash
-pnpm --filter @ratelock/upstash test:integration:remote
-```
-
-It reads `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` and is not a
-default CI gate.
-
 ## When to use
 
 - Cloudflare Workers, Vercel Edge, and other fetch-based serverless handlers
