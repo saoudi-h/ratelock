@@ -129,6 +129,50 @@ const limiter = await fixedWindow({
 
 Or by URL with `driver: 'bun'`.
 
+### Upstash Redis (HTTP / Edge)
+
+Use the official Upstash REST client when your runtime cannot open a Redis TCP
+connection:
+
+<CodeBlockTabs defaultValue="npm" groupId="package-manager">
+  <CodeBlockTabsList>
+    <CodeBlockTabsTrigger value="npm">
+      npm
+    </CodeBlockTabsTrigger>
+
+    <CodeBlockTabsTrigger value="pnpm">
+      pnpm
+    </CodeBlockTabsTrigger>
+
+    <CodeBlockTabsTrigger value="yarn">
+      yarn
+    </CodeBlockTabsTrigger>
+
+    <CodeBlockTabsTrigger value="bun">
+      bun
+    </CodeBlockTabsTrigger>
+
+  </CodeBlockTabsList>
+
+<CodeBlockTab value="npm">```bash npm install @ratelock/upstash @upstash/redis ```</CodeBlockTab>
+
+<CodeBlockTab value="pnpm">```bash pnpm add @ratelock/upstash @upstash/redis ```</CodeBlockTab>
+
+<CodeBlockTab value="yarn">```bash yarn add @ratelock/upstash @upstash/redis ```</CodeBlockTab>
+
+  <CodeBlockTab value="bun">
+    ```bash
+    bun add @ratelock/upstash @upstash/redis
+    ```
+  </CodeBlockTab>
+</CodeBlockTabs>
+
+Create the client with `Redis.fromEnv()` or pass an explicit `{ url, token }`
+configuration to `@upstash/redis`, then give that client to the RateLock
+factory. Cloudflare Workers and Pages should import `Redis` from
+`@upstash/redis/cloudflare` and call `Redis.fromEnv(env)`. See the
+[Upstash engine guide](/docs/engines/upstash) for the full Edge example.
+
 ### PostgreSQL
 
 <CodeBlockTabs defaultValue="npm" groupId="package-manager">
@@ -222,7 +266,8 @@ const redisLimiter = await redisFixedWindow({
 
 ## Requirements
 
-- **Node.js 20+** or **Bun 1.1+** (all packages)
+- **Node.js 22+** or **Bun 1.1+** for the Node/Bun packages
 - **TypeScript 5+** (recommended, not required)
 - Redis 6+ (for `@ratelock/redis`)
 - PostgreSQL 14+ (for `@ratelock/postgres`)
+- An Upstash Redis database and REST credentials (for `@ratelock/upstash`)

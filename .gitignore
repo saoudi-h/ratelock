@@ -40,6 +40,7 @@ packages/react-example
 
 # Benchmark results
 packages/bench/results/*.json
+packages/bench/results/upstash/
 
 # Husky
 .husky

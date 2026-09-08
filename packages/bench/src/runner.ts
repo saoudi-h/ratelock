@@ -17,6 +17,10 @@ type RunSample = {
     totalReqs: number
 }
 
+export type HarnessHooks = {
+    afterWarmup?: () => void | Promise<void>
+}
+
 async function runTimedPhase(
     adapter: BenchmarkAdapter,
     scenario: BenchmarkScenario,
@@ -108,7 +112,8 @@ function maybeGc(): void {
 
 export async function runHarness(
     adapter: BenchmarkAdapter,
-    scenario: BenchmarkScenario
+    scenario: BenchmarkScenario,
+    hooks: HarnessHooks = {}
 ): Promise<BenchMetrics> {
     const keySuffix = adapter.name.replace(/[^a-z0-9]/gi, '-').toLowerCase()
 
@@ -134,6 +139,7 @@ export async function runHarness(
             `__warmup-${keySuffix}`,
             shouldApplyLatency
         )
+        await hooks.afterWarmup?.()
         maybeGc()
     }
 

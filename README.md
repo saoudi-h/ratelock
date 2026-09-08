@@ -13,7 +13,7 @@ RateLock is a modern rate limiting solution built for the real world. Whether yo
 
 ### Why another rate limiter?
 
-Most rate limiting libraries force you into a one-size-fits-all architecture. RateLock takes a different approach: **each storage adapter is a first-class citizen**, designed to leverage the unique strengths of its backend — Redis Lua scripts for atomicity, PostgreSQL UPSERTs for consistency, in-memory Maps for zero-overhead single-process apps. The same source runs on Node.js and Bun, with no shims and no runtime-only fallbacks.
+Most rate limiting libraries force you into a one-size-fits-all architecture. RateLock takes a different approach: **each storage adapter is a first-class citizen**, designed to leverage the unique strengths of its backend — Redis Lua scripts for atomicity, Upstash REST for Edge deployments, PostgreSQL UPSERTs for consistency, and in-memory Maps for zero-overhead single-process apps. The same contracts run on Node.js and Bun, while the HTTP adapter also targets fetch-based Edge runtimes without Node.js shims.
 
 ## Quick Start
 
@@ -21,33 +21,35 @@ Most rate limiting libraries force you into a one-size-fits-all architecture. Ra
 import { fixedWindow } from '@ratelock/local'
 
 const limiter = await fixedWindow({
-  limit: 100,
-  windowMs: 60_000, // 1 minute
+    limit: 100,
+    windowMs: 60_000, // 1 minute
 })
 
 const result = await limiter.check('user:123')
 
 if (!result.allowed) {
-  return new Response('Too Many Requests', { status: 429 })
+    return new Response('Too Many Requests', { status: 429 })
 }
 ```
 
 ## Packages
 
-| Package | Description | Best For |
-|---------|-------------|----------|
-| [`@ratelock/local`](packages/local/) | Zero-dependency in-memory adapter | Single-process apps, development |
-| [`@ratelock/redis`](packages/redis/) | Redis adapter with Lua scripts | Distributed systems, high traffic |
-| [`@ratelock/postgres`](packages/postgres/) | PostgreSQL adapter with UPSERTs | Apps already using Postgres |
+| Package                                    | Description                       | Best For                          |
+| ------------------------------------------ | --------------------------------- | --------------------------------- |
+| [`@ratelock/local`](packages/local/)       | Zero-dependency in-memory adapter | Single-process apps, development  |
+| [`@ratelock/redis`](packages/redis/)       | Redis adapter with Lua scripts    | Distributed systems, high traffic |
+| [`@ratelock/upstash`](packages/upstash/)   | HTTP-native Upstash Redis adapter | Edge and serverless deployments   |
+| [`@ratelock/postgres`](packages/postgres/) | PostgreSQL adapter with UPSERTs   | Apps already using Postgres       |
 
 ## Core Features
 
 - **Cross-runtime**: Same source on Node.js 22+ and Bun 1.1+, tested on every PR
+- **Edge-ready Redis**: `@ratelock/upstash` uses the official HTTP client with no TCP or Node.js driver requirement
 - **Native Bun Redis client**: `@ratelock/redis` auto-detects Bun's built-in RedisClient (>= 1.4) — zero extra dependency, fastest measured path
 - **4 rate limiting strategies**: Fixed Window, Sliding Window, Token Bucket, Individual Fixed Window
 - **Built-in resilience**: Retry with backoff, circuit breaker, error policies, deny cache
 - **TypeScript first**: Full type safety, no `any` leaks
-- **Dual driver support**: Redis (node-redis or ioredis), PostgreSQL (pg or porsager/postgres)
+- **Backend choice**: Redis (node-redis or ioredis), Upstash REST, or PostgreSQL (pg or porsager/postgres)
 - **Batch operations**: Check multiple identifiers in a single call
 
 ## Documentation

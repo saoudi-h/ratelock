@@ -1,0 +1,27 @@
+services:
+    redis:
+        image: redis:7-alpine
+        healthcheck:
+            test: ['CMD', 'redis-cli', 'ping']
+            interval: 1s
+            timeout: 3s
+            retries: 30
+
+    rest:
+        # The Upstash documentation recommends this local REST bridge for
+        # testing @upstash/redis without a remote database.
+        image: hiett/serverless-redis-http@sha256:5b0bb9239fce53abf87b2018a7a0deb9ec7bd900c5360738fe5fbeeb426f9150
+        environment:
+            SRH_MODE: env
+            SRH_TOKEN: ratelock-integration-token
+            SRH_CONNECTION_STRING: redis://redis:6379
+        ports:
+            - '127.0.0.1:8079:80'
+        depends_on:
+            redis:
+                condition: service_healthy
+        healthcheck:
+            test: ['CMD', 'nc', '-z', '127.0.0.1', '80']
+            interval: 1s
+            timeout: 3s
+            retries: 30

@@ -6,7 +6,7 @@ title: Fastify
 
 Rate limiting plugin for Fastify 4 and 5, powered by any RateLock engine.
 
-- **Engine-agnostic**: bring a `@ratelock/local`, `@ratelock/redis` or `@ratelock/postgres` limiter
+- **Engine-agnostic**: bring a `@ratelock/local`, `@ratelock/redis`, `@ratelock/upstash` or `@ratelock/postgres` limiter
 - **Both majors supported**: wrapped in `fastify-plugin`, the hook applies across encapsulation scopes
 - **Lazy initialization**: pass a factory and the engine starts on the first request after boot
 - **Dual-family headers**: `RateLimit-*` (RFC 9331) and `X-RateLimit-*`, configurable

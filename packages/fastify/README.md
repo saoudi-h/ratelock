@@ -4,12 +4,12 @@
 
 ## Why
 
-RateLock engines (`@ratelock/local`, `@ratelock/redis`, `@ratelock/postgres`) expose limiters; this package turns any of them into a Fastify plugin. Wrapped with `fastify-plugin`, it applies to routes registered anywhere in the instance, including child encapsulation scopes. Zero runtime dependencies beyond `fastify-plugin` itself.
+RateLock engines (`@ratelock/local`, `@ratelock/redis`, `@ratelock/upstash`, `@ratelock/postgres`) expose limiters; this package turns any of them into a Fastify plugin. Wrapped with `fastify-plugin`, it applies to routes registered anywhere in the instance, including child encapsulation scopes. Zero runtime dependencies beyond `fastify-plugin` itself.
 
 ## Install
 
 ```bash
-pnpm add @ratelock/fastify @ratelock/local   # or @ratelock/redis, @ratelock/postgres
+pnpm add @ratelock/fastify @ratelock/local   # or @ratelock/redis, @ratelock/upstash, @ratelock/postgres
 ```
 
 ## Quick start

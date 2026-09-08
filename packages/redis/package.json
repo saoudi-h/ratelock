@@ -73,6 +73,7 @@
         "@ratelock/core": "workspace:*"
     },
     "devDependencies": {
+        "@ratelock/redis-common": "workspace:*",
         "@ratelock/test-utils": "workspace:*",
         "@ratelock/vitest": "workspace:*",
         "@tala-tools/tsconfig": "0.0.2",

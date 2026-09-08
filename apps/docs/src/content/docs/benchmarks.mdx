@@ -35,6 +35,90 @@ The numbers reported are the **median across 3 runs** of 2 seconds each, with a 
 
 ---
 
+## Optional Upstash HTTP characterization
+
+The standard suite intentionally measures local storage capacity: Redis and
+PostgreSQL run on the same machine as the benchmark process. That makes the
+results useful for comparing algorithms and drivers, but it does not answer a
+different question: what does the HTTP-based `@ratelock/upstash` path look like
+when the limiter is used through a REST service?
+
+The Upstash benchmark is therefore a separate, opt-in track. Its numbers must
+not be merged into the Redis or PostgreSQL tables above.
+
+### What it measures
+
+For each selected strategy and scenario, it records:
+
+- throughput and latency from the existing harness;
+- one cold probe, which includes the first Lua script load;
+- warm HTTP request counts observed at the global `fetch` boundary;
+- HTTP status counts and transport-level fetch errors, including `429` responses;
+- the difference between scalar checks and `checkBatch`.
+
+The Batch scenario submits five identifiers through `checkBatch`. Upstash
+pipelines send those commands in one HTTP request, but a pipeline is ordered
+and not a cross-command transaction. See the [Upstash pipeline documentation](https://upstash.com/docs/redis/sdks/ts/pipelining/pipeline-transaction)
+for that distinction.
+
+The counter measures HTTP calls made by the SDK, not packets or every detail of
+the network path. The benchmark disables the SDK's automatic pipelining and
+retry policy so that the measured request count is easier to interpret. This
+is a measurement choice, not a recommendation to disable those features in an
+application.
+
+### Reproduce locally
+
+The local command starts Redis and the
+[`hiett/serverless-redis-http`](https://upstash.com/docs/redis/sdks/ts/developing)
+bridge used by the package's HTTP integration tests, then runs the real
+`@upstash/redis` client against it:
+
+```bash
+pnpm --filter @ratelock/bench bench:upstash:local
+```
+
+Local mode uses the complete strategy and scenario selection by default. The
+generated JSON and Markdown reports are written under
+`packages/bench/results/upstash/` and are intentionally ignored by Git.
+
+### Run against a real Upstash database
+
+Remote mode is deliberately conservative: it defaults to one strategy,
+Diverse Keys and Batch scenarios, one short run, and low concurrency. Provide
+the REST credentials through the environment and opt into broader coverage
+only when the request budget is understood:
+
+```bash
+UPSTASH_REDIS_REST_URL=https://your-database.upstash.io \
+UPSTASH_REDIS_REST_TOKEN=your-secret-token \
+pnpm --filter @ratelock/bench bench:upstash:remote
+```
+
+For example, the full matrix can be selected explicitly:
+
+```bash
+BENCH_UPSTASH_STRATEGIES=fixed-window,sliding-window,token-bucket,individual-fixed-window \
+BENCH_UPSTASH_SCENARIOS=diverse,spam,realistic,batch \
+UPSTASH_REDIS_REST_URL=https://your-database.upstash.io \
+UPSTASH_REDIS_REST_TOKEN=your-secret-token \
+pnpm --filter @ratelock/bench bench:upstash:remote
+```
+
+### Limits of interpretation
+
+The local bridge validates the adapter, the official client, the HTTP shape,
+and the pipeline path. It does not reproduce managed Upstash latency,
+regional placement, plan quotas, service load, or provider throttling.
+
+A remote run is one observation from one machine to one Upstash endpoint. CPU,
+runtime, network distance, congestion, endpoint region, account plan, server
+load and service-level rate limiting can all move the result. A non-zero `429`
+count is evidence that the request path encountered throttling or another
+upstream policy; it is recorded explicitly rather than hidden in a throughput
+number. Remote runs are consequently not part of CI or the committed static
+tables.
+
 ## Reference hardware
 
 The committed numbers were generated on:

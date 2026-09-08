@@ -94,7 +94,8 @@ export function FooterSection() {
                         </div>
                         <p className="max-w-sm text-xs/relaxed text-muted-foreground">
                             A highly precise, resilient rate limiting suite for TypeScript. Built to
-                            scale gracefully with your local storage, Redis, or PostgreSQL backends.
+                            scale gracefully with local, HTTP Redis, TCP Redis, or PostgreSQL
+                            backends.
                         </p>
                     </div>
 
@@ -159,6 +160,7 @@ export function FooterSection() {
                                     {[
                                         '@ratelock/local',
                                         '@ratelock/redis',
+                                        '@ratelock/upstash',
                                         '@ratelock/postgres',
                                     ].map(pkg => (
                                         <li key={pkg}>
