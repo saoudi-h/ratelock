@@ -54,7 +54,7 @@ if (!result.allowed) {
 
 ## Documentation
 
-For full documentation, guides, and API reference, visit **[ratelock.vercel.app](https://ratelock.vercel.app)**.
+For full documentation, guides, and API reference, visit **[ratelock-docs.vercel.app](https://ratelock-docs.vercel.app)**.
 
 ## Contributing
 

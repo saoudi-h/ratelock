@@ -138,7 +138,7 @@ await limiter.destroy() // Stops auto-cleanup and closes the connection
 
 ## Documentation
 
-Full API reference and guides at **[ratelock.vercel.app](https://ratelock.vercel.app)**.
+Full API reference and guides at **[ratelock-docs.vercel.app](https://ratelock-docs.vercel.app)**.
 
 ## License
 
