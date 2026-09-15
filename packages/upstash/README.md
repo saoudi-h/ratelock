@@ -138,7 +138,7 @@ export default {
 }
 ```
 
-For a framework-specific recipe, see the [Upstash engine guide](https://ratelock.vercel.app/docs/engines/upstash) and the [framework recipes](https://ratelock.vercel.app/docs/integrations/framework-recipes).
+For a framework-specific recipe, see the [Upstash engine guide](https://ratelock-docs.vercel.app/docs/engines/upstash) and the [framework recipes](https://ratelock-docs.vercel.app/docs/integrations/framework-recipes).
 
 ## Strategies
 
@@ -196,7 +196,7 @@ remains under your application's control.
 ## Documentation
 
 Full guides and API reference are available at
-**[ratelock.vercel.app](https://ratelock.vercel.app)**.
+**[ratelock-docs.vercel.app](https://ratelock-docs.vercel.app)**.
 
 ## License
 
