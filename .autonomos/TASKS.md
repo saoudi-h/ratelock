@@ -7,6 +7,7 @@
 
 ## 🚀 Active Sprint
 
+- [x] **[DOCS-03]** Fix production site URL to `ratelock-docs.vercel.app` + patch affected published packages (READMEs displayed on registry) `Priority: 🔴` `Complexity: S`
 - [x] **[BLOG-01]** Establish Fumadocs blog editorial surface for SEO (framework-specific recipes + resilience guides) — clone fumadocs official blog structure into `apps/docs` `Priority: 🟠` `Complexity: M`
 - [x] **[BLOG-02]** Polish blog editorial surface — premium hero, card system, slop-free prose (stop-slop + documentation-writer, frontend-design + ui-ux-pro-max) `Priority: 🟠` `Complexity: M`
 - [x] **[DOCS-02]** Fix 5 non-blocking errors reported by Next.js devtools in `apps/docs`; update Next.js past 16.3.0 plus all other workspace dependencies `Priority: 🟠` `Complexity: M`

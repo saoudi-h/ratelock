@@ -61,7 +61,7 @@ npm install @ratelock/core
 
 ## Documentation
 
-Full API reference and guides at **[ratelock.vercel.app](https://ratelock.vercel.app)**.
+Full API reference and guides at **[ratelock-docs.vercel.app](https://ratelock-docs.vercel.app)**.
 
 ## License
 
