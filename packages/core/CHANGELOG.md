@@ -1,5 +1,11 @@
 # @ratelock/core
 
+## 0.2.1
+
+### Patch Changes
+
+- [#35](https://github.com/saoudi-h/ratelock/pull/35) [`97c068e`](https://github.com/saoudi-h/ratelock/commit/97c068e619a531cb459fc1615d339b2ddac361a9) Thanks [@saoudi-h](https://github.com/saoudi-h)! - Fix production documentation URL to https://ratelock-docs.vercel.app in package READMEs.
+
 ## 0.2.0
 
 ### Minor Changes
