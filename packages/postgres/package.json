@@ -1,6 +1,6 @@
 {
     "name": "@ratelock/postgres",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "description": "PostgreSQL storage backend for RateLock rate limiting system",
     "keywords": [
         "bun",
