@@ -3,7 +3,7 @@
 import { useGSAP } from '@gsap/react'
 import { useEffect, useRef, useState } from 'react'
 
-import { gsap, registerGsap } from '@/app/(home)/_lib/gsap'
+import { gsap, registerGsap } from '~/components/home/_lib/gsap'
 
 import { BasePlate } from './base-plate'
 import { ConnectionLines } from './connection-lines'

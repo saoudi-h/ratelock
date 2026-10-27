@@ -4,14 +4,14 @@ import { Combobox as ComboboxPrimitive } from '@base-ui/react'
 import { AltArrowDownIcon, CheckCircleIcon, CloseCircleIcon } from '@solar-icons/react/bold-duotone'
 import * as React from 'react'
 
-import { Button } from '@/components/ui/button'
+import { Button } from '~/components/ui/button'
 import {
     InputGroup,
     InputGroupAddon,
     InputGroupButton,
     InputGroupInput,
-} from '@/components/ui/input-group'
-import { cn } from '@/lib/utils'
+} from '~/components/ui/input-group'
+import { cn } from '~/lib/utils'
 
 const Combobox = ComboboxPrimitive.Root
 

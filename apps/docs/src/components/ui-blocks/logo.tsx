@@ -1,8 +1,8 @@
-import Link from 'next/link'
 import type { SVGProps } from 'react'
 import React from 'react'
 
-import { cn } from '@/lib/utils'
+import { FrameworkLink as Link } from '~/components/framework-link'
+import { cn } from '~/lib/utils'
 
 export const LogoIcon: React.FC<SVGProps<SVGSVGElement>> = props => {
     return (

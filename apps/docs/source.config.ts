@@ -1,62 +1,36 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import { remarkSteps } from 'fumadocs-core/mdx-plugins'
-import { metaSchema, pageSchema } from 'fumadocs-core/source/schema'
-import { defineCollections, defineConfig, defineDocs } from 'fumadocs-mdx/config'
+import { defineConfig } from 'fumadocs-mdx/config'
 import lastModified from 'fumadocs-mdx/plugins/last-modified'
-import { z } from 'zod'
+import { remarkAutoTypeTable } from 'fumadocs-typescript'
 
-// You can customize Zod schemas for frontmatter and `meta.json` here
-// see https://fumadocs.vercel.app/docs/mdx/collections#define-docs
-export const docs = defineDocs({
-    dir: 'src/content/docs',
-    docs: {
-        schema: pageSchema.extend({
-            preview: z.string().optional(),
-            index: z.boolean().default(false),
-            /**
-             * API routes only
-             */
-            method: z.string().optional(),
-        }),
-        postprocess: {
-            includeProcessedMarkdown: true,
-            extractLinkReferences: true,
-            valueToExport: ['elementIds'],
-        },
-    },
-    meta: {
-        schema: metaSchema,
-    },
-})
+const appRoot = path.dirname(fileURLToPath(import.meta.url))
 
-export const blog = defineCollections({
-    dir: 'src/content/blog',
-    type: 'doc',
-    schema: pageSchema.extend({
-        author: z.string(),
-        date: z.coerce.date(),
-        tags: z.array(z.string()).optional(),
-        image: z.string().optional(),
-        /**
-         * Marks an article as featured on /blog. When several articles are
-         * marked, the most recent by date wins.
-         */
-        featured: z.boolean().default(false),
-        /**
-         * Publication status. Only `published` articles are listed and
-         * statically generated. Use `draft` to keep an article unpublished.
-         * Defaults to `published` for backward-compatibility.
-         */
-        status: z.enum(['draft', 'published']).default('published'),
-    }),
-    postprocess: {
-        includeProcessedMarkdown: true,
-        extractLinkReferences: true,
-    },
-})
-
+/**
+ * Global options shared by every collection of this app. The collections
+ * themselves are declared with the macro API in `src/lib/source.ts`.
+ *
+ * `remarkAutoTypeTable` precomputes every `<AutoTypeTable>` of the MDX
+ * content into a static `<TypeTable type={...} />` at compile time. The
+ * TanStack build has no RSC layer, so the runtime `AutoTypeTable` of
+ * `fumadocs-typescript/ui` cannot render: it needs `ts-morph` and the file
+ * system, which do not exist in the browser. The `basePath` is the app root,
+ * the same resolution root the Next app used through its working directory.
+ */
 export default defineConfig({
     plugins: [lastModified()],
     mdxOptions: {
-        remarkPlugins: [remarkSteps],
+        remarkPlugins: [
+            remarkSteps,
+            // `remarkAutoTypeTable` returns the transformer itself, so wrap it
+            // in an attacher.
+            () =>
+                remarkAutoTypeTable({
+                    name: 'AutoTypeTable',
+                    options: { basePath: appRoot },
+                }),
+        ],
     },
 })

@@ -58,7 +58,7 @@ function DocsRoute() {
                     <MarkdownCopyButton markdownUrl={markdownUrl} />
                     <ViewOptionsPopover
                         markdownUrl={markdownUrl}
-                        githubUrl={`https://github.com/saoudi-h/ratelock/blob/main/apps/docs/src/content/docs/${page.path}`}
+                        githubUrl={`https://github.com/saoudi-h/ratelock/blob/main/apps/docs/content/docs/${page.path}`}
                     />
                 </div>
                 <DocsBody>

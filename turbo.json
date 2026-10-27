@@ -7,7 +7,7 @@
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "env": ["VITE_*", "GITHUB_APP_*"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**", ".output/**", ".vercel/output/**"]
+      "outputs": ["dist/**", ".output/**", ".vercel/output/**"]
     },
     "lint": {
       "dependsOn": ["^lint"]
