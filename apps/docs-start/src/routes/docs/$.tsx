@@ -6,12 +6,11 @@ import {
     PageLastUpdate,
     ViewOptionsPopover,
 } from 'fumadocs-ui/layouts/docs/page'
-import { createRelativeLink } from 'fumadocs-ui/mdx'
 import { DocsBody, DocsDescription, DocsTitle } from 'fumadocs-ui/page'
 import { use } from 'react'
 
 import { DocsRate } from '~/components/docs-rate'
-import { FrameworkLink } from '~/components/framework-link'
+import { createRelativeLink } from '~/components/framework-link'
 import { useMDXComponents } from '~/components/mdx-components'
 import { docsOptions } from '~/lib/layout-options'
 import { source } from '~/lib/source'
@@ -65,7 +64,7 @@ function DocsRoute() {
                 <DocsBody>
                     <MDXContent
                         components={useMDXComponents({
-                            a: createRelativeLink(source, page, FrameworkLink),
+                            a: createRelativeLink(source, page),
                         })}
                     />
                 </DocsBody>

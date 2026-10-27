@@ -30,3 +30,26 @@ export function FrameworkLink({
         />
     )
 }
+
+type ResolvableSource = {
+    resolveHref: (href: string, parent: never) => string
+}
+
+/**
+ * Client-safe replacement for `createRelativeLink` of `fumadocs-ui/mdx`.
+ * The browser export of that helper is a stub that throws, so using it in a
+ * route component breaks hydration. `resolveHref` runs anywhere.
+ */
+export function createRelativeLink<Page>(source: ResolvableSource, page: Page) {
+    return function RelativeLink({
+        href,
+        ...props
+    }: { href?: string } & Omit<ComponentProps<'a'>, 'href'>) {
+        return (
+            <FrameworkLink
+                href={href ? source.resolveHref(href, page as never) : href}
+                {...props}
+            />
+        )
+    }
+}

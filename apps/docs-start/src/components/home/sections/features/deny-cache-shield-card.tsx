@@ -115,9 +115,8 @@ export function DenyCacheShieldCard() {
                       mt-2 w-full space-y-3 rounded-2xl border border-border/40 bg-background/50 p-4
                       font-mono text-[10px] shadow-sm select-none
                     ">
-                    <div className="
-                      flex items-center justify-between border-b border-border/20 pb-2
-                    ">
+                    <div
+                        className="flex items-center justify-between border-b border-border/20 pb-2">
                         <span
                             className="
                               text-[8px] font-bold tracking-wider text-muted-foreground/60 uppercase
