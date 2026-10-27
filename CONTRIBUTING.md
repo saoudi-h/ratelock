@@ -6,7 +6,7 @@ Thank you for your interest in contributing! We welcome all kinds of contributio
 
 ### Prerequisites
 
-- **Node.js >= 22** or **Bun >= 1.1** (CI runs on both; see the [Runtimes page](https://github.com/saoudi-h/ratelock/blob/main/apps/docs/src/content/docs/getting-started/runtimes.mdx))
+- **Node.js >= 22** or **Bun >= 1.1** (CI runs on both; see the [Runtimes page](https://github.com/saoudi-h/ratelock/blob/main/apps/docs/content/docs/getting-started/runtimes.mdx))
 - **pnpm >= 10** (this project uses pnpm as its package manager)
 - **Docker** (for running integration tests)
 

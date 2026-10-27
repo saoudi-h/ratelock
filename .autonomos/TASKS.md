@@ -7,6 +7,10 @@
 
 ## 🚀 Active Sprint
 
+- [/] **[DOCS-START-01]** Port `apps/docs` from Next.js to TanStack Start (sibling app, parity-first approach per solar-icons migration handover). Keep deployment on Vercel (`ratelock-docs.vercel.app`) until a dedicated domain exists; delete the Next.js app once parity is reached. Uses Fumadocs macro API, full prerender, Vercel-compatible output `Priority: 🔴` `Complexity: XL`
+      - Done: app builds (typecheck/lint/format green), full prerender (35 pages, 29 `.mdx`, sitemap, rss, llms, search index), nitro Vercel output, `vercel.json` (`cleanUrls`), turbo outputs/env
+      - Done: Vercel project `ratelock-docs-start` (root `apps/docs-start`, env set) + PR #37; preview OK (routes, cleanUrls, hydration, SPA nav, Umami `p.js`)
+      - Left: feedback widget end-to-end, visual/network parity vs `apps/docs`, then swap domain `ratelock-docs.vercel.app` to the new project, delete `apps/docs` + old Vercel project, CI/AGENT.md updates
 - [x] **[DOCS-03]** Fix production site URL to `ratelock-docs.vercel.app` + patch affected published packages (READMEs displayed on registry) `Priority: 🔴` `Complexity: S`
 - [x] **[BLOG-01]** Establish Fumadocs blog editorial surface for SEO (framework-specific recipes + resilience guides) — clone fumadocs official blog structure into `apps/docs` `Priority: 🟠` `Complexity: M`
 - [x] **[BLOG-02]** Polish blog editorial surface — premium hero, card system, slop-free prose (stop-slop + documentation-writer, frontend-design + ui-ux-pro-max) `Priority: 🟠` `Complexity: M`

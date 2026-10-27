@@ -4,7 +4,7 @@ import { MinusCircleIcon } from '@solar-icons/react/bold-duotone'
 import { OTPInput, OTPInputContext } from 'input-otp'
 import * as React from 'react'
 
-import { cn } from '@/lib/utils'
+import { cn } from '~/lib/utils'
 
 function InputOTP({
     className,

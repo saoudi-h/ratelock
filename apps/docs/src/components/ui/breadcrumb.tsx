@@ -3,7 +3,7 @@ import { useRender } from '@base-ui/react/use-render'
 import { AltArrowRightIcon, MenuDotsIcon } from '@solar-icons/react/bold-duotone'
 import * as React from 'react'
 
-import { cn } from '@/lib/utils'
+import { cn } from '~/lib/utils'
 
 function Breadcrumb({ className, ...props }: React.ComponentProps<'nav'>) {
     return (

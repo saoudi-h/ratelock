@@ -1,6 +1,12 @@
 'use client'
 
-import { CheckCircleIcon, DangerTriangleIcon, ForbiddenIcon, InfoCircleIcon, RefreshIcon } from '@solar-icons/react/bold-duotone'
+import {
+    CheckCircleIcon,
+    DangerTriangleIcon,
+    ForbiddenIcon,
+    InfoCircleIcon,
+    RefreshIcon,
+} from '@solar-icons/react/bold-duotone'
 import { useTheme } from 'next-themes'
 import { Toaster as Sonner, type ToasterProps } from 'sonner'
 

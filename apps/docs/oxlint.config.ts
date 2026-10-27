@@ -1,9 +1,9 @@
-import { base, next, tailwind } from '@tala-tools/oxlint'
+import { base, tailwind } from '@tala-tools/oxlint'
 import { defineConfig } from 'oxlint'
 
 export default defineConfig({
-    extends: [base, next, tailwind],
-    ignorePatterns: ['.next', '.source', 'node_modules', 'next-env.d.ts'],
+    extends: [base, tailwind],
+    ignorePatterns: ['.source', 'dist', 'node_modules', 'src/routeTree.gen.ts'],
     rules: {
         // Canonical pipeline order: oxfmt runs FIRST, oxlint runs LAST, so
         // this rule owns the final shape of className wrapping. Consequence:
@@ -18,7 +18,7 @@ export default defineConfig({
     },
     settings: {
         'better-tailwindcss': {
-            entryPoint: './src/app/globals.css',
+            entryPoint: './src/styles/app.css',
             detectComponentClasses: true,
             ignore: [
                 'toaster',

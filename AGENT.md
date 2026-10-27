@@ -23,8 +23,8 @@ RateLock is a high-performance, extensible rate limiting library for Node.js, Bu
 
 ## 🏗 Stack & Architecture
 
-- **Tooling:** pnpm@11 workspaces + Turborepo; TypeScript strict via `@tala-tools/tsconfig`, typechecked with the native `tsc` from **TypeScript 7** (maintainer-approved migration; tsdown dts + full DoD verified on TS 7.0.2). Builds via tsdown (ESM+CJS dual, publint on build); lint/format via **oxlint + oxfmt** through shared `@tala-tools/oxlint` / `@tala-tools/oxfmt` presets (root configs; `apps/docs` overrides with next+tailwind). Canonical pipeline order is **format first, lint last** (`oxfmt --write` → `oxlint --fix`): better-tailwindcss owns the final className shape in docs, so a couple of docs files intentionally keep the plugin's wrapping and are reported by `oxfmt --check`; lint is the gated tool and stays green. Vitest 4 with workspace projects composed from `@ratelock/vitest`; husky + lint-staged on pre-commit; Changesets v3 + GitHub Actions publish from main.
-- **Docs app:** Next.js 16 App Router + Fumadocs MDX, deployed on Vercel.
+- **Tooling:** pnpm@11 workspaces + Turborepo; TypeScript strict via `@tala-tools/tsconfig`, typechecked with the native `tsc` from **TypeScript 7** (maintainer-approved migration; tsdown dts + full DoD verified on TS 7.0.2). Builds via tsdown (ESM+CJS dual, publint on build); lint/format via **oxlint + oxfmt** through shared `@tala-tools/oxlint` / `@tala-tools/oxfmt` presets (root configs; `apps/docs` overrides with tailwind). Canonical pipeline order is **format first, lint last** (`oxfmt --write` → `oxlint --fix`): better-tailwindcss owns the final className shape in docs, so a couple of docs files intentionally keep the plugin's wrapping and are reported by `oxfmt --check`; lint is the gated tool and stays green. Vitest 4 with workspace projects composed from `@ratelock/vitest`; husky + lint-staged on pre-commit; Changesets v3 + GitHub Actions publish from main.
+- **Docs app:** TanStack Start + Fumadocs MDX (full prerender + Nitro Vercel output), deployed on Vercel as `ratelock-docs.vercel.app`.
 - **CI gates (`.github/workflows/ci.yml`):** unit tests on Node + Bun matrix; then build → lint → typecheck → publint over the published packages (`packages/{core,local,redis,upstash,postgres}`). cspell is not in CI. Upstash real-service integration remains opt-in and is not a PR gate.
 
 ## 📁 Key Directories
@@ -40,14 +40,13 @@ RateLock is a high-performance, extensible rate limiting library for Node.js, Bu
 | `packages/test-utils` | Contract test suites asserting parity across engines |
 | `packages/vitest` | Shared Vitest configs (base preset, workspace project globs) |
 | `packages/bench` | Benchmark harness vs `rate-limiter-flexible`, docker compose for full runs |
-| `apps/docs` | Documentation site (Fumadocs MDX content in `src/content/docs/`) |
+| `apps/docs` | Documentation site (Fumadocs MDX content in `content/docs/`) |
 | `.autonomos/` | Agent Protocol files |
 
 ## ⚠️ Known Constraints
 
 - Root `pnpm test` starts Vitest in **watch mode**; use `vitest run` or `pnpm test:coverage` for one-shot. Turbo `test` has no `dependsOn: build`; build before testing.
-- `next build` for the docs app sets `typescript.ignoreBuildErrors: true`; `pnpm typecheck` is the only TS gate.
-- Docs env validation needs real values locally (`.env.local`, see `apps/docs/.env.example`); auto-skipped when `CI=true`.
+- Docs app needs `VITE_*` / `GITHUB_APP_*` values locally (`.env.local`, see `apps/docs/.env.example`); builds without them succeed but ship without analytics and feedback.
 - Non-default ports for integration infra: Redis **6380**, PostgreSQL **5434** (docker-compose inside package dirs). Intentional, test-only: avoids conflicts with other projects running on the maintainer's machine; do not "normalize" back to 6379/5432.
 - Published packages use Changesets (`release.yml` on main); private shared packages are never published. Keep changesets flowing for user-facing changes.
 - Untracked stale `dist/` and `coverage/` dirs may exist in packages; do not trust them as current state.

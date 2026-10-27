@@ -1,7 +1,7 @@
 import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
 import { AltArrowDownIcon, AltArrowUpIcon } from '@solar-icons/react/bold-duotone'
 
-import { cn } from '@/lib/utils'
+import { cn } from '~/lib/utils'
 
 function Accordion({ className, ...props }: AccordionPrimitive.Root.Props) {
     return (

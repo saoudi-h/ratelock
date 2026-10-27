@@ -1,12 +1,12 @@
 'use client'
 
 import { DislikeIcon, LikeIcon } from '@solar-icons/react/bold-duotone'
+import { useRouterState } from '@tanstack/react-router'
 import { cva } from 'class-variance-authority'
 import { Collapsible, CollapsibleContent } from 'fumadocs-ui/components/ui/collapsible'
-import { usePathname } from 'next/navigation'
 import { type SyntheticEvent, useEffect, useState, useTransition } from 'react'
 
-import { cn } from '@/lib/utils'
+import { cn } from '~/lib/utils'
 
 const rateButtonVariants = cva(
     `
@@ -39,7 +39,7 @@ export function Rate({
 }: {
     onRateAction: (url: string, feedback: Feedback) => Promise<ActionResponse>
 }) {
-    const url = usePathname()
+    const url = useRouterState({ select: state => state.location.pathname })
     const [previous, setPrevious] = useState<Result | null>(null)
     const [opinion, setOpinion] = useState<'good' | 'bad' | null>(null)
     const [message, setMessage] = useState('')
