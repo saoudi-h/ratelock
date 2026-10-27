@@ -38,14 +38,11 @@ export const Route = createRootRoute({
             ],
             links: [
                 { rel: 'stylesheet', href: appCss },
-                // The latin subsets are fetched with the page, so the text is
-                // not laid out again when the fonts replace the fallbacks.
-                ...[
-                    'funnel-display-latin',
-                    'funnel-sans-latin',
-                    'ubuntu-mono-latin-400',
-                    'ubuntu-mono-latin-700',
-                ].map(font => ({
+                // The latin subsets of the page fonts are fetched with the
+                // page, so the text is not laid out again when they replace
+                // the fallbacks. The monospace font only styles code that
+                // appears later; preloading it would compete with the CSS.
+                ...['funnel-display-latin', 'funnel-sans-latin'].map(font => ({
                     rel: 'preload',
                     href: `/fonts/${font}.woff2`,
                     as: 'font',
