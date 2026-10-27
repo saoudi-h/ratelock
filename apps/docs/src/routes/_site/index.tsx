@@ -1,13 +1,25 @@
 import { createFileRoute } from '@tanstack/react-router'
 
+import { lazyWhenIdle } from '~/components/home/_lib/lazy-when-idle'
 import { BfcacheRemount } from '~/components/home/bfcache-remount'
-import { EnginesSection } from '~/components/home/sections/engines'
-import { FeaturesSection } from '~/components/home/sections/features'
 import { HeroSection } from '~/components/home/sections/hero'
-import { IntegrationsSection } from '~/components/home/sections/integrations'
-import { PerformanceSection } from '~/components/home/sections/performance'
-import { SimulationSection } from '~/components/home/sections/simulation-section'
 import { seo } from '~/utils/seo'
+
+const FeaturesSection = lazyWhenIdle(() =>
+    import('~/components/home/sections/features').then(m => m.FeaturesSection)
+)
+const SimulationSection = lazyWhenIdle(() =>
+    import('~/components/home/sections/simulation-section').then(m => m.SimulationSection)
+)
+const EnginesSection = lazyWhenIdle(() =>
+    import('~/components/home/sections/engines').then(m => m.EnginesSection)
+)
+const IntegrationsSection = lazyWhenIdle(() =>
+    import('~/components/home/sections/integrations').then(m => m.IntegrationsSection)
+)
+const PerformanceSection = lazyWhenIdle(() =>
+    import('~/components/home/sections/performance').then(m => m.PerformanceSection)
+)
 
 export const Route = createFileRoute('/_site/')({
     head: () =>

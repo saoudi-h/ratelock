@@ -7,6 +7,7 @@
 
 ## 🚀 Active Sprint
 
+- [x] **[DOCS-PERF-01]** Improve Lighthouse performance of the docs home page: preview mobile 65 -> ~90 (TBT 530 -> ~60 ms), desktop 96 -> 99; docs pages 95-100. Levers: CSS-only hero entrances, deferred hydration of below-the-fold sections, bundled icons `Priority: 🟠` `Complexity: M`
 - [x] **[DOCS-START-01]** Port `apps/docs` from Next.js to TanStack Start (parity-first, per solar-icons handover). Done: PR #37 merged, Next app removed, `apps/docs-start` renamed `apps/docs`; Vercel project `ratelock-docs-start` serves `ratelock-docs.vercel.app` (old `ratelock-docs` project deleted); Docs Feedback verified end-to-end with a new GitHub App key `Priority: 🔴` `Complexity: XL`
 - [x] **[DOCS-03]** Fix production site URL to `ratelock-docs.vercel.app` + patch affected published packages (READMEs displayed on registry) `Priority: 🔴` `Complexity: S`
 - [x] **[BLOG-01]** Establish Fumadocs blog editorial surface for SEO (framework-specific recipes + resilience guides) — clone fumadocs official blog structure into `apps/docs` `Priority: 🟠` `Complexity: M`

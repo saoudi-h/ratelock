@@ -6,7 +6,6 @@ import { useRef } from 'react'
 import { HeroIllustration } from '~/components/ui/hero-illustration'
 
 import { gsap, registerGsap } from '../../_lib/gsap'
-import { registerReplay } from '../../_lib/replay-registry'
 import { HeroBadge } from './hero-badge'
 import { HeroCtas } from './hero-ctas'
 import { HeroScrollCue } from './hero-scroll-cue'
@@ -31,33 +30,11 @@ import { HeroTitle } from './hero-title'
 export function HeroSection() {
     registerGsap()
     const ambientRef = useRef<HTMLDivElement>(null)
-    const descRef = useRef<HTMLParagraphElement>(null)
 
+    // The description is the largest text of the first viewport, so it is
+    // never hidden: an opacity entrance would push the LCP back until the
+    // JS has loaded, hydrated and the delay elapsed.
     useGSAP(() => {
-        if (descRef.current) {
-            const desc = descRef.current
-            const descTl = gsap.fromTo(
-                desc,
-                { y: 16, opacity: 0, filter: 'blur(6px)' },
-                {
-                    y: 0,
-                    opacity: 1,
-                    filter: 'blur(0px)',
-                    duration: 0.9,
-                    ease: 'expo.out',
-                    delay: 0.85,
-                    onStart: () => desc.classList.remove('gsap-prep'),
-                    onInterrupt: () => {
-                        gsap.set(desc, { y: 0, opacity: 1, clearProps: 'filter' })
-                        desc.classList.remove('gsap-prep')
-                    },
-                }
-            )
-            return registerReplay(() => {
-                descTl.restart(true, false)
-            })
-        }
-
         if (ambientRef.current) {
             gsap.to(ambientRef.current, {
                 yPercent: 30,
@@ -113,10 +90,8 @@ export function HeroSection() {
                                 <HeroTitle />
 
                                 <p
-                                    ref={descRef}
                                     className="
-                                      gsap-prep mt-3 max-w-xl text-base/relaxed
-                                      text-muted-foreground
+                                      mt-3 max-w-xl text-base/relaxed text-muted-foreground
                                       md:text-lg
                                     ">
                                     TypeScript rate limiting with multiple strategies,

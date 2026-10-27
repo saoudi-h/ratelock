@@ -10,3 +10,7 @@
 - Generated, git-ignored: `public/{og,optimized,p.js,r.js}`, `.source`, `.output`, `.vercel`.
 - The local node-server preset does not serve prerendered extras (`llms.txt`, `.mdx`); verify those on a Vercel preview.
 - Vercel skips a deployment when a commit does not touch the project root dir.
+- Home page performance (Lighthouse mobile ~90): the hero entrances (`.hero-animate` in `app.css`) are CSS keyframes, never GSAP `fromTo`: each `fromTo` forced a style recalculation during hydration. Use `backwards` fill so scroll-driven GSAP tweens can own the transform afterwards. Never hide LCP text behind JS (`gsap-prep`, inline `opacity: 0`).
+- Sections below the fold are wrapped with `lazyWhenIdle` (`components/home/_lib`): prerendered HTML stays, hydration waits for the first interaction. Their Iconify icons ship in `src/generated/icons-deferred.ts`.
+- Iconify icons are bundled, not fetched from api.iconify.design: after adding or renaming an icon id (`prefix:name`), run `pnpm generate:icons` and commit `src/generated/*` (prefix needs an `@iconify-json/<prefix>` devDependency and an entry in `scripts/generate-icons.ts`).
+- Measure on a Vercel preview (`lighthouse --extra-headers` with a protection-bypass secret), not on a local static server: without compression the simulated LCP is far worse than production. Profile hydration with puppeteer-core + CDP `Profiler` on an unminified build.

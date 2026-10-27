@@ -205,6 +205,39 @@ importers:
       '@babel/core':
         specifier: ^8.0.9
         version: 8.0.9
+      '@iconify-json/bxl':
+        specifier: ^1.2.4
+        version: 1.2.4
+      '@iconify-json/devicon':
+        specifier: ^1.2.72
+        version: 1.2.72
+      '@iconify-json/devicon-plain':
+        specifier: ^1.2.63
+        version: 1.2.63
+      '@iconify-json/logos':
+        specifier: ^1.2.18
+        version: 1.2.18
+      '@iconify-json/lucide':
+        specifier: ^1.2.147
+        version: 1.2.147
+      '@iconify-json/mdi':
+        specifier: ^1.2.3
+        version: 1.2.3
+      '@iconify-json/simple-icons':
+        specifier: ^1.2.101
+        version: 1.2.101
+      '@iconify-json/solar':
+        specifier: ^1.2.13
+        version: 1.2.13
+      '@iconify-json/thesvg-color':
+        specifier: ^1.2.21
+        version: 1.2.21
+      '@iconify/types':
+        specifier: ^2.0.0
+        version: 2.0.0
+      '@iconify/utils':
+        specifier: ^3.1.7
+        version: 3.1.7
       '@ratelock/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -741,6 +774,9 @@ importers:
         version: 0.0.2
 
 packages:
+
+  '@antfu/install-pkg@2.1.0':
+    resolution: {integrity: sha512-sdg9NxU3zR4Mnawfbc/x6GB5Wf17WYud5qOuEuxXjaKpYpMkISSJEjItGebXJ2bQ4DIcly4NYH23mtkGJjvKUw==}
 
   '@autonomos/cli@0.4.1':
     resolution: {integrity: sha512-qEMGJhHqegh6T3yN8IzIEBnxbz0nG4sJacVoYxfy+SSeVQNdD1k5QsU1ZRfzCwBBxiMJl+soDhb7/i/ONPhYrA==}
@@ -1753,6 +1789,33 @@ packages:
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
 
+  '@iconify-json/bxl@1.2.4':
+    resolution: {integrity: sha512-R6gVQSxB1+XeVClK7KdACnk1SfP8xiAu6LHuKZmp6Ro5zwMQbpe9vFBv30F6eHMDL8lZ7eXuac5SRJ9C8DKehQ==}
+
+  '@iconify-json/devicon-plain@1.2.63':
+    resolution: {integrity: sha512-19Ujbz87yMfoRGoiXNCx8g/zsJgWcfQdgfumY7VPOzYl/c8weUZ+mycja1Zl6pe2LiwZjoG+HbZ/FlFoKuazGw==}
+
+  '@iconify-json/devicon@1.2.72':
+    resolution: {integrity: sha512-S1Tfzx+6SAQiJpHWR7KO6Pp7vuC+GADj8e1hDaUzaF+SReNnbUzHl1N0A90ty9NoMBAddHTvAKO7O29DPyTIxg==}
+
+  '@iconify-json/logos@1.2.18':
+    resolution: {integrity: sha512-Qehd7RmUbYM4LSXNHFqulgvmdmqldOxQ3VDbCmzos5IGlo40+cChVdX7GnG9VODBU0H3+Bb8npYOkplooJZvtQ==}
+
+  '@iconify-json/lucide@1.2.147':
+    resolution: {integrity: sha512-7Qqa/joSBeUxihWsQJx5nKcqMWtV3YrH90Jldxcx4J9ciTLavRUlpexQwRTcx9dcb7CJpISfjZTj42zD/30sqA==}
+
+  '@iconify-json/mdi@1.2.3':
+    resolution: {integrity: sha512-O3cLwbDOK7NNDf2ihaQOH5F9JglnulNDFV7WprU2dSoZu3h3cWH//h74uQAB87brHmvFVxIOkuBX2sZSzYhScg==}
+
+  '@iconify-json/simple-icons@1.2.101':
+    resolution: {integrity: sha512-MXJkMZDancJ/9I+Bgdthi9kXvn3AwWStxoTHwEPwAFQ9kMLBASO1BSstg52fNtjXeizm1Wi91R+QnWxNGkWHPQ==}
+
+  '@iconify-json/solar@1.2.13':
+    resolution: {integrity: sha512-/ZWb6xRib6pzxD/qTkKWYhuzSU2yu0bY+EN0spgtz1NM3d5f4eYueQZpL3PfCdsg5uVfm4Ldtt3cAyQL+YI8/Q==}
+
+  '@iconify-json/thesvg-color@1.2.21':
+    resolution: {integrity: sha512-36x7DMlUmagXEuwkzvDnPi1AkO5Z8E4NYaTuWcg92MulxSfek7tehjQ9MTlqQessjr8DL3boIUAJAXVWznTSBA==}
+
   '@iconify/react@6.0.2':
     resolution: {integrity: sha512-SMmC2sactfpJD427WJEDN6PMyznTFMhByK9yLW0gOTtnjzzbsi/Ke/XqsumsavFPwNiXs8jSiYeZTmLCLwO+Fg==}
     peerDependencies:
@@ -1760,6 +1823,9 @@ packages:
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
+
+  '@iconify/utils@3.1.7':
+    resolution: {integrity: sha512-JZHlwdID+dy+lTgbYC8NEC4zeugqeYsc6jewvzb4c58kHauJn+X7rNwQjxz5p2qSjqaEeQoLkCIQ9v/H4PK0/w==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -8742,6 +8808,11 @@ packages:
 
 snapshots:
 
+  '@antfu/install-pkg@2.1.0':
+    dependencies:
+      package-manager-detector: 1.8.0
+      tinyexec: 1.3.1
+
   '@autonomos/cli@0.4.1(@types/node@26.2.0)':
     dependencies:
       '@autonomos/core': 0.4.0
@@ -9867,12 +9938,54 @@ snapshots:
   '@humanwhocodes/retry@0.4.3':
     optional: true
 
+  '@iconify-json/bxl@1.2.4':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/devicon-plain@1.2.63':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/devicon@1.2.72':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/logos@1.2.18':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/lucide@1.2.147':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/mdi@1.2.3':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/simple-icons@1.2.101':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/solar@1.2.13':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/thesvg-color@1.2.21':
+    dependencies:
+      '@iconify/types': 2.0.0
+
   '@iconify/react@6.0.2(react@19.2.8)':
     dependencies:
       '@iconify/types': 2.0.0
       react: 19.2.8
 
   '@iconify/types@2.0.0': {}
+
+  '@iconify/utils@3.1.7':
+    dependencies:
+      '@antfu/install-pkg': 2.1.0
+      '@iconify/types': 2.0.0
+      import-meta-resolve: 4.2.0
 
   '@img/colour@1.1.0': {}
 

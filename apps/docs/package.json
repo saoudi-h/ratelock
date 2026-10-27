@@ -16,7 +16,8 @@
         "lint-staged": "lint-staged",
         "sync:umami": "tsx ./scripts/sync-umami.ts",
         "generate:og-images": "tsx ./scripts/generate-og-images.tsx",
-        "optimize:images": "tsx ./scripts/optimize-images.ts"
+        "optimize:images": "tsx ./scripts/optimize-images.ts",
+        "generate:icons": "tsx ./scripts/generate-icons.ts"
     },
     "dependencies": {
         "@base-ui/react": "^1.7.0",
@@ -55,6 +56,17 @@
     },
     "devDependencies": {
         "@babel/core": "^8.0.9",
+        "@iconify-json/bxl": "^1.2.4",
+        "@iconify-json/devicon": "^1.2.72",
+        "@iconify-json/devicon-plain": "^1.2.63",
+        "@iconify-json/logos": "^1.2.18",
+        "@iconify-json/lucide": "^1.2.147",
+        "@iconify-json/mdi": "^1.2.3",
+        "@iconify-json/simple-icons": "^1.2.101",
+        "@iconify-json/solar": "^1.2.13",
+        "@iconify-json/thesvg-color": "^1.2.21",
+        "@iconify/types": "^2.0.0",
+        "@iconify/utils": "^3.1.7",
         "@ratelock/core": "workspace:*",
         "@ratelock/local": "workspace:*",
         "@ratelock/postgres": "workspace:*",

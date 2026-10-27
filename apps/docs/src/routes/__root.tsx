@@ -15,6 +15,18 @@ import { umamiEnabled, umamiId, umamiUrl } from '~/utils/umami'
 
 import appCss from '~/styles/app.css?url'
 
+function replayLoader({ id, url }: { id: string; url: string }) {
+    const attrs = JSON.stringify({
+        src: '/r.js',
+        'data-website-id': id,
+        'data-host-url': url,
+        'data-sample-rate': '0.15',
+        'data-mask-level': 'moderate',
+        'data-max-duration': '300000',
+    })
+    return `(function(){var a=${attrs};function l(){var s=document.createElement('script');for(var k in a)s.setAttribute(k,a[k]);document.body.appendChild(s)}function i(){(window.requestIdleCallback||function(f){setTimeout(f,2000)})(l)}document.readyState==='complete'?i():addEventListener('load',i)})()`
+}
+
 export const Route = createRootRoute({
     head: () => {
         return {
@@ -26,14 +38,11 @@ export const Route = createRootRoute({
             ],
             links: [
                 { rel: 'stylesheet', href: appCss },
-                // The latin subsets are fetched with the page, so the text is
-                // not laid out again when the fonts replace the fallbacks.
-                ...[
-                    'funnel-display-latin',
-                    'funnel-sans-latin',
-                    'ubuntu-mono-latin-400',
-                    'ubuntu-mono-latin-700',
-                ].map(font => ({
+                // The latin subsets of the page fonts are fetched with the
+                // page, so the text is not laid out again when they replace
+                // the fallbacks. The monospace font only styles code that
+                // appears later; preloading it would compete with the CSS.
+                ...['funnel-display-latin', 'funnel-sans-latin'].map(font => ({
                     rel: 'preload',
                     href: `/fonts/${font}.woff2`,
                     as: 'font',
@@ -47,12 +56,7 @@ export const Route = createRootRoute({
                 { rel: 'manifest', href: '/manifest.json' },
                 // Same first-party loading as the Next app: the analytics
                 // scripts are served from our own origin.
-                ...(umamiEnabled
-                    ? [
-                          { rel: 'preload', href: '/p.js', as: 'script' as const },
-                          { rel: 'preload', href: '/r.js', as: 'script' as const },
-                      ]
-                    : []),
+                ...(umamiEnabled ? [{ rel: 'preload', href: '/p.js', as: 'script' as const }] : []),
             ],
         }
     },
@@ -130,14 +134,12 @@ function RootDocument({ children }: { children: ReactNode }) {
                             data-host-url={umamiUrl}
                             data-performance="true"
                         />
+                        {/* The session replay recorder is 45 KiB and not needed for the
+                            first render: it loads once the page is idle. */}
                         <script
-                            defer
-                            src="/r.js"
-                            data-website-id={umamiId}
-                            data-host-url={umamiUrl}
-                            data-sample-rate="0.15"
-                            data-mask-level="moderate"
-                            data-max-duration="300000"
+                            dangerouslySetInnerHTML={{
+                                __html: replayLoader({ id: umamiId, url: umamiUrl }),
+                            }}
                         />
                     </>
                 ) : null}
