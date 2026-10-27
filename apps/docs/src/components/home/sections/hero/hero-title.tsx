@@ -1,7 +1,7 @@
 'use client'
 
 import { useGSAP } from '@gsap/react'
-import { useRef } from 'react'
+import { Fragment, useRef } from 'react'
 
 import { gsap, registerGsap, ScrollTrigger } from '../../_lib/gsap'
 import { registerReplay } from '../../_lib/replay-registry'
@@ -62,11 +62,16 @@ export function HeroTitle() {
             ">
             <span data-hero-line className="block text-foreground">
                 {firstLine.map((word, index) => (
-                    <span key={word} className="hero-word-mask">
-                        <span className="hero-word" style={{ '--i': index } as React.CSSProperties}>
-                            {word}
-                        </span>{' '}
-                    </span>
+                    <Fragment key={word}>
+                        <span className="hero-word-mask">
+                            <span
+                                className="hero-word"
+                                style={{ '--i': index } as React.CSSProperties}>
+                                {word}
+                            </span>
+                        </span>
+                        {index < firstLine.length - 1 ? ' ' : null}
+                    </Fragment>
                 ))}
             </span>
             <span

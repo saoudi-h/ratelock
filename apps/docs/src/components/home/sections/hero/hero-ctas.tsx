@@ -1,14 +1,13 @@
 'use client'
 
-import { useGSAP } from '@gsap/react'
 import { Icon } from '@iconify/react'
 import { ArrowRightBoldIcon } from '@solar-icons/react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { FrameworkLink as Link } from '~/components/framework-link'
 import { Button } from '~/components/ui/button'
 
-import { gsap, registerGsap } from '../../_lib/gsap'
+import { restartCssAnimation } from '../../_lib/css-animation'
 import { registerReplay } from '../../_lib/replay-registry'
 
 interface HeroCtasProps {
@@ -23,7 +22,6 @@ interface HeroCtasProps {
  * primary CTA leads the stagger so the eye lands on it first.
  */
 export function HeroCtas({ command = 'npm install @ratelock/local' }: HeroCtasProps) {
-    registerGsap()
     const ref = useRef<HTMLDivElement>(null)
     const [copied, setCopied] = useState(false)
 
@@ -33,45 +31,17 @@ export function HeroCtas({ command = 'npm install @ratelock/local' }: HeroCtasPr
         setTimeout(() => setCopied(false), 2000)
     }
 
-    useGSAP(
-        () => {
-            if (!ref.current) return
-            const wrap = ref.current
-            const items = wrap.children
-            const tl = gsap.fromTo(
-                items,
-                { y: 24, opacity: 0, filter: 'blur(6px)' },
-                {
-                    y: 0,
-                    opacity: 1,
-                    filter: 'blur(0px)',
-                    duration: 0.7,
-                    ease: 'expo.out',
-                    stagger: 0.08,
-                    delay: 0.55,
-                    onStart: () => wrap.classList.remove('gsap-prep'),
-                    onInterrupt: () => {
-                        gsap.set(items, {
-                            y: 0,
-                            opacity: 1,
-                            clearProps: 'filter',
-                        })
-                        wrap.classList.remove('gsap-prep')
-                    },
-                }
-            )
-            return registerReplay(() => {
-                tl.restart(true, false)
-            })
-        },
-        { scope: ref }
-    )
+    useEffect(() => {
+        const wrap = ref.current
+        if (!wrap) return
+        return registerReplay(() => restartCssAnimation(wrap))
+    }, [])
 
     return (
         <div
             ref={ref}
             className="
-              gsap-prep mt-8 flex flex-col items-start gap-3
+              hero-animate hero-ctas mt-8 flex flex-col items-start gap-3
               sm:flex-row sm:flex-wrap sm:items-center sm:gap-4
             ">
             <div className="flex items-center gap-4">
