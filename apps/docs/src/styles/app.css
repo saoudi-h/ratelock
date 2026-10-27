@@ -257,6 +257,54 @@
     }
 }
 
+/* Hero title entrance: CSS only, so the title paints with the first frame. */
+@media (prefers-reduced-motion: no-preference) {
+    .hero-animate .hero-word {
+        animation: hero-word-in 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+        animation-delay: calc(0.15s + var(--i, 0) * 0.06s);
+    }
+    .hero-animate .hero-gradient-line {
+        animation: hero-line-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
+    }
+}
+
+.hero-word-mask {
+    display: inline-block;
+    overflow: hidden;
+    padding-bottom: 5px;
+    margin-bottom: -5px;
+    vertical-align: top;
+}
+
+.hero-word {
+    display: inline-block;
+    transform-origin: 50% 50% -40px;
+}
+
+@keyframes hero-word-in {
+    from {
+        transform: translateY(110%) rotateX(-45deg);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+@keyframes hero-line-in {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+        filter: blur(4px);
+    }
+    to {
+        transform: none;
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
 @keyframes simulation-drift {
     from {
         transform: translateX(0);

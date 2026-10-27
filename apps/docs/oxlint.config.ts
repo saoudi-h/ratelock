@@ -3,7 +3,7 @@ import { defineConfig } from 'oxlint'
 
 export default defineConfig({
     extends: [base, tailwind],
-    ignorePatterns: ['.source', 'dist', 'node_modules', 'src/routeTree.gen.ts'],
+    ignorePatterns: ['.source', 'dist', 'node_modules', 'src/routeTree.gen.ts', 'src/generated'],
     rules: {
         // Canonical pipeline order: oxfmt runs FIRST, oxlint runs LAST, so
         // this rule owns the final shape of className wrapping. Consequence:
@@ -25,6 +25,7 @@ export default defineConfig({
                 'data-*',
                 'cn-*',
                 'no-scrollbar',
+                'hero-*',
                 'not-prose',
                 'animate-event-pop',
                 'animate-token-enter',
