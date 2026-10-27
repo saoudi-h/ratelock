@@ -1,0 +1,10 @@
+.output
+.vercel
+.source
+.tanstack
+.cache
+dist
+public/p.js
+public/r.js
+public/optimized
+public/og

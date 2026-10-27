@@ -1,0 +1,12 @@
+{
+    "extends": "@tala-tools/tsconfig/base.json",
+    "compilerOptions": {
+        "types": ["node", "vite/client"],
+        "paths": {
+            "fumadocs-mdx:collections/*": ["./.source/*"],
+            "~/*": ["./src/*"]
+        }
+    },
+    "include": ["**/*.ts", "**/*.tsx", ".source/**/*.ts", "vite.config.ts"],
+    "exclude": ["node_modules", "dist", ".output", ".tanstack", ".vercel"]
+}
