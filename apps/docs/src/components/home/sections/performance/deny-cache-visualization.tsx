@@ -180,9 +180,8 @@ export function DenyCacheVisualization() {
                         data-deny-client
                         className="absolute top-6 flex flex-col items-center gap-1">
                         <Icon icon="solar:user-bold-duotone" className="size-6 text-zinc-500" />
-                        <span className="
-                          text-[8px] font-bold tracking-widest text-zinc-400 uppercase
-                        ">
+                        <span
+                            className="text-[8px] font-bold tracking-widest text-zinc-400 uppercase">
                             Spam Client
                         </span>
                     </div>

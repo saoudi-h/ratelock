@@ -5,7 +5,7 @@ const INTERACTION_EVENTS = ['scroll', 'pointerdown', 'touchstart', 'keydown', 'w
 let readyPromise: Promise<void> | undefined
 
 /** A deferred section is released after this long without any interaction. */
-const FALLBACK_DELAY_MS = 8000
+const FALLBACK_DELAY_MS = 12_000
 
 /**
  * Resolves at the first user interaction, or after a long quiet period,
