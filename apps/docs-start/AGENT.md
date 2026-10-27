@@ -7,3 +7,4 @@
 - After every build, check for `Error in render` in the log: prerender can exit 0 while shipping client-only shells.
 - Generated, git-ignored: `public/{og,optimized,p.js,r.js}`, `.source`, `.output`, `.vercel`. `VITE_*` vars are baked at build time and silently absent if unset.
 - The local node-server preset does not serve prerendered extras (`llms.txt`, `.mdx`); verify those on a Vercel preview, not locally.
+- Keep `fumadocs-core`, `fumadocs-mdx` and `fumadocs-ui` on the same ranges as `apps/docs` (and bump them together): two resolved copies break the Next build with "Export findProjection doesn't exist".
