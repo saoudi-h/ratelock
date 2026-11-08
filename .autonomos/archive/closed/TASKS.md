@@ -1,0 +1,38 @@
+# Closed tasks
+
+> Append-only history moved out of `.autonomos/TASKS.md`. Not startup context; search by ID.
+
+## From TASKS.md › 🚀 Active Sprint (moved 2026-11-08)
+
+- [x] **[DOCS-PERF-01]** Improve Lighthouse performance of the docs home page: preview mobile 65 -> ~90 (TBT 530 -> ~60 ms), desktop 96 -> 99; docs pages 95-100. Levers: CSS-only hero entrances, deferred hydration of below-the-fold sections, bundled icons `Priority: 🟠` `Complexity: M`
+- [x] **[DOCS-START-01]** Port `apps/docs` from Next.js to TanStack Start (parity-first, per solar-icons handover). Done: PR #37 merged, Next app removed, `apps/docs-start` renamed `apps/docs`; Vercel project `ratelock-docs-start` serves `ratelock-docs.vercel.app` (old `ratelock-docs` project deleted); Docs Feedback verified end-to-end with a new GitHub App key `Priority: 🔴` `Complexity: XL`
+- [x] **[DOCS-03]** Fix production site URL to `ratelock-docs.vercel.app` + patch affected published packages (READMEs displayed on registry) `Priority: 🔴` `Complexity: S`
+- [x] **[BLOG-01]** Establish Fumadocs blog editorial surface for SEO (framework-specific recipes + resilience guides) — clone fumadocs official blog structure into `apps/docs` `Priority: 🟠` `Complexity: M`
+- [x] **[BLOG-02]** Polish blog editorial surface — premium hero, card system, slop-free prose (stop-slop + documentation-writer, frontend-design + ui-ux-pro-max) `Priority: 🟠` `Complexity: M`
+- [x] **[DOCS-02]** Fix 5 non-blocking errors reported by Next.js devtools in `apps/docs`; update Next.js past 16.3.0 plus all other workspace dependencies `Priority: 🟠` `Complexity: M`
+      - Fixed: hydration mismatch (`toLocaleString()` without locale → `'en-US'`), 3× Base UI `nativeButton` warnings (Button wrapper now auto-derives `nativeButton` from the `render` element type), script-in-component console error (cascade of the hydration remount)
+      - Deps: next 16.3.0→16.3.2, fumadocs-core/mdx, nuqs, shadcn, shiki, sonner, redis, pg, vitest, cspell, hono… ; replaced deprecated `@solar-icons/react-perf` with `@solar-icons/react` (imports: `/BoldDuotone` → `/bold-duotone`, names gain `Icon` suffix, `Plain2` → `Plane2Icon`)
+      - Intentionally NOT bumped: `express4`/`fastify4` aliases + `fastify-plugin@^5` (dual v4/v5 peer support)
+- [x] **[DOCS-01]** Fix the GSAP ScrollTrigger crash after browser back navigation restores the home page `Priority: 🔴` `Complexity: M`
+- [x] **[TOOL-01]** Update dependencies; migrate lint/format from `@tala-tools/eslint`+`@tala-tools/prettier` to `@tala-tools/oxlint`+`@tala-tools/oxfmt`; evaluate TypeScript 7 adoption vs ecosystem tool compatibility (reference migration: solar-icons) `Priority: 🟠` `Complexity: L`
+- [x] **[INIT-01]** Review project context and structure `Priority: 🔵` `Complexity: S`
+- [x] **[INIT-02]** Triage legacy `BACKLOG.md` + `ANALYSIS_REPORT.md` into protocol issues/tasks `Priority: 🟠` `Complexity: M`
+- [x] **[BUN-01]** Evaluate Bun 1.4 native Redis/Postgres clients as drivers. PoC against `@ratelock/redis` + `@ratelock/postgres`, decide internal drivers vs dedicated packages, document decision `Priority: 🟠` `Complexity: L`
+- [x] **[BUN-02]** Implement `bun` driver in `@ratelock/redis` (Bun 1.4 RedisClient over existing `RedisClient` interface) `Priority: 🟠` `Complexity: M`
+- [x] **[BENCH-01]** Benchmark Bun-native RedisClient vs node-redis/ioredis under Bun vs Node baseline, using `packages/bench` harness + docker compose `Priority: 🟠` `Complexity: M`
+- [x] **[CORE-02]** Fix duplicate-id batch fallback: replace `Promise.all` with sequential loop (nondeterministic results on concurrent same-key upserts, exposed by Bun SQL) `Priority: 🔵` `Complexity: S`
+- [x] **[ENV-01]** Align `engines.node` to `>=22` in all package.json (README + CONTRIBUTING already say 22+) `Priority: 🔵` `Complexity: S`
+- [x] **[TST-01]** Run redis/postgres `__integration__` suites against Docker, assess coverage completeness `Priority: 🔵` `Complexity: M`
+- [x] **[TST-02]** Strengthen contract suites: duplicate-id batch cases (would have caught CORE-02), per-key state assertions, deny propagation; add postgres `pg` pool driver leg to integration `Priority: 🟠` `Complexity: M`
+- [x] **[REL-01]** Push `feat/bun-native-drivers`, open PR to main, let changesets + `release.yml` drive the versioning/publish flow `Priority: 🟠` `Complexity: S`
+
+## From TASKS.md › 🔮 Backlog (moved 2026-11-08)
+
+- [x] **[INT-04]** Extract shared HTTP logic into private bundled `@ratelock/http-common` if duplication is confirmed when the third middleware lands (rule of three) `Priority: ⚪` `Complexity: S`
+- [x] **[INT-01]** Hono middleware `@ratelock/hono`: engine-agnostic `rateLimit({ limiter })` accepting instance OR lazy factory (`() => Promise<Limiter>`, memoized singleton); headers `'both' | 'rfc' | 'legacy' | false` default `'both'` (+ Retry-After on 429); framework IP default + `keyGenerator` override; middleware contract tests in test-utils; README + docs page + changeset `Priority: 🟠` `Complexity: M`
+- [x] **[INT-02]** Express middleware `@ratelock/express` — support Express 4 AND 5 (async error semantics differ); `req.ip` + `trust proxy`; tests via supertest; research exact APIs first `Priority: 🟠` `Complexity: M`
+- [x] **[INT-03]** Fastify plugin `@ratelock/fastify` — fastify-plugin encapsulation pattern; `request.ip`; tests via built-in `inject()` `Priority: 🔵` `Complexity: M`
+- [x] **[INT-05]** Elysia plugin `@ratelock/elysia` — Bun-native synergy with our native driver; pin supported Elysia version range (fast-moving ecosystem) `Priority: 🔵` `Complexity: M`
+- [x] **[INT-07]** NestJS integration `@ratelock/nestjs` — framework-agnostic (Express/Fastify multi-adapter); decorator + module/provider concepts justify a dedicated package with NestJS-idiomatic DX (Guard/Interceptor, DI-friendly limiter injection). Research official plugin patterns and supported majors first `Priority: 🔵` `Complexity: L`
+- [x] **[DOC-03]** Framework recipes documentation — manual pattern guides for Next.js route handlers / SvelteKit / Astro / Remix (+ SolidStart), including full headers snippet, Retry-After, lazy init, per-platform IP extraction recipes (CF-Connecting-IP, Vercel, self-hosted) `Priority: 🟠` `Complexity: M`
+- [x] **[ADP-01]** Upstash Redis adapter (serverless REST) `Priority: 🔵` `Complexity: M`
