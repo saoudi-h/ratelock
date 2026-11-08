@@ -10,6 +10,8 @@ allowBuilds:
 minimumReleaseAgeExclude:
   - '@autonomos/cli@0.7.1'
   - '@autonomos/core@0.7.1'
+  - '@autonomos/cli@0.8.1'
+  - '@autonomos/core@0.8.1'
 
 onlyBuiltDependencies:
   - esbuild
