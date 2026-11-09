@@ -8,8 +8,8 @@ allowBuilds:
   sharp: set this to true or false
 
 minimumReleaseAgeExclude:
-  - '@autonomos/cli@0.8.4'
-  - '@autonomos/core@0.8.4'
+  - '@autonomos/cli@0.8.5'
+  - '@autonomos/core@0.8.5'
 
 onlyBuiltDependencies:
   - esbuild
