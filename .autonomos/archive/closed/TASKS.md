@@ -36,3 +36,7 @@
 - [x] **[INT-07]** NestJS integration `@ratelock/nestjs` — framework-agnostic (Express/Fastify multi-adapter); decorator + module/provider concepts justify a dedicated package with NestJS-idiomatic DX (Guard/Interceptor, DI-friendly limiter injection). Research official plugin patterns and supported majors first `Priority: 🔵` `Complexity: L`
 - [x] **[DOC-03]** Framework recipes documentation — manual pattern guides for Next.js route handlers / SvelteKit / Astro / Remix (+ SolidStart), including full headers snippet, Retry-After, lazy init, per-platform IP extraction recipes (CF-Connecting-IP, Vercel, self-hosted) `Priority: 🟠` `Complexity: M`
 - [x] **[ADP-01]** Upstash Redis adapter (serverless REST) `Priority: 🔵` `Complexity: M`
+
+## Closed 2026-11-09
+
+- [x] **[META-01]** Restore the INT-06 parking rationale lost in the 0.8.1 migration `Priority: ⚪` `Complexity: S` `Completed: 2026-11-09` — [worklog](../../worklogs/2026-11-09-META-01.md)
