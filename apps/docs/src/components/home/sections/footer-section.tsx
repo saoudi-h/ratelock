@@ -275,6 +275,51 @@ export function FooterSection() {
                                 </li>
                             ))}
                         </ul>
+                        <div className="space-y-3 pt-2">
+                            <div
+                                className="
+                                  text-[9px] font-semibold tracking-widest text-muted-foreground/40
+                                  uppercase select-none
+                                ">
+                                Other projects
+                            </div>
+                            <ul className="flex flex-col gap-3 text-xs">
+                                {[
+                                    {
+                                        href: 'https://postdot.app/?utm_source=ratelock-docs.vercel.app&utm_medium=footer',
+                                        label: 'Postdot',
+                                    },
+                                    {
+                                        href: 'https://solar-icons.dev/?utm_source=ratelock-docs.vercel.app&utm_medium=footer',
+                                        label: 'Solar Icons',
+                                    },
+                                ].map(link => (
+                                    <li key={link.href}>
+                                        <a
+                                            href={link.href}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="
+                                              group/link inline-flex text-muted-foreground
+                                              transition-colors duration-200
+                                              hover:text-foreground
+                                            ">
+                                            <span className="relative">
+                                                {link.label}
+                                                <span
+                                                    className="
+                                                      absolute inset-x-0 -bottom-0.5 h-px
+                                                      origin-left scale-x-0 bg-foreground/40
+                                                      transition-transform duration-300
+                                                      group-hover/link:scale-x-100
+                                                    "
+                                                />
+                                            </span>
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
                 </div>
 
