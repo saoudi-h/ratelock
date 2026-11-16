@@ -40,3 +40,7 @@
 ## Closed 2026-11-09
 
 - [x] **[META-01]** Restore the INT-06 parking rationale lost in the 0.8.1 migration `Priority: ⚪` `Complexity: S` `Completed: 2026-11-09` — [worklog](../../worklogs/2026-11-09-META-01.md)
+
+## Closed 2026-11-16
+
+- [x] **[HOME-FIX-01]** Stabilize mobile home: hero illustration flicker + transient horizontal overflow `Priority: 🟠` `Complexity: M` `Completed: 2026-11-16` — issues HOME-01, HOME-02
