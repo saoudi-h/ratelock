@@ -80,7 +80,7 @@ function LenisGsapBridge() {
         }
 
         gsap.ticker.add(update)
-        gsap.ticker.lagSmoothing(0)
+        gsap.ticker.lagSmoothing(500, 33)
 
         const lenis = lenisRef.current?.lenis
         lenis?.on('scroll', ScrollTrigger.update)

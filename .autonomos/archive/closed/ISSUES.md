@@ -13,17 +13,9 @@
 - Desired outcome: RateLock has an owned, maintainable, searchable editorial surface with clear article metadata, durable URLs, useful navigation and internal linking, references to relevant documentation and interactive proof, and a lightweight publishing workflow suitable for occasional high-quality articles and later distribution to social and community channels.
 - Tasks: BLOG-01, BLOG-02
 
-## Closed 2026-11-16
+## [HOME-01] Reopened 2026-11-16
 
-## [HOME-01] Hero illustration flickers and animates chaotically on mobile Chrome
-
-- Type: problem
-- Status: resolved
-- Evidence: On a physical phone with Chrome, the home hero illustration's elements appear/disappear at high frequency; the screenshot shows a distorted, partially drawn scene. Same page is stable on desktop Chrome and Firefox. A second screenshot taken on the maintainer's desktop (scroll test for HOME-02) shows the illustration animating normally, so the fault is device-specific.
-- Impact: The landing page's main visual is broken for mobile Chrome visitors; first impression and perceived quality suffer on the primary traffic device class.
-- Desired outcome: The hero illustration renders and animates with the same stable timing on mobile Chrome as on desktop, with no rapid flicker or element popping.
-- Tasks: HOME-FIX-01
-- Resolution: Fixed by HOME-FIX-01 — see `.autonomos/worklogs/2026-11-16-HOME-FIX-01.md`; physical-phone confirmation remains with the maintainer.
+- HOME-01 was reopened to `.autonomos/ISSUES.md`: HOME-FIX-01 did not resolve the flicker on physical phones. Current evidence and the root-cause finding are recorded there; the original closed record is superseded, not deleted.
 
 ## Closed 2026-11-16
 
@@ -36,3 +28,27 @@
 - Desired outcome: Home page has no horizontal overflow at any point from first paint through hydration and scrolling in a mobile viewport.
 - Tasks: HOME-FIX-01
 - Resolution: Fixed by HOME-FIX-01 — see `.autonomos/worklogs/2026-11-16-HOME-FIX-01.md`; verified at 390px viewport with zero document overflow.
+
+## Closed 2026-11-16
+
+## [HOME-01] Hero illustration flickers and animates chaotically on mobile
+
+- Type: problem
+- Status: resolved
+- Evidence: On physical phones (Chrome AND Firefox), the hero illustration's parts light up and go dark at high speed, randomly; desktop browsers are stable. HOME-FIX-01 (mouse-only tilt, one simulation tween per cycle, lagSmoothing restored in `gsap.ts`) was deployed and did NOT fix it: `LenisGsapBridge` in `apps/docs/src/routes/__root.tsx:83` calls `gsap.ticker.lagSmoothing(0)` after `registerGsap()`, overriding the fix. Other contributors: an animated `filter: drop-shadow(oklch(from ...))` pulse with random stagger, a ResizeObserver↔height feedback loop, and per-cycle GSAP tweens accumulating in the context.
+- Impact: The landing page's main visual is broken for mobile visitors on both major browsers; the first fix attempt failed, so a verified device-level result is required.
+- Desired outcome: The illustration animates stably on physical phones with no rapid/ random light-up or dropout, verified after deployment.
+- Tasks: HOME-FIX-02
+- Resolution: Fixed by HOME-FIX-02 — see `.autonomos/worklogs/2026-11-16-HOME-FIX-02.md`; pending the maintainer's physical-phone check after deployment.
+
+## Closed 2026-11-16
+
+## [HOME-03] Hero illustration compositing fails on mobile GPUs
+
+- Type: problem
+- Status: resolved
+- Evidence: Despite HOME-FIX-02 (lagSmoothing, opacity pulse, no ResizeObserver loop), the 3D illustration still flickered on a Samsung S23 in Chrome and Firefox, with objects missing at random between reloads. Elimination tests proved stability only when all 3D transforms were neutralized; the same page worked on an old desktop. Maintainer accepted hiding the illustration on mobile.
+- Impact: A broken main visual on mobile; a functional page is preferred over a decorative gadget that fails.
+- Desired outcome: No visible flicker or layout break on mobile, while keeping the illustration on desktop.
+- Tasks: HOME-FIX-03
+- Resolution: Fixed by HOME-FIX-03 — see `.autonomos/worklogs/2026-11-17-HOME-FIX-03.md`; verified by the maintainer on an S23 via the LAN dev server.

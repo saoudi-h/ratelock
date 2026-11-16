@@ -63,17 +63,15 @@ export function HeroIllustration({ className }: HeroIllustrationProps) {
         if (!container) return
 
         const handleResize = () => {
-            const rect = container.getBoundingClientRect()
-            const width = rect.width || container.clientWidth || DESIGN_WIDTH
+            const width = container.clientWidth || DESIGN_WIDTH
             setScale(Math.min(1, width / DESIGN_WIDTH))
         }
 
         handleResize()
         setIsMounted(true)
 
-        const observer = new ResizeObserver(handleResize)
-        observer.observe(container)
-        return () => observer.disconnect()
+        window.addEventListener('resize', handleResize)
+        return () => window.removeEventListener('resize', handleResize)
     }, [])
 
     useEffect(() => {
@@ -117,6 +115,7 @@ export function HeroIllustration({ className }: HeroIllustrationProps) {
     useGSAP(
         () => {
             registerGsap()
+            if (!window.matchMedia('(min-width: 768px)').matches) return
             let stopSimulation: (() => void) | undefined
 
             const tl = gsap.timeline({
@@ -225,16 +224,16 @@ export function HeroIllustration({ className }: HeroIllustrationProps) {
                     repeat: -1,
                 })
 
-                // Pulsing checkmark glows
+                // Pulsing checkmark glows: opacity is compositable on mobile GPUs
                 gsap.to('[data-animate="card-check"]', {
-                    filter: 'drop-shadow(0 0 10px oklch(from var(--primary) l c h / 0.7)) drop-shadow(0 0 2px var(--primary))',
+                    opacity: 0.55,
                     duration: 1.8,
                     ease: 'sine.inOut',
                     repeat: -1,
                     yoyo: true,
                     stagger: {
                         each: 0.3,
-                        from: 'random',
+                        from: 'start',
                     },
                 })
 
@@ -303,22 +302,19 @@ export function HeroIllustration({ className }: HeroIllustrationProps) {
                     })
                 }
 
-                let simScrollTween: gsap.core.Tween | undefined
-                const runCycle = () => {
-                    updateSimulation()
-                    simScrollTween = gsap.fromTo(
-                        chartSvgRef.current,
-                        { '--chart-tx': 0 },
-                        {
-                            '--chart-tx': -64,
-                            duration: 2.4,
-                            ease: 'none',
-                            onComplete: runCycle,
-                        }
-                    )
-                }
-                runCycle()
-                stopSimulation = () => simScrollTween?.kill()
+                updateSimulation()
+                const simScrollTween = gsap.fromTo(
+                    chartSvgRef.current,
+                    { '--chart-tx': 0 },
+                    {
+                        '--chart-tx': -64,
+                        duration: 2.4,
+                        ease: 'none',
+                        repeat: -1,
+                        onRepeat: updateSimulation,
+                    }
+                )
+                stopSimulation = () => simScrollTween.kill()
             })
 
             return () => stopSimulation?.()
@@ -338,6 +334,7 @@ export function HeroIllustration({ className }: HeroIllustrationProps) {
             ref={containerRef}
             className={`
               ${styles.illustration}
+              hidden md:block
               ${className ?? ''}
             `}
             style={{
@@ -351,7 +348,7 @@ export function HeroIllustration({ className }: HeroIllustrationProps) {
                 justifyContent: 'center',
                 margin: '0 auto',
                 opacity: isMounted ? 1 : 0,
-                transition: 'opacity 0.4s ease-out, height 0.15s ease-out',
+                transition: 'opacity 0.4s ease-out',
                 overflow: 'visible',
             }}>
             <div
