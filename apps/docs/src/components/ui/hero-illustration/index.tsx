@@ -36,9 +36,12 @@ const getBezierPath = (points: number[]) => {
     return d
 }
 
+const DESIGN_WIDTH = 630
+const DESIGN_HEIGHT = 380
+
 /**
  * 3D isometric rate-limiting illustration built with CSS 3D transforms.
- * Contains client-side ResizeObserver scaling, section-wide Z-axis hover tilt,
+ * Contains client-side ResizeObserver scaling, mouse-only Z-axis hover tilt,
  * and a real-time request traffic simulation.
  */
 export function HeroIllustration({ className }: HeroIllustrationProps) {
@@ -55,77 +58,66 @@ export function HeroIllustration({ className }: HeroIllustrationProps) {
     const chartFillRef = useRef<SVGPathElement>(null)
     const cardValueRefs = useRef<(HTMLSpanElement | null)[]>([])
 
-    const designWidth = 630
-    const designHeight = 380
-
     useEffect(() => {
         const container = containerRef.current
         if (!container) return
 
-        // 1. Measure and adjust wrapper scale
         const handleResize = () => {
             const rect = container.getBoundingClientRect()
-            const width = rect.width || container.clientWidth || designWidth
-            const newScale = Math.min(1, width / designWidth)
-            setScale(newScale)
+            const width = rect.width || container.clientWidth || DESIGN_WIDTH
+            setScale(Math.min(1, width / DESIGN_WIDTH))
         }
 
         handleResize()
         setIsMounted(true)
 
-        const observer = new ResizeObserver(() => {
-            handleResize()
-        })
+        const observer = new ResizeObserver(handleResize)
         observer.observe(container)
+        return () => observer.disconnect()
+    }, [])
 
-        // 2. Register hover mouse tilt listener over the ENTIRE Hero Section parent
-        const section = container.closest('section')
-        if (section) {
-            const handleSectionMouseMove = (e: MouseEvent) => {
-                const rect = section.getBoundingClientRect()
-                // Mouse coordinate relative to the horizontal center of the entire hero section
-                const x = e.clientX - rect.left - rect.width / 2
+    useEffect(() => {
+        const container = containerRef.current
+        const section = container?.closest('section')
+        if (!container || !section) return
 
-                // Very subtle yaw rotation around the Z-axis (max 4 degrees)
-                const tiltZ = (x / (rect.width / 2)) * 4
+        const handlePointerMove = (e: PointerEvent) => {
+            if (e.pointerType !== 'mouse') return
+            const rect = section.getBoundingClientRect()
+            const x = e.clientX - rect.left - rect.width / 2
+            const tiltZ = (x / (rect.width / 2)) * 4
 
-                gsap.to(container, {
-                    '--tilt-z': tiltZ,
-                    duration: 0.8, // slower duration makes it feel heavy and extremely fluid
-                    ease: 'power2.out',
-                    overwrite: 'auto',
-                })
-            }
-
-            const handleSectionMouseLeave = () => {
-                // Smoothly animate back to center
-                gsap.to(container, {
-                    '--tilt-z': 0,
-                    duration: 1.2,
-                    ease: 'power2.out',
-                    overwrite: 'auto',
-                })
-            }
-
-            section.addEventListener('mousemove', handleSectionMouseMove)
-            section.addEventListener('mouseleave', handleSectionMouseLeave)
-
-            return () => {
-                observer.disconnect()
-                section.removeEventListener('mousemove', handleSectionMouseMove)
-                section.removeEventListener('mouseleave', handleSectionMouseLeave)
-            }
+            gsap.to(container, {
+                '--tilt-z': tiltZ,
+                duration: 0.8,
+                ease: 'power2.out',
+                overwrite: 'auto',
+            })
         }
 
+        const handlePointerLeave = (e: PointerEvent) => {
+            if (e.pointerType !== 'mouse') return
+            gsap.to(container, {
+                '--tilt-z': 0,
+                duration: 1.2,
+                ease: 'power2.out',
+                overwrite: 'auto',
+            })
+        }
+
+        section.addEventListener('pointermove', handlePointerMove)
+        section.addEventListener('pointerleave', handlePointerLeave)
         return () => {
-            observer.disconnect()
+            section.removeEventListener('pointermove', handlePointerMove)
+            section.removeEventListener('pointerleave', handlePointerLeave)
         }
-    }, [scale])
+    }, [])
 
     // Setup GSAP entrance animations & dynamic simulation loops
     useGSAP(
         () => {
             registerGsap()
+            let stopSimulation: (() => void) | undefined
 
             const tl = gsap.timeline({
                 delay: 0.25,
@@ -290,6 +282,7 @@ export function HeroIllustration({ className }: HeroIllustrationProps) {
                         total: targetTotal,
                         duration: 2.4,
                         ease: 'power1.inOut',
+                        overwrite: true,
                         onUpdate: () => {
                             if (cardValueRefs.current[0])
                                 cardValueRefs.current[0].textContent =
@@ -310,25 +303,25 @@ export function HeroIllustration({ className }: HeroIllustrationProps) {
                     })
                 }
 
-                // Set up a repeating GSAP tween to drive the horizontal scroll and trigger updates.
-                // This is perfectly synchronized with GSAP's tick loop and has zero timer drift.
-                const simScrollTween = gsap.fromTo(
-                    chartSvgRef.current,
-                    { '--chart-tx': 0 },
-                    {
-                        '--chart-tx': -64,
-                        duration: 2.4,
-                        ease: 'none',
-                        repeat: -1,
-                        onStart: updateSimulation,
-                        onRepeat: updateSimulation,
-                    }
-                )
-
-                return () => {
-                    simScrollTween.kill()
+                let simScrollTween: gsap.core.Tween | undefined
+                const runCycle = () => {
+                    updateSimulation()
+                    simScrollTween = gsap.fromTo(
+                        chartSvgRef.current,
+                        { '--chart-tx': 0 },
+                        {
+                            '--chart-tx': -64,
+                            duration: 2.4,
+                            ease: 'none',
+                            onComplete: runCycle,
+                        }
+                    )
                 }
+                runCycle()
+                stopSimulation = () => simScrollTween?.kill()
             })
+
+            return () => stopSimulation?.()
         },
         { scope: containerRef }
     )
@@ -351,8 +344,8 @@ export function HeroIllustration({ className }: HeroIllustrationProps) {
                 position: 'relative',
                 perspective: 2000,
                 width: '100%',
-                maxWidth: designWidth,
-                height: designHeight * scale,
+                maxWidth: DESIGN_WIDTH,
+                height: DESIGN_HEIGHT * scale,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

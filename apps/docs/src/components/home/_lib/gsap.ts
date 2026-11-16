@@ -11,7 +11,7 @@ export function registerGsap() {
     gsap.registerPlugin(ScrollTrigger, SplitText)
     gsap.config({ nullTargetWarn: false })
     ScrollTrigger.config({ limitCallbacks: true })
-    gsap.ticker.lagSmoothing(0)
+    gsap.ticker.lagSmoothing(500, 33)
     registered = true
 }
 

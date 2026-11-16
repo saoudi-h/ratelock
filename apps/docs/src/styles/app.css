@@ -480,8 +480,10 @@
     }
     body {
         @apply bg-background text-foreground;
+        overflow-x: clip;
     }
     html {
         @apply font-body;
+        overflow-x: clip;
     }
 }
