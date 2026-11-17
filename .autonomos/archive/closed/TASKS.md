@@ -46,3 +46,7 @@
 - [x] **[HOME-FIX-01]** Stabilize mobile home: hero illustration flicker + transient horizontal overflow `Priority: 🟠` `Complexity: M` `Completed: 2026-11-16` — issues HOME-01, HOME-02
 - [x] **[HOME-FIX-02]** Fix mobile hero flicker: root lagSmoothing override, GPU-heavy filter pulse, ResizeObserver loop `Priority: 🔴` `Complexity: M` `Completed: 2026-11-16` — issue HOME-01
 - [x] **[HOME-FIX-03]** Hide the 3D hero illustration on mobile `Priority: 🔴` `Complexity: S` `Completed: 2026-11-17` — issue HOME-03
+
+## Closed 2026-11-17
+
+- [x] **[DEPS-01]** Update main, toolchain (Node/pnpm/CI) and all dependencies incl. majors `Priority: 🟠 High` `Complexity: M` `Completed: 2026-11-17`

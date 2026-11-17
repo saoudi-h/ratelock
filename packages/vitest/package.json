@@ -28,10 +28,10 @@
         "pre-commit": "lint-staged"
     },
     "dependencies": {
-        "vitest": "^4.1.11"
+        "vitest": "^5.1.0"
     },
     "devDependencies": {
-        "@tala-tools/tsconfig": "0.0.2"
+        "@tala-tools/tsconfig": "0.1.2"
     },
     "peerDependencies": {
         "vite-tsconfig-paths": "^4.0.0"

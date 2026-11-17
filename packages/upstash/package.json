@@ -69,12 +69,12 @@
         "@ratelock/redis-common": "workspace:*",
         "@ratelock/test-utils": "workspace:*",
         "@ratelock/vitest": "workspace:*",
-        "@tala-tools/tsconfig": "0.0.2",
-        "@types/node": "^26.2.0",
-        "@upstash/redis": "^1.38.4",
-        "rimraf": "^6.1.3",
+        "@tala-tools/tsconfig": "0.1.2",
+        "@types/node": "^26.6.6",
+        "@upstash/redis": "^1.41.0",
+        "rimraf": "^6.1.4",
         "typescript": "7.0.2",
-        "vitest": "^4.1.11"
+        "vitest": "^5.1.0"
     },
     "peerDependencies": {
         "@upstash/redis": ">=1.34.0 <2"

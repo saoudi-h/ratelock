@@ -55,17 +55,17 @@
         "pre-commit": "lint-staged"
     },
     "dependencies": {
-        "fastify-plugin": "^5.0.0"
+        "fastify-plugin": "^6.0.1"
     },
     "devDependencies": {
         "@ratelock/core": "workspace:*",
         "@ratelock/http-common": "workspace:*",
         "@ratelock/local": "workspace:*",
-        "@tala-tools/tsconfig": "0.0.2",
-        "@types/node": "^26.2.0",
-        "fastify": "^5.0.0",
-        "fastify4": "npm:fastify@^4.29.0",
-        "vitest": "^4.1.11"
+        "@tala-tools/tsconfig": "0.1.2",
+        "@types/node": "^26.6.6",
+        "fastify": "^5.12.8",
+        "fastify4": "npm:fastify@^5.12.8",
+        "vitest": "^5.1.0"
     },
     "peerDependencies": {
         "fastify": "^4.0.0 || ^5.0.0"

@@ -73,15 +73,15 @@
     "devDependencies": {
         "@ratelock/test-utils": "workspace:*",
         "@ratelock/vitest": "workspace:*",
-        "@tala-tools/tsconfig": "0.0.2",
-        "@types/node": "^26.2.0",
+        "@tala-tools/tsconfig": "0.1.2",
+        "@types/node": "^26.6.6",
         "@types/pg": "^8.23.1",
-        "@vitest/coverage-v8": "^4.1.11",
-        "dotenv": "^17.4.2",
-        "pg": "^8.23.0",
+        "@vitest/coverage-v8": "^5.1.0",
+        "dotenv": "^18.0.10",
+        "pg": "^8.23.1",
         "postgres": ">=3.0.0",
         "typescript": "7.0.2",
-        "vitest": "^4.1.11"
+        "vitest": "^5.1.0"
     },
     "peerDependencies": {
         "pg": ">=8.0.0",
